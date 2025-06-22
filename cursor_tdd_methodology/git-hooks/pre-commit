@@ -1,0 +1,92 @@
+#!/bin/sh
+# Pre-commit hook for TDD enforcement
+# This hook runs tests before allowing a commit
+
+echo "🚨 Running tests before commit..."
+
+# Detect project type and run appropriate tests
+if [ -f "composer.json" ]; then
+    # PHP project
+    echo "📦 PHP project detected"
+    if [ ! -f "vendor/bin/phpunit" ]; then
+        echo "❌ PHPUnit not installed. Run: composer install"
+        exit 1
+    fi
+    ./vendor/bin/phpunit --stop-on-failure
+    TEST_RESULT=$?
+elif [ -f "package.json" ]; then
+    # JavaScript project
+    echo "📦 JavaScript project detected"
+    if [ ! -d "node_modules" ]; then
+        echo "❌ Dependencies not installed. Run: npm install"
+        exit 1
+    fi
+    npm test -- --passWithNoTests
+    TEST_RESULT=$?
+elif [ -f "requirements.txt" ] || [ -f "setup.py" ]; then
+    # Python project
+    echo "📦 Python project detected"
+    if ! command -v pytest &> /dev/null; then
+        echo "❌ pytest not installed. Run: pip install pytest"
+        exit 1
+    fi
+    pytest -x
+    TEST_RESULT=$?
+else
+    echo "⚠️  No recognized project type. Skipping tests."
+    exit 0
+fi
+
+# Check test results
+if [ $TEST_RESULT -ne 0 ]; then
+    echo ""
+    echo "❌ Tests failed! Commit aborted."
+    echo ""
+    echo "Please fix the failing tests before committing."
+    echo "Remember: Write test → See it fail → Write code → See it pass → Commit"
+    echo ""
+    echo "To bypass this check (NOT RECOMMENDED), use: git commit --no-verify"
+    exit 1
+fi
+
+echo "✅ All tests passed! Proceeding with commit..."
+
+# Optional: Check for console.log, debugger, or other debug statements
+echo "🔍 Checking for debug statements..."
+
+# Check for console.log in JS files
+if [ -f "package.json" ]; then
+    CONSOLE_LOGS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx)$' | xargs grep -n "console\.log" || true)
+    if [ ! -z "$CONSOLE_LOGS" ]; then
+        echo "⚠️  Warning: console.log statements found:"
+        echo "$CONSOLE_LOGS"
+        echo ""
+        read -p "Continue with commit? (y/n) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
+    fi
+fi
+
+# Check for debugger statements
+DEBUGGERS=$(git diff --cached --name-only --diff-filter=ACM | xargs grep -n "debugger\|binding\.pry\|import pdb\|pdb\.set_trace" || true)
+if [ ! -z "$DEBUGGERS" ]; then
+    echo "❌ Debug statements found:"
+    echo "$DEBUGGERS"
+    echo "Please remove debug statements before committing."
+    exit 1
+fi
+
+# Optional: Run linter
+echo "🔍 Running linter..."
+if [ -f ".eslintrc" ] || [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ]; then
+    npm run lint || true
+elif [ -f ".flake8" ] || [ -f "setup.cfg" ] || [ -f "tox.ini" ]; then
+    flake8 . || true
+elif [ -f ".php_cs" ] || [ -f ".php-cs-fixer.php" ]; then
+    ./vendor/bin/phpcs || true
+fi
+
+echo "✅ Pre-commit checks complete!"
+exit 0 

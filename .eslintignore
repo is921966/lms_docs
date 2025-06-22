@@ -1,0 +1,4 @@
+**/*.md
+*.md
+/technical_requirements/
+/images/ 

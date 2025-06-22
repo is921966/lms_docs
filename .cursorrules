@@ -1,0 +1,214 @@
+# LMS Documentation Project - Cursor Rules
+
+## 🚨 КРИТИЧЕСКОЕ ПРАВИЛО
+
+**Код без запущенных тестов = КОД НЕ СУЩЕСТВУЕТ**
+**Спринт с непроходящими тестами = СПРИНТ НЕ ЗАВЕРШЕН**
+
+## ⚡ БЫСТРЫЙ ЗАПУСК ТЕСТОВ
+
+**ВСЕГДА используйте `test-quick.sh` для запуска тестов:**
+```bash
+# Запустить конкретный тест (5 секунд!)
+./test-quick.sh tests/Unit/Competency/Domain/CompetencyTest.php
+
+# Запустить все тесты в директории
+./test-quick.sh tests/Unit/Competency/Domain/
+
+# Запустить все тесты
+./test-quick.sh
+```
+
+**Преимущества:**
+- ✅ 5-10 секунд на запуск (вместо 2-3 минут)
+- ✅ Не требует настройки
+- ✅ Работает из коробки
+- ✅ Идеально для TDD цикла
+
+## 📋 ВАЖНО: 100% тестов должны проходить
+
+**БЕЗ ИСКЛЮЧЕНИЙ**: Все написанные тесты ДОЛЖНЫ проходить. Если тесты не проходят:
+1. Исправьте код
+2. Сделайте архитектурный рефакторинг если нужно
+3. Измените дизайн если требуется
+4. НО ВСЕ ТЕСТЫ ДОЛЖНЫ БЫТЬ ЗЕЛЕНЫМИ
+
+Недопустимые отговорки:
+- ❌ "90% достаточно хорошо"
+- ❌ "Эти тесты можно исправить потом"
+- ❌ "Это технический долг"
+- ❌ "Требуется сложный рефакторинг"
+
+Правильный подход:
+- ✅ Тест не проходит → исправить СЕЙЧАС
+- ✅ Нужен рефакторинг → сделать СЕЙЧАС
+- ✅ Сложная проблема → решить СЕЙЧАС
+
+## 📋 ВАЖНО: Методология продакт-менеджера
+
+Перед началом разработки ОБЯЗАТЕЛЬНО ознакомьтесь с файлом `.cursor/rules/productmanager.mdc`. Все технические задания должны быть разработаны согласно этой методологии, учитывая, что дальнейшую разработку будет проводить LLM.
+
+## 🔄 ПРАВИЛО ОБНОВЛЕНИЯ МЕТОДОЛОГИИ
+
+**КРИТИЧЕСКИ ВАЖНО**: Если в процессе разработки выявляются новые важные методологические требования, паттерны или best practices, вы ДОЛЖНЫ:
+
+1. **Немедленно обновить** соответствующие файлы методологии:
+   - `.cursorrules` - для правил AI
+   - `.cursor/rules/productmanager.mdc` - для требований к ТЗ
+   - `technical_requirements/TDD_MANDATORY_GUIDE.md` - для процессов разработки
+   - `technical_requirements/antipatterns.md` - для новых антипаттернов
+
+2. **Документировать причину** изменения в комментарии коммита
+
+3. **Уведомить команду** о важных изменениях в методологии
+
+4. **Версионировать** изменения (обновить версию и дату в файлах)
+
+5. **Синхронизировать с центральным репозиторием**:
+   ```bash
+   # Обновить центральный репозиторий методологии
+   ./sync-methodology.sh to-central
+   
+   # Получить обновления из центрального репозитория
+   ./sync-methodology.sh from-central
+   ```
+
+### 🔄 Команда "Обнови методологию"
+
+Когда пользователь говорит **"обнови методологию"**, выполните следующие действия:
+
+1. **Обновите файлы в текущем проекте**:
+   - Внесите необходимые изменения в файлы методологии
+   - Обновите версии и даты
+   - Создайте METHODOLOGY_UPDATE_vX.X.X.md с описанием изменений
+
+2. **Синхронизируйте с центральным репозиторием**:
+   ```bash
+   ./sync-methodology.sh to-central
+   ```
+
+3. **Покажите пользователю**:
+   - Какие файлы были обновлены
+   - Новую версию методологии
+   - Ключевые изменения
+
+4. **Напомните** о необходимости закоммитить изменения
+
+Примеры ситуаций для обновления:
+- Обнаружен новый антипаттерн
+- Найден более эффективный подход к TDD
+- Выявлены специфические требования для LLM-разработки
+- Обнаружены проблемы с существующими практиками
+
+## Project Context
+This is a structured markdown documentation for "ЦУМ: Корпоративный университет" (Corporate University) LMS module version 10.2.0. The documentation is organized for optimal LLM readability.
+
+## Documentation Structure
+- `/about/` - Product information and concepts
+- `/updates/` - Version history and changelog
+- `/competencies/` - Competency management documentation
+- `/positions/` - Position and career path management
+- `/courses/` - Course and training materials management
+- `/tests/` - Testing system documentation
+- `/analytics/` - Analytics and reporting features
+- `/setup/` - Installation and configuration guides
+- `/development_of_employees/` - Employee development programs
+- `/certificates/` - Certificate management
+- `/gamification/` - Gamification features
+- `/integrations/` - External integrations
+- `/personal_cabinet/` - Personal cabinet functionality
+- `/programs/` - Training programs
+- `/images/` - Documentation images
+- `/technical_requirements/` - Technical requirements and specifications
+  - `/v1.0/` - MVP version requirements
+    - `llm_development_guide.md` - Guide for LLM-based development
+    - `llm_versioning_guide.md` - Incremental development guide
+    - `microservices_contracts.md` - Detailed API contracts
+
+## Key Technical Information
+- **Platform**: Standalone web application
+- **Requirements**: PHP 8.1+, MySQL/PostgreSQL
+- **Authentication**: Microsoft Active Directory (LDAP/SAML)
+- **Compatibility**: Desktop browsers, mobile-responsive web interface
+- **Current Version**: 10.2.0
+
+## Development Guidelines for LLM
+1. **File Size Limits**: Maximum 150 lines per file (optimal 50-100)
+2. **Modular Structure**: One class per file, methods under 30 lines
+3. **Clear Naming**: Use descriptive file names and consistent folder structure
+4. **Interface First**: Define interfaces before implementations
+5. **Small Iterations**: One feature = one LLM session (5-10 files max)
+6. **Test-Driven Development (TDD)**:
+   - Write test FIRST, run it, see it fail
+   - Write minimal code to make test pass
+   - Run test again, see it pass
+   - Refactor if needed, run test again
+   - NEVER commit code without running tests
+7. **Continuous Testing**:
+   - Every new function must have a test
+   - Every test must be executed immediately after writing
+   - Use `make test-specific TEST=path/to/test.php` for quick feedback
+   - If test doesn't run, the code is not complete
+
+## Documentation Guidelines
+1. All documentation is in Russian language
+2. Use markdown formatting with proper headers and lists
+3. Images are referenced with relative paths (`../images/`)
+4. Cross-references between sections use relative links
+5. Important notes use blockquotes with "⚠️ Важно:" prefix
+
+## When Working with This Documentation
+- Maintain consistent formatting and structure
+- Update version history in `/updates/index.md` for any changes
+- Keep README.md table of contents synchronized with folder structure
+- Preserve technical accuracy and implementation details
+- Use clear step-by-step instructions for procedures
+
+## Common Tasks
+- **Adding new features**: Create appropriate markdown files in relevant folders
+- **Updating existing docs**: Maintain version history and cross-references
+- **Adding images**: Place in `/images/` folder with descriptive names
+- **Creating new sections**: Update README.md and STRUCTURE.md accordingly
+
+## Project Structure for Development
+```
+lms/
+├── config/           # Configuration files (< 50 lines each)
+├── src/             # Modular structure by services
+│   ├── Common/      # Shared interfaces and traits
+│   ├── User/        # User Management Service
+│   ├── Competency/  # Competency Service
+│   ├── Learning/    # Learning Service
+│   ├── Program/     # Program Service
+│   └── Notification/# Notification Service
+├── database/        # Migrations (one table = one file)
+└── tests/          # Tests mirror src/ structure
+```
+
+## Technical Requirements References
+When implementing features, refer to:
+- `/technical_requirements/v1.0/product_context.md` - Business context
+- `/technical_requirements/v1.0/user_stories.md` - User stories with BDD scenarios
+- `/technical_requirements/v1.0/technical_architecture.md` - Architecture decisions
+- `/technical_requirements/v1.0/microservices_contracts.md` - API contracts
+- `/technical_requirements/v1.0/llm_development_guide.md` - Development patterns
+- `/technical_requirements/TDD_MANDATORY_GUIDE.md` - ОБЯЗАТЕЛЬНОЕ руководство по TDD
+
+## Связанные документы методологии
+
+- **`.cursor/rules/productmanager.mdc`** - ОБЯЗАТЕЛЬНО для создания технических заданий
+- **`technical_requirements/TDD_MANDATORY_GUIDE.md`** - Полное руководство по TDD
+- **`TDD_IMPLEMENTATION_SUMMARY.md`** - Итоги внедрения TDD
+- **`TESTING_GUIDE.md`** - Руководство по тестированию
+- **`PROJECT_STATUS.md`** - Текущий статус проекта
+
+## Версия методологии
+
+**Версия:** 1.1.0  
+**Последнее обновление:** 2025-01-19
+
+### Что нового в версии 1.1.0:
+- Добавлена обязательная методология продакт-менеджера
+- Внедрены правила обновления методологии
+- Усилены требования к запуску тестов
+- Оптимизация для LLM-разработки

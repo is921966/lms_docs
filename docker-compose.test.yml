@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: lms_test
+    volumes:
+      - ./:/app
+      - vendor:/app/vendor
+    environment:
+      - APP_ENV=test
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres_test
+      - DB_PORT=5432
+      - DB_DATABASE=lms_test
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=secret
+      - REDIS_HOST=redis_test
+      - REDIS_PASSWORD=
+    depends_on:
+      - postgres_test
+      - redis_test
+    networks:
+      - test_network
+
+  postgres_test:
+    image: postgres:15-alpine
+    container_name: lms_postgres_test
+    environment:
+      POSTGRES_DB: lms_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    networks:
+      - test_network
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  redis_test:
+    image: redis:7-alpine
+    container_name: lms_redis_test
+    networks:
+      - test_network
+
+networks:
+  test_network:
+    driver: bridge
+
+volumes:
+  vendor: 

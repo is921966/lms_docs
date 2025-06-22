@@ -226,3 +226,90 @@
 - Material-UI/Ant Design
 - Redux Toolkit
 - React Query 
+
+# Versioning Strategy for LMS Project
+
+## Version Format
+
+We follow Semantic Versioning (SemVer): `MAJOR.MINOR.PATCH`
+
+- **MAJOR**: Incompatible API changes
+- **MINOR**: New functionality (backwards compatible)
+- **PATCH**: Bug fixes (backwards compatible)
+
+## Current Version
+
+`0.1.0-dev` - Initial development phase
+
+## Version History
+
+### v0.2.0-dev (2025-01-19)
+- 🚨 **CRITICAL**: Mandatory TDD process implemented
+- All new code must have tests written first
+- Tests must be executed before code is considered complete
+- See [TDD_MANDATORY_GUIDE.md](technical_requirements/TDD_MANDATORY_GUIDE.md)
+
+### v0.1.0-dev (2025-01-01)
+- Initial project structure
+- Basic User Management Service
+- Docker infrastructure
+- Database migrations
+
+## Release Criteria
+
+### For any version release:
+1. ✅ All tests must pass (100%)
+2. ✅ Code coverage >= 80%
+3. ✅ No critical security issues
+4. ✅ Documentation updated
+5. ✅ **NEW**: TDD compliance verified
+
+### Additional for MINOR releases:
+- All new features have integration tests
+- Performance benchmarks met
+- API documentation generated
+
+### Additional for MAJOR releases:
+- Migration guide prepared
+- Breaking changes documented
+- Stakeholder approval received
+
+## Branch Strategy
+
+- `main` - stable, production-ready code
+- `develop` - integration branch
+- `feature/*` - new features (TDD required)
+- `hotfix/*` - urgent fixes
+- `release/*` - release preparation
+
+## TDD Compliance Check
+
+Before merging any branch:
+```bash
+# Run all tests
+make test
+
+# Check coverage
+make test-coverage
+
+# Verify TDD compliance
+git log --oneline | grep -E "(test|Test|TEST)" | wc -l
+# Should show test commits before implementation commits
+```
+
+## Version Tagging
+
+```bash
+# After all checks pass
+git tag -a v0.2.0 -m "Release version 0.2.0: TDD implementation"
+git push origin v0.2.0
+```
+
+## Documentation Updates
+
+Each version must update:
+- README.md (version badge)
+- CHANGELOG.md (detailed changes)
+- API documentation
+- Migration guides (if needed)
+- **NEW**: Test execution logs 

@@ -1,0 +1,52 @@
+# Simplified Dockerfile for running tests
+FROM php:8.2-cli-alpine
+
+# Install system dependencies and PHP extensions
+RUN apk add --no-cache \
+    git \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    postgresql-dev \
+    icu-dev \
+    oniguruma-dev \
+    libzip-dev \
+    openldap-dev \
+    autoconf \
+    g++ \
+    make \
+    && docker-php-ext-install \
+        pdo \
+        pdo_pgsql \
+        mbstring \
+        xml \
+        zip \
+        intl \
+        bcmath \
+        ldap \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del autoconf g++ make
+
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /app
+
+# Copy composer files
+COPY composer.json composer.lock ./
+
+# Install dependencies
+RUN composer install --no-scripts --no-autoloader
+
+# Copy application files
+COPY . .
+
+# Generate autoloader
+RUN composer dump-autoload --optimize
+
+# Default command
+CMD ["vendor/bin/phpunit"] 
