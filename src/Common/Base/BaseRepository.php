@@ -26,9 +26,10 @@ abstract class BaseRepository implements RepositoryInterface
      */
     protected string $entityClass;
     
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, string $entityClass)
     {
         $this->entityManager = $entityManager;
+        $this->entityClass = $entityClass;
         $this->repository = $entityManager->getRepository($this->entityClass);
     }
     

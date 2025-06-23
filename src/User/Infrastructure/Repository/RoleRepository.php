@@ -142,8 +142,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
      */
     public function save(Role $role): void
     {
-        $this->getEntityManager()->persist($role);
-        $this->getEntityManager()->flush();
+        parent::save($role);
     }
     
     /**

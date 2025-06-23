@@ -1,0 +1,528 @@
+openapi: 3.0.0
+info:
+  title: Competency Management API
+  description: API для управления компетенциями и оценками сотрудников
+  version: 1.0.0
+  contact:
+    name: LMS Development Team
+    email: dev@lms.com
+
+servers:
+  - url: /api/v1
+    description: Production API
+
+tags:
+  - name: Competencies
+    description: Управление компетенциями
+  - name: Assessments
+    description: Оценка компетенций сотрудников
+
+paths:
+  /competencies:
+    get:
+      tags:
+        - Competencies
+      summary: Получить список компетенций
+      operationId: listCompetencies
+      parameters:
+        - name: category
+          in: query
+          description: Фильтр по категории
+          schema:
+            type: string
+            enum: [technical, soft, managerial, business]
+        - name: active
+          in: query
+          description: Только активные компетенции
+          schema:
+            type: boolean
+            default: true
+        - name: search
+          in: query
+          description: Поиск по названию или описанию
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список компетенций
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Competency'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          
+    post:
+      tags:
+        - Competencies
+      summary: Создать новую компетенцию
+      operationId: createCompetency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompetencyRequest'
+      responses:
+        '201':
+          description: Компетенция создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Competency'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /competencies/{competencyId}:
+    get:
+      tags:
+        - Competencies
+      summary: Получить компетенцию по ID
+      operationId: getCompetency
+      parameters:
+        - $ref: '#/components/parameters/CompetencyId'
+      responses:
+        '200':
+          description: Данные компетенции
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Competency'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+    put:
+      tags:
+        - Competencies
+      summary: Обновить компетенцию
+      operationId: updateCompetency
+      parameters:
+        - $ref: '#/components/parameters/CompetencyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompetencyRequest'
+      responses:
+        '200':
+          description: Компетенция обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Competency'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+    delete:
+      tags:
+        - Competencies
+      summary: Деактивировать компетенцию
+      operationId: deleteCompetency
+      parameters:
+        - $ref: '#/components/parameters/CompetencyId'
+      responses:
+        '200':
+          description: Компетенция деактивирована
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      is_active:
+                        type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /assessments:
+    post:
+      tags:
+        - Assessments
+      summary: Создать оценку компетенции
+      operationId: createAssessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssessmentRequest'
+      responses:
+        '201':
+          description: Оценка создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Assessment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /users/{userId}/assessments:
+    get:
+      tags:
+        - Assessments
+      summary: Получить оценки пользователя
+      operationId: getUserAssessments
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Список оценок
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Assessment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /assessments/{assessmentId}:
+    put:
+      tags:
+        - Assessments
+      summary: Обновить оценку
+      operationId: updateAssessment
+      parameters:
+        - $ref: '#/components/parameters/AssessmentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssessmentRequest'
+      responses:
+        '200':
+          description: Оценка обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      assessment_id:
+                        type: string
+                      level:
+                        type: string
+                      score:
+                        type: integer
+                      comment:
+                        type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /assessments/{assessmentId}/confirm:
+    post:
+      tags:
+        - Assessments
+      summary: Подтвердить оценку
+      operationId: confirmAssessment
+      parameters:
+        - $ref: '#/components/parameters/AssessmentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmer_id
+              properties:
+                confirmer_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Оценка подтверждена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      assessment_id:
+                        type: string
+                      is_confirmed:
+                        type: boolean
+                      confirmed_at:
+                        type: string
+                        format: date-time
+                      confirmed_by:
+                        type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /users/{userId}/competencies/{competencyId}/assessments:
+    get:
+      tags:
+        - Assessments
+      summary: История оценок по компетенции
+      operationId: getAssessmentHistory
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/CompetencyId'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: История оценок
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Assessment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+components:
+  parameters:
+    CompetencyId:
+      name: competencyId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+        
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+        
+    AssessmentId:
+      name: assessmentId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    Competency:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          example: "TECH-001"
+        name:
+          type: string
+          example: "PHP Development"
+        description:
+          type: string
+          example: "Навыки разработки на PHP"
+        category:
+          type: string
+          enum: [technical, soft, managerial, business]
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+          
+    CreateCompetencyRequest:
+      type: object
+      required:
+        - code
+        - name
+        - description
+        - category
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: [technical, soft, managerial, business]
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+          
+    UpdateCompetencyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          
+    Assessment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        competency_id:
+          type: string
+          format: uuid
+        assessor_id:
+          type: string
+          format: uuid
+        level:
+          type: string
+          enum: [beginner, elementary, intermediate, advanced, expert]
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        comment:
+          type: string
+          nullable: true
+        is_self_assessment:
+          type: boolean
+        is_confirmed:
+          type: boolean
+        assessed_at:
+          type: string
+          format: date-time
+          
+    CreateAssessmentRequest:
+      type: object
+      required:
+        - user_id
+        - competency_id
+        - assessor_id
+        - level
+        - score
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        competency_id:
+          type: string
+          format: uuid
+        assessor_id:
+          type: string
+          format: uuid
+        level:
+          type: string
+          enum: [beginner, elementary, intermediate, advanced, expert]
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        comment:
+          type: string
+          nullable: true
+          
+    UpdateAssessmentRequest:
+      type: object
+      required:
+        - level
+        - score
+      properties:
+        level:
+          type: string
+          enum: [beginner, elementary, intermediate, advanced, expert]
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        comment:
+          type: string
+          nullable: true
+
+  responses:
+    BadRequest:
+      description: Неверный запрос
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Invalid request data"
+                
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Resource not found" 

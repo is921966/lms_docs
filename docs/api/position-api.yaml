@@ -1,0 +1,757 @@
+openapi: 3.0.0
+info:
+  title: Position Management Service API
+  description: API для управления должностями, профилями компетенций и карьерными путями
+  version: 1.0.0
+  contact:
+    name: LMS Development Team
+    email: support@lms.local
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://lms.company.com/api/v1
+    description: Production server
+
+tags:
+  - name: positions
+    description: Управление должностями
+  - name: profiles
+    description: Профили компетенций должностей
+  - name: career-paths
+    description: Карьерные пути
+
+paths:
+  /positions:
+    get:
+      tags:
+        - positions
+      summary: Получить список активных должностей
+      operationId: getActivePositions
+      responses:
+        '200':
+          description: Список должностей
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Position'
+    
+    post:
+      tags:
+        - positions
+      summary: Создать новую должность
+      operationId: createPosition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePositionRequest'
+      responses:
+        '201':
+          description: Должность создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Position'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /positions/{id}:
+    get:
+      tags:
+        - positions
+      summary: Получить информацию о должности
+      operationId: getPosition
+      parameters:
+        - $ref: '#/components/parameters/PositionId'
+      responses:
+        '200':
+          description: Информация о должности
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Position'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags:
+        - positions
+      summary: Обновить должность
+      operationId: updatePosition
+      parameters:
+        - $ref: '#/components/parameters/PositionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePositionRequest'
+      responses:
+        '200':
+          description: Должность обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Position'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /positions/{id}/archive:
+    post:
+      tags:
+        - positions
+      summary: Архивировать должность
+      operationId: archivePosition
+      parameters:
+        - $ref: '#/components/parameters/PositionId'
+      responses:
+        '200':
+          description: Должность архивирована
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Position archived successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /positions/department/{department}:
+    get:
+      tags:
+        - positions
+      summary: Получить должности по департаменту
+      operationId: getPositionsByDepartment
+      parameters:
+        - name: department
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Название департамента
+      responses:
+        '200':
+          description: Список должностей департамента
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Position'
+
+  /positions/{positionId}/profile:
+    get:
+      tags:
+        - profiles
+      summary: Получить профиль компетенций должности
+      operationId: getProfile
+      parameters:
+        - $ref: '#/components/parameters/PositionId'
+      responses:
+        '200':
+          description: Профиль компетенций
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Profile'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags:
+        - profiles
+      summary: Обновить профиль компетенций
+      operationId: updateProfile
+      parameters:
+        - $ref: '#/components/parameters/PositionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Профиль обновлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Profile'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /profiles:
+    post:
+      tags:
+        - profiles
+      summary: Создать профиль компетенций
+      operationId: createProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProfileRequest'
+      responses:
+        '201':
+          description: Профиль создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Profile'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /positions/{positionId}/profile/competencies:
+    post:
+      tags:
+        - profiles
+      summary: Добавить требование к компетенции
+      operationId: addCompetencyRequirement
+      parameters:
+        - $ref: '#/components/parameters/PositionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompetencyRequirement'
+      responses:
+        '200':
+          description: Требование добавлено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Competency requirement added successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /positions/{positionId}/profile/competencies/{competencyId}:
+    delete:
+      tags:
+        - profiles
+      summary: Удалить требование к компетенции
+      operationId: removeCompetencyRequirement
+      parameters:
+        - $ref: '#/components/parameters/PositionId'
+        - name: competencyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Требование удалено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Competency requirement removed successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /career-paths:
+    post:
+      tags:
+        - career-paths
+      summary: Создать карьерный путь
+      operationId: createCareerPath
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCareerPathRequest'
+      responses:
+        '201':
+          description: Карьерный путь создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/CareerPath'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /career-paths/{fromPositionId}/{toPositionId}:
+    get:
+      tags:
+        - career-paths
+      summary: Получить карьерный путь между должностями
+      operationId: getCareerPath
+      parameters:
+        - name: fromPositionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: toPositionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Карьерный путь
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/CareerPath'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /career-paths/{fromPositionId}/{toPositionId}/progress:
+    get:
+      tags:
+        - career-paths
+      summary: Получить прогресс по карьерному пути
+      operationId: getCareerProgress
+      parameters:
+        - name: fromPositionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: toPositionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: employeeId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: monthsCompleted
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: Прогресс по карьерному пути
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/CareerProgress'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    PositionId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Идентификатор должности
+
+  schemas:
+    Position:
+      type: object
+      properties:
+        id:
+          type: string
+          example: pos-123
+        code:
+          type: string
+          example: DEV-001
+        title:
+          type: string
+          example: Senior Developer
+        department:
+          type: string
+          example: IT
+        level:
+          type: integer
+          example: 3
+          minimum: 1
+          maximum: 6
+        levelName:
+          type: string
+          example: Senior
+        description:
+          type: string
+          example: Senior developer position
+        parentId:
+          type: string
+          nullable: true
+          example: pos-456
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreatePositionRequest:
+      type: object
+      required:
+        - code
+        - title
+        - department
+        - level
+        - description
+      properties:
+        code:
+          type: string
+          pattern: '^[A-Z]{2,5}-\d{3,5}$'
+          example: DEV-001
+        title:
+          type: string
+          example: Senior Developer
+        department:
+          type: string
+          example: IT
+        level:
+          type: integer
+          minimum: 1
+          maximum: 6
+          example: 3
+        description:
+          type: string
+          example: Senior developer position
+        parentId:
+          type: string
+          nullable: true
+          example: pos-456
+
+    UpdatePositionRequest:
+      type: object
+      required:
+        - title
+        - description
+        - level
+      properties:
+        title:
+          type: string
+          example: Senior Developer
+        description:
+          type: string
+          example: Updated description
+        level:
+          type: integer
+          minimum: 1
+          maximum: 6
+          example: 3
+
+    Profile:
+      type: object
+      properties:
+        positionId:
+          type: string
+          example: pos-123
+        responsibilities:
+          type: array
+          items:
+            type: string
+          example: ["Lead development team", "Code reviews"]
+        requirements:
+          type: array
+          items:
+            type: string
+          example: ["5+ years experience", "Strong leadership skills"]
+        requiredCompetencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetencyRequirement'
+        desiredCompetencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetencyRequirement'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateProfileRequest:
+      type: object
+      required:
+        - positionId
+      properties:
+        positionId:
+          type: string
+          example: pos-123
+        responsibilities:
+          type: array
+          items:
+            type: string
+          example: ["Lead development team", "Code reviews"]
+        requirements:
+          type: array
+          items:
+            type: string
+          example: ["5+ years experience", "Strong leadership skills"]
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        responsibilities:
+          type: array
+          items:
+            type: string
+          example: ["Lead development team", "Code reviews", "Mentoring"]
+        requirements:
+          type: array
+          items:
+            type: string
+          example: ["7+ years experience", "Strong leadership skills"]
+
+    CompetencyRequirement:
+      type: object
+      required:
+        - competencyId
+        - minimumLevel
+      properties:
+        competencyId:
+          type: string
+          example: comp-123
+        minimumLevel:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 3
+        isRequired:
+          type: boolean
+          default: true
+          example: true
+
+    CareerPath:
+      type: object
+      properties:
+        id:
+          type: string
+          example: path-123
+        fromPositionId:
+          type: string
+          example: pos-001
+        toPositionId:
+          type: string
+          example: pos-002
+        requirements:
+          type: array
+          items:
+            type: string
+          example: ["2 years experience", "Complete training"]
+        estimatedDuration:
+          type: integer
+          description: Estimated duration in months
+          example: 24
+        isActive:
+          type: boolean
+          example: true
+        milestones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Milestone'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateCareerPathRequest:
+      type: object
+      required:
+        - fromPositionId
+        - toPositionId
+        - estimatedDuration
+      properties:
+        fromPositionId:
+          type: string
+          example: pos-001
+        toPositionId:
+          type: string
+          example: pos-002
+        requirements:
+          type: array
+          items:
+            type: string
+          example: ["2 years experience", "Complete training"]
+        estimatedDuration:
+          type: integer
+          minimum: 1
+          example: 24
+
+    Milestone:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Complete training
+        description:
+          type: string
+          example: Finish all required courses
+        monthsFromStart:
+          type: integer
+          example: 6
+
+    CareerProgress:
+      type: object
+      properties:
+        employeeId:
+          type: string
+          example: emp-123
+        fromPositionId:
+          type: string
+          example: pos-001
+        toPositionId:
+          type: string
+          example: pos-002
+        monthsCompleted:
+          type: integer
+          example: 12
+        progressPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 50
+        remainingMonths:
+          type: integer
+          example: 12
+        isEligibleForPromotion:
+          type: boolean
+          example: false
+        completedMilestones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Milestone'
+        nextMilestone:
+          $ref: '#/components/schemas/Milestone'
+          nullable: true
+        requirements:
+          type: array
+          items:
+            type: string
+        estimatedCompletionDate:
+          type: string
+          format: date-time
+
+  responses:
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Resource not found
+
+    ValidationError:
+      description: Ошибка валидации
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Validation failed
+              errors:
+                type: object
+                example:
+                  code: Invalid code format
+                  title: Title is required 
