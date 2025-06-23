@@ -57,3 +57,4 @@ Thumbs.db
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+ios/LMS/.build/
