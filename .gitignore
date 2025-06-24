@@ -58,3 +58,19 @@ Thumbs.db
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 ios/LMS/.build/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# CI/CD secrets
+ci-secrets/
+*.p12
+*.mobileprovision
+AuthKey_*.p8
+*_base64.txt
+
+# Временные файлы CI/CD
+.temp-cicd/
+github-secrets.txt

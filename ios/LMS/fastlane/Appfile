@@ -1,0 +1,12 @@
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
+
+# Your Apple email address
+app_identifier("ru.tsum.lms")
+apple_id("igor.shirokov@mac.com")
+
+# Your Apple Developer Team ID
+team_id("N85286S93X")
+
+# Optional: iTunes Connect Team ID (if different from Developer Portal Team ID)
+# itc_team_id("YOUR_ITC_TEAM_ID") 

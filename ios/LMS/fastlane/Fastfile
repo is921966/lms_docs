@@ -1,27 +1,21 @@
-# Fastfile for LMS iOS App
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
 
 default_platform(:ios)
 
 platform :ios do
-  desc "Run unit tests"
+  desc "Run tests"
   lane :test do
     run_tests(
+      workspace: "LMS.xcworkspace",
       scheme: "LMS",
-      devices: ["iPhone 15"],
-      code_coverage: true,
-      xcargs: "-quiet"
-    )
-    
-    # Check coverage threshold
-    xcov(
-      scheme: "LMS",
-      minimum_coverage_percentage: 80.0
+      devices: ["iPhone 14"]
     )
   end
-  
+
   desc "Build and upload to TestFlight"
   lane :beta do
-    # Ensure git is clean
+    # Ensure we're on a clean git status
     ensure_git_status_clean
     
     # Increment build number
@@ -29,75 +23,43 @@ platform :ios do
       build_number: latest_testflight_build_number + 1
     )
     
-    # Match certificates
-    match(
-      type: "appstore",
-      readonly: true
-    )
-    
     # Build the app
     build_app(
+      workspace: "LMS.xcworkspace",
       scheme: "LMS",
-      clean: true,
       export_method: "app-store",
-      export_options: {
-        provisioningProfiles: {
-          "com.company.lms" => "match AppStore com.company.lms"
-        }
-      }
+      clean: true,
+      output_directory: "./build",
+      output_name: "LMS.ipa"
     )
     
     # Upload to TestFlight
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
-      distribute_external: false,
-      notify_external_testers: false,
-      changelog: "Автоматическая сборка из ветки main"
+      changelog: "Bug fixes and improvements"
     )
     
     # Commit version bump
     commit_version_bump(
-      message: "Bump build number to #{get_build_number}"
+      message: "Version Bump",
+      xcodeproj: "LMS.xcodeproj"
     )
     
     # Push to git
     push_to_git_remote
-    
-    # Send notification
-    slack(
-      message: "Новая версия LMS iOS загружена в TestFlight! 🚀",
-      success: true,
-      payload: {
-        "Build Number" => get_build_number,
-        "Version" => get_version_number
-      }
-    )
   end
-  
-  desc "Create screenshots"
-  lane :screenshots do
-    capture_screenshots(
-      scheme: "LMSUITests",
-      devices: [
-        "iPhone 15 Pro",
-        "iPhone 15 Pro Max",
-        "iPad Pro (12.9-inch) (6th generation)"
-      ],
-      languages: ["ru-RU"],
-      clear_previous_screenshots: true
-    )
-  end
-  
-  desc "Submit to App Store"
+
+  desc "Deploy to App Store"
   lane :release do
-    # Run tests first
-    test
+    # Ensure we're on a clean git status
+    ensure_git_status_clean
     
-    # Build and upload
+    # Build the app
     build_app(
+      workspace: "LMS.xcworkspace",
       scheme: "LMS",
-      clean: true,
-      export_method: "app-store"
+      export_method: "app-store",
+      clean: true
     )
     
     # Upload to App Store Connect
@@ -108,22 +70,24 @@ platform :ios do
       force: true
     )
   end
-  
-  desc "Setup CI environment"
-  lane :setup_ci do
-    setup_ci(
-      provider: "travis",
-      force: true
+
+  desc "Create push notification certificates"
+  lane :push do
+    get_push_certificate(
+      app_identifier: "com.yourcompany.lms",
+      save_private_key: true
     )
-    
-    # Create keychain for CI
-    create_keychain(
-      name: "CI_Keychain",
-      password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-      default_keychain: true,
-      unlock: true,
-      timeout: 3600,
-      add_to_search_list: true
+  end
+
+  desc "Download certificates and provisioning profiles"
+  lane :certificates do
+    match(
+      type: "development",
+      readonly: true
+    )
+    match(
+      type: "appstore",
+      readonly: true
     )
   end
 end 

@@ -1,0 +1,28 @@
+// Configuration settings for LMS app
+// Update these values with your Apple Developer account details
+
+// Bundle Identifier
+PRODUCT_BUNDLE_IDENTIFIER = ru.tsum.lms
+
+// Development Team ID (найдите в Apple Developer Account)
+DEVELOPMENT_TEAM = N85286S93X
+
+// App Name
+PRODUCT_NAME = LMS
+
+// Version
+MARKETING_VERSION = 1.0.0
+CURRENT_PROJECT_VERSION = 1
+
+// Code Signing
+CODE_SIGN_STYLE = Automatic
+CODE_SIGN_IDENTITY = Apple Development
+
+// For Release builds
+CODE_SIGN_IDENTITY[config=Release] = Apple Distribution
+
+// Deployment Target
+IPHONEOS_DEPLOYMENT_TARGET = 15.0
+
+// Swift Version
+SWIFT_VERSION = 5.0 

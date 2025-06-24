@@ -7,7 +7,7 @@ let package = Package(
     name: "LMS",
     platforms: [
         .iOS(.v16),
-        .macOS("12.0")  // Updated from v10_15 for FocusState
+        .macOS(.v13)
     ],
     products: [
         .library(
@@ -19,10 +19,10 @@ let package = Package(
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.8.0"),
         
         // Keychain
-        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "4.2.2"),
+        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "4.2.0"),
         
         // Testing
-        .package(url: "https://github.com/nalexn/ViewInspector.git", from: "0.9.8"),
+        .package(url: "https://github.com/nalexn/ViewInspector.git", from: "0.9.0")
     ],
     targets: [
         .target(
