@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - master
       - develop
     paths:
       - 'LMS_App/**'
@@ -12,6 +13,7 @@ on:
   pull_request:
     branches:
       - main
+      - master
     paths:
       - 'LMS_App/**'
       - 'ios/**'
@@ -51,7 +53,7 @@ jobs:
     name: Build and Deploy to TestFlight
     runs-on: macos-latest
     needs: test
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
