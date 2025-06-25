@@ -132,6 +132,26 @@ jobs:
         run: |
           cd LMS_App/LMS
           
+          # Check if environment variables are set
+          if [ -z "$APP_STORE_CONNECT_API_KEY_ID" ]; then
+            echo "❌ Error: APP_STORE_CONNECT_API_KEY_ID is not set"
+            exit 1
+          fi
+          
+          if [ -z "$APP_STORE_CONNECT_API_KEY_ISSUER_ID" ]; then
+            echo "❌ Error: APP_STORE_CONNECT_API_KEY_ISSUER_ID is not set"
+            exit 1
+          fi
+          
+          if [ -z "$APP_STORE_CONNECT_API_KEY_KEY" ]; then
+            echo "❌ Error: APP_STORE_CONNECT_API_KEY_KEY is not set"
+            exit 1
+          fi
+          
+          echo "✅ API Key ID: ${APP_STORE_CONNECT_API_KEY_ID}"
+          echo "✅ API Issuer ID: ${APP_STORE_CONNECT_API_KEY_ISSUER_ID}"
+          echo "✅ API Key length: ${#APP_STORE_CONNECT_API_KEY_KEY}"
+          
           # Create API key file
           mkdir -p ~/.appstoreconnect/private_keys
           echo "$APP_STORE_CONNECT_API_KEY_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
@@ -140,8 +160,8 @@ jobs:
           xcrun altool --upload-app \
             --type ios \
             --file build/LMS.ipa \
-            --apiKey $APP_STORE_CONNECT_API_KEY_ID \
-            --apiIssuer $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
+            --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_API_KEY_ISSUER_ID" \
             --verbose
 
       - name: Clean up
