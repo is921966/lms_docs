@@ -1,0 +1,5 @@
+current directory: /Users/ishirokov/lms_docs/LMS_App/LMS/vendor/bundle/ruby/2.6.0/gems/unf-0.2.0/ext
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby mkrf_conf.rb
+
+current directory: /Users/ishirokov/lms_docs/LMS_App/LMS/vendor/bundle/ruby/2.6.0/gems/unf-0.2.0/ext
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -rrubygems /Users/ishirokov/lms_docs/LMS_App/LMS/vendor/bundle/ruby/2.6.0/gems/rake-13.3.0/exe/rake RUBYARCHDIR\=/Users/ishirokov/lms_docs/LMS_App/LMS/vendor/bundle/ruby/2.6.0/extensions/universal-darwin-24/2.6.0/unf-0.2.0 RUBYLIBDIR\=/Users/ishirokov/lms_docs/LMS_App/LMS/vendor/bundle/ruby/2.6.0/extensions/universal-darwin-24/2.6.0/unf-0.2.0
