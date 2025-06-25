@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "N85286S93X.ru.tsum.lms.igor",
+        "paths": [
+          "/vk_id_redirect",
+          "/vk_id_redirect/*"
+        ]
+      }
+    ]
+  }
+} 
