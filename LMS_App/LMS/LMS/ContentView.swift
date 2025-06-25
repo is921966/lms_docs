@@ -32,8 +32,8 @@ struct ContentView: View {
                     .cornerRadius(10)
             }
             
-            // Version info - CI/CD ready
-            Text("Version 1.0.2")
+            // Version info - CI/CD success!
+            Text("Version 1.0.3")
                 .font(.caption)
                 .foregroundColor(.gray)
         }
