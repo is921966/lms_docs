@@ -47,37 +47,29 @@ struct MockLoginView: View {
                     VStack(spacing: 15) {
                         // Student login
                         Button(action: {
-                            authService.mockLogin(asAdmin: false)
+                            authService.loginAsMockUser(isAdmin: false)
                         }) {
-                            HStack {
-                                Image(systemName: "person.fill")
-                                Text("Войти как Студент")
-                            }
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(Color.blue)
-                            .cornerRadius(10)
+                            Label("Войти как студент", systemImage: "person.fill")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
                         }
-                        .disabled(authService.isLoading)
+                        .accessibilityIdentifier("loginAsStudent")
                         
                         // Admin login
                         Button(action: {
-                            authService.mockLogin(asAdmin: true)
+                            authService.loginAsMockUser(isAdmin: true)
                         }) {
-                            HStack {
-                                Image(systemName: "person.badge.shield.checkmark.fill")
-                                Text("Войти как Админ")
-                            }
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(Color.green)
-                            .cornerRadius(10)
+                            Label("Войти как администратор", systemImage: "person.badge.shield.checkmark.fill")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.orange)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
                         }
-                        .disabled(authService.isLoading)
+                        .accessibilityIdentifier("loginAsAdmin")
                     }
                     .padding(.horizontal, 40)
                     

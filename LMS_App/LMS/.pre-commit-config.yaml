@@ -1,0 +1,22 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ui-tests
+        name: iOS UI Tests
+        entry: ./test-ui.sh
+        language: script
+        pass_filenames: false
+        files: '\.(swift|xib|storyboard)$'
+        stages: [commit]
+        
+      - id: swift-format
+        name: Swift Format Check
+        entry: swift-format --lint
+        language: system
+        files: '\.swift$'
+        
+      - id: no-debug-print
+        name: Check for Debug Print
+        entry: sh -c 'grep -r "print(" LMS/ --include="*.swift" && echo "❌ Найдены debug print выражения!" && exit 1 || exit 0'
+        language: system
+        pass_filenames: false 

@@ -289,8 +289,8 @@ struct Module: Identifiable {
     ]
 }
 
-// MARK: - Course Detail View
-struct CourseDetailView: View {
+// MARK: - Simple Course Detail View (for LearningListView)
+struct SimpleCourseDetailView: View {
     let course: Course
     
     var body: some View {

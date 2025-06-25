@@ -32,7 +32,7 @@ class MockAuthService: ObservableObject {
                 firstName: asAdmin ? "Админ" : "Иван",
                 lastName: asAdmin ? "Админов" : "Иванов",
                 middleName: nil,
-                position: asAdmin ? "Администратор" : "Студент",
+                position: asAdmin ? "Администратор" : "Продавец-консультант",
                 department: "IT",
                 avatar: nil,
                 roles: asAdmin ? ["admin", "student"] : ["student"],
@@ -53,6 +53,11 @@ class MockAuthService: ObservableObject {
             
             print("Mock login successful as \(asAdmin ? "Admin" : "Student")")
         }
+    }
+    
+    // Alias for UI compatibility
+    func loginAsMockUser(isAdmin: Bool) {
+        mockLogin(asAdmin: isAdmin)
     }
     
     // MARK: - Mock Approve
