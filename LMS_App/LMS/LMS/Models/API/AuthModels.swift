@@ -36,7 +36,7 @@ struct UserResponse: Decodable {
     let department: String?
     let avatar: String?
     let roles: [String]
-    let permissions: [String]
+    var permissions: [String]
     
     enum CodingKeys: String, CodingKey {
         case id
