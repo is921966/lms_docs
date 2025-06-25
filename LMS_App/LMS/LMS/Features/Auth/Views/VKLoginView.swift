@@ -6,6 +6,7 @@ struct VKLoginView: View {
     @StateObject private var authService = VKIDAuthService.shared
     @State private var showingAlert = false
     @State private var alertMessage = ""
+    @State private var showingMockLogin = false
     
     @Environment(\.dismiss) private var dismiss
     
@@ -44,7 +45,7 @@ struct VKLoginView: View {
                     Spacer()
                     
                     // VK Login Button
-                    VKLoginButton()
+                    VKLoginButton(showingMockLogin: $showingMockLogin)
                         .frame(height: 50)
                         .padding(.horizontal, 40)
                     
@@ -64,15 +65,42 @@ struct VKLoginView: View {
                     }
                     .padding(.top, 20)
                     
+                    // Development mode button (for when VK ID is not available)
+                    Button(action: {
+                        showingMockLogin = true
+                    }) {
+                        HStack {
+                            Image(systemName: "hammer.fill")
+                            Text("Войти в режиме разработки")
+                        }
+                        .font(.caption)
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.orange, lineWidth: 1)
+                        )
+                    }
+                    .padding(.top, 10)
+                    
                     Spacer()
                 }
                 .padding()
             }
             .navigationBarHidden(true)
             .alert("Информация", isPresented: $showingAlert) {
-                Button("OK") { }
+                Button("OK") { 
+                    // After showing the VK ID not installed error, show dev mode option
+                    if alertMessage.contains("VK ID SDK не установлен") {
+                        showingMockLogin = true
+                    }
+                }
             } message: {
                 Text(alertMessage)
+            }
+            .sheet(isPresented: $showingMockLogin) {
+                MockLoginView()
             }
             .onReceive(authService.$isAuthenticated) { isAuthenticated in
                 if isAuthenticated {
@@ -92,6 +120,7 @@ struct VKLoginView: View {
 // MARK: - VK Login Button
 struct VKLoginButton: UIViewControllerRepresentable {
     @StateObject private var authService = VKIDAuthService.shared
+    @Binding var showingMockLogin: Bool
     
     func makeUIViewController(context: Context) -> UIViewController {
         let viewController = UIViewController()
@@ -129,19 +158,25 @@ struct VKLoginButton: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(authService: authService)
+        Coordinator(authService: authService, showingMockLogin: $showingMockLogin)
     }
     
     class Coordinator: NSObject {
         let authService: VKIDAuthService
+        @Binding var showingMockLogin: Bool
         
-        init(authService: VKIDAuthService) {
+        init(authService: VKIDAuthService, showingMockLogin: Binding<Bool>) {
             self.authService = authService
+            self._showingMockLogin = showingMockLogin
         }
         
         @objc func loginTapped() {
-            guard let viewController = UIApplication.shared.windows.first?.rootViewController else { return }
-            authService.loginWithVK(from: viewController)
+            // Since VK ID SDK is not installed, directly show mock login
+            showingMockLogin = true
+            
+            // Original code for when VK ID is available:
+            // guard let viewController = UIApplication.shared.windows.first?.rootViewController else { return }
+            // authService.loginWithVK(from: viewController)
         }
     }
 }

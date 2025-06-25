@@ -49,6 +49,11 @@ class VKIDAuthService: ObservableObject {
         // TODO: Implement when VK ID SDK is installed
         self.error = "VK ID SDK не установлен. Используйте режим разработки."
         
+        // Automatically show development mode when VK ID is not available
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.temporarySwitchToMockAuth()
+        }
+        
         /*
         guard let vkid = vkid else {
             self.error = "VK ID не инициализирован"
@@ -200,6 +205,24 @@ class VKIDAuthService: ObservableObject {
     
     // MARK: - Cancellables
     private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Temporary Development Mode
+    private func temporarySwitchToMockAuth() {
+        // Use mock service data for now
+        let mockService = MockAuthService.shared
+        mockService.loginAsMockUser(isAdmin: false)
+        
+        // Wait for mock login to complete
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            if mockService.isAuthenticated, let user = mockService.currentUser {
+                // Copy mock user data to VK service
+                self?.currentUser = user
+                self?.isAuthenticated = true
+                self?.isApprovedByAdmin = mockService.isApprovedByAdmin
+                self?.error = nil
+            }
+        }
+    }
 }
 
 // MARK: - Request/Response Models
