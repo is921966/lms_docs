@@ -1,11 +1,8 @@
 import SwiftUI
 
 struct MoreView: View {
-    #if DEBUG
+    // TEMPORARY: Use mock service for TestFlight testing
     @StateObject private var authService = MockAuthService.shared
-    #else
-    @StateObject private var authService = VKIDAuthService.shared
-    #endif
     
     @State private var showingPendingUsers = false
     @State private var isAdmin = false

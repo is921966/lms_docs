@@ -8,12 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    // Use mock service for development
-    #if DEBUG
+    // TEMPORARY: Use mock service for TestFlight testing
+    // TODO: Change back to VKIDAuthService when VK ID is fully integrated
     @StateObject private var authService = MockAuthService.shared
-    #else
-    @StateObject private var authService = VKIDAuthService.shared
-    #endif
     
     @State private var showingLogin = false
     
@@ -53,13 +50,8 @@ struct ContentView: View {
                         showingLogin = true
                     }) {
                         HStack {
-                            #if DEBUG
                             Image(systemName: "person.crop.circle.badge.questionmark")
-                            Text("Войти (Dev Mode)")
-                            #else
-                            Image(systemName: "v.circle.fill")
-                            Text("Войти через VK ID")
-                            #endif
+                            Text("Войти (Demo)")
                         }
                         .font(.headline)
                         .foregroundColor(.white)
@@ -70,47 +62,33 @@ struct ContentView: View {
                     
                     // Info text
                     VStack(spacing: 5) {
-                        #if DEBUG
-                        Text("Режим разработки")
+                        Text("Демо версия")
                             .font(.caption)
                             .foregroundColor(.orange)
                             .fontWeight(.semibold)
-                        #else
-                        Text("Для доступа к курсам требуется")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
                         
-                        Text("одобрение администратора")
+                        Text("VK ID будет доступен позже")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        #endif
                     }
                     .padding(.top, 10)
                     
                     // Version info
-                    Text("Version 2.0.0 - VK ID Integration")
+                    Text("Version 2.0.1 - TestFlight Demo")
                         .font(.caption)
                         .foregroundColor(.gray)
                         .padding(.top, 50)
                 }
                 .padding()
                 .sheet(isPresented: $showingLogin) {
-                    #if DEBUG
                     MockLoginView()
-                    #else
-                    VKLoginView()
-                    #endif
                 }
             }
         }
         .onAppear {
             // Проверяем статус одобрения при запуске
             if authService.isAuthenticated {
-                #if DEBUG
                 // Mock service doesn't need to check approval
-                #else
-                authService.checkAdminApproval()
-                #endif
             }
         }
     }

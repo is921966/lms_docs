@@ -1,0 +1,10 @@
+
+# Environment variables
+.env
+
+
+# Build artifacts
+build/
+*.xcarchive
+*.ipa
+
