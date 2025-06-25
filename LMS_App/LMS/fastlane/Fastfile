@@ -17,16 +17,7 @@ default_platform(:ios)
 
 platform :ios do
   before_all do
-    # Set up App Store Connect API if running in CI
-    if ENV['CI']
-      app_store_connect_api_key(
-        key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
-        issuer_id: ENV['APP_STORE_CONNECT_API_KEY_ISSUER_ID'],
-        key_content: ENV['APP_STORE_CONNECT_API_KEY_KEY'],
-        is_key_content_base64: true,
-        in_house: false
-      )
-    end
+    # Общие настройки для всех lanes
   end
 
   desc "Run tests"
@@ -43,6 +34,17 @@ platform :ios do
 
   desc "Build and upload to TestFlight"
   lane :beta do
+    # Set up App Store Connect API if running in CI
+    if ENV['CI']
+      app_store_connect_api_key(
+        key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+        issuer_id: ENV['APP_STORE_CONNECT_API_KEY_ISSUER_ID'],
+        key_content: ENV['APP_STORE_CONNECT_API_KEY_KEY'],
+        is_key_content_base64: true,
+        in_house: false
+      )
+    end
+    
     # Don't check git status in CI
     unless ENV['CI']
       ensure_git_status_clean
