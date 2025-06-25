@@ -107,9 +107,11 @@ jobs:
             -configuration Release \
             -archivePath build/LMS.xcarchive \
             -destination "generic/platform=iOS" \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 \
+            -authenticationKeyID $APP_STORE_CONNECT_API_KEY_ID \
+            -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
+            DEVELOPMENT_TEAM=N85286S93X
           
           # Проверяем, что архив создан
           if [ -d build/LMS.xcarchive ]; then
@@ -152,7 +154,7 @@ jobs:
           <plist version="1.0">
           <dict>
             <key>method</key>
-            <string>app-store</string>
+            <string>app-store-connect</string>
             <key>teamID</key>
             <string>N85286S93X</string>
             <key>uploadSymbols</key>
