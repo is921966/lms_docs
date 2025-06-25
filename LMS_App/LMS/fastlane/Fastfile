@@ -26,7 +26,7 @@ platform :ios do
       scheme: "LMS",
       project: "LMS.xcodeproj",
       clean: true,
-      devices: ["iPhone 15"],
+      devices: ["iPhone 16"],
       skip_build: false,
       code_coverage: true
     )
