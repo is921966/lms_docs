@@ -33,9 +33,10 @@ struct ContentView: View {
             }
             
             // Version info - CI/CD success!
-            Text("Version 1.0.3")
+            Text("Version 1.0.4")
                 .font(.caption)
                 .foregroundColor(.gray)
+                .padding(.top, 5)
         }
         .padding()
     }
