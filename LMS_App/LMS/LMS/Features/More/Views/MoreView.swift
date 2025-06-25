@@ -1,7 +1,12 @@
 import SwiftUI
 
 struct MoreView: View {
+    #if DEBUG
+    @StateObject private var authService = MockAuthService.shared
+    #else
     @StateObject private var authService = VKIDAuthService.shared
+    #endif
+    
     @State private var showingPendingUsers = false
     @State private var isAdmin = false
     
@@ -10,7 +15,7 @@ struct MoreView: View {
             // Admin section
             if isAdmin {
                 Section("Администрирование") {
-                    NavigationLink(destination: PendingUsersView()) {
+                    NavigationLink(destination: MockPendingUsersView()) {
                         HStack {
                             Image(systemName: "person.badge.plus")
                                 .foregroundColor(.blue)
@@ -20,8 +25,8 @@ struct MoreView: View {
                             
                             Spacer()
                             
-                            // Badge with pending count if needed
-                            Text("!")
+                            // Badge with pending count
+                            Text("3")
                                 .font(.caption)
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 8)
@@ -76,6 +81,25 @@ struct MoreView: View {
                 }
             }
             
+            #if DEBUG
+            // Development section
+            Section("Разработка") {
+                HStack {
+                    Image(systemName: "hammer.fill")
+                        .foregroundColor(.purple)
+                        .frame(width: 30)
+                    
+                    Text("Режим разработки")
+                    
+                    Spacer()
+                    
+                    Text("Включен")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                }
+            }
+            #endif
+            
             // Logout
             Section {
                 Button(action: logout) {
@@ -106,6 +130,105 @@ struct MoreView: View {
     
     private func logout() {
         authService.logout()
+    }
+}
+
+// MARK: - Mock Pending Users View
+struct MockPendingUsersView: View {
+    @StateObject private var adminService = MockAdminService.shared
+    @State private var selectedUsers = Set<String>()
+    @State private var showingSuccessAlert = false
+    @State private var successMessage = ""
+    
+    var body: some View {
+        VStack {
+            if adminService.isLoading {
+                ProgressView("Загрузка...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if adminService.pendingUsers.isEmpty {
+                VStack(spacing: 20) {
+                    Image(systemName: "person.crop.circle.badge.checkmark")
+                        .font(.system(size: 60))
+                        .foregroundColor(.green)
+                    
+                    Text("Нет новых студентов")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    
+                    Text("Все студенты уже одобрены")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                    
+                    Button("Обновить") {
+                        adminService.fetchPendingUsers()
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List(adminService.pendingUsers) { user in
+                    HStack {
+                        // Checkbox
+                        Button(action: {
+                            if selectedUsers.contains(user.id) {
+                                selectedUsers.remove(user.id)
+                            } else {
+                                selectedUsers.insert(user.id)
+                            }
+                        }) {
+                            Image(systemName: selectedUsers.contains(user.id) ? "checkmark.square.fill" : "square")
+                                .font(.system(size: 24))
+                                .foregroundColor(selectedUsers.contains(user.id) ? .blue : .gray)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        // User info
+                        VStack(alignment: .leading) {
+                            Text(user.fullName)
+                                .font(.headline)
+                            Text(user.email)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(.vertical, 8)
+                }
+                .listStyle(InsetGroupedListStyle())
+            }
+        }
+        .navigationTitle("Новые студенты")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Одобрить (\(selectedUsers.count))") {
+                    approveSelectedUsers()
+                }
+                .disabled(selectedUsers.isEmpty)
+            }
+        }
+        .onAppear {
+            adminService.fetchPendingUsers()
+        }
+        .alert("Успешно", isPresented: $showingSuccessAlert) {
+            Button("OK") { }
+        } message: {
+            Text(successMessage)
+        }
+    }
+    
+    private func approveSelectedUsers() {
+        adminService.approveSelectedUsers(userIds: Array(selectedUsers)) { success in
+            if success {
+                successMessage = "Одобрено пользователей: \(selectedUsers.count)"
+                showingSuccessAlert = true
+                selectedUsers.removeAll()
+            }
+        }
     }
 }
 
