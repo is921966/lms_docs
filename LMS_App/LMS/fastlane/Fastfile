@@ -26,7 +26,7 @@ platform :ios do
       scheme: "LMS",
       project: "LMS.xcodeproj",
       clean: true,
-      devices: ["iPhone 16"],
+      destination: "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5",
       skip_build: false,
       code_coverage: true
     )
