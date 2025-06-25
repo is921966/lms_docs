@@ -73,8 +73,16 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH
 
       - name: Build app
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
         run: |
           cd LMS_App/LMS
+          
+          # Create API key file for xcodebuild authentication
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
           
           # Clean build folder
           rm -rf build
@@ -96,13 +104,17 @@ jobs:
             -archivePath build/LMS.xcarchive \
             -destination "generic/platform=iOS" \
             -allowProvisioningUpdates \
+            -allowProvisioningDeviceRegistration \
             DEVELOPMENT_TEAM=N85286S93X \
             PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_IDENTIFIER \
             CODE_SIGNING_ALLOWED=YES \
-            CODE_SIGN_IDENTITY="Apple Development" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             CODE_SIGN_STYLE=Automatic \
             PROVISIONING_PROFILE_SPECIFIER="" \
-            -verbose
+            IPHONEOS_DEPLOYMENT_TARGET=18.0 \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 \
+            -authenticationKeyID $APP_STORE_CONNECT_API_KEY_ID \
+            -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID
           
           # Проверяем, что архив создан
           if [ -d build/LMS.xcarchive ]; then
