@@ -78,6 +78,11 @@ jobs:
           
           # Clean build folder
           rm -rf build
+          rm -rf ~/Library/Developer/Xcode/DerivedData
+          
+          # Show available destinations
+          echo "📱 Available destinations:"
+          xcodebuild -showdestinations -project LMS.xcodeproj -scheme LMS || true
           
           # Build archive
           xcodebuild archive \
@@ -85,9 +90,11 @@ jobs:
             -scheme LMS \
             -configuration Release \
             -archivePath build/LMS.xcarchive \
+            -destination "generic/platform=iOS" \
             -allowProvisioningUpdates \
             DEVELOPMENT_TEAM=N85286S93X \
             PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_IDENTIFIER \
+            CODE_SIGNING_ALLOWED=YES \
             | xcpretty
           
           # Проверяем, что архив создан
