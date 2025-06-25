@@ -111,7 +111,11 @@ jobs:
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 \
             -authenticationKeyID $APP_STORE_CONNECT_API_KEY_ID \
             -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
-            DEVELOPMENT_TEAM=N85286S93X
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution: Igor Shirokov (N85286S93X)" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            DEVELOPMENT_TEAM=N85286S93X \
+            IPHONEOS_DEPLOYMENT_TARGET=18.0
           
           # Проверяем, что архив создан
           if [ -d build/LMS.xcarchive ]; then
