@@ -8,57 +8,39 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isShowingWelcome = true
-    
     var body: some View {
-        NavigationView {
-            VStack(spacing: 30) {
-                // Logo placeholder
-                Image(systemName: "graduationcap.fill")
-                    .font(.system(size: 80))
-                    .foregroundColor(.blue)
-                    .padding(.top, 50)
-                
-                // Title
-                Text("TSUM LMS")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                // Subtitle
-                Text("Корпоративный университет")
-                    .font(.title3)
-                    .foregroundColor(.gray)
-                
-                Spacer()
-                
-                // Login button
-                Button(action: {
-                    // TODO: Implement login
-                    print("Login tapped")
-                }) {
-                    Text("Войти")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(10)
-                }
-                .padding(.horizontal, 40)
-                
-                // Version info - CI/CD test
-                Text("Version 1.0.1")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .padding(.bottom, 20)
+        VStack(spacing: 20) {
+            // App icon
+            Image(systemName: "graduationcap.fill")
+                .font(.system(size: 80))
+                .foregroundColor(.blue)
+            
+            // App title
+            Text("TSUM LMS")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+            
+            // Login button
+            Button(action: {
+                print("Login tapped")
+            }) {
+                Text("Войти")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(width: 200, height: 50)
+                    .background(Color.blue)
+                    .cornerRadius(10)
             }
-            .navigationBarHidden(true)
+            
+            // Version info - CI/CD ready
+            Text("Version 1.0.2")
+                .font(.caption)
+                .foregroundColor(.gray)
         }
+        .padding()
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
 }
