@@ -113,10 +113,11 @@ jobs:
             -authenticationKeyID $APP_STORE_CONNECT_API_KEY_ID \
             -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
             CODE_SIGN_IDENTITY="Apple Distribution: Igor Shirokov (N85286S93X)" \
-            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM=N85286S93X \
             PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_IDENTIFIER \
-            IPHONEOS_DEPLOYMENT_TARGET=18.0
+            IPHONEOS_DEPLOYMENT_TARGET=18.0 \
+            PROVISIONING_PROFILE_SPECIFIER=""
           
           # Проверяем, что архив создан
           if [ -d build/LMS.xcarchive ]; then
