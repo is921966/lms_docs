@@ -35,7 +35,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.2'
           bundler-cache: true
           working-directory: LMS_App/LMS
 
@@ -61,7 +61,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.2'
           bundler-cache: true
           working-directory: LMS_App/LMS
 
