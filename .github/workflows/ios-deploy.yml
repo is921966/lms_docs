@@ -289,20 +289,4 @@ jobs:
             LMS_App/LMS/build/
             LMS_App/LMS/*.log
 
-  notify:
-    name: Notify on Slack
-    runs-on: ubuntu-latest
-    needs: build-and-deploy
-    if: always()
-    steps:
-      - name: Send notification
-        if: env.SLACK_WEBHOOK_URL != ''
-        uses: 8398a7/action-slack@v3
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        with:
-          status: ${{ job.status }}
-          text: |
-            iOS Build ${{ needs.build-and-deploy.result }}
-            Branch: ${{ github.ref }}
-            Commit: ${{ github.sha }}
+
