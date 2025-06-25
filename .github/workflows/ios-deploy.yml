@@ -72,11 +72,25 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
 
+      - name: Import provisioning profile
+        env:
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          PROVISION_PROFILE_UUID: ${{ secrets.PROVISION_PROFILE_UUID }}
+        run: |
+          # Create provisioning profile directory
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          
+          # Import provisioning profile from secrets
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/${PROVISION_PROFILE_UUID}.mobileprovision
+          
+          echo "✅ Provisioning profile installed with UUID: $PROVISION_PROFILE_UUID"
+
       - name: Build app
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          PROVISION_PROFILE_UUID: ${{ secrets.PROVISION_PROFILE_UUID }}
         run: |
           cd LMS_App/LMS
           
@@ -113,7 +127,7 @@ jobs:
             -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution: Igor Shirokov (N85286S93X)" \
-            PROVISIONING_PROFILE_SPECIFIER="" \
+            PROVISIONING_PROFILE_SPECIFIER=$PROVISION_PROFILE_UUID \
             DEVELOPMENT_TEAM=N85286S93X \
             PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_IDENTIFIER \
             IPHONEOS_DEPLOYMENT_TARGET=18.0
@@ -177,7 +191,7 @@ jobs:
             <key>provisioningProfiles</key>
             <dict>
               <key>ru.tsum.lms.igor</key>
-              <string></string>
+              <string>${PROVISION_PROFILE_UUID}</string>
             </dict>
           </dict>
           </plist>
