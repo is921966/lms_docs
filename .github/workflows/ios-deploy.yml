@@ -163,16 +163,12 @@ jobs:
             <false/>
             <key>signingStyle</key>
             <string>automatic</string>
-            <key>provisioningProfiles</key>
-            <dict>
-              <key>ru.tsum.lms.igor</key>
-              <string></string>
-            </dict>
           </dict>
           </plist>
           EOF
           
           # Export archive to IPA
+          echo "🔄 Starting export process..."
           xcodebuild -exportArchive \
             -archivePath build/LMS.xcarchive \
             -exportPath build \
@@ -180,8 +176,14 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 \
             -authenticationKeyID $APP_STORE_CONNECT_API_KEY_ID \
-            -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
-            | xcpretty
+            -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID || {
+              echo "❌ Export failed with exit code $?"
+              echo "📋 Export options used:"
+              cat ExportOptions.plist
+              echo "📁 Archive Info.plist:"
+              cat build/LMS.xcarchive/Info.plist || true
+              exit 1
+            }
           
           # Проверяем результат экспорта
           echo "📁 Contents of build directory after export:"
