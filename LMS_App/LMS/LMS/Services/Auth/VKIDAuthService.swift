@@ -1,7 +1,9 @@
 import Foundation
 import SwiftUI
-import VKID
-import VKIDCore
+import Combine
+// TODO: Uncomment when VK ID SDK is installed via CocoaPods
+// import VKID
+// import VKIDCore
 
 // MARK: - VKIDAuthService
 class VKIDAuthService: ObservableObject {
@@ -13,16 +15,20 @@ class VKIDAuthService: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
     
-    private var vkid: VKID?
+    // TODO: Uncomment when VK ID SDK is installed
+    // private var vkid: VKID?
     private let networkService = NetworkService.shared
     
     private init() {
-        setupVKID()
+        // TODO: Setup VK ID when SDK is installed
+        // setupVKID()
         checkAuthenticationStatus()
     }
     
     // MARK: - Setup
     private func setupVKID() {
+        // TODO: Implement when VK ID SDK is installed
+        /*
         do {
             vkid = try VKID(
                 config: Configuration(
@@ -35,10 +41,15 @@ class VKIDAuthService: ObservableObject {
         } catch {
             print("Failed to initialize VKID: \(error)")
         }
+        */
     }
     
     // MARK: - Authentication
     func loginWithVK(from viewController: UIViewController) {
+        // TODO: Implement when VK ID SDK is installed
+        self.error = "VK ID SDK не установлен. Используйте режим разработки."
+        
+        /*
         guard let vkid = vkid else {
             self.error = "VK ID не инициализирован"
             return
@@ -61,8 +72,11 @@ class VKIDAuthService: ObservableObject {
                 }
             }
         )
+        */
     }
     
+    // TODO: Implement these when VK ID SDK is installed
+    /*
     private func handleVKAuthSuccess(session: UserSession) {
         // Получаем информацию о пользователе из VK
         session.user.fetchUser { [weak self] result in
@@ -82,9 +96,12 @@ class VKIDAuthService: ObservableObject {
         self.error = "Ошибка авторизации VK: \(error.localizedDescription)"
         self.isLoading = false
     }
+    */
     
     // MARK: - Backend Sync
-    private func syncWithBackend(vkUser: User, vkAccessToken: String) {
+    private func syncWithBackend(vkUser: Any, vkAccessToken: String) {
+        // TODO: Implement when VK ID SDK is installed
+        /*
         let vkAuthRequest = VKAuthRequest(
             vkId: String(vkUser.id),
             accessToken: vkAccessToken,
@@ -111,6 +128,7 @@ class VKIDAuthService: ObservableObject {
             }
         )
         .store(in: &cancellables)
+        */
     }
     
     private func handleBackendAuthResponse(_ response: VKAuthResponse) {
@@ -161,11 +179,15 @@ class VKIDAuthService: ObservableObject {
     
     // MARK: - Logout
     func logout() {
+        // TODO: Implement VK logout when SDK is installed
+        /*
         vkid?.logout { [weak self] _ in
             DispatchQueue.main.async {
                 self?.clearAuthState()
             }
         }
+        */
+        clearAuthState()
     }
     
     private func clearAuthState() {

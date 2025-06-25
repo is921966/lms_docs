@@ -1,5 +1,6 @@
 import SwiftUI
-import VKID
+// TODO: Uncomment when VK ID SDK is installed
+// import VKID
 
 struct VKLoginView: View {
     @StateObject private var authService = VKIDAuthService.shared
