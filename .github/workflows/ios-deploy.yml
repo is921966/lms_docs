@@ -108,10 +108,11 @@ jobs:
             -archivePath build/LMS.xcarchive \
             -destination "generic/platform=iOS" \
             -allowProvisioningUpdates \
-            -allowProvisioningDeviceRegistration \
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 \
             -authenticationKeyID $APP_STORE_CONNECT_API_KEY_ID \
             -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM=N85286S93X \
             PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_IDENTIFIER \
             IPHONEOS_DEPLOYMENT_TARGET=18.0
