@@ -112,12 +112,9 @@ jobs:
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 \
             -authenticationKeyID $APP_STORE_CONNECT_API_KEY_ID \
             -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
-            CODE_SIGN_IDENTITY="Apple Distribution: Igor Shirokov (N85286S93X)" \
-            CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM=N85286S93X \
             PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_IDENTIFIER \
-            IPHONEOS_DEPLOYMENT_TARGET=18.0 \
-            PROVISIONING_PROFILE_SPECIFIER=""
+            IPHONEOS_DEPLOYMENT_TARGET=18.0
           
           # Проверяем, что архив создан
           if [ -d build/LMS.xcarchive ]; then
@@ -163,6 +160,13 @@ jobs:
             <false/>
             <key>signingStyle</key>
             <string>automatic</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>ru.tsum.lms.igor</key>
+              <string>Automatic</string>
+            </dict>
           </dict>
           </plist>
           EOF
