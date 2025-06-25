@@ -33,6 +33,7 @@ platform :ios do
   lane :test do
     run_tests(
       scheme: "LMS",
+      xcodeproj: "LMS.xcodeproj",
       clean: true,
       devices: ["iPhone 15"],
       skip_build: false,
@@ -55,12 +56,14 @@ platform :ios do
     
     # Increment build number
     increment_build_number(
-      build_number: latest_build + 1
+      build_number: latest_build + 1,
+      xcodeproj: "LMS.xcodeproj"
     )
     
     # Build the app
     build_app(
       scheme: "LMS",
+      xcodeproj: "LMS.xcodeproj",
       clean: true,
       export_method: "app-store",
       output_directory: "./build",
@@ -95,6 +98,7 @@ platform :ios do
     # Build the app
     build_app(
       scheme: "LMS",
+      xcodeproj: "LMS.xcodeproj",
       clean: true,
       export_method: "app-store"
     )
@@ -113,6 +117,7 @@ platform :ios do
   lane :build do
     build_app(
       scheme: "LMS",
+      xcodeproj: "LMS.xcodeproj",
       clean: true,
       export_method: "app-store",
       output_directory: "./build",
