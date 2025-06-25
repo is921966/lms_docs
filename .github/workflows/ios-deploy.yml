@@ -149,6 +149,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          PROVISION_PROFILE_UUID: ${{ secrets.PROVISION_PROFILE_UUID }}
         run: |
           cd LMS_App/LMS
           
@@ -191,7 +192,7 @@ jobs:
             <key>provisioningProfiles</key>
             <dict>
               <key>ru.tsum.lms.igor</key>
-              <string>${PROVISION_PROFILE_UUID}</string>
+              <string>$PROVISION_PROFILE_UUID</string>
             </dict>
           </dict>
           </plist>
