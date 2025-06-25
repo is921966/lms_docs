@@ -152,9 +152,35 @@ jobs:
           echo "✅ API Issuer ID: ${APP_STORE_CONNECT_API_KEY_ISSUER_ID}"
           echo "✅ API Key length: ${#APP_STORE_CONNECT_API_KEY_KEY}"
           
+          # Проверяем формат ключа
+          if [[ "$APP_STORE_CONNECT_API_KEY_KEY" == *"BEGIN PRIVATE KEY"* ]]; then
+            echo "✅ API Key format looks correct (contains BEGIN PRIVATE KEY)"
+          else
+            echo "❌ API Key format might be wrong (missing BEGIN PRIVATE KEY)"
+          fi
+          
           # Create API key file
           mkdir -p ~/.appstoreconnect/private_keys
           echo "$APP_STORE_CONNECT_API_KEY_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
+          
+          # Проверяем, что файл создан
+          if [ -f ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 ]; then
+            echo "✅ API Key file created successfully"
+            echo "📄 File size: $(wc -c < ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8) bytes"
+          else
+            echo "❌ Failed to create API Key file"
+            exit 1
+          fi
+          
+          # Проверяем, что IPA файл существует
+          if [ -f build/LMS.ipa ]; then
+            echo "✅ IPA file exists: $(ls -lh build/LMS.ipa)"
+          else
+            echo "❌ IPA file not found at build/LMS.ipa"
+            echo "📁 Contents of build directory:"
+            ls -la build/
+            exit 1
+          fi
           
           # Upload to TestFlight
           xcrun altool --upload-app \
