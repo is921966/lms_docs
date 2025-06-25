@@ -111,8 +111,6 @@ jobs:
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 \
             -authenticationKeyID $APP_STORE_CONNECT_API_KEY_ID \
             -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM=N85286S93X \
             PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_IDENTIFIER \
             IPHONEOS_DEPLOYMENT_TARGET=18.0
@@ -130,8 +128,16 @@ jobs:
           fi
 
       - name: Export IPA
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
         run: |
           cd LMS_App/LMS
+          
+          # Create API key file for export
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
           
           # Проверяем, что архив создан
           if [ -d build/LMS.xcarchive ]; then
@@ -159,15 +165,8 @@ jobs:
             <false/>
             <key>uploadBitcode</key>
             <false/>
-            <key>signingStyle</key>
-            <string>automatic</string>
-            <key>signingCertificate</key>
-            <string>Apple Distribution</string>
-            <key>provisioningProfiles</key>
-            <dict>
-              <key>ru.tsum.lms.igor</key>
-              <string>Automatic</string>
-            </dict>
+            <key>destination</key>
+            <string>export</string>
           </dict>
           </plist>
           EOF
@@ -178,6 +177,9 @@ jobs:
             -exportPath build \
             -exportOptionsPlist ExportOptions.plist \
             -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 \
+            -authenticationKeyID $APP_STORE_CONNECT_API_KEY_ID \
+            -authenticationKeyIssuerID $APP_STORE_CONNECT_API_KEY_ISSUER_ID \
             | xcpretty
           
           # Проверяем результат экспорта
@@ -217,19 +219,6 @@ jobs:
             echo "✅ API Key format looks correct (contains BEGIN PRIVATE KEY)"
           else
             echo "❌ API Key format might be wrong (missing BEGIN PRIVATE KEY)"
-          fi
-          
-          # Create API key file
-          mkdir -p ~/.appstoreconnect/private_keys
-          echo "$APP_STORE_CONNECT_API_KEY_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
-          
-          # Проверяем, что файл создан
-          if [ -f ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 ]; then
-            echo "✅ API Key file created successfully"
-            echo "📄 File size: $(wc -c < ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8) bytes"
-          else
-            echo "❌ Failed to create API Key file"
-            exit 1
           fi
           
           # Проверяем, что IPA файл существует
