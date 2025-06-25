@@ -89,10 +89,32 @@ jobs:
             DEVELOPMENT_TEAM=N85286S93X \
             PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_IDENTIFIER \
             | xcpretty
+          
+          # Проверяем, что архив создан
+          if [ -d build/LMS.xcarchive ]; then
+            echo "✅ Archive created successfully at build/LMS.xcarchive"
+            echo "📁 Archive contents:"
+            ls -la build/LMS.xcarchive/
+          else
+            echo "❌ Archive creation failed"
+            echo "📁 Current directory:"
+            ls -la
+            exit 1
+          fi
 
       - name: Export IPA
         run: |
           cd LMS_App/LMS
+          
+          # Проверяем, что архив создан
+          if [ -d build/LMS.xcarchive ]; then
+            echo "✅ Archive exists at build/LMS.xcarchive"
+          else
+            echo "❌ Archive not found at build/LMS.xcarchive"
+            echo "📁 Current directory contents:"
+            ls -la
+            exit 1
+          fi
           
           # Create export options plist
           cat > ExportOptions.plist <<EOF
@@ -123,6 +145,10 @@ jobs:
             -exportOptionsPlist ExportOptions.plist \
             -allowProvisioningUpdates \
             | xcpretty
+          
+          # Проверяем результат экспорта
+          echo "📁 Contents of build directory after export:"
+          ls -la build/
 
       - name: Upload to TestFlight
         env:
