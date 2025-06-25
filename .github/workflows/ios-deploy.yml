@@ -296,12 +296,13 @@ jobs:
     if: always()
     steps:
       - name: Send notification
+        if: env.SLACK_WEBHOOK_URL != ''
         uses: 8398a7/action-slack@v3
-        if: success() || failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           status: ${{ job.status }}
           text: |
             iOS Build ${{ needs.build-and-deploy.result }}
             Branch: ${{ github.ref }}
             Commit: ${{ github.sha }}
-          webhook_url: ${{ secrets.SLACK_WEBHOOK || '' }}
