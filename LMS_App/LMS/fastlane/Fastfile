@@ -24,7 +24,7 @@ platform :ios do
   lane :test do
     run_tests(
       scheme: "LMS",
-      xcodeproj: "LMS.xcodeproj",
+      project: "LMS.xcodeproj",
       clean: true,
       devices: ["iPhone 15"],
       skip_build: false,
