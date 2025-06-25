@@ -8,16 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var authService = AuthService.shared
+    @StateObject private var authService = VKIDAuthService.shared
     @State private var showingLogin = false
     
     var body: some View {
         NavigationView {
             if authService.isAuthenticated {
-                // Main app content
-                MainTabView()
+                if authService.isApprovedByAdmin {
+                    // Пользователь авторизован и одобрен - показываем основное приложение
+                    MainTabView()
+                } else {
+                    // Пользователь авторизован, но ожидает одобрения
+                    PendingApprovalView()
+                }
             } else {
-                // Welcome screen
+                // Пользователь не авторизован
                 VStack(spacing: 20) {
                     Spacer()
                     
@@ -41,35 +46,45 @@ struct ContentView: View {
                     Button(action: {
                         showingLogin = true
                     }) {
-                        Text("Войти")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(width: 200, height: 50)
-                            .background(Color.blue)
-                            .cornerRadius(10)
+                        HStack {
+                            Image(systemName: "v.circle.fill")
+                            Text("Войти через VK ID")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(width: 250, height: 50)
+                        .background(Color(red: 0/255, green: 119/255, blue: 255/255))
+                        .cornerRadius(10)
                     }
                     
+                    // Info text
+                    VStack(spacing: 5) {
+                        Text("Для доступа к курсам требуется")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Text("одобрение администратора")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.top, 10)
+                    
                     // Version info
-                    Text("Version 1.1.0 - Backend Integration")
+                    Text("Version 2.0.0 - VK ID Integration")
                         .font(.caption)
                         .foregroundColor(.gray)
                         .padding(.top, 50)
                 }
                 .padding()
                 .sheet(isPresented: $showingLogin) {
-                    LoginView()
+                    VKLoginView()
                 }
             }
         }
         .onAppear {
-            // Check if user token is still valid
+            // Проверяем статус одобрения при запуске
             if authService.isAuthenticated {
-                authService.getCurrentUser()
-                    .sink(
-                        receiveCompletion: { _ in },
-                        receiveValue: { _ in }
-                    )
-                    .store(in: &authService.cancellables)
+                authService.checkAdminApproval()
             }
         }
     }
