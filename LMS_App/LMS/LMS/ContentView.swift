@@ -46,8 +46,8 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, 40)
                 
-                // Version info
-                Text("Версия 1.0.1")
+                // Version info - CI/CD test
+                Text("Version 1.0.1")
                     .font(.caption)
                     .foregroundColor(.gray)
                     .padding(.bottom, 20)
