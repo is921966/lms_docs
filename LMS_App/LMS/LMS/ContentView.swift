@@ -174,6 +174,8 @@ struct MockPendingApprovalView: View {
 
 // MARK: - Main Tab View
 struct MainTabView: View {
+    @StateObject private var authService = MockAuthService.shared
+    
     var body: some View {
         TabView {
             // Learning tab
@@ -183,6 +185,16 @@ struct MainTabView: View {
             .tabItem {
                 Image(systemName: "book.fill")
                 Text("Обучение")
+            }
+            
+            // Competencies tab
+            NavigationView {
+                CompetencyListView()
+                    .environmentObject(AuthViewModel(authService: authService))
+            }
+            .tabItem {
+                Image(systemName: "star.circle.fill")
+                Text("Компетенции")
             }
             
             // Profile tab
