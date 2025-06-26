@@ -210,12 +210,12 @@ struct MainTabView: View {
                 Label("Тесты", systemImage: "doc.text.magnifyingglass")
             }
             
-            // Positions
+            // Analytics
             NavigationStack {
-                PositionListView()
+                AnalyticsDashboard()
             }
             .tabItem {
-                Label("Должности", systemImage: "briefcase")
+                Label("Аналитика", systemImage: "chart.bar.fill")
             }
             
             // Profile
