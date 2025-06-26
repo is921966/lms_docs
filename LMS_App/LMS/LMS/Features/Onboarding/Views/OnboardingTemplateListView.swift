@@ -393,9 +393,9 @@ struct TemplateStageCard: View {
             Button(action: onTap) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Этап \(stage.orderIndex): \(stage.title)")
-                            .font(.headline)
-                            .foregroundColor(.primary)
+                        Text("Этап \(stage.order): \(stage.title)")
+                            .font(.caption)
+                            .fontWeight(.medium)
                         
                         HStack {
                             Text(stage.description)

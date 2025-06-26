@@ -73,21 +73,22 @@ enum OnboardingStatus: String, Codable, CaseIterable {
 
 // MARK: - Onboarding Stage
 struct OnboardingStage: Identifiable, Codable {
-    let id = UUID()
-    let orderIndex: Int
+    let id: UUID
+    let templateStageId: UUID?
     let title: String
     let description: String
+    let order: Int
     let duration: Int // in days
-    
-    var tasks: [OnboardingTask]
-    var status: OnboardingStatus
     var startDate: Date?
     var endDate: Date?
+    var status: StageStatus = .pending
+    var completionPercentage: Double = 0
+    var tasks: [OnboardingTask]
     
     var progress: Double {
         guard !tasks.isEmpty else { return 0 }
-        let completedTasks = tasks.filter { $0.isCompleted }.count
-        return Double(completedTasks) / Double(tasks.count)
+        let completed = tasks.filter { $0.isCompleted }.count
+        return Double(completed) / Double(tasks.count)
     }
     
     var completedTasks: Int {
@@ -95,12 +96,12 @@ struct OnboardingStage: Identifiable, Codable {
     }
     
     var icon: String {
-        switch orderIndex {
-        case 1: return "person.2.fill"
-        case 2: return "book.fill"
-        case 3: return "wrench.and.screwdriver.fill"
-        case 4: return "star.fill"
-        default: return "checkmark.circle.fill"
+        switch order {
+        case 1: return "1.circle.fill"
+        case 2: return "2.circle.fill"
+        case 3: return "3.circle.fill"
+        case 4: return "4.circle.fill"
+        default: return "circle.fill"
         }
     }
 }
@@ -217,10 +218,16 @@ extension OnboardingProgram {
     static func createMockStages() -> [OnboardingStage] {
         [
             OnboardingStage(
-                orderIndex: 1,
+                id: UUID(),
+                templateStageId: nil,
                 title: "Знакомство с компанией",
                 description: "Первые шаги в компании",
+                order: 1,
                 duration: 3,
+                startDate: Date().addingTimeInterval(-7*24*60*60),
+                endDate: Date().addingTimeInterval(-4*24*60*60),
+                status: .completed,
+                completionPercentage: 1.0,
                 tasks: [
                     OnboardingTask(
                         title: "Встреча с руководителем",
@@ -251,16 +258,19 @@ extension OnboardingProgram {
                         completedAt: Date().addingTimeInterval(-4*24*60*60),
                         courseId: UUID()
                     )
-                ],
-                status: .completed,
-                startDate: Date().addingTimeInterval(-7*24*60*60),
-                endDate: Date().addingTimeInterval(-4*24*60*60)
+                ]
             ),
             OnboardingStage(
-                orderIndex: 2,
+                id: UUID(),
+                templateStageId: nil,
                 title: "Обучение продуктам",
                 description: "Изучение ассортимента и особенностей товаров",
+                order: 2,
                 duration: 7,
+                startDate: Date().addingTimeInterval(-3*24*60*60),
+                endDate: nil,
+                status: .inProgress,
+                completionPercentage: 0.5,
                 tasks: [
                     OnboardingTask(
                         title: "Курс: Товароведение",
@@ -284,15 +294,19 @@ extension OnboardingProgram {
                         type: .task,
                         isCompleted: false
                     )
-                ],
-                status: .inProgress,
-                startDate: Date().addingTimeInterval(-3*24*60*60)
+                ]
             ),
             OnboardingStage(
-                orderIndex: 3,
+                id: UUID(),
+                templateStageId: nil,
                 title: "Навыки продаж",
                 description: "Развитие компетенций в области продаж",
+                order: 3,
                 duration: 10,
+                startDate: nil,
+                endDate: nil,
+                status: .notStarted,
+                completionPercentage: 0.0,
                 tasks: [
                     OnboardingTask(
                         title: "Курс: Основы продаж",
@@ -316,14 +330,19 @@ extension OnboardingProgram {
                         description: "Первые продажи под контролем наставника",
                         type: .task
                     )
-                ],
-                status: .notStarted
+                ]
             ),
             OnboardingStage(
-                orderIndex: 4,
+                id: UUID(),
+                templateStageId: nil,
                 title: "Финальная оценка",
                 description: "Завершение адаптационного периода",
+                order: 4,
                 duration: 3,
+                startDate: nil,
+                endDate: nil,
+                status: .notStarted,
+                completionPercentage: 0.0,
                 tasks: [
                     OnboardingTask(
                         title: "Итоговый тест",
@@ -346,8 +365,7 @@ extension OnboardingProgram {
                         description: "Постановка целей на следующий период",
                         type: .document
                     )
-                ],
-                status: .notStarted
+                ]
             )
         ]
     }
@@ -355,10 +373,16 @@ extension OnboardingProgram {
     static func createMockStagesForCashier() -> [OnboardingStage] {
         [
             OnboardingStage(
-                orderIndex: 1,
+                id: UUID(),
+                templateStageId: nil,
                 title: "Введение в работу",
                 description: "Знакомство с компанией и рабочим местом",
+                order: 1,
                 duration: 2,
+                startDate: Date().addingTimeInterval(-2*24*60*60),
+                endDate: Date().addingTimeInterval(-1*24*60*60),
+                status: .completed,
+                completionPercentage: 1.0,
                 tasks: [
                     OnboardingTask(
                         title: "Встреча с управляющим",
@@ -374,16 +398,19 @@ extension OnboardingProgram {
                         isCompleted: true,
                         completedAt: Date().addingTimeInterval(-1*24*60*60)
                     )
-                ],
-                status: .completed,
-                startDate: Date().addingTimeInterval(-2*24*60*60),
-                endDate: Date().addingTimeInterval(-1*24*60*60)
+                ]
             ),
             OnboardingStage(
-                orderIndex: 2,
+                id: UUID(),
+                templateStageId: nil,
                 title: "Обучение кассовым операциям",
                 description: "Освоение работы с кассой",
+                order: 2,
                 duration: 5,
+                startDate: Date(),
+                endDate: nil,
+                status: .inProgress,
+                completionPercentage: 0.2,
                 tasks: [
                     OnboardingTask(
                         title: "Курс: Работа с кассой",
@@ -397,9 +424,7 @@ extension OnboardingProgram {
                         description: "Отработка операций на кассе",
                         type: .task
                     )
-                ],
-                status: .inProgress,
-                startDate: Date()
+                ]
             )
         ]
     }

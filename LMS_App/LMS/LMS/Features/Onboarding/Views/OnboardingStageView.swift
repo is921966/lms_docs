@@ -36,8 +36,8 @@ struct OnboardingStageView: View {
                     .padding()
                 }
             }
-            .navigationTitle("Этап \(stage.orderIndex)")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Этап \(stage.order)")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Готово") {

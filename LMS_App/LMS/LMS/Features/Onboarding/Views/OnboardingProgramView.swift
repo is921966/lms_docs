@@ -248,6 +248,14 @@ struct ProgressOverview: View {
                     )
                 }
             }
+            
+            // Calculate estimated completion date
+            if let template = OnboardingMockService.shared.getTemplate(by: program.templateId) {
+                let estimatedDate = Calendar.current.date(byAdding: .day, value: template.duration, to: program.startDate) ?? program.startDate
+                Text("Ожидаемое завершение: \(estimatedDate, formatter: dateFormatter)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
         }
         .padding()
         .background(Color(.systemGray6))
@@ -322,9 +330,9 @@ struct StageTimelineItem: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Этап \(stage.orderIndex): \(stage.title)")
-                                .font(.headline)
-                                .foregroundColor(.primary)
+                            Text("Этап \(stage.order): \(stage.title)")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
                             
                             Text(stage.description)
                                 .font(.subheadline)
