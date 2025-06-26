@@ -241,6 +241,8 @@ struct MainTabView: View {
 // MARK: - Main Dashboard View
 struct MainDashboardView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @StateObject private var notificationService = NotificationService.shared
+    @State private var showingNotifications = false
     
     var body: some View {
         ScrollView {
@@ -315,6 +317,33 @@ struct MainDashboardView: View {
         }
         .navigationTitle("Главная")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showingNotifications = true
+                }) {
+                    ZStack {
+                        Image(systemName: "bell")
+                            .font(.system(size: 20))
+                        
+                        if notificationService.unreadCount > 0 {
+                            Circle()
+                                .fill(Color.red)
+                                .frame(width: 16, height: 16)
+                                .overlay(
+                                    Text("\(notificationService.unreadCount)")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundColor(.white)
+                                )
+                                .offset(x: 8, y: -8)
+                        }
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingNotifications) {
+            NotificationListView()
+        }
     }
 }
 
