@@ -174,7 +174,7 @@ class OnboardingMockService: ObservableObject {
                     OnboardingTask(
                         title: templateTask.title,
                         description: templateTask.description,
-                        type: getTaskType(from: templateTask.type),
+                        type: templateTask.type,
                         isCompleted: false,
                         completedAt: nil,
                         completedBy: nil,

@@ -152,14 +152,7 @@ struct OnboardingTask: Identifiable, Codable {
 }
 
 // MARK: - Task Type
-enum OnboardingTaskType: String, Codable, CaseIterable {
-    case course = "Курс"
-    case test = "Тест"
-    case document = "Документ"
-    case meeting = "Встреча"
-    case task = "Задача"
-    case feedback = "Обратная связь"
-}
+// Use OnboardingTaskType from OnboardingTemplate.swift
 
 // MARK: - Mock Data
 extension OnboardingProgram {
@@ -447,4 +440,10 @@ extension OnboardingProgram {
         
         return stages
     }
+}
+
+extension OnboardingProgram {
+    static let mockData: [OnboardingProgram] = [
+        // ... existing code ...
+    ]
 } 
