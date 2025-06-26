@@ -99,6 +99,12 @@ struct OnboardingTemplateTask: Identifiable, Codable {
         self.requiredDocuments = requiredDocuments
         self.checklistItems = checklistItems
     }
+    
+    func apply(_ block: (inout OnboardingTemplateTask) -> Void) -> OnboardingTemplateTask {
+        var task = self
+        block(&task)
+        return task
+    }
 }
 
 // MARK: - Enums
@@ -127,6 +133,35 @@ enum StageStatus: String, Codable, CaseIterable {
     case cancelled = "Отменен"
 }
 
+// MARK: - Helper Functions
+extension OnboardingTemplateTask {
+    static func course(title: String, description: String, order: Int, assigneeType: AssigneeType, courseId: UUID = UUID()) -> OnboardingTemplateTask {
+        var task = OnboardingTemplateTask(title: title, description: description, type: .course, order: order, assigneeType: assigneeType)
+        task.courseId = courseId
+        return task
+    }
+    
+    static func test(title: String, description: String, order: Int, assigneeType: AssigneeType, testId: UUID = UUID()) -> OnboardingTemplateTask {
+        var task = OnboardingTemplateTask(title: title, description: description, type: .test, order: order, assigneeType: assigneeType)
+        task.testId = testId
+        return task
+    }
+    
+    static func document(title: String, description: String, order: Int, assigneeType: AssigneeType, documentUrl: String) -> OnboardingTemplateTask {
+        var task = OnboardingTemplateTask(title: title, description: description, type: .document, order: order, assigneeType: assigneeType)
+        task.documentUrl = documentUrl
+        return task
+    }
+    
+    static func meeting(title: String, description: String, order: Int, assigneeType: AssigneeType) -> OnboardingTemplateTask {
+        OnboardingTemplateTask(title: title, description: description, type: .meeting, order: order, assigneeType: assigneeType)
+    }
+    
+    static func task(title: String, description: String, order: Int, assigneeType: AssigneeType) -> OnboardingTemplateTask {
+        OnboardingTemplateTask(title: title, description: description, type: .task, order: order, assigneeType: assigneeType)
+    }
+}
+
 // MARK: - Mock Templates
 extension OnboardingTemplate {
     static let mockTemplates = [
@@ -143,27 +178,23 @@ extension OnboardingTemplate {
                     order: 1,
                     duration: 3,
                     tasks: [
-                        OnboardingTemplateTask(
+                        .meeting(
                             title: "Встреча с руководителем",
                             description: "Знакомство с непосредственным руководителем",
-                            type: .meeting,
                             order: 1,
                             assigneeType: .manager
                         ),
-                        OnboardingTemplateTask(
+                        .task(
                             title: "Экскурсия по магазину",
                             description: "Ознакомление с торговым пространством",
-                            type: .task,
                             order: 2,
                             assigneeType: .mentor
                         ),
-                        OnboardingTemplateTask(
+                        .course(
                             title: "Курс: Корпоративная культура",
                             description: "Изучение ценностей и принципов компании",
-                            type: .course,
                             order: 3,
-                            assigneeType: .employee,
-                            courseId: UUID()
+                            assigneeType: .employee
                         )
                     ]
                 ),
@@ -173,21 +204,17 @@ extension OnboardingTemplate {
                     order: 2,
                     duration: 7,
                     tasks: [
-                        OnboardingTemplateTask(
+                        .course(
                             title: "Курс: Товароведение",
                             description: "Базовые знания об ассортименте",
-                            type: .course,
                             order: 1,
-                            assigneeType: .employee,
-                            courseId: UUID()
+                            assigneeType: .employee
                         ),
-                        OnboardingTemplateTask(
+                        .test(
                             title: "Тест по товароведению",
                             description: "Проверка знаний ассортимента",
-                            type: .test,
                             order: 2,
-                            assigneeType: .employee,
-                            testId: UUID()
+                            assigneeType: .employee
                         )
                     ]
                 ),
@@ -197,18 +224,15 @@ extension OnboardingTemplate {
                     order: 3,
                     duration: 14,
                     tasks: [
-                        OnboardingTemplateTask(
+                        .course(
                             title: "Курс: Основы продаж",
                             description: "Техники эффективных продаж",
-                            type: .course,
                             order: 1,
-                            assigneeType: .employee,
-                            courseId: UUID()
+                            assigneeType: .employee
                         ),
-                        OnboardingTemplateTask(
+                        .task(
                             title: "Практика с наставником",
                             description: "Работа в паре с опытным продавцом",
-                            type: .task,
                             order: 2,
                             assigneeType: .mentor
                         )
@@ -233,17 +257,15 @@ extension OnboardingTemplate {
                     order: 1,
                     duration: 2,
                     tasks: [
-                        OnboardingTemplateTask(
+                        .meeting(
                             title: "Встреча с управляющим",
                             description: "Знакомство и постановка задач",
-                            type: .meeting,
                             order: 1,
                             assigneeType: .manager
                         ),
-                        OnboardingTemplateTask(
+                        .task(
                             title: "Изучение кассовой зоны",
                             description: "Знакомство с рабочим местом",
-                            type: .task,
                             order: 2,
                             assigneeType: .mentor
                         )
@@ -255,28 +277,23 @@ extension OnboardingTemplate {
                     order: 2,
                     duration: 7,
                     tasks: [
-                        OnboardingTemplateTask(
+                        .course(
                             title: "Курс: Работа с кассой",
                             description: "Все виды кассовых операций",
-                            type: .course,
                             order: 1,
-                            assigneeType: .employee,
-                            courseId: UUID()
+                            assigneeType: .employee
                         ),
-                        OnboardingTemplateTask(
+                        .task(
                             title: "Практика под контролем",
                             description: "Работа с наставником",
-                            type: .task,
                             order: 2,
                             assigneeType: .mentor
                         ),
-                        OnboardingTemplateTask(
+                        .test(
                             title: "Тест по кассовым операциям",
                             description: "Проверка навыков",
-                            type: .test,
                             order: 3,
-                            assigneeType: .employee,
-                            testId: UUID()
+                            assigneeType: .employee
                         )
                     ]
                 )
@@ -299,17 +316,15 @@ extension OnboardingTemplate {
                     order: 1,
                     duration: 3,
                     tasks: [
-                        OnboardingTemplateTask(
+                        .meeting(
                             title: "Встреча с руководителем VM",
                             description: "Обсуждение стандартов и требований",
-                            type: .meeting,
                             order: 1,
                             assigneeType: .manager
                         ),
-                        OnboardingTemplateTask(
+                        .document(
                             title: "Изучение brand book",
                             description: "Стандарты визуального оформления",
-                            type: .document,
                             order: 2,
                             assigneeType: .employee,
                             documentUrl: "https://example.com/brandbook.pdf"
@@ -322,25 +337,21 @@ extension OnboardingTemplate {
                     order: 2,
                     duration: 14,
                     tasks: [
-                        OnboardingTemplateTask(
+                        .course(
                             title: "Курс: Визуальный мерчандайзинг",
                             description: "Теория и практика VM",
-                            type: .course,
                             order: 1,
-                            assigneeType: .employee,
-                            courseId: UUID()
+                            assigneeType: .employee
                         ),
-                        OnboardingTemplateTask(
+                        .task(
                             title: "Создание первой витрины",
                             description: "Самостоятельная работа под контролем",
-                            type: .task,
                             order: 2,
                             assigneeType: .mentor
                         ),
-                        OnboardingTemplateTask(
+                        .task(
                             title: "Анализ конкурентов",
                             description: "Изучение лучших практик",
-                            type: .task,
                             order: 3,
                             assigneeType: .employee
                         )
@@ -365,28 +376,24 @@ extension OnboardingTemplate {
                     order: 1,
                     duration: 5,
                     tasks: [
-                        OnboardingTemplateTask(
+                        .meeting(
                             title: "Встреча с топ-менеджментом",
                             description: "Знакомство с руководством компании",
-                            type: .meeting,
                             order: 1,
                             assigneeType: .manager
                         ),
-                        OnboardingTemplateTask(
+                        .document(
                             title: "Изучение бизнес-процессов",
                             description: "Понимание операционной модели",
-                            type: .document,
                             order: 2,
                             assigneeType: .employee,
                             documentUrl: "https://example.com/processes.pdf"
                         ),
-                        OnboardingTemplateTask(
+                        .course(
                             title: "Курс: Лидерство в ЦУМ",
                             description: "Корпоративные стандарты управления",
-                            type: .course,
                             order: 3,
-                            assigneeType: .employee,
-                            courseId: UUID()
+                            assigneeType: .employee
                         )
                     ]
                 )
