@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct OnboardingDashboard: View {
-    @State private var programs: [OnboardingProgram] = []
+    @StateObject private var service = OnboardingMockService.shared
     @State private var selectedFilter: FilterType = .all
     @State private var searchText = ""
     @State private var showingNewProgram = false
@@ -23,7 +23,7 @@ struct OnboardingDashboard: View {
     }
     
     var filteredPrograms: [OnboardingProgram] {
-        var filtered = programs
+        var filtered = service.programs
         
         // Apply status filter
         switch selectedFilter {
@@ -55,7 +55,7 @@ struct OnboardingDashboard: View {
         NavigationView {
             VStack(spacing: 0) {
                 // Statistics
-                OnboardingStatsView(programs: programs)
+                OnboardingStatsView(programs: service.programs)
                 
                 // Filter and Search
                 VStack(spacing: 12) {
@@ -128,7 +128,75 @@ struct OnboardingDashboard: View {
             }
             .sheet(isPresented: $showingNewProgram) {
                 // NewProgramView()
-                Text("Создание новой программы")
+                NavigationView {
+                    VStack(spacing: 20) {
+                        Text("Выберите способ создания")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .padding(.top, 40)
+                        
+                        VStack(spacing: 16) {
+                            Button(action: {
+                                showingNewProgram = false
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    showingTemplates = true
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: "doc.text.fill")
+                                        .font(.title2)
+                                    VStack(alignment: .leading) {
+                                        Text("Из шаблона")
+                                            .font(.headline)
+                                        Text("Быстрое создание на основе готового шаблона")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            
+                            Button(action: {}) {
+                                HStack {
+                                    Image(systemName: "plus.square.fill")
+                                        .font(.title2)
+                                    VStack(alignment: .leading) {
+                                        Text("С нуля")
+                                            .font(.headline)
+                                        Text("Создать уникальную программу")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                        .padding(.horizontal)
+                        
+                        Spacer()
+                    }
+                    .navigationTitle("Новая программа")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button("Отмена") {
+                                showingNewProgram = false
+                            }
+                        }
+                    }
+                }
             }
             .sheet(isPresented: $showingTemplates) {
                 OnboardingTemplateListView()
@@ -137,21 +205,21 @@ struct OnboardingDashboard: View {
     }
     
     private func loadPrograms() {
-        programs = OnboardingProgram.createMockPrograms()
+        // Programs are now loaded automatically from service
     }
     
     private func countForFilter(_ filter: FilterType) -> Int {
         switch filter {
         case .all:
-            return programs.count
+            return service.programs.count
         case .inProgress:
-            return programs.filter { $0.status == .inProgress }.count
+            return service.programs.filter { $0.status == .inProgress }.count
         case .notStarted:
-            return programs.filter { $0.status == .notStarted }.count
+            return service.programs.filter { $0.status == .notStarted }.count
         case .completed:
-            return programs.filter { $0.status == .completed }.count
+            return service.programs.filter { $0.status == .completed }.count
         case .overdue:
-            return programs.filter { $0.isOverdue }.count
+            return service.programs.filter { $0.isOverdue }.count
         }
     }
 }

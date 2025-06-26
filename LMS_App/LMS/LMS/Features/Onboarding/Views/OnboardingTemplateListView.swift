@@ -214,6 +214,8 @@ struct TemplateCardView: View {
 struct TemplateDetailView: View {
     let template: OnboardingTemplate
     @State private var expandedStages: Set<UUID> = []
+    @State private var showingCreateProgram = false
+    @State private var showingEditTemplate = false
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -247,7 +249,7 @@ struct TemplateDetailView: View {
                     
                     // Actions
                     VStack(spacing: 12) {
-                        Button(action: {}) {
+                        Button(action: { showingCreateProgram = true }) {
                             HStack {
                                 Image(systemName: "person.badge.plus")
                                 Text("Создать программу из шаблона")
@@ -259,7 +261,7 @@ struct TemplateDetailView: View {
                             .cornerRadius(12)
                         }
                         
-                        Button(action: {}) {
+                        Button(action: { showingEditTemplate = true }) {
                             HStack {
                                 Image(systemName: "square.and.pencil")
                                 Text("Редактировать шаблон")
@@ -282,6 +284,14 @@ struct TemplateDetailView: View {
                         dismiss()
                     }
                 }
+            }
+            .sheet(isPresented: $showingCreateProgram) {
+                CreateProgramFromTemplateView(template: template)
+            }
+            .sheet(isPresented: $showingEditTemplate) {
+                // EditTemplateView(template: template)
+                Text("Редактирование шаблона")
+                    .navigationTitle("Редактировать шаблон")
             }
         }
     }
