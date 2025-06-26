@@ -2,8 +2,9 @@ import SwiftUI
 
 struct CourseDetailView: View {
     let course: Course
-    @State private var selectedModule: CourseModule?
+    @State private var selectedModule: Module?
     @State private var showingLesson = false
+    @State private var showingAssignment = false
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -33,7 +34,7 @@ struct CourseDetailView: View {
                         .font(.headline)
                         .padding(.horizontal)
                     
-                    ForEach(course.courseModules) { module in
+                    ForEach(course.modules) { module in
                         ModuleCard(module: module) {
                             selectedModule = module
                             showingLesson = true
@@ -43,7 +44,7 @@ struct CourseDetailView: View {
                 
                 // Start button
                 Button(action: {
-                    if let firstModule = course.courseModules.first {
+                    if let firstModule = course.modules.first {
                         selectedModule = firstModule
                         showingLesson = true
                     }
@@ -66,8 +67,18 @@ struct CourseDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {}) {
-                    Image(systemName: "bookmark")
+                HStack(spacing: 16) {
+                    // Assign course button (for admins/managers)
+                    if MockAuthService.shared.currentUser?.roles.contains("admin") == true ||
+                       MockAuthService.shared.currentUser?.roles.contains("manager") == true {
+                        Button(action: { showingAssignment = true }) {
+                            Image(systemName: "person.badge.plus")
+                        }
+                    }
+                    
+                    Button(action: {}) {
+                        Image(systemName: "bookmark")
+                    }
                 }
             }
         }
@@ -75,6 +86,9 @@ struct CourseDetailView: View {
             if let module = selectedModule {
                 LessonView(module: module)
             }
+        }
+        .sheet(isPresented: $showingAssignment) {
+            CourseAssignmentView(course: course)
         }
     }
 }
@@ -109,7 +123,7 @@ struct CourseHeaderView: View {
                 
                 HStack {
                     Label(course.duration, systemImage: "clock")
-                    Label("\(course.courseModules.count) модулей", systemImage: "square.stack.3d.up")
+                    Label("\(course.modules.count) модулей", systemImage: "square.stack.3d.up")
                 }
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.9))
@@ -188,7 +202,7 @@ struct InfoCard: View {
 
 // MARK: - Module Card
 struct ModuleCard: View {
-    let module: CourseModule
+    let module: Module
     let onTap: () -> Void
     
     var body: some View {
@@ -257,6 +271,12 @@ struct ModuleCard: View {
 // MARK: - Course Extensions
 extension Course {
     var category: String {
+        if let categoryId = categoryId,
+           let category = CourseCategory.categories.first(where: { $0.id == categoryId }) {
+            return category.name
+        }
+        
+        // Fallback for old data
         switch title {
         case "Основы продаж", "Основы продаж в ЦУМ":
             return "Продажи"
@@ -274,6 +294,12 @@ extension Course {
     }
     
     var fullDescription: String {
+        // Use description if it's already detailed
+        if description.count > 100 {
+            return description
+        }
+        
+        // Fallback descriptions
         switch title {
         case "Основы продаж", "Основы продаж в ЦУМ":
             return "Курс научит вас эффективным техникам продаж, работе с возражениями клиентов, выявлению потребностей и презентации товара. Вы освоите психологию покупателя и научитесь строить долгосрочные отношения с клиентами."
@@ -312,123 +338,14 @@ extension Course {
     }
     
     var hasCertificate: Bool {
-        progress == 1.0 || title.contains("VIP")
-    }
-    
-    var courseModules: [CourseModule] {
-        switch title {
-        case "Основы продаж", "Основы продаж в ЦУМ":
-            return [
-                CourseModule(
-                    id: UUID(),
-                    title: "Введение в продажи",
-                    orderIndex: 1,
-                    duration: 30,
-                    isCompleted: true,
-                    isLocked: false,
-                    progress: 1.0,
-                    lessons: mockLessons(count: 3)
-                ),
-                CourseModule(
-                    id: UUID(),
-                    title: "Типы клиентов",
-                    orderIndex: 2,
-                    duration: 45,
-                    isCompleted: true,
-                    isLocked: false,
-                    progress: 1.0,
-                    lessons: mockLessons(count: 4)
-                ),
-                CourseModule(
-                    id: UUID(),
-                    title: "Работа с возражениями",
-                    orderIndex: 3,
-                    duration: 60,
-                    isCompleted: false,
-                    isLocked: false,
-                    progress: 0.6,
-                    lessons: mockLessons(count: 5)
-                ),
-                CourseModule(
-                    id: UUID(),
-                    title: "Завершение сделки",
-                    orderIndex: 4,
-                    duration: 40,
-                    isCompleted: false,
-                    isLocked: true,
-                    progress: 0,
-                    lessons: mockLessons(count: 3)
-                )
-            ]
-        case "Товароведение":
-            return [
-                CourseModule(
-                    id: UUID(),
-                    title: "Категории товаров",
-                    orderIndex: 1,
-                    duration: 40,
-                    isCompleted: false,
-                    isLocked: false,
-                    progress: 0.3,
-                    lessons: mockLessons(count: 4)
-                ),
-                CourseModule(
-                    id: UUID(),
-                    title: "Правила хранения",
-                    orderIndex: 2,
-                    duration: 30,
-                    isCompleted: false,
-                    isLocked: true,
-                    progress: 0,
-                    lessons: mockLessons(count: 3)
-                )
-            ]
-        default:
-            return []
-        }
-    }
-    
-    private func mockLessons(count: Int) -> [Lesson] {
-        (1...count).map { index in
-            Lesson(
-                id: UUID(),
-                title: "Урок \(index)",
-                type: index == 1 ? .video : (index == count ? .quiz : .text),
-                duration: Int.random(in: 5...15),
-                isCompleted: false
-            )
-        }
-    }
-}
-
-// MARK: - Models
-struct CourseModule: Identifiable {
-    let id: UUID
-    let title: String
-    let orderIndex: Int
-    let duration: Int
-    let isCompleted: Bool
-    let isLocked: Bool
-    let progress: Double
-    let lessons: [Lesson]
-}
-
-struct Lesson: Identifiable {
-    let id: UUID
-    let title: String
-    let type: LessonType
-    let duration: Int
-    let isCompleted: Bool
-    
-    enum LessonType {
-        case video, text, quiz, interactive
+        certificateTemplateId != nil || progress == 1.0 || title.contains("VIP")
     }
 }
 
 #Preview {
     NavigationView {
         CourseDetailView(
-            course: Course.mockCourses.first!
+            course: Course.createMockCourses().first!
         )
     }
 } 

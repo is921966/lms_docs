@@ -11,15 +11,18 @@ struct CourseAddView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
     @State private var description = ""
-    @State private var duration = "1 час"
-    @State private var selectedIcon = "book.fill"
-    @State private var selectedColor = Color.blue
+    @State private var duration = "8 часов"
+    @State private var selectedCategoryId: UUID?
+    @State private var selectedType = CourseType.optional
+    @State private var selectedStatus = CourseStatus.draft
     @State private var modules: [Module] = []
     @State private var showingAddModule = false
     
     let onAdd: (Course) -> Void
-    let icons = ["cart.fill", "tag.fill", "creditcard.fill", "eye.fill", "star.fill", "book.fill", "graduationcap.fill", "briefcase.fill"]
-    let colors: [Color] = [.blue, .green, .orange, .purple, .yellow, .red, .pink, .indigo]
+    
+    var selectedCategory: CourseCategory? {
+        CourseCategory.categories.first { $0.id == selectedCategoryId }
+    }
     
     var body: some View {
         NavigationView {
@@ -34,54 +37,32 @@ struct CourseAddView: View {
                     TextField("Длительность", text: $duration)
                 }
                 
-                // Visual section
-                Section("Оформление") {
-                    // Icon picker
-                    VStack(alignment: .leading) {
-                        Text("Иконка")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 15) {
-                                ForEach(icons, id: \.self) { icon in
-                                    Button(action: { selectedIcon = icon }) {
-                                        Image(systemName: icon)
-                                            .font(.title2)
-                                            .frame(width: 50, height: 50)
-                                            .background(selectedIcon == icon ? selectedColor.opacity(0.2) : Color.gray.opacity(0.1))
-                                            .foregroundColor(selectedIcon == icon ? selectedColor : .primary)
-                                            .cornerRadius(10)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 10)
-                                                    .stroke(selectedIcon == icon ? selectedColor : Color.clear, lineWidth: 2)
-                                            )
-                                    }
-                                }
-                            }
+                // Category and type section
+                Section("Категория и тип") {
+                    Picker("Категория", selection: $selectedCategoryId) {
+                        Text("Выберите категорию").tag(UUID?.none)
+                        ForEach(CourseCategory.categories) { category in
+                            Label(category.name, systemImage: category.icon)
+                                .tag(category.id as UUID?)
                         }
                     }
                     
-                    // Color picker
-                    VStack(alignment: .leading) {
-                        Text("Цвет")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 15) {
-                                ForEach(colors, id: \.self) { color in
-                                    Button(action: { selectedColor = color }) {
-                                        Circle()
-                                            .fill(color)
-                                            .frame(width: 40, height: 40)
-                                            .overlay(
-                                                Circle()
-                                                    .stroke(Color.primary, lineWidth: selectedColor == color ? 3 : 0)
-                                            )
-                                    }
-                                }
+                    Picker("Тип курса", selection: $selectedType) {
+                        ForEach(CourseType.allCases, id: \.self) { type in
+                            Label(type.rawValue, systemImage: type.icon)
+                                .tag(type)
+                        }
+                    }
+                    
+                    Picker("Статус", selection: $selectedStatus) {
+                        ForEach(CourseStatus.allCases, id: \.self) { status in
+                            HStack {
+                                Circle()
+                                    .fill(status.color)
+                                    .frame(width: 12, height: 12)
+                                Text(status.rawValue)
                             }
+                            .tag(status)
                         }
                     }
                 }
@@ -92,13 +73,19 @@ struct CourseAddView: View {
                         Text("Добавьте модули к курсу")
                             .foregroundColor(.secondary)
                     } else {
-                        ForEach($modules) { $module in
+                        ForEach(modules.indices, id: \.self) { index in
                             HStack {
                                 VStack(alignment: .leading) {
-                                    Text(module.title)
+                                    Text(modules[index].title)
                                         .font(.body)
-                                    Text(module.duration)
-                                        .font(.caption)
+                                    if let description = modules[index].description {
+                                        Text(description)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                            .lineLimit(1)
+                                    }
+                                    Text("\(modules[index].duration) мин • \(modules[index].lessons.count) уроков")
+                                        .font(.caption2)
                                         .foregroundColor(.secondary)
                                 }
                                 Spacer()
@@ -121,8 +108,9 @@ struct CourseAddView: View {
                     CoursePreviewCard(
                         title: title.isEmpty ? "Название курса" : title,
                         description: description.isEmpty ? "Описание курса" : description,
-                        icon: selectedIcon,
-                        color: selectedColor,
+                        category: selectedCategory,
+                        type: selectedType,
+                        status: selectedStatus,
                         duration: duration,
                         progress: 0.0
                     )
@@ -142,12 +130,14 @@ struct CourseAddView: View {
                         createCourse()
                     }
                     .fontWeight(.bold)
-                    .disabled(title.isEmpty || description.isEmpty)
+                    .disabled(title.isEmpty || description.isEmpty || selectedCategoryId == nil)
                 }
             }
             .sheet(isPresented: $showingAddModule) {
                 AddModuleView { newModule in
-                    modules.append(newModule)
+                    var updatedModule = newModule
+                    updatedModule.orderIndex = modules.count + 1
+                    modules.append(updatedModule)
                 }
             }
         }
@@ -155,17 +145,23 @@ struct CourseAddView: View {
     
     private func deleteModule(at offsets: IndexSet) {
         modules.remove(atOffsets: offsets)
+        // Update order indices
+        for i in modules.indices {
+            modules[i].orderIndex = i + 1
+        }
     }
     
     private func createCourse() {
         let newCourse = Course(
             title: title,
             description: description,
-            progress: 0.0,
-            icon: selectedIcon,
-            color: selectedColor,
+            categoryId: selectedCategoryId,
+            status: selectedStatus,
+            type: selectedType,
+            modules: modules,
             duration: duration,
-            modules: modules
+            estimatedHours: Int(duration.replacingOccurrences(of: " часов", with: "").replacingOccurrences(of: " час", with: "")) ?? 8,
+            createdBy: UUID() // For now, just use a new UUID. In real app, would convert user ID
         )
         onAdd(newCourse)
         dismiss()

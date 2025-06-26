@@ -2,7 +2,7 @@ import SwiftUI
 import AVKit
 
 struct LessonView: View {
-    let module: CourseModule
+    let module: Module
     @State private var currentLessonIndex = 0
     @State private var showingQuiz = false
     @State private var lessonCompleted = false
@@ -33,6 +33,8 @@ struct LessonView: View {
                             QuizIntroView(showingQuiz: $showingQuiz)
                         case .interactive:
                             InteractiveLessonView()
+                        case .assignment:
+                            AssignmentLessonView()
                         }
                     }
                     .padding()
@@ -434,6 +436,49 @@ struct InteractiveLessonView: View {
     }
 }
 
+// MARK: - Assignment Lesson
+struct AssignmentLessonView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Практическое задание")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Выполните задание для закрепления материала")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            VStack(alignment: .leading, spacing: 15) {
+                Text("Инструкции:")
+                    .font(.headline)
+                
+                Text("1. Проведите анализ потребностей клиента\n2. Составьте презентацию товара\n3. Подготовьте ответы на возможные возражения")
+                    .font(.subheadline)
+                    .padding()
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(10)
+                
+                HStack {
+                    Image(systemName: "calendar")
+                        .foregroundColor(.orange)
+                    Text("Срок выполнения: 3 дня")
+                        .font(.subheadline)
+                }
+                
+                Button(action: {}) {
+                    Text("Загрузить выполненное задание")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Quiz View
 struct QuizView: View {
     let onComplete: (Bool) -> Void
@@ -631,19 +676,50 @@ struct QuizResultsView: View {
 
 #Preview {
     LessonView(
-        module: CourseModule(
-            id: UUID(),
+        module: Module(
             title: "Работа с возражениями",
+            description: "Изучение техник работы с возражениями клиентов",
             orderIndex: 3,
-            duration: 60,
-            isCompleted: false,
-            isLocked: false,
-            progress: 0.6,
             lessons: [
-                Lesson(id: UUID(), title: "Видео: Введение", type: .video, duration: 15, isCompleted: false),
-                Lesson(id: UUID(), title: "Теория", type: .text, duration: 10, isCompleted: false),
-                Lesson(id: UUID(), title: "Практика", type: .interactive, duration: 20, isCompleted: false),
-                Lesson(id: UUID(), title: "Тест", type: .quiz, duration: 15, isCompleted: false)
+                Lesson(
+                    title: "Видео: Введение",
+                    type: .video,
+                    orderIndex: 1,
+                    duration: 15,
+                    content: .video(url: "https://example.com/video1.mp4", subtitlesUrl: nil)
+                ),
+                Lesson(
+                    title: "Теория",
+                    type: .text,
+                    orderIndex: 2,
+                    duration: 10,
+                    content: .text(html: "<h1>Работа с возражениями</h1><p>Содержание урока...</p>")
+                ),
+                Lesson(
+                    title: "Практика",
+                    type: .interactive,
+                    orderIndex: 3,
+                    duration: 20,
+                    content: .interactive(url: "https://example.com/interactive1")
+                ),
+                Lesson(
+                    title: "Тест",
+                    type: .quiz,
+                    orderIndex: 4,
+                    duration: 15,
+                    content: .quiz(questions: [
+                        CourseQuizQuestion(
+                            text: "Что является первым шагом в работе с возражением клиента?",
+                            options: [
+                                "Сразу привести контраргументы",
+                                "Выслушать клиента до конца",
+                                "Предложить скидку",
+                                "Позвать старшего менеджера"
+                            ],
+                            correctAnswerIndex: 1
+                        )
+                    ])
+                )
             ]
         )
     )

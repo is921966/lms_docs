@@ -13,23 +13,29 @@ struct CourseEditView: View {
     @State private var title: String
     @State private var description: String
     @State private var duration: String
-    @State private var selectedIcon: String
-    @State private var selectedColor: Color
+    @State private var selectedCategoryId: UUID?
+    @State private var selectedType: CourseType
+    @State private var selectedStatus: CourseStatus
     @State private var modules: [Module]
     @State private var showingAddModule = false
     @State private var showingSaveAlert = false
-    
-    let icons = ["cart.fill", "tag.fill", "creditcard.fill", "eye.fill", "star.fill", "book.fill", "graduationcap.fill", "briefcase.fill"]
-    let colors: [Color] = [.blue, .green, .orange, .purple, .yellow, .red, .pink, .indigo]
+    @State private var showingCompetencyLink = false
+    @State private var showingPositionLink = false
+    @State private var showingTestLink = false
     
     init(course: Course) {
         self._course = State(initialValue: course)
         self._title = State(initialValue: course.title)
         self._description = State(initialValue: course.description)
         self._duration = State(initialValue: course.duration)
-        self._selectedIcon = State(initialValue: course.icon)
-        self._selectedColor = State(initialValue: course.color)
+        self._selectedCategoryId = State(initialValue: course.categoryId)
+        self._selectedType = State(initialValue: course.type)
+        self._selectedStatus = State(initialValue: course.status)
         self._modules = State(initialValue: course.modules)
+    }
+    
+    var selectedCategory: CourseCategory? {
+        CourseCategory.categories.first { $0.id == selectedCategoryId }
     }
     
     var body: some View {
@@ -45,54 +51,32 @@ struct CourseEditView: View {
                     TextField("Длительность", text: $duration)
                 }
                 
-                // Visual section
-                Section("Оформление") {
-                    // Icon picker
-                    VStack(alignment: .leading) {
-                        Text("Иконка")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 15) {
-                                ForEach(icons, id: \.self) { icon in
-                                    Button(action: { selectedIcon = icon }) {
-                                        Image(systemName: icon)
-                                            .font(.title2)
-                                            .frame(width: 50, height: 50)
-                                            .background(selectedIcon == icon ? selectedColor.opacity(0.2) : Color.gray.opacity(0.1))
-                                            .foregroundColor(selectedIcon == icon ? selectedColor : .primary)
-                                            .cornerRadius(10)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 10)
-                                                    .stroke(selectedIcon == icon ? selectedColor : Color.clear, lineWidth: 2)
-                                            )
-                                    }
-                                }
-                            }
+                // Category and type section
+                Section("Категория и тип") {
+                    Picker("Категория", selection: $selectedCategoryId) {
+                        Text("Не выбрана").tag(UUID?.none)
+                        ForEach(CourseCategory.categories) { category in
+                            Label(category.name, systemImage: category.icon)
+                                .tag(category.id as UUID?)
                         }
                     }
                     
-                    // Color picker
-                    VStack(alignment: .leading) {
-                        Text("Цвет")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 15) {
-                                ForEach(colors, id: \.self) { color in
-                                    Button(action: { selectedColor = color }) {
-                                        Circle()
-                                            .fill(color)
-                                            .frame(width: 40, height: 40)
-                                            .overlay(
-                                                Circle()
-                                                    .stroke(Color.primary, lineWidth: selectedColor == color ? 3 : 0)
-                                            )
-                                    }
-                                }
+                    Picker("Тип курса", selection: $selectedType) {
+                        ForEach(CourseType.allCases, id: \.self) { type in
+                            Label(type.rawValue, systemImage: type.icon)
+                                .tag(type)
+                        }
+                    }
+                    
+                    Picker("Статус", selection: $selectedStatus) {
+                        ForEach(CourseStatus.allCases, id: \.self) { status in
+                            HStack {
+                                Circle()
+                                    .fill(status.color)
+                                    .frame(width: 12, height: 12)
+                                Text(status.rawValue)
                             }
+                            .tag(status)
                         }
                     }
                 }
@@ -113,13 +97,77 @@ struct CourseEditView: View {
                     }
                 }
                 
+                // Competencies section
+                Section("Компетенции") {
+                    if !course.competencyIds.isEmpty {
+                        Text("Связано компетенций: \(course.competencyIds.count)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    } else {
+                        Text("Компетенции не назначены")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Button(action: { showingCompetencyLink = true }) {
+                        HStack {
+                            Image(systemName: "link.circle.fill")
+                            Text("Управление компетенциями")
+                        }
+                        .foregroundColor(.blue)
+                    }
+                }
+                
+                // Positions section
+                Section("Должности") {
+                    if !course.positionIds.isEmpty {
+                        Text("Рекомендовано для должностей: \(course.positionIds.count)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    } else {
+                        Text("Должности не указаны")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Button(action: { showingPositionLink = true }) {
+                        HStack {
+                            Image(systemName: "person.badge.shield.checkmark")
+                            Text("Управление должностями")
+                        }
+                        .foregroundColor(.blue)
+                    }
+                }
+                
+                // Test section
+                Section("Итоговый тест") {
+                    if course.testId != nil {
+                        Text("Тест назначен")
+                            .font(.subheadline)
+                            .foregroundColor(.green)
+                    } else {
+                        Text("Тест не назначен")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Button(action: { showingTestLink = true }) {
+                        HStack {
+                            Image(systemName: "doc.badge.gearshape")
+                            Text("Управление тестом")
+                        }
+                        .foregroundColor(.blue)
+                    }
+                }
+                
                 // Preview section
                 Section("Предпросмотр") {
                     CoursePreviewCard(
                         title: title,
                         description: description,
-                        icon: selectedIcon,
-                        color: selectedColor,
+                        category: selectedCategory,
+                        type: selectedType,
+                        status: selectedStatus,
                         duration: duration,
                         progress: course.progress
                     )
@@ -146,6 +194,15 @@ struct CourseEditView: View {
                     modules.append(newModule)
                 }
             }
+            .sheet(isPresented: $showingCompetencyLink) {
+                CourseCompetencyLinkView(course: $course)
+            }
+            .sheet(isPresented: $showingPositionLink) {
+                CoursePositionLinkView(course: $course)
+            }
+            .sheet(isPresented: $showingTestLink) {
+                CourseTestLinkView(course: $course)
+            }
             .alert("Изменения сохранены", isPresented: $showingSaveAlert) {
                 Button("OK") {
                     dismiss()
@@ -163,15 +220,17 @@ struct CourseEditView: View {
     private func saveCourse() {
         // Обновляем курс в сервисе
         if let courseIndex = Course.mockCourses.firstIndex(where: { $0.id == course.id }) {
-            Course.mockCourses[courseIndex] = Course(
-                title: title,
-                description: description,
-                progress: course.progress,
-                icon: selectedIcon,
-                color: selectedColor,
-                duration: duration,
-                modules: modules
-            )
+            var updatedCourse = course
+            updatedCourse.title = title
+            updatedCourse.description = description
+            updatedCourse.duration = duration
+            updatedCourse.categoryId = selectedCategoryId
+            updatedCourse.type = selectedType
+            updatedCourse.status = selectedStatus
+            updatedCourse.modules = modules
+            updatedCourse.updatedAt = Date()
+            
+            Course.mockCourses[courseIndex] = updatedCourse
         }
         
         // В реальном приложении здесь будет вызов API
@@ -186,12 +245,12 @@ struct ModuleEditRow: View {
     @Binding var module: Module
     @State private var isEditing = false
     @State private var editedTitle: String
-    @State private var editedDuration: String
+    @State private var editedDescription: String
     
     init(module: Binding<Module>) {
         self._module = module
         self._editedTitle = State(initialValue: module.wrappedValue.title)
-        self._editedDuration = State(initialValue: module.wrappedValue.duration)
+        self._editedDescription = State(initialValue: module.wrappedValue.description ?? "")
     }
     
     var body: some View {
@@ -201,17 +260,13 @@ struct ModuleEditRow: View {
                     TextField("Название модуля", text: $editedTitle)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     
-                    TextField("Длительность", text: $editedDuration)
+                    TextField("Описание (необязательно)", text: $editedDescription)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 
                 Button("Готово") {
-                    // Create new module with updated values
-                    module = Module(
-                        title: editedTitle,
-                        duration: editedDuration,
-                        isCompleted: module.isCompleted
-                    )
+                    module.title = editedTitle
+                    module.description = editedDescription.isEmpty ? nil : editedDescription
                     isEditing = false
                 }
                 .foregroundColor(.blue)
@@ -219,8 +274,13 @@ struct ModuleEditRow: View {
                 VStack(alignment: .leading) {
                     Text(module.title)
                         .font(.body)
-                    Text(module.duration)
-                        .font(.caption)
+                    if let description = module.description {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    Text("\(module.duration) мин • \(module.lessons.count) уроков")
+                        .font(.caption2)
                         .foregroundColor(.secondary)
                 }
                 
@@ -239,14 +299,15 @@ struct ModuleEditRow: View {
 struct AddModuleView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
-    @State private var duration = ""
+    @State private var description = ""
     let onAdd: (Module) -> Void
     
     var body: some View {
         NavigationView {
             Form {
                 TextField("Название модуля", text: $title)
-                TextField("Длительность (например: 30 мин)", text: $duration)
+                TextField("Описание (необязательно)", text: $description, axis: .vertical)
+                    .lineLimit(2...4)
             }
             .navigationTitle("Новый модуль")
             .navigationBarTitleDisplayMode(.inline)
@@ -261,13 +322,14 @@ struct AddModuleView: View {
                     Button("Добавить") {
                         let newModule = Module(
                             title: title,
-                            duration: duration,
-                            isCompleted: false
+                            description: description.isEmpty ? nil : description,
+                            orderIndex: 0, // Will be set properly when added
+                            lessons: []
                         )
                         onAdd(newModule)
                         dismiss()
                     }
-                    .disabled(title.isEmpty || duration.isEmpty)
+                    .disabled(title.isEmpty)
                 }
             }
         }
@@ -278,40 +340,84 @@ struct AddModuleView: View {
 struct CoursePreviewCard: View {
     let title: String
     let description: String
-    let icon: String
-    let color: Color
+    let category: CourseCategory?
+    let type: CourseType
+    let status: CourseStatus
     let duration: String
     let progress: Double
     
     var body: some View {
-        HStack(spacing: 15) {
-            Image(systemName: icon)
-                .font(.system(size: 40))
-                .foregroundColor(color)
-                .frame(width: 60, height: 60)
-                .background(color.opacity(0.1))
-                .cornerRadius(15)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text(title)
-                    .font(.headline)
-                
-                Text(description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                
-                HStack {
-                    Text("\(Int(progress * 100))% завершено")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                    
-                    Spacer()
-                    
-                    Text(duration)
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                if let category = category {
+                    Image(systemName: category.icon)
+                        .font(.system(size: 40))
+                        .foregroundColor(category.color)
+                        .frame(width: 60, height: 60)
+                        .background(category.color.opacity(0.1))
+                        .cornerRadius(15)
+                } else {
+                    Image(systemName: "book.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(.gray)
+                        .frame(width: 60, height: 60)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(15)
                 }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text(title)
+                            .font(.headline)
+                        
+                        Spacer()
+                        
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(status.color)
+                                .frame(width: 8, height: 8)
+                            Text(status.rawValue)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    Text(description)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                    
+                    HStack {
+                        Label(type.rawValue, systemImage: type.icon)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        Text(duration)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            
+            if progress > 0 {
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(Color.gray.opacity(0.2))
+                            .frame(height: 4)
+                        
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(category?.color ?? .blue)
+                            .frame(width: geometry.size.width * progress, height: 4)
+                    }
+                }
+                .frame(height: 4)
+                
+                Text("\(Int(progress * 100))% завершено")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
             }
         }
         .padding()
