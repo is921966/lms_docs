@@ -55,12 +55,21 @@ struct OnboardingTemplate: Identifiable, Codable {
 
 // MARK: - Template Stage
 struct OnboardingTemplateStage: Identifiable, Codable {
-    let id = UUID()
-    let orderIndex: Int
-    let title: String
-    let description: String
-    let duration: Int // in days
-    var taskTemplates: [OnboardingTaskTemplate]
+    let id: UUID
+    var title: String
+    var description: String
+    var order: Int
+    var duration: Int // in days
+    var tasks: [OnboardingTemplateTask]
+    
+    init(id: UUID = UUID(), title: String, description: String, order: Int, duration: Int, tasks: [OnboardingTemplateTask] = []) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.order = order
+        self.duration = duration
+        self.tasks = tasks
+    }
 }
 
 // MARK: - Task Template

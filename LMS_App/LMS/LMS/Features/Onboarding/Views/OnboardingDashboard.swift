@@ -63,19 +63,20 @@ struct OnboardingDashboard: View {
                     // Filter chips
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
+                            OnboardingFilterChip(
+                                title: "Все",
+                                isSelected: selectedFilter == .all,
+                                action: { selectedFilter = .all }
+                            )
+                            
                             ForEach(FilterType.allCases, id: \.self) { filter in
-                                FilterChip(
+                                OnboardingFilterChip(
                                     title: filter.rawValue,
-                                    count: countForFilter(filter),
-                                    isSelected: selectedFilter == filter
-                                ) {
-                                    withAnimation {
-                                        selectedFilter = filter
-                                    }
-                                }
+                                    isSelected: selectedFilter == filter,
+                                    action: { selectedFilter = filter }
+                                )
                             }
                         }
-                        .padding(.horizontal)
                     }
                     
                     // Search bar
@@ -280,33 +281,27 @@ struct OnboardingStatsView: View {
 }
 
 // MARK: - Filter Chip
-struct FilterChip: View {
+struct OnboardingFilterChip: View {
     let title: String
-    let count: Int
     let isSelected: Bool
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 4) {
-                Text(title)
-                if count > 0 {
-                    Text("\(count)")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(isSelected ? Color.white.opacity(0.3) : Color.blue.opacity(0.2))
-                        .cornerRadius(8)
-                }
-            }
-            .font(.subheadline)
-            .fontWeight(isSelected ? .semibold : .regular)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(isSelected ? Color.blue : Color(.systemGray5))
-            .foregroundColor(isSelected ? .white : .primary)
-            .cornerRadius(20)
+            Text(title)
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(isSelected ? .white : .primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill(isSelected ? Color.blue : Color(UIColor.secondarySystemBackground))
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(isSelected ? Color.blue : Color.gray.opacity(0.3), lineWidth: 1)
+                )
         }
     }
 }

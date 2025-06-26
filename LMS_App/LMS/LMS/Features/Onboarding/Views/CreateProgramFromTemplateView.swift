@@ -54,7 +54,7 @@ struct CreateProgramFromTemplateView: View {
                                     VStack(alignment: .leading) {
                                         Text("\(employee.firstName) \(employee.lastName)")
                                             .foregroundColor(.primary)
-                                        Text(employee.position ?? "Без должности")
+                                        Text(employee.email)
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -109,7 +109,7 @@ struct CreateProgramFromTemplateView: View {
                                     VStack(alignment: .leading) {
                                         Text("\(manager.firstName) \(manager.lastName)")
                                             .foregroundColor(.primary)
-                                        Text(manager.position ?? "Без должности")
+                                        Text(manager.email)
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -245,8 +245,7 @@ struct EmployeeSelectionView: View {
         return employees.filter { employee in
             let fullName = "\(employee.firstName) \(employee.lastName)"
             return fullName.localizedCaseInsensitiveContains(searchText) ||
-                   (employee.position?.localizedCaseInsensitiveContains(searchText) ?? false) ||
-                   (employee.department?.localizedCaseInsensitiveContains(searchText) ?? false)
+                   (employee.email?.localizedCaseInsensitiveContains(searchText) ?? false)
         }
     }
     
@@ -265,49 +264,35 @@ struct EmployeeSelectionView: View {
                 .padding()
                 
                 // Employee list
-                List(filteredEmployees) { employee in
-                    Button(action: {
-                        selectedEmployee = employee
-                        dismiss()
-                    }) {
-                        HStack {
-                            Image(systemName: "person.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.gray)
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("\(employee.firstName) \(employee.lastName)")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.primary)
+                ScrollView {
+                    LazyVStack(spacing: 8) {
+                        ForEach(filteredEmployees) { employee in
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("\(employee.firstName) \(employee.lastName)")
+                                        .font(.headline)
+                                    Text(employee.email ?? "")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
                                 
-                                HStack {
-                                    if let position = employee.position {
-                                        Text(position)
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    
-                                    if let department = employee.department {
-                                        Text("•")
-                                            .foregroundColor(.secondary)
-                                        Text(department)
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
+                                Spacer()
+                                
+                                if selectedEmployee?.id == employee.id {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.blue)
                                 }
                             }
-                            
-                            Spacer()
-                            
-                            if employee.id == selectedEmployee?.id {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.blue)
+                            .padding()
+                            .background(Color(UIColor.secondarySystemGroupedBackground))
+                            .cornerRadius(10)
+                            .onTapGesture {
+                                selectedEmployee = employee
+                                dismiss()
                             }
                         }
                     }
                 }
-                .listStyle(PlainListStyle())
             }
             .navigationTitle("Выбор сотрудника")
             .navigationBarTitleDisplayMode(.inline)
@@ -325,10 +310,8 @@ struct EmployeeSelectionView: View {
     }
     
     private func loadEmployees() {
-        // Load from UserMockService
-        employees = UserMockService.shared.getUsers().filter { user in
-            // Filter out admins and managers for employee selection
-            !(user.roles?.contains(where: { $0.name == "admin" || $0.name == "manager" }) ?? false)
+        employees = MockAuthService.shared.getAllUsers().filter { user in
+            user.role != "admin" && user.role != "manager"
         }
     }
 }
@@ -357,8 +340,8 @@ struct ManagerSelectionView: View {
                                 .fontWeight(.medium)
                                 .foregroundColor(.primary)
                             
-                            if let position = manager.position {
-                                Text(position)
+                            if let email = manager.email {
+                                Text(email)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -390,9 +373,8 @@ struct ManagerSelectionView: View {
     }
     
     private func loadManagers() {
-        // Load managers from UserMockService
-        managers = UserMockService.shared.getUsers().filter { user in
-            user.roles?.contains(where: { $0.name == "manager" || $0.name == "admin" }) ?? false
+        managers = MockAuthService.shared.getAllUsers().filter { user in
+            user.role == "manager" || user.role == "admin"
         }
     }
 }
