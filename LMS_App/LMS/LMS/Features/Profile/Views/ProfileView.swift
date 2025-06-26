@@ -16,6 +16,9 @@ struct ProfileView: View {
                 // Stats cards
                 StatsCardsView()
                 
+                // Quick actions
+                QuickActionsView()
+                
                 // Tab selector
                 Picker("", selection: $selectedTab) {
                     Text("Достижения").tag(0)
@@ -219,6 +222,75 @@ struct StatCard: View {
         .background(Color.white)
         .cornerRadius(15)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+    }
+}
+
+// MARK: - Quick Actions
+struct QuickActionsView: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            NavigationLink(destination: CertificateListView()) {
+                QuickActionRow(
+                    icon: "seal.fill",
+                    title: "Мои сертификаты",
+                    count: "4",
+                    color: .green
+                )
+            }
+            
+            NavigationLink(destination: LearningListView()) {
+                QuickActionRow(
+                    icon: "book.closed.fill",
+                    title: "Активные курсы",
+                    count: "3",
+                    color: .blue
+                )
+            }
+        }
+        .padding(.horizontal)
+    }
+}
+
+struct QuickActionRow: View {
+    let icon: String
+    let title: String
+    let count: String
+    let color: Color
+    
+    var body: some View {
+        HStack {
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.2))
+                    .frame(width: 40, height: 40)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 20))
+                    .foregroundColor(color)
+            }
+            
+            Text(title)
+                .font(.body)
+                .fontWeight(.medium)
+                .foregroundColor(.primary)
+            
+            Spacer()
+            
+            HStack(spacing: 5) {
+                Text(count)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(color)
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
     }
 }
 

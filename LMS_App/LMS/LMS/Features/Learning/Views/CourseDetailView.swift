@@ -5,6 +5,7 @@ struct CourseDetailView: View {
     @State private var selectedModule: Module?
     @State private var showingLesson = false
     @State private var showingAssignment = false
+    @State private var showingCertificate = false
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -42,23 +43,44 @@ struct CourseDetailView: View {
                     }
                 }
                 
-                // Start button
-                Button(action: {
-                    if let firstModule = course.modules.first {
-                        selectedModule = firstModule
-                        showingLesson = true
+                // Action buttons
+                VStack(spacing: 12) {
+                    // Certificate button (if course completed)
+                    if course.progress == 1.0 && course.hasCertificate {
+                        Button(action: { showingCertificate = true }) {
+                            HStack {
+                                Image(systemName: "seal.fill")
+                                Text("Посмотреть сертификат")
+                                    .fontWeight(.semibold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(15)
+                        }
                     }
-                }) {
-                    HStack {
-                        Image(systemName: "play.fill")
-                        Text(course.progress == 0 ? "Начать обучение" : "Продолжить обучение")
-                            .fontWeight(.semibold)
+                    
+                    // Start/Continue button
+                    Button(action: {
+                        if let firstModule = course.modules.first {
+                            selectedModule = firstModule
+                            showingLesson = true
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "play.fill")
+                            Text(course.progress == 0 ? "Начать обучение" : "Продолжить обучение")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(15)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(15)
+                    .disabled(course.progress == 1.0)
+                    .opacity(course.progress == 1.0 ? 0.6 : 1.0)
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 30)
@@ -90,6 +112,38 @@ struct CourseDetailView: View {
         .sheet(isPresented: $showingAssignment) {
             CourseAssignmentView(course: course)
         }
+        .sheet(isPresented: $showingCertificate) {
+            if let certificate = generateCertificate(),
+               let template = CertificateTemplate.mockTemplates.first {
+                CertificateView(certificate: certificate, template: template)
+            }
+        }
+    }
+    
+    private func generateCertificate() -> Certificate? {
+        guard course.progress == 1.0,
+              let user = MockAuthService.shared.currentUser else { return nil }
+        
+        return Certificate(
+            userId: UUID(),
+            courseId: course.id,
+            templateId: UUID(),
+            certificateNumber: Certificate.generateCertificateNumber(),
+            courseName: course.title,
+            courseDescription: course.description,
+            courseDuration: course.duration,
+            userName: "\(user.firstName) \(user.lastName)",
+            userEmail: user.email,
+            completedAt: Date(),
+            score: 92,
+            totalScore: 100,
+            percentage: 92,
+            isPassed: true,
+            issuedAt: Date(),
+            expiresAt: nil,
+            verificationCode: Certificate.generateVerificationCode(),
+            pdfUrl: nil
+        )
     }
 }
 
