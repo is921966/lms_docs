@@ -1,4 +1,6 @@
-# LMS Documentation - ЦУМ: Корпоративный университет
+# ЦУМ: Корпоративный университет
+
+[![iOS Deploy to TestFlight](https://github.com/is921966/lms_docs/actions/workflows/ios.yml/badge.svg)](https://github.com/is921966/lms_docs/actions/workflows/ios.yml)
 
 **Версия:** 10.2.0  
 **Статус проекта:** В активной разработке  
