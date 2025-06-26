@@ -69,13 +69,15 @@ platform :ios do
       clean: true,
       export_method: "app-store",
       output_directory: "./build",
-      output_name: "LMS.ipa",
-      skip_profile_detection: ENV['CI'] ? true : false,
-      export_options: ENV['CI'] ? {
+      output_name: "LMS",
+      skip_profile_detection: true,
+      export_options: {
+        method: "app-store",
+        signingStyle: "manual",
         provisioningProfiles: {
-          "ru.tsum.lms.igor" => "match AppStore ru.tsum.lms.igor"
+          "com.yourdomain.lms" => "LMS AppStore"
         }
-      } : nil
+      }
     )
     
     # Get changelog from git commits or environment variable
