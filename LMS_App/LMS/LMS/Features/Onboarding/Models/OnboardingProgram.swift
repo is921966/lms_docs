@@ -81,7 +81,7 @@ struct OnboardingStage: Identifiable, Codable {
     let duration: Int // in days
     var startDate: Date?
     var endDate: Date?
-    var status: StageStatus = .pending
+    var status: StageStatus = StageStatus.notStarted
     var completionPercentage: Double = 0
     var tasks: [OnboardingTask]
     
@@ -111,7 +111,7 @@ struct OnboardingTask: Identifiable, Codable {
     let id = UUID()
     let title: String
     let description: String
-    let type: TaskType
+    let type: OnboardingTaskType
     
     var isCompleted: Bool = false
     var completedAt: Date?
@@ -133,6 +133,7 @@ struct OnboardingTask: Identifiable, Codable {
         case .document: return "doc.fill"
         case .meeting: return "person.2.fill"
         case .task: return "checkmark.square.fill"
+        case .checklist: return "checklist"
         case .feedback: return "bubble.left.and.bubble.right.fill"
         }
     }
@@ -144,13 +145,14 @@ struct OnboardingTask: Identifiable, Codable {
         case .document: return .orange
         case .meeting: return .green
         case .task: return .gray
+        case .checklist: return .indigo
         case .feedback: return .pink
         }
     }
 }
 
 // MARK: - Task Type
-enum TaskType: String, Codable, CaseIterable {
+enum OnboardingTaskType: String, Codable, CaseIterable {
     case course = "Курс"
     case test = "Тест"
     case document = "Документ"

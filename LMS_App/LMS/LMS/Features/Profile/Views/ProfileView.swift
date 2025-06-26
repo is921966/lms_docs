@@ -191,7 +191,7 @@ struct StatsCardsView: View {
     var body: some View {
         HStack(spacing: 15) {
             if hasActiveOnboarding {
-                StatCard(
+                ProfileStatCard(
                     icon: "person.badge.clock",
                     value: "\(userOnboardingProgress)%",
                     title: "Онбординг",
@@ -199,14 +199,14 @@ struct StatsCardsView: View {
                 )
             }
             
-            StatCard(
+            ProfileStatCard(
                 icon: "book.fill",
                 value: "12",
                 title: "Курсов",
                 color: .blue
             )
             
-            StatCard(
+            ProfileStatCard(
                 icon: "rosette",
                 value: "4",
                 title: "Сертификатов",
@@ -214,7 +214,7 @@ struct StatsCardsView: View {
             )
             
             if !hasActiveOnboarding {
-                StatCard(
+                ProfileStatCard(
                     icon: "clock.fill",
                     value: "48ч",
                     title: "Обучения",
@@ -226,7 +226,8 @@ struct StatsCardsView: View {
     }
 }
 
-struct StatCard: View {
+// MARK: - Stat Card
+struct ProfileStatCard: View {
     let icon: String
     let value: String
     let title: String

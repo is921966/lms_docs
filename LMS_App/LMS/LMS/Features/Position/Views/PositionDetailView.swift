@@ -106,19 +106,19 @@ struct PositionDetailView: View {
     
     private var metricsSection: some View {
         HStack(spacing: 16) {
-            MetricCard(
+            PositionDetailMetricCard(
                 title: "Сотрудников",
                 value: "\(position.employeeCount)",
                 icon: "person.3.fill",
                 color: .blue
             )
-            MetricCard(
+            PositionDetailMetricCard(
                 title: "Компетенций",
                 value: "\(position.requiredCompetenciesCount)",
                 icon: "star.fill",
                 color: .orange
             )
-            MetricCard(
+            PositionDetailMetricCard(
                 title: "Ср. уровень",
                 value: String(format: "%.1f", position.averageRequiredLevel),
                 icon: "chart.bar.fill",
@@ -327,31 +327,6 @@ struct PositionDetailView: View {
 
 // MARK: - Supporting Views
 
-struct MetricCard: View {
-    let title: String
-    let value: String
-    let icon: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(color)
-            Text(value)
-                .font(.title3)
-                .fontWeight(.semibold)
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
-    }
-}
-
 struct CompetencyRequirementRow: View {
     let requirement: CompetencyRequirement
     let isCritical: Bool
@@ -472,6 +447,33 @@ struct LevelVisualization: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Position Detail Metric Card
+
+struct PositionDetailMetricCard: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(color)
+            Text(value)
+                .font(.title3)
+                .fontWeight(.semibold)
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
     }
 }
 

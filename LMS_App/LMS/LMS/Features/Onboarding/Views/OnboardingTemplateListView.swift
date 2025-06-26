@@ -199,7 +199,7 @@ struct TemplateCardView: View {
     }
     
     private func totalTasks(in template: OnboardingTemplate) -> Int {
-        template.stages.reduce(0) { $0 + $1.taskTemplates.count }
+        template.stages.reduce(0) { $0 + $1.tasks.count }
     }
     
     private func formatDate(_ date: Date) -> String {
@@ -377,7 +377,7 @@ struct TemplateHeaderView: View {
     }
     
     private func totalTasks(in template: OnboardingTemplate) -> Int {
-        template.stages.reduce(0) { $0 + $1.taskTemplates.count }
+        template.stages.reduce(0) { $0 + $1.tasks.count }
     }
 }
 
@@ -409,7 +409,7 @@ struct TemplateStageCard: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
-                            Label("\(stage.taskTemplates.count) задач", systemImage: "checkmark.square")
+                            Label("\(stage.tasks.count) задач", systemImage: "checkmark.square")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -430,7 +430,7 @@ struct TemplateStageCard: View {
                 Divider()
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    ForEach(stage.taskTemplates) { task in
+                    ForEach(stage.tasks) { task in
                         HStack(spacing: 12) {
                             Image(systemName: getTaskIcon(task.type))
                                 .font(.system(size: 16))
@@ -450,11 +450,9 @@ struct TemplateStageCard: View {
                             
                             Spacer()
                             
-                            if let duration = task.estimatedDuration {
-                                Text("\(duration / 60) ч.")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
+                            Text(task.assigneeType.rawValue)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                         .padding(.vertical, 4)
                     }
@@ -469,24 +467,25 @@ struct TemplateStageCard: View {
         .padding(.horizontal)
     }
     
-    private func getTaskIcon(_ type: TaskType) -> String {
+    private func getTaskIcon(_ type: OnboardingTaskType) -> String {
         switch type {
         case .course: return "book.closed.fill"
         case .test: return "doc.text.fill"
         case .document: return "doc.fill"
         case .meeting: return "person.2.fill"
         case .task: return "checkmark.square.fill"
-        case .feedback: return "bubble.left.and.bubble.right.fill"
+        case .checklist: return "checklist"        case .feedback: return "bubble.left.and.bubble.right.fill"
         }
     }
     
-    private func getTaskColor(_ type: TaskType) -> Color {
+    private func getTaskColor(_ type: OnboardingTaskType) -> Color {
         switch type {
         case .course: return .blue
         case .test: return .purple
         case .document: return .orange
         case .meeting: return .green
         case .task: return .gray
+        case .checklist: return .indigo
         case .feedback: return .pink
         }
     }

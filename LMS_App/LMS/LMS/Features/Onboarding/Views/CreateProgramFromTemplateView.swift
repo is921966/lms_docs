@@ -8,23 +8,45 @@
 import SwiftUI
 
 struct CreateProgramFromTemplateView: View {
+    @Environment(\.dismiss) var dismiss
+    
     let template: OnboardingTemplate
-    @Environment(\.dismiss) private var dismiss
+    
+    // Form State
+    @State private var selectedEmployee: UserResponse?
+    @State private var selectedManager: UserResponse?
+    @State private var startDate = Date()
+    @State private var notes = ""
+    
+    // UI State
+    @State private var showingEmployeeSearch = false
+    @State private var showingManagerSearch = false
+    @State private var isCreating = false
+    @State private var searchText = ""
+    
+    // Mock data
+    @State private var employees: [UserResponse] = []
+    @State private var managers: [UserResponse] = []
+    
+    private var filteredEmployees: [UserResponse] {
+        if searchText.isEmpty {
+            return employees
+        } else {
+            return employees.filter { employee in
+                employee.firstName.localizedCaseInsensitiveContains(searchText) ||
+                employee.lastName.localizedCaseInsensitiveContains(searchText) ||
+                employee.email.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
     
     // Employee selection
-    @State private var selectedEmployee: User?
-    @State private var searchText = ""
     @State private var showingEmployeeSelection = false
     
     // Program details
     @State private var programTitle = ""
     @State private var programDescription = ""
-    @State private var startDate = Date()
     @State private var targetEndDate = Date()
-    
-    // Manager selection
-    @State private var selectedManager: User?
-    @State private var showingManagerSelection = false
     
     // Customization
     @State private var customizedStages: [OnboardingTemplateStage] = []
@@ -98,7 +120,7 @@ struct CreateProgramFromTemplateView: View {
                 
                 // Manager Section
                 Section(header: Text("Руководитель")) {
-                    Button(action: { showingManagerSelection = true }) {
+                    Button(action: { showingManagerSearch = true }) {
                         HStack {
                             if let manager = selectedManager {
                                 HStack {
@@ -140,14 +162,14 @@ struct CreateProgramFromTemplateView: View {
                         }) {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("Этап \(stage.orderIndex): \(stage.title)")
+                                    Text("Этап \(stage.order): \(stage.title)")
                                         .font(.subheadline)
                                         .fontWeight(.medium)
                                     
                                     HStack {
                                         Label("\(stage.duration) дн.", systemImage: "calendar")
                                         Text("•")
-                                        Label("\(stage.taskTemplates.count) задач", systemImage: "checkmark.square")
+                                        Label("\(stage.tasks.count) задач", systemImage: "checkmark.square")
                                     }
                                     .font(.caption)
                                     .foregroundColor(.secondary)
@@ -179,7 +201,7 @@ struct CreateProgramFromTemplateView: View {
             .sheet(isPresented: $showingEmployeeSelection) {
                 EmployeeSelectionView(selectedEmployee: $selectedEmployee)
             }
-            .sheet(isPresented: $showingManagerSelection) {
+            .sheet(isPresented: $showingManagerSearch) {
                 ManagerSelectionView(selectedManager: $selectedManager)
             }
             .alert("Программа создана", isPresented: $showingSuccess) {
@@ -217,35 +239,37 @@ struct CreateProgramFromTemplateView: View {
               let manager = selectedManager else { return }
         
         let newProgram = OnboardingMockService.shared.createProgram(
-            from: template,
+            fromTemplate: template,
             employee: employee,
             manager: manager,
-            title: programTitle,
-            description: programDescription,
-            startDate: startDate,
-            targetEndDate: targetEndDate,
-            customizedStages: customizedStages
+            startDate: startDate
         )
         
         showingSuccess = true
+    }
+    
+    private func loadEmployees() {
+        employees = MockAuthService.shared.getUsers().filter { user in
+            !user.roles.contains("admin") && !user.roles.contains("manager")
+        }
     }
 }
 
 // MARK: - Employee Selection View
 struct EmployeeSelectionView: View {
-    @Binding var selectedEmployee: User?
+    @Binding var selectedEmployee: UserResponse?
     @State private var searchText = ""
-    @State private var employees: [User] = []
+    @State private var employees: [UserResponse] = []
     @Environment(\.dismiss) private var dismiss
     
-    var filteredEmployees: [User] {
+    var filteredEmployees: [UserResponse] {
         if searchText.isEmpty {
             return employees
         }
         return employees.filter { employee in
             let fullName = "\(employee.firstName) \(employee.lastName)"
             return fullName.localizedCaseInsensitiveContains(searchText) ||
-                   (employee.email?.localizedCaseInsensitiveContains(searchText) ?? false)
+                   employee.email.localizedCaseInsensitiveContains(searchText)
         }
     }
     
@@ -311,28 +335,15 @@ struct EmployeeSelectionView: View {
     
     private func loadEmployees() {
         employees = MockAuthService.shared.getUsers().filter { user in
-            user.role != "admin" && user.role != "manager"
-        }
-        filterEmployees()
-    }
-    
-    private func filterEmployees() {
-        if searchText.isEmpty {
-            filteredEmployees = employees
-        } else {
-            filteredEmployees = employees.filter { employee in
-                employee.firstName.localizedCaseInsensitiveContains(searchText) ||
-                employee.lastName.localizedCaseInsensitiveContains(searchText) ||
-                employee.email.localizedCaseInsensitiveContains(searchText)
-            }
+            !user.roles.contains("admin") && !user.roles.contains("manager")
         }
     }
 }
 
 // MARK: - Manager Selection View
 struct ManagerSelectionView: View {
-    @Binding var selectedManager: User?
-    @State private var managers: [User] = []
+    @Binding var selectedManager: UserResponse?
+    @State private var managers: [UserResponse] = []
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -353,11 +364,9 @@ struct ManagerSelectionView: View {
                                 .fontWeight(.medium)
                                 .foregroundColor(.primary)
                             
-                            if let email = manager.email {
-                                Text(email)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
+                            Text(manager.email)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                         
                         Spacer()
@@ -386,8 +395,9 @@ struct ManagerSelectionView: View {
     }
     
     private func loadManagers() {
-        managers = MockAuthService.shared.getUsers().filter { user in
-            user.role == "manager" || user.role == "admin"
+        let allUsers = MockAuthService.shared.getUsers()
+        managers = allUsers.filter { user in
+            user.roles.contains("manager") || user.roles.contains("admin")
         }
     }
 }
@@ -423,8 +433,8 @@ struct CustomizeStageView: View {
                 Stepper("Длительность: \(stageDuration) дн.", value: $stageDuration, in: 1...90)
             }
             
-            Section(header: Text("Задачи этапа (\(customizedStage.taskTemplates.count))")) {
-                ForEach(customizedStage.taskTemplates) { task in
+            Section(header: Text("Задачи этапа (\(customizedStage.tasks.count))")) {
+                ForEach(customizedStage.tasks) { task in
                     HStack {
                         Image(systemName: getTaskIcon(task.type))
                             .foregroundColor(getTaskColor(task.type))
@@ -460,24 +470,26 @@ struct CustomizeStageView: View {
         }
     }
     
-    private func getTaskIcon(_ type: TaskType) -> String {
+    private func getTaskIcon(_ type: OnboardingTaskType) -> String {
         switch type {
         case .course: return "book.closed.fill"
         case .test: return "doc.text.fill"
         case .document: return "doc.fill"
         case .meeting: return "person.2.fill"
         case .task: return "checkmark.square.fill"
+        case .checklist: return "checklist"
         case .feedback: return "bubble.left.and.bubble.right.fill"
         }
     }
     
-    private func getTaskColor(_ type: TaskType) -> Color {
+    private func getTaskColor(_ type: OnboardingTaskType) -> Color {
         switch type {
         case .course: return .blue
         case .test: return .purple
         case .document: return .orange
         case .meeting: return .green
         case .task: return .gray
+        case .checklist: return .indigo        case .checklist: return .indigo
         case .feedback: return .pink
         }
     }

@@ -254,7 +254,7 @@ struct TaskCardView: View {
         case .document: return "doc"
         case .meeting: return "person.2"
         case .task: return "checkmark.square"
-        case .feedback: return "bubble.left.and.bubble.right"
+        case .checklist: return "checklist"        case .feedback: return "bubble.left.and.bubble.right"
         }
     }
     

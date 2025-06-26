@@ -114,11 +114,19 @@ struct OnboardingDashboard: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: CreateProgramFromTemplateView()) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
-                            .foregroundColor(.blue)
+                    NavigationLink(destination: OnboardingTemplateListView()) {
+                        VStack(spacing: 8) {
+                            Image(systemName: "plus.rectangle.on.rectangle")
+                                .font(.title2)
+                            Text("Создать из шаблона")
+                                .font(.subheadline)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 80)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
                     }
+                    .buttonStyle(PlainButtonStyle())
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -261,29 +269,57 @@ struct OnboardingStatsView: View {
     }
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             StatCard(
-                title: "Активные",
-                value: "\(activePrograms)",
-                icon: "person.badge.clock",
+                icon: "person.3.fill",
+                value: "\(programs.count)",
+                title: "Всего программ",
                 color: .blue
             )
             
             StatCard(
+                icon: "person.fill.checkmark",
+                value: "\(programs.filter { $0.status == .completed }.count)",
                 title: "Завершено",
-                value: String(format: "%.0f%%", completionRate),
-                icon: "checkmark.circle.fill",
                 color: .green
             )
             
             StatCard(
-                title: "Прогресс",
-                value: String(format: "%.0f%%", averageProgress),
-                icon: "chart.line.uptrend.xyaxis",
+                icon: "clock.fill",
+                value: "\(programs.filter { $0.status == .inProgress }.count)",
+                title: "В процессе",
                 color: .orange
             )
         }
         .padding()
+    }
+}
+
+// MARK: - Stat Card
+struct StatCard: View {
+    let icon: String
+    let value: String
+    let title: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(color)
+            
+            Text(value)
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
     }
 }
 

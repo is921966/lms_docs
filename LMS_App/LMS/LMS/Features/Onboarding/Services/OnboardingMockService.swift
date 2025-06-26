@@ -237,16 +237,85 @@ class OnboardingMockService: ObservableObject {
         }
     }
     
-    private func getTaskType(from templateType: OnboardingTaskType) -> TaskType {
-        switch templateType {
-        case .course: return .course
-        case .test: return .test
-        case .document: return .document
-        case .meeting: return .meeting
-        case .task: return .task
-        case .checklist: return .task
-        case .feedback: return .feedback
+    
+    func getAllTemplates() -> [OnboardingTemplate] {
+        return templates
+    }
+    
+    // MARK: - Create Program
+    
+    func createProgram(fromTemplate template: OnboardingTemplate, 
+                      employee: UserResponse,
+                      manager: UserResponse,
+                      startDate: Date) -> OnboardingProgram {
+        // Create stages from template
+        var programStages: [OnboardingStage] = []
+        var currentStageStartDate = startDate
+        
+        for (index, templateStage) in template.stages.enumerated() {
+            // Create tasks from template
+            let tasks = templateStage.tasks.map { taskTemplate in
+                OnboardingTask(
+                    title: taskTemplate.title,
+                    description: taskTemplate.description,
+                    type: taskTemplate.type,
+                    isCompleted: false,
+                    completedAt: nil,
+                    completedBy: nil,
+                    courseId: taskTemplate.courseId,
+                    testId: taskTemplate.testId,
+                    documentUrl: taskTemplate.documentUrl,
+                    meetingId: nil,
+                    dueDate: nil,
+                    isRequired: !taskTemplate.requiredDocuments.isEmpty
+                )
+            }
+            
+            // Calculate stage dates
+            let stageDuration = templateStage.duration
+            let stageEndDate = Calendar.current.date(byAdding: .day, value: stageDuration, to: currentStageStartDate)!
+            
+            let stage = OnboardingStage(
+                id: UUID(),
+                templateStageId: templateStage.id,
+                title: templateStage.title,
+                description: templateStage.description,
+                order: index + 1,
+                duration: stageDuration,
+                startDate: currentStageStartDate,
+                endDate: stageEndDate,
+                status: index == 0 ? .inProgress : .notStarted,
+                completionPercentage: 0,
+                tasks: tasks
+            )
+            
+            programStages.append(stage)
+            currentStageStartDate = stageEndDate
         }
+        
+        // Create program
+        let program = OnboardingProgram(
+            templateId: template.id,
+            employeeId: UUID(uuidString: employee.id) ?? UUID(),
+            employeeName: "\(employee.firstName) \(employee.lastName)",
+            employeePosition: employee.position ?? "Сотрудник",
+            employeeDepartment: employee.department ?? "Не указан",
+            managerId: UUID(uuidString: manager.id) ?? UUID(),
+            managerName: "\(manager.firstName) \(manager.lastName)",
+            title: template.title,
+            description: template.description,
+            startDate: startDate,
+            targetEndDate: currentStageStartDate,
+            actualEndDate: nil,
+            stages: programStages,
+            totalDuration: template.duration,
+            status: .inProgress
+        )
+        
+        // Add to programs list
+        programs.append(program)
+        
+        return program
     }
 }
 
