@@ -156,21 +156,21 @@ struct CertificateStatsView: View {
     
     var body: some View {
         HStack(spacing: 20) {
-            StatCard(
+            CertificateStatCard(
                 title: "Всего",
                 value: "\(certificates.count)",
                 icon: "doc.text.fill",
                 color: .blue
             )
             
-            StatCard(
+            CertificateStatCard(
                 title: "Активных",
                 value: "\(activeCertificates)",
                 icon: "checkmark.seal.fill",
                 color: .green
             )
             
-            StatCard(
+            CertificateStatCard(
                 title: "Средний балл",
                 value: String(format: "%.0f%%", averageScore),
                 icon: "percent",
@@ -181,8 +181,8 @@ struct CertificateStatsView: View {
     }
 }
 
-// MARK: - Stat Card
-struct StatCard: View {
+// MARK: - Certificate Stat Card
+struct CertificateStatCard: View {
     let title: String
     let value: String
     let icon: String
