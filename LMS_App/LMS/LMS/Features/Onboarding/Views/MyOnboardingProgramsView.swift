@@ -13,7 +13,8 @@ struct MyOnboardingProgramsView: View {
     @State private var selectedProgram: OnboardingProgram?
     
     var userPrograms: [OnboardingProgram] {
-        guard let userId = authService.currentUser?.id else { return [] }
+        guard let userIdString = authService.currentUser?.id,
+              let userId = UUID(uuidString: userIdString) else { return [] }
         return onboardingService.getProgramsForUser(userId)
     }
     

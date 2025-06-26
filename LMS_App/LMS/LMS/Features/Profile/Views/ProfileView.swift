@@ -174,7 +174,8 @@ struct StatsCardsView: View {
     @StateObject private var authService = MockAuthService.shared
     
     var userOnboardingProgress: Int {
-        guard let userId = authService.currentUser?.id else { return 0 }
+        guard let userIdString = authService.currentUser?.id,
+              let userId = UUID(uuidString: userIdString) else { return 0 }
         let programs = onboardingService.getProgramsForUser(userId).filter { $0.status == .inProgress }
         guard !programs.isEmpty else { return 0 }
         let totalProgress = programs.reduce(0) { $0 + $1.overallProgress }
@@ -182,7 +183,8 @@ struct StatsCardsView: View {
     }
     
     var hasActiveOnboarding: Bool {
-        guard let userId = authService.currentUser?.id else { return false }
+        guard let userIdString = authService.currentUser?.id,
+              let userId = UUID(uuidString: userIdString) else { return false }
         return !onboardingService.getProgramsForUser(userId).filter { $0.status == .inProgress }.isEmpty
     }
     
@@ -258,7 +260,8 @@ struct QuickActionsView: View {
     @StateObject private var authService = MockAuthService.shared
     
     var userOnboardingPrograms: [OnboardingProgram] {
-        guard let userId = authService.currentUser?.id else { return [] }
+        guard let userIdString = authService.currentUser?.id,
+              let userId = UUID(uuidString: userIdString) else { return [] }
         return onboardingService.getProgramsForUser(userId)
     }
     

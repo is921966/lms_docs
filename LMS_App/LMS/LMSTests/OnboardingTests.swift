@@ -1,0 +1,293 @@
+//
+//  OnboardingTests.swift
+//  LMSTests
+//
+//  Created on 27/01/2025.
+//
+
+import XCTest
+@testable import LMS
+
+final class OnboardingTests: XCTestCase {
+    
+    var onboardingService: OnboardingMockService!
+    
+    override func setUp() {
+        super.setUp()
+        onboardingService = OnboardingMockService.shared
+        onboardingService.resetData()
+    }
+    
+    override func tearDown() {
+        onboardingService = nil
+        super.tearDown()
+    }
+    
+    // MARK: - OnboardingProgram Tests
+    
+    func testOnboardingProgramCreation() {
+        // Given
+        let program = OnboardingProgram(
+            templateId: UUID(),
+            employeeId: UUID(),
+            employeeName: "Иван Петров",
+            employeePosition: "Продавец",
+            employeeDepartment: "Отдел продаж",
+            managerId: UUID(),
+            managerName: "Анна Смирнова",
+            title: "Адаптация продавца",
+            description: "Программа для новых продавцов",
+            startDate: Date(),
+            targetEndDate: Date().addingTimeInterval(30*24*60*60),
+            stages: [],
+            totalDuration: 30,
+            status: .notStarted
+        )
+        
+        // Then
+        XCTAssertNotNil(program)
+        XCTAssertEqual(program.employeeName, "Иван Петров")
+        XCTAssertEqual(program.status, .notStarted)
+        XCTAssertEqual(program.overallProgress, 0.0)
+    }
+    
+    func testProgramProgressCalculation() {
+        // Given
+        var stages = [
+            OnboardingStage(
+                orderIndex: 1,
+                title: "Этап 1",
+                description: "Описание",
+                duration: 5,
+                tasks: [
+                    OnboardingTask(title: "Задача 1", description: "", type: .task, isCompleted: true),
+                    OnboardingTask(title: "Задача 2", description: "", type: .task, isCompleted: true)
+                ],
+                status: .completed
+            ),
+            OnboardingStage(
+                orderIndex: 2,
+                title: "Этап 2",
+                description: "Описание",
+                duration: 5,
+                tasks: [
+                    OnboardingTask(title: "Задача 3", description: "", type: .task, isCompleted: true),
+                    OnboardingTask(title: "Задача 4", description: "", type: .task, isCompleted: false)
+                ],
+                status: .inProgress
+            )
+        ]
+        
+        let program = OnboardingProgram(
+            templateId: UUID(),
+            employeeId: UUID(),
+            employeeName: "Тест",
+            employeePosition: "Тест",
+            employeeDepartment: "Тест",
+            managerId: UUID(),
+            managerName: "Тест",
+            title: "Тест",
+            description: "Тест",
+            startDate: Date(),
+            targetEndDate: Date().addingTimeInterval(10*24*60*60),
+            stages: stages,
+            totalDuration: 10,
+            status: .inProgress
+        )
+        
+        // Then
+        XCTAssertEqual(program.completedStages, 1)
+        XCTAssertEqual(program.overallProgress, 0.75) // 3 из 4 задач выполнено
+    }
+    
+    func testProgramOverdueStatus() {
+        // Given
+        let program = OnboardingProgram(
+            templateId: UUID(),
+            employeeId: UUID(),
+            employeeName: "Тест",
+            employeePosition: "Тест",
+            employeeDepartment: "Тест",
+            managerId: UUID(),
+            managerName: "Тест",
+            title: "Тест",
+            description: "Тест",
+            startDate: Date().addingTimeInterval(-20*24*60*60),
+            targetEndDate: Date().addingTimeInterval(-5*24*60*60), // 5 дней назад
+            stages: [],
+            totalDuration: 15,
+            status: .inProgress
+        )
+        
+        // Then
+        XCTAssertTrue(program.isOverdue)
+        XCTAssertLessThan(program.daysRemaining, 0)
+    }
+    
+    // MARK: - OnboardingStage Tests
+    
+    func testStageProgressCalculation() {
+        // Given
+        let tasks = [
+            OnboardingTask(title: "Задача 1", description: "", type: .task, isCompleted: true),
+            OnboardingTask(title: "Задача 2", description: "", type: .task, isCompleted: true),
+            OnboardingTask(title: "Задача 3", description: "", type: .task, isCompleted: false),
+            OnboardingTask(title: "Задача 4", description: "", type: .task, isCompleted: false)
+        ]
+        
+        let stage = OnboardingStage(
+            orderIndex: 1,
+            title: "Тестовый этап",
+            description: "Описание",
+            duration: 5,
+            tasks: tasks,
+            status: .inProgress
+        )
+        
+        // Then
+        XCTAssertEqual(stage.progress, 0.5) // 2 из 4 задач выполнено
+        XCTAssertEqual(stage.completedTasks, 2)
+    }
+    
+    // MARK: - OnboardingTask Tests
+    
+    func testTaskIconAndColor() {
+        // Given
+        let courseTask = OnboardingTask(title: "Курс", description: "", type: .course)
+        let testTask = OnboardingTask(title: "Тест", description: "", type: .test)
+        let meetingTask = OnboardingTask(title: "Встреча", description: "", type: .meeting)
+        
+        // Then
+        XCTAssertEqual(courseTask.icon, "book.closed.fill")
+        XCTAssertEqual(testTask.icon, "doc.text.fill")
+        XCTAssertEqual(meetingTask.icon, "person.2.fill")
+    }
+    
+    // MARK: - OnboardingService Tests
+    
+    func testCreateProgramFromTemplate() {
+        // Given
+        let template = OnboardingTemplate.mockTemplates.first!
+        let employeeId = UUID()
+        let managerId = UUID()
+        
+        // When
+        let program = onboardingService.createProgramFromTemplate(
+            template: template,
+            employeeId: employeeId,
+            employeeName: "Новый сотрудник",
+            employeePosition: "Должность",
+            employeeDepartment: "Отдел",
+            managerId: managerId,
+            managerName: "Руководитель",
+            startDate: Date()
+        )
+        
+        // Then
+        XCTAssertNotNil(program)
+        XCTAssertEqual(program.templateId, template.id)
+        XCTAssertEqual(program.employeeId, employeeId)
+        XCTAssertEqual(program.stages.count, template.stages.count)
+        XCTAssertTrue(onboardingService.programs.contains { $0.id == program.id })
+    }
+    
+    func testGetProgramsForUser() {
+        // Given
+        let userId = UUID()
+        let program1 = onboardingService.createProgramFromTemplate(
+            template: OnboardingTemplate.mockTemplates.first!,
+            employeeId: userId,
+            employeeName: "Сотрудник",
+            employeePosition: "Должность",
+            employeeDepartment: "Отдел",
+            managerId: UUID(),
+            managerName: "Руководитель",
+            startDate: Date()
+        )
+        
+        // When
+        let userPrograms = onboardingService.getProgramsForUser(userId)
+        
+        // Then
+        XCTAssertEqual(userPrograms.count, 1)
+        XCTAssertEqual(userPrograms.first?.id, program1.id)
+    }
+    
+    func testUpdateTaskStatus() {
+        // Given
+        let program = onboardingService.programs.first!
+        let stage = program.stages.first!
+        let task = stage.tasks.first!
+        
+        // When
+        onboardingService.updateTaskStatus(
+            programId: program.id,
+            stageId: stage.id,
+            taskId: task.id,
+            isCompleted: true
+        )
+        
+        // Then
+        let updatedProgram = onboardingService.programs.first { $0.id == program.id }
+        let updatedTask = updatedProgram?.stages.first?.tasks.first
+        XCTAssertTrue(updatedTask?.isCompleted ?? false)
+    }
+    
+    // MARK: - Template Tests
+    
+    func testTemplateCreation() {
+        // Given
+        let template = OnboardingTemplate(
+            title: "Тестовый шаблон",
+            description: "Описание",
+            targetPosition: "Должность",
+            department: "Отдел",
+            stages: [],
+            totalDuration: 30,
+            icon: "person.fill",
+            color: .blue
+        )
+        
+        // Then
+        XCTAssertNotNil(template)
+        XCTAssertEqual(template.title, "Тестовый шаблон")
+        XCTAssertEqual(template.totalDuration, 30)
+    }
+    
+    func testMockTemplatesExist() {
+        // Given
+        let templates = OnboardingTemplate.mockTemplates
+        
+        // Then
+        XCTAssertGreaterThan(templates.count, 0)
+        XCTAssertTrue(templates.allSatisfy { !$0.stages.isEmpty })
+    }
+}
+
+// MARK: - UI Tests
+final class OnboardingUITests: XCTestCase {
+    
+    func testOnboardingDashboardFiltering() {
+        // Given
+        let dashboard = OnboardingDashboard()
+        let allFilter = OnboardingDashboard.FilterType.all
+        let inProgressFilter = OnboardingDashboard.FilterType.inProgress
+        
+        // Then
+        XCTAssertNotNil(dashboard)
+        XCTAssertEqual(allFilter.rawValue, "Все")
+        XCTAssertEqual(inProgressFilter.rawValue, "В процессе")
+    }
+    
+    func testStatusBadgeColors() {
+        // Given
+        let notStartedStatus = OnboardingStatus.notStarted
+        let inProgressStatus = OnboardingStatus.inProgress
+        let completedStatus = OnboardingStatus.completed
+        
+        // Then
+        XCTAssertEqual(notStartedStatus.rawValue, "Не начат")
+        XCTAssertEqual(inProgressStatus.rawValue, "В процессе")
+        XCTAssertEqual(completedStatus.rawValue, "Завершен")
+    }
+} 
