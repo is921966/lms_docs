@@ -21,6 +21,15 @@ class OnboardingMockService: ObservableObject {
     private func loadInitialData() {
         programs = OnboardingProgram.createMockPrograms()
         templates = OnboardingTemplate.mockTemplates
+        
+        // Assign one program to the current user for testing
+        if let currentUser = MockAuthService.shared.currentUser,
+           programs.count > 0 {
+            programs[0].employeeId = currentUser.id
+            programs[0].employeeName = "\(currentUser.firstName) \(currentUser.lastName)"
+            programs[0].employeePosition = currentUser.position ?? "Сотрудник"
+            programs[0].employeeDepartment = currentUser.department ?? "Не указан"
+        }
     }
     
     // MARK: - Programs

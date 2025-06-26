@@ -12,10 +12,10 @@ import SwiftUI
 struct OnboardingProgram: Identifiable, Codable {
     let id = UUID()
     let templateId: UUID
-    let employeeId: UUID
-    let employeeName: String
-    let employeePosition: String
-    let employeeDepartment: String
+    var employeeId: UUID
+    var employeeName: String
+    var employeePosition: String
+    var employeeDepartment: String
     let managerId: UUID
     let managerName: String
     

@@ -13,6 +13,7 @@ struct OnboardingDashboard: View {
     @State private var searchText = ""
     @State private var showingNewProgram = false
     @State private var showingTemplates = false
+    @State private var selectedProgram: OnboardingProgram?
     
     enum FilterType: String, CaseIterable {
         case all = "Все"
@@ -106,20 +107,22 @@ struct OnboardingDashboard: View {
                     }
                 }
             }
-            .navigationTitle("Онбординг")
+            .navigationTitle("Программы адаптации")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button(action: { showingNewProgram = true }) {
-                            Label("Новая программа", systemImage: "plus.circle")
-                        }
-                        
-                        Button(action: { showingTemplates = true }) {
-                            Label("Шаблоны", systemImage: "doc.text")
-                        }
-                    } label: {
-                        Image(systemName: "plus")
+                    NavigationLink(destination: CreateProgramFromTemplateView()) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
+                            .foregroundColor(.blue)
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: OnboardingReportsView()) {
+                        Image(systemName: "chart.bar.doc.horizontal")
+                            .font(.title3)
+                            .foregroundColor(.purple)
                     }
                 }
             }
@@ -200,6 +203,11 @@ struct OnboardingDashboard: View {
             }
             .sheet(isPresented: $showingTemplates) {
                 OnboardingTemplateListView()
+            }
+            .sheet(item: $selectedProgram) { program in
+                NavigationView {
+                    OnboardingProgramView(program: program)
+                }
             }
         }
     }

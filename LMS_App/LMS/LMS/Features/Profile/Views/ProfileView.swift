@@ -170,8 +170,33 @@ struct ProfileHeaderView: View {
 
 // MARK: - Stats Cards
 struct StatsCardsView: View {
+    @StateObject private var onboardingService = OnboardingMockService.shared
+    @StateObject private var authService = MockAuthService.shared
+    
+    var userOnboardingProgress: Int {
+        guard let userId = authService.currentUser?.id else { return 0 }
+        let programs = onboardingService.getProgramsForUser(userId).filter { $0.status == .inProgress }
+        guard !programs.isEmpty else { return 0 }
+        let totalProgress = programs.reduce(0) { $0 + $1.overallProgress }
+        return Int((totalProgress / Double(programs.count)) * 100)
+    }
+    
+    var hasActiveOnboarding: Bool {
+        guard let userId = authService.currentUser?.id else { return false }
+        return !onboardingService.getProgramsForUser(userId).filter { $0.status == .inProgress }.isEmpty
+    }
+    
     var body: some View {
         HStack(spacing: 15) {
+            if hasActiveOnboarding {
+                StatCard(
+                    icon: "person.badge.clock",
+                    value: "\(userOnboardingProgress)%",
+                    title: "Онбординг",
+                    color: .purple
+                )
+            }
+            
             StatCard(
                 icon: "book.fill",
                 value: "12",
@@ -186,12 +211,14 @@ struct StatsCardsView: View {
                 color: .green
             )
             
-            StatCard(
-                icon: "clock.fill",
-                value: "48ч",
-                title: "Обучения",
-                color: .orange
-            )
+            if !hasActiveOnboarding {
+                StatCard(
+                    icon: "clock.fill",
+                    value: "48ч",
+                    title: "Обучения",
+                    color: .orange
+                )
+            }
         }
         .padding(.horizontal)
     }
@@ -227,8 +254,32 @@ struct StatCard: View {
 
 // MARK: - Quick Actions
 struct QuickActionsView: View {
+    @StateObject private var onboardingService = OnboardingMockService.shared
+    @StateObject private var authService = MockAuthService.shared
+    
+    var userOnboardingPrograms: [OnboardingProgram] {
+        guard let userId = authService.currentUser?.id else { return [] }
+        return onboardingService.getProgramsForUser(userId)
+    }
+    
+    var activeOnboardingCount: Int {
+        userOnboardingPrograms.filter { $0.status == .inProgress }.count
+    }
+    
     var body: some View {
         VStack(spacing: 12) {
+            // Onboarding programs (if any)
+            if !userOnboardingPrograms.isEmpty {
+                NavigationLink(destination: MyOnboardingProgramsView()) {
+                    QuickActionRow(
+                        icon: "person.badge.clock",
+                        title: "Программа адаптации",
+                        count: "\(activeOnboardingCount)",
+                        color: .purple
+                    )
+                }
+            }
+            
             NavigationLink(destination: CertificateListView()) {
                 QuickActionRow(
                     icon: "seal.fill",
