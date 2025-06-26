@@ -174,50 +174,203 @@ struct MockPendingApprovalView: View {
 
 // MARK: - Main Tab View
 struct MainTabView: View {
-    @StateObject private var authService = MockAuthService.shared
+    @StateObject private var authViewModel = AuthViewModel()
     
     var body: some View {
         TabView {
-            // Learning tab
-            NavigationView {
-                LearningListView()
+            // Main screen
+            NavigationStack {
+                MainDashboardView()
             }
             .tabItem {
-                Image(systemName: "book.fill")
-                Text("Обучение")
+                Label("Главная", systemImage: "house")
             }
             
-            // Competencies tab
-            NavigationView {
+            // Learning
+            NavigationStack {
+                CourseListView()
+            }
+            .tabItem {
+                Label("Обучение", systemImage: "book")
+            }
+            
+            // Competencies
+            NavigationStack {
                 CompetencyListView()
-                    .environmentObject(AuthViewModel(authService: authService))
             }
             .tabItem {
-                Image(systemName: "star.circle.fill")
-                Text("Компетенции")
+                Label("Компетенции", systemImage: "star")
             }
             
-            // Profile tab
-            NavigationView {
+            // Tests
+            NavigationStack {
+                TestListView()
+            }
+            .tabItem {
+                Label("Тесты", systemImage: "doc.text.magnifyingglass")
+            }
+            
+            // Positions
+            NavigationStack {
+                PositionListView()
+            }
+            .tabItem {
+                Label("Должности", systemImage: "briefcase")
+            }
+            
+            // Profile
+            NavigationStack {
                 ProfileView()
             }
             .tabItem {
-                Image(systemName: "person.fill")
-                Text("Профиль")
-            }
-            
-            // More tab
-            NavigationView {
-                MoreView()
-            }
-            .tabItem {
-                Image(systemName: "ellipsis")
-                Text("Ещё")
+                Label("Профиль", systemImage: "person.circle")
             }
         }
+        .environmentObject(authViewModel)
     }
 }
 
-#Preview {
-    ContentView()
+// MARK: - Main Dashboard View
+struct MainDashboardView: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Добро пожаловать!")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    
+                    if let userName = authViewModel.currentUser?.firstName {
+                        Text("Привет, \(userName)")
+                            .font(.title2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+                
+                // Quick stats
+                HStack(spacing: 16) {
+                    DashboardCard(
+                        title: "Курсов",
+                        value: "12",
+                        icon: "book.fill",
+                        color: .blue
+                    )
+                    
+                    DashboardCard(
+                        title: "Компетенций",
+                        value: "8",
+                        icon: "star.fill",
+                        color: .orange
+                    )
+                }
+                .padding(.horizontal)
+                
+                // Recent activities
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Последняя активность")
+                        .font(.headline)
+                        .padding(.horizontal)
+                    
+                    VStack(spacing: 12) {
+                        ActivityRow(
+                            title: "Завершен курс iOS разработка",
+                            time: "2 часа назад",
+                            icon: "checkmark.circle.fill",
+                            color: .green
+                        )
+                        
+                        ActivityRow(
+                            title: "Новая компетенция: SwiftUI",
+                            time: "Вчера",
+                            icon: "star.fill",
+                            color: .orange
+                        )
+                        
+                        ActivityRow(
+                            title: "Начат курс по архитектуре",
+                            time: "3 дня назад",
+                            icon: "play.circle.fill",
+                            color: .blue
+                        )
+                    }
+                    .padding(.horizontal)
+                }
+                
+                Spacer(minLength: 100)
+            }
+            .padding(.vertical)
+        }
+        .navigationTitle("Главная")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct DashboardCard: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(color)
+            
+            Text(value)
+                .font(.title)
+                .fontWeight(.bold)
+            
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+    }
+}
+
+struct ActivityRow: View {
+    let title: String
+    let time: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(color)
+                .frame(width: 30)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                
+                Text(time)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Preview Provider
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
