@@ -10,6 +10,8 @@ import Combine
 
 @MainActor
 class TestMockService: ObservableObject {
+    static let shared = TestMockService()
+    
     @Published var tests: [Test] = []
     @Published var attempts: [TestAttempt] = []
     @Published var results: [TestResult] = []

@@ -152,8 +152,30 @@ struct TestEditView: View {
     }
     
     private func saveTest() {
-        // Here you would save to backend
-        // For now, just show success alert
+        // Обновляем тест в сервисе
+        let service = TestMockService.shared
+        if let testIndex = service.tests.firstIndex(where: { $0.id == test.id }) {
+            
+            service.tests[testIndex] = Test(
+                id: test.id,
+                title: title,
+                description: description,
+                type: selectedType,
+                status: test.status,
+                difficulty: selectedDifficulty,
+                questions: questions,
+                timeLimit: timeLimit,
+                attemptsAllowed: maxAttempts,
+                passingScore: Double(passingScore),
+                createdBy: test.createdBy,
+                createdAt: test.createdAt,
+                updatedAt: Date()
+            )
+        }
+        
+        // В реальном приложении здесь будет вызов API
+        // await testService.updateTest(test)
+        
         showingSaveAlert = true
     }
 }

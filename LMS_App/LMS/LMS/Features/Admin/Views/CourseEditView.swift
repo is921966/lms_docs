@@ -161,8 +161,22 @@ struct CourseEditView: View {
     }
     
     private func saveCourse() {
-        // Here you would save to backend
-        // For now, just show success alert
+        // Обновляем курс в сервисе
+        if let courseIndex = Course.mockCourses.firstIndex(where: { $0.id == course.id }) {
+            Course.mockCourses[courseIndex] = Course(
+                title: title,
+                description: description,
+                progress: course.progress,
+                icon: selectedIcon,
+                color: selectedColor,
+                duration: duration,
+                modules: modules
+            )
+        }
+        
+        // В реальном приложении здесь будет вызов API
+        // await courseService.updateCourse(course)
+        
         showingSaveAlert = true
     }
 }

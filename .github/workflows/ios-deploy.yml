@@ -220,6 +220,16 @@ jobs:
           echo "📁 Contents of build directory after export:"
           ls -la build/
 
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get last 10 commit messages for changelog
+          CHANGELOG=$(git log --pretty=format:'• %s' -10)
+          echo "📝 Changelog for TestFlight:"
+          echo "$CHANGELOG"
+          # Save to file for upload
+          echo "$CHANGELOG" > changelog.txt
+          
       - name: Upload to TestFlight
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}

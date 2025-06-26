@@ -251,7 +251,7 @@ struct Course: Identifiable {
     let duration: String
     let modules: [Module]
     
-    static let mockCourses = [
+    static var mockCourses = [
         Course(
             title: "Основы продаж в ЦУМ",
             description: "Изучите основные техники продаж и работы с клиентами в премиум-сегменте",
