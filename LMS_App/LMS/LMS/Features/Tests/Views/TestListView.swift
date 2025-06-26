@@ -12,6 +12,16 @@ struct TestListView: View {
     @State private var showFilters = false
     @State private var selectedTest: Test?
     @State private var showTestDetail = false
+    @State private var showingEditView = false
+    @State private var testToEdit: Test?
+    @State private var showingAddTest = false
+    
+    var isAdmin: Bool {
+        if let user = MockAuthService.shared.currentUser {
+            return user.roles.contains("admin") || user.permissions.contains("manage_tests")
+        }
+        return false
+    }
     
     var body: some View {
         NavigationView {
@@ -39,16 +49,33 @@ struct TestListView: View {
             }
             .navigationTitle("Тесты и оценки")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: { withAnimation { showFilters.toggle() } }) {
                         Image(systemName: showFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                             .foregroundColor(.blue)
+                    }
+                    
+                    if isAdmin {
+                        Button(action: { showingAddTest = true }) {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(.blue)
+                        }
                     }
                 }
             }
             .sheet(item: $selectedTest) { test in
                 NavigationView {
                     TestDetailView(test: test, viewModel: viewModel)
+                }
+            }
+            .sheet(isPresented: $showingEditView) {
+                if let test = testToEdit {
+                    TestEditView(test: test)
+                }
+            }
+            .sheet(isPresented: $showingAddTest) {
+                TestAddView { newTest in
+                    viewModel.addTest(newTest)
                 }
             }
         }
@@ -130,10 +157,13 @@ struct TestListView: View {
         ScrollView {
             LazyVStack(spacing: 16) {
                 ForEach(viewModel.filteredTests) { test in
-                    TestCardView(test: test, viewModel: viewModel)
-                        .onTapGesture {
-                            selectedTest = test
-                        }
+                    TestCardView(test: test, viewModel: viewModel, isAdmin: isAdmin) { editTest in
+                        testToEdit = editTest
+                        showingEditView = true
+                    }
+                    .onTapGesture {
+                        selectedTest = test
+                    }
                 }
             }
             .padding()
@@ -164,6 +194,15 @@ struct TestListView: View {
 struct TestCardView: View {
     let test: Test
     @ObservedObject var viewModel: TestViewModel
+    let isAdmin: Bool
+    let onEdit: ((Test) -> Void)?
+    
+    init(test: Test, viewModel: TestViewModel, isAdmin: Bool = false, onEdit: ((Test) -> Void)? = nil) {
+        self.test = test
+        self.viewModel = viewModel
+        self.isAdmin = isAdmin
+        self.onEdit = onEdit
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -251,6 +290,18 @@ struct TestCardView: View {
         .background(Color(UIColor.secondarySystemGroupedBackground))
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .overlay(alignment: .topTrailing) {
+            if isAdmin, let onEdit = onEdit {
+                Button(action: { onEdit(test) }) {
+                    Image(systemName: "pencil.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.blue)
+                        .background(Color.white)
+                        .clipShape(Circle())
+                }
+                .padding(8)
+            }
+        }
     }
     
     private var statusBadge: some View {

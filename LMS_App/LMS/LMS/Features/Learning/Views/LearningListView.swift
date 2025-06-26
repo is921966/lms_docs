@@ -4,8 +4,18 @@ struct LearningListView: View {
     @State private var searchText = ""
     @State private var selectedCategory = "Все"
     @State private var courses: [Course] = Course.mockCourses
+    @State private var showingEditView = false
+    @State private var courseToEdit: Course?
+    @State private var showingAddCourse = false
     
     let categories = ["Все", "В процессе", "Назначенные", "Завершенные"]
+    
+    var isAdmin: Bool {
+        if let user = MockAuthService.shared.currentUser {
+            return user.roles.contains("admin") || user.permissions.contains("manage_courses")
+        }
+        return false
+    }
     
     var filteredCourses: [Course] {
         var filtered = courses
@@ -87,12 +97,15 @@ struct LearningListView: View {
             } else {
                 ScrollView {
                     VStack(spacing: 15) {
-                        ForEach(filteredCourses) { course in
-                            NavigationLink(destination: CourseDetailView(course: course)) {
-                                CourseCard(course: course)
-                            }
-                            .buttonStyle(PlainButtonStyle())
+                                        ForEach(filteredCourses) { course in
+                    NavigationLink(destination: CourseDetailView(course: course)) {
+                        CourseCard(course: course, isAdmin: isAdmin) { editCourse in
+                            courseToEdit = editCourse
+                            showingEditView = true
                         }
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
                     }
                     .padding()
                 }
@@ -100,6 +113,26 @@ struct LearningListView: View {
         }
         .navigationTitle("Обучение")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            if isAdmin {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingAddCourse = true }) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingEditView) {
+            if let course = courseToEdit {
+                CourseEditView(course: course)
+            }
+        }
+        .sheet(isPresented: $showingAddCourse) {
+            CourseAddView { newCourse in
+                courses.append(newCourse)
+            }
+        }
     }
 }
 
@@ -125,6 +158,14 @@ struct CategoryChip: View {
 // MARK: - Course Card
 struct CourseCard: View {
     let course: Course
+    let isAdmin: Bool
+    let onEdit: ((Course) -> Void)?
+    
+    init(course: Course, isAdmin: Bool = false, onEdit: ((Course) -> Void)? = nil) {
+        self.course = course
+        self.isAdmin = isAdmin
+        self.onEdit = onEdit
+    }
     
     var body: some View {
         HStack(spacing: 15) {
@@ -184,6 +225,18 @@ struct CourseCard: View {
         .background(Color.white)
         .cornerRadius(15)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .overlay(alignment: .topTrailing) {
+            if isAdmin, let onEdit = onEdit {
+                Button(action: { onEdit(course) }) {
+                    Image(systemName: "pencil.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.blue)
+                        .background(Color.white)
+                        .clipShape(Circle())
+                }
+                .padding(8)
+            }
+        }
     }
 }
 

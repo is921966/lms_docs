@@ -96,6 +96,10 @@ class TestViewModel: ObservableObject {
         selectedTest = test
     }
     
+    func addTest(_ test: Test) {
+        service.tests.append(test)
+    }
+    
     func startTest(_ test: Test) {
         guard let attempt = service.startTest(testId: test.id, userId: currentUserId) else {
             // Показать ошибку - превышен лимит попыток
