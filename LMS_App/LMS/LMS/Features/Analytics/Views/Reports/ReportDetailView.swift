@@ -211,18 +211,6 @@ private let dateFormatter: DateFormatter = {
                 title: "Отчет по обучению",
                 description: "Детальный анализ прогресса обучения",
                 type: .learningProgress,
-                period: .month,
-                format: .pdf,
-                status: .ready,
-                sections: [],
-                createdBy: "admin"
-            )
-        )
-        ReportDetailView(
-            report: Report(
-                title: "Отчет по обучению",
-                description: "Детальный анализ прогресса обучения",
-                type: .learningProgress,
                 status: .ready,
                 period: .month,
                 createdBy: "admin",

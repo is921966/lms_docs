@@ -74,7 +74,7 @@ struct OnboardingTemplateStage: Identifiable, Codable {
 
 // MARK: - Template Task
 struct OnboardingTemplateTask: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     var title: String
     var description: String
     var type: OnboardingTaskType
@@ -91,6 +91,16 @@ struct OnboardingTemplateTask: Identifiable, Codable {
     
     init(id: UUID = UUID(), title: String, description: String, type: OnboardingTaskType, order: Int, assigneeType: AssigneeType, requiredDocuments: [String] = [], checklistItems: [String] = []) {
         self.id = id
+        self.title = title
+        self.description = description
+        self.type = type
+        self.order = order
+        self.assigneeType = assigneeType
+        self.requiredDocuments = requiredDocuments
+        self.checklistItems = checklistItems
+    }
+    
+    init(title: String, description: String, type: OnboardingTaskType, order: Int, assigneeType: AssigneeType, requiredDocuments: [String] = [], checklistItems: [String] = []) {
         self.title = title
         self.description = description
         self.type = type

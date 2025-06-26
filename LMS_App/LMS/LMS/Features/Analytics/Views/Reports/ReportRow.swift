@@ -82,10 +82,10 @@ struct ReportInfoSection: View {
             report: Report(
                 title: "Отчет по обучению",
                 type: .learningProgress,
-                period: .month,
-                format: .pdf,
                 status: .ready,
-                createdBy: "admin"
+                period: .month,
+                createdBy: "admin",
+                format: .pdf
             ),
             onTap: {}
         )
