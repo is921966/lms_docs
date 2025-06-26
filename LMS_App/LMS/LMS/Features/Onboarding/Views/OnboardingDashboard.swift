@@ -14,6 +14,8 @@ struct OnboardingDashboard: View {
     @State private var showingNewProgram = false
     @State private var showingTemplates = false
     @State private var selectedProgram: OnboardingProgram?
+    @State private var showingCreateProgram = false
+    @State private var selectedTemplate: OnboardingTemplate?
     
     enum FilterType: String, CaseIterable {
         case all = "Все"
@@ -208,6 +210,11 @@ struct OnboardingDashboard: View {
             .sheet(item: $selectedProgram) { program in
                 NavigationView {
                     OnboardingProgramView(program: program)
+                }
+            }
+            .sheet(isPresented: $showingCreateProgram) {
+                if let selectedTemplate = selectedTemplate {
+                    CreateProgramFromTemplateView(template: selectedTemplate)
                 }
             }
         }

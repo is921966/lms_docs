@@ -113,6 +113,72 @@ class MockAuthService: ObservableObject {
         isApprovedByAdmin = false
         error = nil
     }
+    
+    // MARK: - Get Users (for testing)
+    func getUsers() -> [UserResponse] {
+        return [
+            UserResponse(
+                id: "user_1",
+                email: "ivanov@tsum.ru",
+                firstName: "Иван",
+                lastName: "Иванов",
+                middleName: "Петрович",
+                position: "Продавец",
+                department: "Отдел продаж",
+                avatar: nil,
+                roles: ["student"],
+                permissions: ["access_courses"]
+            ),
+            UserResponse(
+                id: "user_2",
+                email: "petrova@tsum.ru",
+                firstName: "Мария",
+                lastName: "Петрова",
+                middleName: nil,
+                position: "Кассир",
+                department: "Операционный отдел",
+                avatar: nil,
+                roles: ["student"],
+                permissions: ["access_courses"]
+            ),
+            UserResponse(
+                id: "user_3",
+                email: "sidorov@tsum.ru",
+                firstName: "Алексей",
+                lastName: "Сидоров",
+                middleName: nil,
+                position: "Мерчандайзер",
+                department: "Отдел маркетинга",
+                avatar: nil,
+                roles: ["student"],
+                permissions: ["access_courses"]
+            ),
+            UserResponse(
+                id: "manager_1",
+                email: "smirnov@tsum.ru",
+                firstName: "Сергей",
+                lastName: "Смирнов",
+                middleName: nil,
+                position: "Руководитель отдела",
+                department: "Отдел продаж",
+                avatar: nil,
+                roles: ["manager"],
+                permissions: ["manage_users", "access_courses"]
+            ),
+            UserResponse(
+                id: "admin_1",
+                email: "admin@tsum.ru",
+                firstName: "Админ",
+                lastName: "Админов",
+                middleName: nil,
+                position: "Администратор",
+                department: "IT",
+                avatar: nil,
+                roles: ["admin"],
+                permissions: ["manage_users", "access_courses", "manage_system"]
+            )
+        ]
+    }
 }
 
 // MARK: - Mock Admin Service

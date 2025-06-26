@@ -310,8 +310,21 @@ struct EmployeeSelectionView: View {
     }
     
     private func loadEmployees() {
-        employees = MockAuthService.shared.getAllUsers().filter { user in
+        employees = MockAuthService.shared.getUsers().filter { user in
             user.role != "admin" && user.role != "manager"
+        }
+        filterEmployees()
+    }
+    
+    private func filterEmployees() {
+        if searchText.isEmpty {
+            filteredEmployees = employees
+        } else {
+            filteredEmployees = employees.filter { employee in
+                employee.firstName.localizedCaseInsensitiveContains(searchText) ||
+                employee.lastName.localizedCaseInsensitiveContains(searchText) ||
+                employee.email.localizedCaseInsensitiveContains(searchText)
+            }
         }
     }
 }
@@ -373,7 +386,7 @@ struct ManagerSelectionView: View {
     }
     
     private func loadManagers() {
-        managers = MockAuthService.shared.getAllUsers().filter { user in
+        managers = MockAuthService.shared.getUsers().filter { user in
             user.role == "manager" || user.role == "admin"
         }
     }

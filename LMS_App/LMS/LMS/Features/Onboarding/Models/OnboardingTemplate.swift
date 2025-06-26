@@ -138,72 +138,79 @@ extension OnboardingTemplate {
             duration: 30,
             stages: [
                 OnboardingTemplateStage(
-                    orderIndex: 1,
                     title: "Знакомство с компанией",
                     description: "Введение в корпоративную культуру",
+                    order: 1,
                     duration: 3,
-                    taskTemplates: [
-                        OnboardingTaskTemplate(
+                    tasks: [
+                        OnboardingTemplateTask(
                             title: "Встреча с руководителем",
                             description: "Знакомство с непосредственным руководителем",
                             type: .meeting,
-                            estimatedDuration: 60
+                            order: 1,
+                            assigneeType: .manager
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Экскурсия по магазину",
                             description: "Ознакомление с торговым пространством",
                             type: .task,
-                            estimatedDuration: 90
+                            order: 2,
+                            assigneeType: .mentor
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Курс: Корпоративная культура",
                             description: "Изучение ценностей и принципов компании",
                             type: .course,
-                            courseId: UUID(),
-                            estimatedDuration: 120
+                            order: 3,
+                            assigneeType: .employee,
+                            courseId: UUID()
                         )
                     ]
                 ),
                 OnboardingTemplateStage(
-                    orderIndex: 2,
                     title: "Изучение ассортимента",
                     description: "Знакомство с товарами и брендами",
+                    order: 2,
                     duration: 7,
-                    taskTemplates: [
-                        OnboardingTaskTemplate(
+                    tasks: [
+                        OnboardingTemplateTask(
                             title: "Курс: Товароведение",
                             description: "Базовые знания об ассортименте",
                             type: .course,
-                            courseId: UUID(),
-                            estimatedDuration: 480
+                            order: 1,
+                            assigneeType: .employee,
+                            courseId: UUID()
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Тест по товароведению",
                             description: "Проверка знаний ассортимента",
                             type: .test,
-                            testId: UUID(),
-                            estimatedDuration: 60
+                            order: 2,
+                            assigneeType: .employee,
+                            testId: UUID()
                         )
                     ]
                 ),
                 OnboardingTemplateStage(
-                    orderIndex: 3,
                     title: "Навыки продаж",
                     description: "Развитие компетенций продавца",
+                    order: 3,
                     duration: 14,
-                    taskTemplates: [
-                        OnboardingTaskTemplate(
+                    tasks: [
+                        OnboardingTemplateTask(
                             title: "Курс: Основы продаж",
                             description: "Техники эффективных продаж",
                             type: .course,
-                            courseId: UUID(),
-                            estimatedDuration: 360
+                            order: 1,
+                            assigneeType: .employee,
+                            courseId: UUID()
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Практика с наставником",
                             description: "Работа в паре с опытным продавцом",
                             type: .task,
-                            estimatedDuration: 2400
+                            order: 2,
+                            assigneeType: .mentor
                         )
                     ]
                 )
@@ -221,50 +228,55 @@ extension OnboardingTemplate {
             duration: 21,
             stages: [
                 OnboardingTemplateStage(
-                    orderIndex: 1,
                     title: "Введение в должность",
                     description: "Первые шаги на новом месте",
+                    order: 1,
                     duration: 2,
-                    taskTemplates: [
-                        OnboardingTaskTemplate(
+                    tasks: [
+                        OnboardingTemplateTask(
                             title: "Встреча с управляющим",
                             description: "Знакомство и постановка задач",
                             type: .meeting,
-                            estimatedDuration: 30
+                            order: 1,
+                            assigneeType: .manager
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Изучение кассовой зоны",
                             description: "Знакомство с рабочим местом",
                             type: .task,
-                            estimatedDuration: 60
+                            order: 2,
+                            assigneeType: .mentor
                         )
                     ]
                 ),
                 OnboardingTemplateStage(
-                    orderIndex: 2,
                     title: "Обучение кассовым операциям",
                     description: "Освоение функционала кассы",
+                    order: 2,
                     duration: 7,
-                    taskTemplates: [
-                        OnboardingTaskTemplate(
+                    tasks: [
+                        OnboardingTemplateTask(
                             title: "Курс: Работа с кассой",
                             description: "Все виды кассовых операций",
                             type: .course,
-                            courseId: UUID(),
-                            estimatedDuration: 480
+                            order: 1,
+                            assigneeType: .employee,
+                            courseId: UUID()
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Практика под контролем",
                             description: "Работа с наставником",
                             type: .task,
-                            estimatedDuration: 1200
+                            order: 2,
+                            assigneeType: .mentor
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Тест по кассовым операциям",
                             description: "Проверка навыков",
                             type: .test,
-                            testId: UUID(),
-                            estimatedDuration: 45
+                            order: 3,
+                            assigneeType: .employee,
+                            testId: UUID()
                         )
                     ]
                 )
@@ -282,50 +294,55 @@ extension OnboardingTemplate {
             duration: 30,
             stages: [
                 OnboardingTemplateStage(
-                    orderIndex: 1,
                     title: "Введение в визуальный мерчандайзинг",
                     description: "Основы профессии",
+                    order: 1,
                     duration: 3,
-                    taskTemplates: [
-                        OnboardingTaskTemplate(
+                    tasks: [
+                        OnboardingTemplateTask(
                             title: "Встреча с руководителем VM",
                             description: "Обсуждение стандартов и требований",
                             type: .meeting,
-                            estimatedDuration: 90
+                            order: 1,
+                            assigneeType: .manager
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Изучение brand book",
                             description: "Стандарты визуального оформления",
                             type: .document,
-                            documentTemplateId: UUID(),
-                            estimatedDuration: 180
+                            order: 2,
+                            assigneeType: .employee,
+                            documentUrl: "https://example.com/brandbook.pdf"
                         )
                     ]
                 ),
                 OnboardingTemplateStage(
-                    orderIndex: 2,
                     title: "Практические навыки",
                     description: "Отработка техник VM",
+                    order: 2,
                     duration: 14,
-                    taskTemplates: [
-                        OnboardingTaskTemplate(
+                    tasks: [
+                        OnboardingTemplateTask(
                             title: "Курс: Визуальный мерчандайзинг",
                             description: "Теория и практика VM",
                             type: .course,
-                            courseId: UUID(),
-                            estimatedDuration: 600
+                            order: 1,
+                            assigneeType: .employee,
+                            courseId: UUID()
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Создание первой витрины",
                             description: "Самостоятельная работа под контролем",
                             type: .task,
-                            estimatedDuration: 480
+                            order: 2,
+                            assigneeType: .mentor
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Анализ конкурентов",
                             description: "Изучение лучших практик",
                             type: .task,
-                            estimatedDuration: 240
+                            order: 3,
+                            assigneeType: .employee
                         )
                     ]
                 )
@@ -343,30 +360,33 @@ extension OnboardingTemplate {
             duration: 45,
             stages: [
                 OnboardingTemplateStage(
-                    orderIndex: 1,
                     title: "Управленческий онбординг",
                     description: "Введение в управленческую культуру",
+                    order: 1,
                     duration: 5,
-                    taskTemplates: [
-                        OnboardingTaskTemplate(
+                    tasks: [
+                        OnboardingTemplateTask(
                             title: "Встреча с топ-менеджментом",
                             description: "Знакомство с руководством компании",
                             type: .meeting,
-                            estimatedDuration: 120
+                            order: 1,
+                            assigneeType: .manager
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Изучение бизнес-процессов",
                             description: "Понимание операционной модели",
                             type: .document,
-                            documentTemplateId: UUID(),
-                            estimatedDuration: 480
+                            order: 2,
+                            assigneeType: .employee,
+                            documentUrl: "https://example.com/processes.pdf"
                         ),
-                        OnboardingTaskTemplate(
+                        OnboardingTemplateTask(
                             title: "Курс: Лидерство в ЦУМ",
                             description: "Корпоративные стандарты управления",
                             type: .course,
-                            courseId: UUID(),
-                            estimatedDuration: 360
+                            order: 3,
+                            assigneeType: .employee,
+                            courseId: UUID()
                         )
                     ]
                 )
