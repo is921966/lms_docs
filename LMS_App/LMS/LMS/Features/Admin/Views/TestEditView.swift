@@ -12,7 +12,7 @@ struct TestEditView: View {
     @State private var test: Test
     @State private var title: String
     @State private var description: String
-    @State private var selectedType: TestType
+    @State private var selectedType: LMSTestType
     @State private var selectedDifficulty: TestDifficulty
     @State private var timeLimit: Int?
     @State private var passingScore: Int
@@ -44,7 +44,7 @@ struct TestEditView: View {
                         .lineLimit(3...6)
                     
                     Picker("Тип теста", selection: $selectedType) {
-                        ForEach(TestType.allCases, id: \.self) { type in
+                        ForEach(LMSTestType.allCases, id: \.self) { type in
                             Label(type.rawValue, systemImage: type.icon)
                                 .tag(type)
                         }
@@ -296,7 +296,7 @@ struct AddQuestionView: View {
 struct TestPreviewCard: View {
     let title: String
     let description: String
-    let type: TestType
+    let type: LMSTestType
     let difficulty: TestDifficulty
     let questionCount: Int
     let timeLimit: Int?

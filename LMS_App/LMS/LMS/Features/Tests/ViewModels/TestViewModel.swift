@@ -11,7 +11,7 @@ import Combine
 
 @MainActor
 class TestViewModel: ObservableObject {
-    @Published var service: TestMockService
+    private let service: TestMockService
     @Published var selectedTest: Test?
     @Published var currentAttempt: TestAttempt?
     @Published var currentQuestion: Question?
@@ -19,7 +19,7 @@ class TestViewModel: ObservableObject {
     
     // Filters
     @Published var searchText = ""
-    @Published var selectedType: TestType?
+    @Published var selectedType: LMSTestType?
     @Published var selectedDifficulty: TestDifficulty?
     @Published var selectedStatus: TestStatus?
     @Published var showOnlyAvailable = false
@@ -27,12 +27,17 @@ class TestViewModel: ObservableObject {
     // Current user (в реальном приложении из AuthService)
     let currentUserId = "current-user"
     
-    init() {
-        self.service = TestMockService()
-    }
+    @Published var selectedFilter = "Все"
+    @Published var sortOption = TestSortOption.dateCreated
+    @Published var isAscending = false
     
-    init(service: TestMockService) {
-        self.service = service
+    // Student specific properties  
+    @Published var assignedTests: [Test] = []
+    @Published var completedTests: [Test] = []
+    @Published var practiceTests: [Test] = []
+    
+    init() {
+        self.service = TestMockService.shared
     }
     
     // MARK: - Computed Properties
@@ -60,7 +65,7 @@ class TestViewModel: ObservableObject {
         }
     }
     
-    var testsGroupedByType: [TestType: [Test]] {
+    var testsGroupedByType: [LMSTestType: [Test]] {
         Dictionary(grouping: filteredTests, by: { $0.type })
     }
     
@@ -278,4 +283,38 @@ class TestViewModel: ObservableObject {
     func cleanup() {
         stopTimer()
     }
-} 
+    
+    // MARK: - Student Methods
+    
+    func loadTests() {
+        // In real app this would be API calls
+        // For mock, filter tests by status
+        let allTests = service.tests
+        
+        assignedTests = allTests.filter { test in
+            test.status == .published && test.canBeTaken && !hasUserCompletedTest(test)
+        }
+        
+        completedTests = allTests.filter { test in
+            hasUserCompletedTest(test)
+        }
+        
+        practiceTests = allTests.filter { test in
+            test.type == .practice && test.status == .published
+        }
+    }
+    
+    private func hasUserCompletedTest(_ test: Test) -> Bool {
+        return userResults.contains { $0.testId == test.id }
+    }
+    
+    // MARK: - Public Access Methods
+    
+    func getUserAttempts(userId: String, testId: UUID) -> [TestAttempt] {
+        return service.getUserAttempts(userId: userId, testId: testId)
+    }
+    
+    func getActiveAttempt(userId: String, testId: UUID) -> TestAttempt? {
+        return service.getActiveAttempt(userId: userId, testId: testId)
+    }
+}

@@ -11,7 +11,7 @@ struct TestAddView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
     @State private var description = ""
-    @State private var selectedType = TestType.quiz
+    @State private var selectedType = LMSTestType.quiz
     @State private var selectedDifficulty = TestDifficulty.medium
     @State private var timeLimit: Int? = 30
     @State private var passingScore = 60
@@ -32,7 +32,7 @@ struct TestAddView: View {
                         .lineLimit(3...6)
                     
                     Picker("Тип теста", selection: $selectedType) {
-                        ForEach(TestType.allCases, id: \.self) { type in
+                        ForEach(LMSTestType.allCases, id: \.self) { type in
                             Label(type.rawValue, systemImage: type.icon)
                                 .tag(type)
                         }

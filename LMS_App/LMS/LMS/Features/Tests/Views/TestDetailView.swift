@@ -64,7 +64,7 @@ struct TestDetailView: View {
         }
         .sheet(item: $selectedResult) { result in
             NavigationView {
-                TestResultView(result: result)
+                TestResultView(test: test)
             }
         }
     }
@@ -283,7 +283,7 @@ struct TestDetailView: View {
             Text("История попыток")
                 .font(.headline)
             
-            let attempts = viewModel.service.getUserAttempts(userId: viewModel.currentUserId, testId: test.id)
+            let attempts = viewModel.getUserAttempts(userId: viewModel.currentUserId, testId: test.id)
             
             if attempts.isEmpty {
                 Text("Вы еще не проходили этот тест")
@@ -292,7 +292,7 @@ struct TestDetailView: View {
             } else {
                 ForEach(attempts.sorted(by: { $0.startedAt ?? Date() > $1.startedAt ?? Date() })) { attempt in
                     AttemptRow(attempt: attempt) {
-                        if let result = viewModel.service.results.first(where: { $0.attemptId == attempt.id }) {
+                        if let result = TestMockService.shared.results.first(where: { $0.attemptId == attempt.id }) {
                             selectedResult = result
                         }
                     }
@@ -332,7 +332,7 @@ struct TestDetailView: View {
     
     private var actionSection: some View {
         VStack(spacing: 12) {
-            if let activeAttempt = viewModel.service.getActiveAttempt(userId: viewModel.currentUserId, testId: test.id) {
+            if let activeAttempt = viewModel.getActiveAttempt(userId: viewModel.currentUserId, testId: test.id) {
                 Button(action: { showTestPlayer = true }) {
                     Label("Продолжить тест", systemImage: "play.fill")
                         .frame(maxWidth: .infinity)
@@ -355,7 +355,7 @@ struct TestDetailView: View {
                 .controlSize(.large)
                 
                 if let maxAttempts = test.attemptsAllowed {
-                    let usedAttempts = viewModel.service.getUserAttempts(userId: viewModel.currentUserId, testId: test.id).count
+                    let usedAttempts = TestMockService.shared.getUserAttempts(userId: viewModel.currentUserId, testId: test.id).count
                     Text("Использовано попыток: \(usedAttempts) из \(maxAttempts)")
                         .font(.caption)
                         .foregroundColor(.secondary)

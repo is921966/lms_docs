@@ -36,7 +36,9 @@ class MockAuthService: ObservableObject {
                 department: "IT",
                 avatar: nil,
                 roles: asAdmin ? ["admin", "student"] : ["student"],
-                permissions: asAdmin ? ["manage_users", "access_courses"] : []
+                permissions: asAdmin ? ["manage_users", "access_courses"] : [],
+                isApproved: true,
+                registrationDate: nil
             )
             
             // Save mock tokens
@@ -98,7 +100,9 @@ class MockAuthService: ObservableObject {
                     department: "IT",
                     avatar: nil,
                     roles: isAdmin ? ["admin", "student"] : ["student"],
-                    permissions: isAdmin ? ["manage_users", "access_courses"] : ["access_courses"]
+                    permissions: isAdmin ? ["manage_users", "access_courses"] : ["access_courses"],
+                    isApproved: true,
+                    registrationDate: nil
                 )
                 isApprovedByAdmin = true
             }
@@ -127,7 +131,9 @@ class MockAuthService: ObservableObject {
                 department: "Отдел продаж",
                 avatar: nil,
                 roles: ["student"],
-                permissions: ["access_courses"]
+                permissions: ["access_courses"],
+                isApproved: true,
+                registrationDate: nil
             ),
             UserResponse(
                 id: "user_2",
@@ -139,7 +145,9 @@ class MockAuthService: ObservableObject {
                 department: "Операционный отдел",
                 avatar: nil,
                 roles: ["student"],
-                permissions: ["access_courses"]
+                permissions: ["access_courses"],
+                isApproved: true,
+                registrationDate: nil
             ),
             UserResponse(
                 id: "user_3",
@@ -151,7 +159,9 @@ class MockAuthService: ObservableObject {
                 department: "Отдел маркетинга",
                 avatar: nil,
                 roles: ["student"],
-                permissions: ["access_courses"]
+                permissions: ["access_courses"],
+                isApproved: true,
+                registrationDate: nil
             ),
             UserResponse(
                 id: "manager_1",
@@ -163,7 +173,9 @@ class MockAuthService: ObservableObject {
                 department: "Отдел продаж",
                 avatar: nil,
                 roles: ["manager"],
-                permissions: ["manage_users", "access_courses"]
+                permissions: ["manage_users", "access_courses"],
+                isApproved: true,
+                registrationDate: nil
             ),
             UserResponse(
                 id: "admin_1",
@@ -175,7 +187,9 @@ class MockAuthService: ObservableObject {
                 department: "IT",
                 avatar: nil,
                 roles: ["admin"],
-                permissions: ["manage_users", "access_courses", "manage_system"]
+                permissions: ["manage_users", "access_courses", "manage_system"],
+                isApproved: true,
+                registrationDate: nil
             )
         ]
     }

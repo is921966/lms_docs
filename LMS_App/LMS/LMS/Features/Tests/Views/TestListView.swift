@@ -108,7 +108,7 @@ struct TestListView: View {
                         action: { viewModel.selectedType = nil }
                     )
                     
-                    ForEach(TestType.allCases, id: \.self) { type in
+                    ForEach(LMSTestType.allCases, id: \.self) { type in
                         FilterChip(
                             title: type.rawValue,
                             icon: type.icon,
@@ -380,7 +380,7 @@ struct TestCardView: View {
     
     private var actionButton: some View {
         Group {
-            if let activeAttempt = viewModel.service.getActiveAttempt(userId: viewModel.currentUserId, testId: test.id) {
+            if let activeAttempt = TestMockService.shared.getActiveAttempt(userId: viewModel.currentUserId, testId: test.id) {
                 Button(action: { viewModel.resumeTest(activeAttempt) }) {
                     Label("Продолжить", systemImage: "play.fill")
                         .font(.caption)

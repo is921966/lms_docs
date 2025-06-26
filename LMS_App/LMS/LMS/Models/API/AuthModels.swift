@@ -37,6 +37,8 @@ struct UserResponse: Decodable, Identifiable {
     let avatar: String?
     let roles: [String]
     var permissions: [String]
+    let isApproved: Bool
+    let registrationDate: Date?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -49,6 +51,8 @@ struct UserResponse: Decodable, Identifiable {
         case avatar
         case roles
         case permissions
+        case isApproved = "is_approved"
+        case registrationDate = "registration_date"
     }
 }
 

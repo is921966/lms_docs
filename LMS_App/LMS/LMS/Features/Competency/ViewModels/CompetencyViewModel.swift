@@ -15,6 +15,10 @@ class CompetencyViewModel: ObservableObject {
     @Published var showingEditSheet: Bool = false
     @Published var selectedCompetency: Competency?
     
+    // Student specific properties
+    @Published var myCompetencies: [Competency] = []
+    @Published var requiredCompetencies: [Competency] = []
+    
     private let service = CompetencyMockService.shared
     private var cancellables = Set<AnyCancellable>()
     
@@ -96,6 +100,7 @@ class CompetencyViewModel: ObservableObject {
     }
     
     func deleteCompetency(_ competency: Competency) {
+        errorMessage = nil
         service.deleteCompetency(competency.id)
     }
     
@@ -136,6 +141,16 @@ class CompetencyViewModel: ObservableObject {
         }
         
         return "[]"
+    }
+    
+    // MARK: - Student Methods
+    func getCurrentLevel(for competency: Competency) -> Int {
+        // In real app this would check user's actual competency level
+        // For mock, return a random level between 0 and competency's max level
+        if myCompetencies.contains(where: { $0.id == competency.id }) {
+            return competency.currentLevel
+        }
+        return 0
     }
 }
 

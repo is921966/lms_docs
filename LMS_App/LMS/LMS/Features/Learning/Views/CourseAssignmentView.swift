@@ -29,7 +29,9 @@ struct CourseAssignmentView: View {
             department: "Продажи", 
             avatar: nil,
             roles: ["employee"], 
-            permissions: []
+            permissions: [],
+            isApproved: true,
+            registrationDate: Date().addingTimeInterval(-365 * 24 * 60 * 60)
         ),
         UserResponse(
             id: "2", 
@@ -41,7 +43,9 @@ struct CourseAssignmentView: View {
             department: "Продажи", 
             avatar: nil,
             roles: ["employee"], 
-            permissions: []
+            permissions: [],
+            isApproved: true,
+            registrationDate: Date().addingTimeInterval(-180 * 24 * 60 * 60)
         ),
         UserResponse(
             id: "3", 
@@ -53,7 +57,9 @@ struct CourseAssignmentView: View {
             department: "Продажи", 
             avatar: nil,
             roles: ["employee"], 
-            permissions: []
+            permissions: [],
+            isApproved: true,
+            registrationDate: Date().addingTimeInterval(-90 * 24 * 60 * 60)
         ),
         UserResponse(
             id: "4", 
@@ -65,7 +71,9 @@ struct CourseAssignmentView: View {
             department: "Товароведение", 
             avatar: nil,
             roles: ["manager"], 
-            permissions: []
+            permissions: [],
+            isApproved: true,
+            registrationDate: Date().addingTimeInterval(-720 * 24 * 60 * 60)
         ),
         UserResponse(
             id: "5", 
@@ -77,7 +85,9 @@ struct CourseAssignmentView: View {
             department: "Товароведение", 
             avatar: nil,
             roles: ["employee"], 
-            permissions: []
+            permissions: [],
+            isApproved: true,
+            registrationDate: Date().addingTimeInterval(-30 * 24 * 60 * 60)
         )
     ]
     

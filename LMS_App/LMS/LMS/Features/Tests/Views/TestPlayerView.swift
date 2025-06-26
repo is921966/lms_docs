@@ -127,7 +127,7 @@ struct TestPlayerView: View {
 struct TestPlayerView_Previews: PreviewProvider {
     static var previews: some View {
         let service = TestMockService()
-        let viewModel = TestViewModel(service: service)
+        let viewModel = TestViewModel()
         if let test = service.tests.first {
             viewModel.startTest(test)
         }

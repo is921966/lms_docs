@@ -8,6 +8,7 @@ class NotificationService: ObservableObject {
     
     @Published var notifications: [Notification] = []
     @Published var unreadCount: Int = 0
+    @Published var pendingApprovals: Int = 0
     
     private var cancellables = Set<AnyCancellable>()
     

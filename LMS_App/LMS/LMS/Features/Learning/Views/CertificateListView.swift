@@ -28,7 +28,7 @@ struct CertificateListView: View {
         NavigationView {
             VStack {
                 if certificates.isEmpty {
-                    EmptyStateView()
+                    EmptyStateView(icon: "seal", title: "Нет сертификатов", subtitle: "Завершите курсы чтобы получить сертификаты")
                 } else {
                     List {
                         // Statistics
@@ -279,7 +279,7 @@ struct CertificateRowView: View {
 }
 
 // MARK: - Empty State View
-private struct EmptyStateView: View {
+private struct CertificateEmptyStateView: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "doc.text")

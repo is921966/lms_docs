@@ -14,6 +14,15 @@ struct Competency: Identifiable, Codable, Hashable {
     var createdAt: Date
     var updatedAt: Date
     
+    // Numeric properties for levels and statistics
+    var currentLevel: Int = 1
+    var requiredLevel: Int = 3
+    var usageCount: Int = 0
+    var coursesCount: Int = 0
+    
+    // Recommended courses for improving this competency
+    var recommendedCourses: [String]? = nil
+    
     // Computed properties
     var maxLevel: Int {
         levels.count

@@ -247,11 +247,3 @@ struct VKAuthRequest: Encodable {
 struct VKAuthResponse: Decodable {
     let user: UserResponse
     let tokens: TokensResponse
-}
-
-// Update UserResponse model
-extension UserResponse {
-    var isApproved: Bool {
-        return permissions.contains("access_courses") || roles.contains("student")
-    }
-} 

@@ -8,20 +8,19 @@
 import Foundation
 import SwiftUI
 
-enum TestType: String, CaseIterable, Codable {
-    case quiz = "Викторина"
+// MARK: - Test Type
+enum LMSTestType: String, CaseIterable, Codable {
+    case quiz = "Тест"
     case exam = "Экзамен"
-    case assessment = "Оценка знаний"
+    case assessment = "Оценка"
     case practice = "Практика"
-    case certification = "Сертификация"
     
     var icon: String {
         switch self {
         case .quiz: return "questionmark.circle"
         case .exam: return "doc.text.magnifyingglass"
-        case .assessment: return "checkmark.seal"
-        case .practice: return "pencil.and.outline"
-        case .certification: return "seal"
+        case .assessment: return "chart.bar.doc.horizontal"
+        case .practice: return "pencil.and.ellipsis.rectangle"
         }
     }
     
@@ -31,7 +30,6 @@ enum TestType: String, CaseIterable, Codable {
         case .exam: return .red
         case .assessment: return .orange
         case .practice: return .green
-        case .certification: return .purple
         }
     }
 }
@@ -79,7 +77,7 @@ struct Test: Identifiable, Codable {
     let id: UUID
     var title: String
     var description: String
-    var type: TestType
+    var type: LMSTestType
     var status: TestStatus
     var difficulty: TestDifficulty
     
@@ -116,7 +114,7 @@ struct Test: Identifiable, Codable {
         id: UUID = UUID(),
         title: String,
         description: String,
-        type: TestType = .quiz,
+        type: LMSTestType = .quiz,
         status: TestStatus = .draft,
         difficulty: TestDifficulty = .medium,
         questions: [Question] = [],
@@ -192,4 +190,53 @@ struct Test: Identifiable, Codable {
     var canBeTaken: Bool {
         isPublished && !questions.isEmpty
     }
-} 
+    
+    // Additional properties for student interface
+    var deadline: Date? {
+        // For student assignments, calculate deadline
+        // For now return a mock deadline
+        publishedAt?.addingTimeInterval(7 * 24 * 60 * 60) // 7 days after publishing
+    }
+    
+    var isPassed: Bool {
+        // This would be checked against user's results
+        // For now return false
+        false
+    }
+    
+    var courseName: String? {
+        // This would be fetched from course service
+        // For now return mock name
+        courseId != nil ? "iOS Development" : nil
+    }
+    
+    var questionsCount: Int {
+        questions.count
+    }
+    
+    var duration: Int {
+        timeLimit ?? (questions.count * 2) // 2 minutes per question if no limit
+    }
+    
+    var attempts: Int {
+        attemptsAllowed ?? 0
+    }
+    
+    var score: Int? {
+        // This would be fetched from user's results
+        nil
+    }
+    
+    var allowsRetake: Bool {
+        if let allowed = attemptsAllowed {
+            return totalAttempts < allowed
+        }
+        return true // Unlimited attempts
+    }
+}
+
+// MARK: - Test Sort Option
+enum TestSortOption: String, CaseIterable {
+    case dateCreated = "Дата создания"
+    case title = "Название"  
+}

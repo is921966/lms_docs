@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PendingUsersView: View {
+struct PendingUsersListView: View {
     var body: some View {
         Text("Pending Users")
     }

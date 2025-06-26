@@ -177,40 +177,98 @@ struct MainTabView: View {
     @StateObject private var authViewModel = AuthViewModel()
     
     var body: some View {
+        Group {
+            if authViewModel.isAdmin {
+                AdminTabView()
+            } else {
+                StudentTabView()
+            }
+        }
+        .environmentObject(authViewModel)
+    }
+}
+
+// MARK: - Student Tab View
+struct StudentTabView: View {
+    @StateObject private var authViewModel = AuthViewModel()
+    
+    var body: some View {
         TabView {
-            // Main screen
+            // Main screen - персональный дашборд
             NavigationStack {
-                MainDashboardView()
+                StudentDashboardView()
             }
             .tabItem {
                 Label("Главная", systemImage: "house")
             }
             
-            // Learning
+            // Learning - мои курсы
             NavigationStack {
-                CourseListView()
+                StudentCourseListView()
             }
             .tabItem {
                 Label("Обучение", systemImage: "book")
             }
             
-            // Competencies
+            // Competencies - только просмотр
             NavigationStack {
-                CompetencyListView()
+                StudentCompetencyView()
             }
             .tabItem {
                 Label("Компетенции", systemImage: "star")
             }
             
-            // Tests
+            // Tests - личные тесты
             NavigationStack {
-                TestListView()
+                StudentTestListView()
             }
             .tabItem {
                 Label("Тесты", systemImage: "doc.text.magnifyingglass")
             }
             
-            // Onboarding
+            // Profile - личный кабинет
+            NavigationStack {
+                ProfileView()
+            }
+            .tabItem {
+                Label("Профиль", systemImage: "person.circle")
+            }
+        }
+        .environmentObject(authViewModel)
+    }
+}
+
+// MARK: - Admin Tab View
+struct AdminTabView: View {
+    @StateObject private var authViewModel = AuthViewModel()
+    
+    var body: some View {
+        TabView {
+            // Main screen - административный дашборд
+            NavigationStack {
+                AdminDashboardView()
+            }
+            .tabItem {
+                Label("Главная", systemImage: "house")
+            }
+            
+            // Management - управление пользователями
+            NavigationStack {
+                AdminManagementView()
+            }
+            .tabItem {
+                Label("Управление", systemImage: "person.3")
+            }
+            
+            // Content - управление контентом
+            NavigationStack {
+                AdminContentView()
+            }
+            .tabItem {
+                Label("Контент", systemImage: "folder")
+            }
+            
+            // Onboarding - управление адаптацией
             NavigationStack {
                 OnboardingDashboard()
             }
@@ -218,7 +276,7 @@ struct MainTabView: View {
                 Label("Онбординг", systemImage: "person.badge.clock")
             }
             
-            // Analytics
+            // Analytics - полная аналитика
             NavigationStack {
                 AnalyticsDashboard()
             }
@@ -226,12 +284,12 @@ struct MainTabView: View {
                 Label("Аналитика", systemImage: "chart.bar.fill")
             }
             
-            // Profile
+            // Settings - системные настройки
             NavigationStack {
-                ProfileView()
+                AdminSettingsView()
             }
             .tabItem {
-                Label("Профиль", systemImage: "person.circle")
+                Label("Настройки", systemImage: "gearshape")
             }
         }
         .environmentObject(authViewModel)
