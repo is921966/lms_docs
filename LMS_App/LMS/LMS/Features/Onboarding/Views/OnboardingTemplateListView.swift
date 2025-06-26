@@ -289,9 +289,7 @@ struct TemplateDetailView: View {
                 CreateProgramFromTemplateView(template: template)
             }
             .sheet(isPresented: $showingEditTemplate) {
-                // EditTemplateView(template: template)
-                Text("Редактирование шаблона")
-                    .navigationTitle("Редактировать шаблон")
+                EditTemplateView(template: template)
             }
         }
     }

@@ -48,7 +48,7 @@ class PDFExportService {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let pdfData = try self.generateOnboardingReportPDF(program)
-                let url = try self.savePDFToFile(pdfData, fileName: "Onboarding_\(program.template.name)_\(Date().timeIntervalSince1970).pdf")
+                let url = try self.savePDFToFile(pdfData, fileName: "Onboarding_\(program.title.replacingOccurrences(of: " ", with: "_"))_\(Date().timeIntervalSince1970).pdf")
                 
                 DispatchQueue.main.async {
                     completion(.success(url))
@@ -88,7 +88,7 @@ class PDFExportService {
             yPosition += 25
             drawText("Период: \(report.period.rawValue)", at: CGPoint(x: 50, y: yPosition), fontSize: 12)
             yPosition += 25
-            drawText("Создан: \(formatDate(report.createdAt ?? Date()))", at: CGPoint(x: 50, y: yPosition), fontSize: 12)
+            drawText("Создан: \(formatDate(report.createdAt))", at: CGPoint(x: 50, y: yPosition), fontSize: 12)
             yPosition += 40
             
             // Draw description
@@ -171,9 +171,9 @@ class PDFExportService {
             
             // Draw program info
             var yPosition: CGFloat = 120
-            drawText("Программа: \(program.template.name)", at: CGPoint(x: 50, y: yPosition), fontSize: 16, weight: .semibold)
+            drawText("Программа: \(program.title)", at: CGPoint(x: 50, y: yPosition), fontSize: 16, weight: .semibold)
             yPosition += 30
-            drawText("Сотрудник: \(program.assigneeName)", at: CGPoint(x: 50, y: yPosition), fontSize: 14)
+            drawText("Сотрудник: \(program.employeeName)", at: CGPoint(x: 50, y: yPosition), fontSize: 14)
             yPosition += 25
             drawText("Прогресс: \(Int(program.overallProgress * 100))%", at: CGPoint(x: 50, y: yPosition), fontSize: 14)
             yPosition += 25
@@ -190,8 +190,8 @@ class PDFExportService {
                     yPosition = 50
                 }
                 
-                let progressText = "\(Int(stage.calculateProgress() * 100))%"
-                drawText("• \(stage.name) - \(progressText)", at: CGPoint(x: 70, y: yPosition), fontSize: 12)
+                let progressText = "\(Int(stage.progress * 100))%"
+                drawText("• \(stage.title) - \(progressText)", at: CGPoint(x: 70, y: yPosition), fontSize: 12)
                 yPosition += 20
                 
                 // Draw tasks summary

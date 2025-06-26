@@ -81,7 +81,6 @@ struct NotificationListView: View {
                     }
                 }
             }
-            .badge(notificationService.unreadCount)
         }
         .alert("Удалить уведомление?", isPresented: $showingDeleteConfirmation) {
             Button("Отмена", role: .cancel) { }
@@ -197,14 +196,7 @@ struct NotificationRow: View {
     private func destinationView() -> some View {
         switch notification.actionType {
         case .openCourse:
-            if let courseId = notification.actionData?["courseId"] {
-                CourseDetailView(course: CourseMockService.shared.getCourses().first ?? Course(
-                    title: "Sample Course",
-                    category: .business,
-                    description: "Sample",
-                    modules: []
-                ))
-            }
+            LearningListView()
         case .openTest:
             TestListView()
         case .viewCertificate:
@@ -250,29 +242,6 @@ struct EmptyNotificationsView: View {
     }
 }
 
-// MARK: - Badge Modifier
-extension View {
-    func badge(_ count: Int) -> some View {
-        overlay(
-            ZStack {
-                if count > 0 {
-                    Circle()
-                        .fill(Color.red)
-                        .frame(width: 20, height: 20)
-                        .offset(x: 12, y: -12)
-                    
-                    Text("\(count)")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.white)
-                        .offset(x: 12, y: -12)
-                }
-            }
-            .allowsHitTesting(false),
-            alignment: .topTrailing
-        )
-    }
-}
-
 #Preview {
     NotificationListView()
-} 
+}
