@@ -3,7 +3,7 @@ import SwiftUI
 // import VKID
 
 struct VKLoginView: View {
-    @StateObject private var authService = VKIDAuthService.shared
+    @StateObject private var authService = MockAuthService.shared
     @State private var showingAlert = false
     @State private var alertMessage = ""
     @State private var showingMockLogin = false
@@ -119,7 +119,7 @@ struct VKLoginView: View {
 
 // MARK: - VK Login Button
 struct VKLoginButton: UIViewControllerRepresentable {
-    @StateObject private var authService = VKIDAuthService.shared
+    @StateObject private var authService = MockAuthService.shared
     @Binding var showingMockLogin: Bool
     
     func makeUIViewController(context: Context) -> UIViewController {
@@ -162,10 +162,10 @@ struct VKLoginButton: UIViewControllerRepresentable {
     }
     
     class Coordinator: NSObject {
-        let authService: VKIDAuthService
+        let authService: MockAuthService
         @Binding var showingMockLogin: Bool
         
-        init(authService: VKIDAuthService, showingMockLogin: Binding<Bool>) {
+        init(authService: MockAuthService, showingMockLogin: Binding<Bool>) {
             self.authService = authService
             self._showingMockLogin = showingMockLogin
         }
