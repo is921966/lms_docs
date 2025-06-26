@@ -210,6 +210,14 @@ struct MainTabView: View {
                 Label("Тесты", systemImage: "doc.text.magnifyingglass")
             }
             
+            // Onboarding
+            NavigationStack {
+                OnboardingDashboard()
+            }
+            .tabItem {
+                Label("Онбординг", systemImage: "person.badge.clock")
+            }
+            
             // Analytics
             NavigationStack {
                 AnalyticsDashboard()
