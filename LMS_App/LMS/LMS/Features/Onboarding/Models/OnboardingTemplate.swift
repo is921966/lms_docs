@@ -72,20 +72,59 @@ struct OnboardingTemplateStage: Identifiable, Codable {
     }
 }
 
-// MARK: - Task Template
-struct OnboardingTaskTemplate: Identifiable, Codable {
+// MARK: - Template Task
+struct OnboardingTemplateTask: Identifiable, Codable {
     let id = UUID()
-    let title: String
-    let description: String
-    let type: TaskType
+    var title: String
+    var description: String
+    var type: OnboardingTaskType
+    var order: Int
+    var assigneeType: AssigneeType
+    var requiredDocuments: [String]
+    var checklistItems: [String]
     
-    // Optional links to predefined content
+    // Optional links
     var courseId: UUID?
     var testId: UUID?
+    var documentUrl: String?
     var documentTemplateId: UUID?
     
-    var isRequired: Bool = true
-    var estimatedDuration: Int? // in minutes
+    init(id: UUID = UUID(), title: String, description: String, type: OnboardingTaskType, order: Int, assigneeType: AssigneeType, requiredDocuments: [String] = [], checklistItems: [String] = []) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.type = type
+        self.order = order
+        self.assigneeType = assigneeType
+        self.requiredDocuments = requiredDocuments
+        self.checklistItems = checklistItems
+    }
+}
+
+// MARK: - Enums
+enum OnboardingTaskType: String, Codable, CaseIterable {
+    case course = "Курс"
+    case test = "Тест"
+    case document = "Документ"
+    case meeting = "Встреча"
+    case task = "Задача"
+    case checklist = "Чек-лист"
+    case feedback = "Обратная связь"
+}
+
+enum AssigneeType: String, Codable {
+    case employee = "Сотрудник"
+    case manager = "Руководитель"
+    case mentor = "Наставник"
+    case hr = "HR"
+}
+
+// MARK: - Stage Status
+enum StageStatus: String, Codable, CaseIterable {
+    case notStarted = "Не начат"
+    case inProgress = "В процессе"
+    case completed = "Завершен"
+    case cancelled = "Отменен"
 }
 
 // MARK: - Mock Templates

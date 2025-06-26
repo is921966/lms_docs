@@ -250,9 +250,9 @@ struct ProgressOverview: View {
             }
             
             // Calculate estimated completion date
-            if let template = OnboardingMockService.shared.getTemplate(by: program.templateId) {
+            if let template = OnboardingMockService.shared.templates.first(where: { $0.id == program.templateId }) {
                 let estimatedDate = Calendar.current.date(byAdding: .day, value: template.duration, to: program.startDate) ?? program.startDate
-                Text("Ожидаемое завершение: \(estimatedDate, formatter: dateFormatter)")
+                Text("Ожидаемое завершение: \(formatDate(estimatedDate))")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -261,6 +261,13 @@ struct ProgressOverview: View {
         .background(Color(.systemGray6))
         .cornerRadius(15)
         .padding(.horizontal)
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMMM yyyy"
+        formatter.locale = Locale(identifier: "ru_RU")
+        return formatter.string(from: date)
     }
 }
 
@@ -303,7 +310,7 @@ struct StageTimelineItem: View {
             VStack(spacing: 0) {
                 if !isFirst {
                     Rectangle()
-                        .fill(stage.status == .completed ? Color.green : Color.gray.opacity(0.3))
+                        .fill(stage.status == StageStatus.completed ? Color.green : Color.gray.opacity(0.3))
                         .frame(width: 2, height: 20)
                 }
                 
@@ -319,7 +326,7 @@ struct StageTimelineItem: View {
                 
                 if !isLast {
                     Rectangle()
-                        .fill(stage.status == .completed ? Color.green : Color.gray.opacity(0.3))
+                        .fill(stage.status == StageStatus.completed ? Color.green : Color.gray.opacity(0.3))
                         .frame(width: 2)
                 }
             }
@@ -392,15 +399,15 @@ struct StageTimelineItem: View {
     
     private var backgroundColor: Color {
         switch stage.status {
-        case .completed: return .green
-        case .inProgress: return .blue
-        case .notStarted: return .gray
-        case .cancelled: return .red
+        case StageStatus.completed: return .green
+        case StageStatus.inProgress: return .blue
+        case StageStatus.notStarted: return .gray
+        case StageStatus.cancelled: return .red
         }
     }
     
     private var progressColor: Color {
-        if stage.status == .completed {
+        if stage.status == StageStatus.completed {
             return .green
         } else if stage.progress > 0 {
             return .blue

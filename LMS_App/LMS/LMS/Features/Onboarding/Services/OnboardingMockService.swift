@@ -64,25 +64,25 @@ class OnboardingMockService: ObservableObject {
         
         // Update stage status if needed
         let stage = programs[programIndex].stages[stageIndex]
-        if stage.progress == 1.0 && stage.status != .completed {
-            programs[programIndex].stages[stageIndex].status = .completed
+        if stage.progress == 1.0 && stage.status != StageStatus.completed {
+            programs[programIndex].stages[stageIndex].status = StageStatus.completed
             programs[programIndex].stages[stageIndex].endDate = Date()
             
             // Check if need to start next stage
             if stageIndex < programs[programIndex].stages.count - 1 {
-                programs[programIndex].stages[stageIndex + 1].status = .inProgress
+                programs[programIndex].stages[stageIndex + 1].status = StageStatus.inProgress
                 programs[programIndex].stages[stageIndex + 1].startDate = Date()
             }
-        } else if stage.progress > 0 && stage.status == .notStarted {
-            programs[programIndex].stages[stageIndex].status = .inProgress
+        } else if stage.progress > 0 && stage.status == StageStatus.notStarted {
+            programs[programIndex].stages[stageIndex].status = StageStatus.inProgress
             programs[programIndex].stages[stageIndex].startDate = Date()
         }
         
         // Update program status
-        if programs[programIndex].status == .notStarted && stage.progress > 0 {
-            programs[programIndex].status = .inProgress
+        if programs[programIndex].status == OnboardingStatus.notStarted && stage.progress > 0 {
+            programs[programIndex].status = OnboardingStatus.inProgress
         } else if programs[programIndex].overallProgress == 1.0 {
-            programs[programIndex].status = .completed
+            programs[programIndex].status = OnboardingStatus.completed
             programs[programIndex].actualEndDate = Date()
         }
     }
@@ -110,8 +110,8 @@ class OnboardingMockService: ObservableObject {
     // MARK: - Statistics
     
     func getStatistics() -> OnboardingStatistics {
-        let activePrograms = programs.filter { $0.status == .inProgress }.count
-        let completedPrograms = programs.filter { $0.status == .completed }.count
+        let activePrograms = programs.filter { $0.status == OnboardingStatus.inProgress }.count
+        let completedPrograms = programs.filter { $0.status == OnboardingStatus.completed }.count
         let overduePrograms = programs.filter { $0.isOverdue }.count
         let totalPrograms = programs.count
         
@@ -130,7 +130,7 @@ class OnboardingMockService: ObservableObject {
     }
     
     private func calculateAverageCompletionTime() -> Int {
-        let completedPrograms = programs.filter { $0.status == .completed && $0.actualEndDate != nil }
+        let completedPrograms = programs.filter { $0.status == OnboardingStatus.completed && $0.actualEndDate != nil }
         guard !completedPrograms.isEmpty else { return 0 }
         
         let totalDays = completedPrograms.reduce(0) { total, program in
@@ -160,23 +160,32 @@ class OnboardingMockService: ObservableObject {
         // Convert template stages to program stages
         let programStages = template.stages.map { templateStage in
             OnboardingStage(
-                orderIndex: templateStage.orderIndex,
+                id: UUID(),
+                templateStageId: templateStage.id,
                 title: templateStage.title,
                 description: templateStage.description,
+                order: templateStage.order,
                 duration: templateStage.duration,
-                tasks: templateStage.taskTemplates.map { taskTemplate in
+                startDate: nil,
+                endDate: nil,
+                status: StageStatus.notStarted,
+                completionPercentage: 0,
+                tasks: templateStage.tasks.map { templateTask in
                     OnboardingTask(
-                        title: taskTemplate.title,
-                        description: taskTemplate.description,
-                        type: taskTemplate.type,
+                        title: templateTask.title,
+                        description: templateTask.description,
+                        type: getTaskType(from: templateTask.type),
                         isCompleted: false,
-                        courseId: taskTemplate.courseId,
-                        testId: taskTemplate.testId,
-                        documentUrl: taskTemplate.documentTemplateId != nil ? "document://\(taskTemplate.documentTemplateId!)" : nil,
-                        isRequired: taskTemplate.isRequired
+                        completedAt: nil,
+                        completedBy: nil,
+                        courseId: templateTask.courseId,
+                        testId: templateTask.testId,
+                        documentUrl: templateTask.documentUrl,
+                        meetingId: nil,
+                        dueDate: nil,
+                        isRequired: templateTask.requiredDocuments.isEmpty ? false : true
                     )
-                },
-                status: .notStarted
+                }
             )
         }
         
@@ -196,7 +205,7 @@ class OnboardingMockService: ObservableObject {
             targetEndDate: targetEndDate,
             stages: programStages,
             totalDuration: template.duration,
-            status: .notStarted
+            status: OnboardingStatus.notStarted
         )
         
         programs.append(newProgram)
@@ -216,15 +225,27 @@ class OnboardingMockService: ObservableObject {
         
         // Update stage status if needed
         let stage = programs[programIndex].stages[stageIndex]
-        if stage.progress == 1.0 && stage.status != .completed {
-            programs[programIndex].stages[stageIndex].status = .completed
+        if stage.progress == 1.0 && stage.status != StageStatus.completed {
+            programs[programIndex].stages[stageIndex].status = StageStatus.completed
             programs[programIndex].stages[stageIndex].endDate = Date()
         }
         
         // Update program status
         if programs[programIndex].overallProgress == 1.0 {
-            programs[programIndex].status = .completed
+            programs[programIndex].status = OnboardingStatus.completed
             programs[programIndex].actualEndDate = Date()
+        }
+    }
+    
+    private func getTaskType(from templateType: OnboardingTaskType) -> TaskType {
+        switch templateType {
+        case .course: return .course
+        case .test: return .test
+        case .document: return .document
+        case .meeting: return .meeting
+        case .task: return .task
+        case .checklist: return .task
+        case .feedback: return .feedback
         }
     }
 }

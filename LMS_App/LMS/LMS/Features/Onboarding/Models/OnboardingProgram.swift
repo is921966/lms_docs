@@ -226,7 +226,7 @@ extension OnboardingProgram {
                 duration: 3,
                 startDate: Date().addingTimeInterval(-7*24*60*60),
                 endDate: Date().addingTimeInterval(-4*24*60*60),
-                status: .completed,
+                status: StageStatus.completed,
                 completionPercentage: 1.0,
                 tasks: [
                     OnboardingTask(
@@ -269,7 +269,7 @@ extension OnboardingProgram {
                 duration: 7,
                 startDate: Date().addingTimeInterval(-3*24*60*60),
                 endDate: nil,
-                status: .inProgress,
+                status: StageStatus.inProgress,
                 completionPercentage: 0.5,
                 tasks: [
                     OnboardingTask(
@@ -305,7 +305,7 @@ extension OnboardingProgram {
                 duration: 10,
                 startDate: nil,
                 endDate: nil,
-                status: .notStarted,
+                status: StageStatus.notStarted,
                 completionPercentage: 0.0,
                 tasks: [
                     OnboardingTask(
@@ -341,7 +341,7 @@ extension OnboardingProgram {
                 duration: 3,
                 startDate: nil,
                 endDate: nil,
-                status: .notStarted,
+                status: StageStatus.notStarted,
                 completionPercentage: 0.0,
                 tasks: [
                     OnboardingTask(
@@ -381,7 +381,7 @@ extension OnboardingProgram {
                 duration: 2,
                 startDate: Date().addingTimeInterval(-2*24*60*60),
                 endDate: Date().addingTimeInterval(-1*24*60*60),
-                status: .completed,
+                status: StageStatus.completed,
                 completionPercentage: 1.0,
                 tasks: [
                     OnboardingTask(
@@ -409,7 +409,7 @@ extension OnboardingProgram {
                 duration: 5,
                 startDate: Date(),
                 endDate: nil,
-                status: .inProgress,
+                status: StageStatus.inProgress,
                 completionPercentage: 0.2,
                 tasks: [
                     OnboardingTask(
@@ -433,13 +433,13 @@ extension OnboardingProgram {
         var stages = createMockStages()
         // Mark most tasks as completed
         for i in 0..<3 {
-            stages[i].status = .completed
+            stages[i].status = StageStatus.completed
             for j in 0..<stages[i].tasks.count {
                 stages[i].tasks[j].isCompleted = true
                 stages[i].tasks[j].completedAt = Date().addingTimeInterval(Double(-10 + i*3 + j)*24*60*60)
             }
         }
-        stages[3].status = .inProgress
+        stages[3].status = StageStatus.inProgress
         stages[3].tasks[0].isCompleted = true
         stages[3].tasks[0].completedAt = Date().addingTimeInterval(-1*24*60*60)
         
