@@ -283,6 +283,14 @@ struct AdminTabView: View {
             .tabItem {
                 Label("Аналитика", systemImage: "chart.bar.fill")
             }
+            
+            // Profile - личный кабинет (с кнопкой выхода)
+            NavigationStack {
+                ProfileView()
+            }
+            .tabItem {
+                Label("Профиль", systemImage: "person.circle")
+            }
         }
         .environmentObject(authViewModel)
     }
