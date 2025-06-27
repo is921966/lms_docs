@@ -36,8 +36,8 @@ struct NewEmployeeOnboardingView: View {
             return templates
         }
         return templates.filter { template in
-            template.name.localizedCaseInsensitiveContains(templateSearchText) ||
-            template.position.localizedCaseInsensitiveContains(templateSearchText)
+            template.title.localizedCaseInsensitiveContains(templateSearchText) ||
+            template.targetPosition.localizedCaseInsensitiveContains(templateSearchText)
         }
     }
     
@@ -154,7 +154,7 @@ struct NewEmployeeOnboardingView: View {
                     HStack {
                         Image(systemName: "doc.text.fill")
                             .foregroundColor(.green)
-                        Text(template.name)
+                        Text(template.title)
                             .font(.headline)
                         Spacer()
                         Button("Изменить") {
@@ -163,11 +163,11 @@ struct NewEmployeeOnboardingView: View {
                         .font(.caption)
                     }
                     
-                    Text("Позиция: \(template.position)")
+                    Text("Позиция: \(template.targetPosition)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
-                    Text("\(template.stages.count) этапов, ~\(template.durationDays) дней")
+                    Text("\(template.stages.count) этапов, ~\(template.duration) дней")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -217,12 +217,12 @@ struct NewEmployeeOnboardingView: View {
                         Text("Этап \(index + 1)")
                             .font(.headline)
                         Spacer()
-                        Text("День \(customStages[index].dayOffset)")
+                        Text("Длительность: \(customStages[index].duration) дн.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                     
-                    TextField("Название этапа", text: $customStages[index].name)
+                    TextField("Название этапа", text: $customStages[index].title)
                         .textFieldStyle(.roundedBorder)
                     
                     Text("\(customStages[index].tasks.count) задач")
@@ -312,7 +312,7 @@ struct NewEmployeeOnboardingView: View {
                             HStack {
                                 Image(systemName: "doc.text.fill")
                                     .foregroundColor(.green)
-                                Text(template.name)
+                                Text(template.title)
                                     .font(.headline)
                                     .foregroundColor(.primary)
                                 Spacer()
@@ -322,13 +322,13 @@ struct NewEmployeeOnboardingView: View {
                                 }
                             }
                             
-                            Text("Позиция: \(template.position)")
+                            Text("Позиция: \(template.targetPosition)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
                             HStack {
                                 Label("\(template.stages.count) этапов", systemImage: "list.bullet")
-                                Label("~\(template.durationDays) дней", systemImage: "calendar")
+                                Label("~\(template.duration) дней", systemImage: "calendar")
                             }
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -365,28 +365,41 @@ struct NewEmployeeOnboardingView: View {
         // Simulate API call
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             // Create stages from template
+            var currentDate = startDate
             let stages = customStages.enumerated().map { index, templateStage in
-                OnboardingStage(
-                    id: UUID().uuidString,
-                    name: templateStage.name,
-                    dayOffset: templateStage.dayOffset,
+                let stageStartDate = currentDate
+                let stageEndDate = Calendar.current.date(byAdding: .day, value: templateStage.duration, to: stageStartDate)
+                currentDate = stageEndDate ?? currentDate
+                
+                return OnboardingStage(
+                    id: UUID(),
+                    templateStageId: templateStage.id,
+                    title: templateStage.title,
+                    description: templateStage.description,
+                    order: templateStage.order,
+                    duration: templateStage.duration,
+                    startDate: stageStartDate,
+                    endDate: stageEndDate,
+                    status: .notStarted,
+                    completionPercentage: 0.0,
                     tasks: templateStage.tasks.map { taskTemplate in
                         OnboardingTask(
-                            id: UUID().uuidString,
                             title: taskTemplate.title,
                             description: taskTemplate.description,
                             type: taskTemplate.type,
                             isCompleted: false,
                             completedAt: nil,
-                            dueDate: Calendar.current.date(
-                                byAdding: .day,
-                                value: templateStage.dayOffset + taskTemplate.dayOffset,
-                                to: startDate
-                            ),
+                            completedBy: nil,
                             courseId: taskTemplate.courseId,
                             testId: taskTemplate.testId,
                             documentUrl: taskTemplate.documentUrl,
-                            meetingId: taskTemplate.meetingId
+                            meetingId: nil,
+                            dueDate: Calendar.current.date(
+                                byAdding: .day,
+                                value: templateStage.duration / 2,
+                                to: stageStartDate
+                            ),
+                            isRequired: true
                         )
                     }
                 )
@@ -394,26 +407,25 @@ struct NewEmployeeOnboardingView: View {
             
             // Create new program
             let newProgram = OnboardingProgram(
-                id: UUID().uuidString,
-                employeeId: employee.id,
+                templateId: template.id,
+                employeeId: UUID(uuidString: employee.id) ?? UUID(),
                 employeeName: employee.fullName,
                 employeePosition: employee.position,
-                employeePhotoUrl: nil,
-                templateId: template.id,
-                templateName: template.name,
+                employeeDepartment: employee.department,
+                managerId: UUID(uuidString: mentorId) ?? UUID(),
+                managerName: "Руководитель",
+                title: template.title,
+                description: template.description,
                 startDate: startDate,
-                endDate: Calendar.current.date(
+                targetEndDate: Calendar.current.date(
                     byAdding: .day,
-                    value: template.durationDays,
+                    value: template.duration,
                     to: startDate
-                ),
-                status: .notStarted,
-                progress: 0.0,
-                mentorId: mentorId,
-                mentorName: "Наставник",
+                ) ?? startDate,
+                actualEndDate: nil,
                 stages: stages,
-                createdAt: Date(),
-                updatedAt: Date()
+                totalDuration: template.duration,
+                status: .notStarted
             )
             
             // Add to service

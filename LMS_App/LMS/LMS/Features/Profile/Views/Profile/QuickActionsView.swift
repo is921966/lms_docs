@@ -7,7 +7,7 @@ struct QuickActionsView: View {
     var userOnboardingPrograms: [OnboardingProgram] {
         guard let userIdString = authService.currentUser?.id,
               let userId = UUID(uuidString: userIdString) else { return [] }
-        return onboardingService.getProgramsForUser(userId)
+        return onboardingService.getPrograms().filter { $0.employeeId == userId }
     }
     
     var activeOnboardingCount: Int {

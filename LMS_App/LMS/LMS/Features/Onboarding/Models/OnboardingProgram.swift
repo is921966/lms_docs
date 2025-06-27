@@ -16,17 +16,17 @@ struct OnboardingProgram: Identifiable, Codable {
     var employeeName: String
     var employeePosition: String
     var employeeDepartment: String
-    let managerId: UUID
-    let managerName: String
+    var managerId: UUID
+    var managerName: String
     
-    let title: String
-    let description: String
-    let startDate: Date
-    let targetEndDate: Date
+    var title: String
+    var description: String
+    var startDate: Date
+    var targetEndDate: Date
     var actualEndDate: Date?
     
     var stages: [OnboardingStage]
-    let totalDuration: Int // in days
+    var totalDuration: Int // in days
     
     var status: OnboardingStatus
     var overallProgress: Double {
@@ -75,10 +75,10 @@ enum OnboardingStatus: String, Codable, CaseIterable {
 struct OnboardingStage: Identifiable, Codable {
     let id: UUID
     let templateStageId: UUID?
-    let title: String
-    let description: String
-    let order: Int
-    let duration: Int // in days
+    var title: String
+    var description: String
+    var order: Int
+    var duration: Int // in days
     var startDate: Date?
     var endDate: Date?
     var status: StageStatus = StageStatus.notStarted
@@ -109,9 +109,9 @@ struct OnboardingStage: Identifiable, Codable {
 // MARK: - Onboarding Task
 struct OnboardingTask: Identifiable, Codable {
     let id = UUID()
-    let title: String
-    let description: String
-    let type: OnboardingTaskType
+    var title: String
+    var description: String
+    var type: OnboardingTaskType
     
     var isCompleted: Bool = false
     var completedAt: Date?

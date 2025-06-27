@@ -40,30 +40,27 @@ struct OnboardingProgramEditView: View {
                 // Program details
                 Section {
                     DatePicker("Дата начала", 
-                              selection: Binding(
-                                get: { editedProgram.startDate },
-                                set: { editedProgram.startDate = $0 }
-                              ),
+                              selection: $editedProgram.startDate,
                               displayedComponents: .date)
                     
-                    if let endDate = editedProgram.endDate {
-                        DatePicker("Дата окончания",
+                    DatePicker("Планируемая дата окончания",
+                              selection: $editedProgram.targetEndDate,
+                              displayedComponents: .date)
+                    
+                    if let actualEndDate = editedProgram.actualEndDate {
+                        DatePicker("Фактическая дата окончания",
                                   selection: Binding(
-                                    get: { endDate },
-                                    set: { editedProgram.endDate = $0 }
+                                    get: { actualEndDate },
+                                    set: { editedProgram.actualEndDate = $0 }
                                   ),
                                   displayedComponents: .date)
                     }
                     
                     HStack {
-                        Text("Наставник")
+                        Text("Руководитель")
                             .foregroundColor(.secondary)
                         Spacer()
-                        TextField("ID наставника", text: Binding(
-                            get: { editedProgram.mentorId },
-                            set: { editedProgram.mentorId = $0 }
-                        ))
-                        .multilineTextAlignment(.trailing)
+                        Text(editedProgram.managerName)
                     }
                 } header: {
                     Text("Детали программы")
@@ -71,11 +68,8 @@ struct OnboardingProgramEditView: View {
                 
                 // Status
                 Section {
-                    Picker("Статус", selection: Binding(
-                        get: { editedProgram.status },
-                        set: { editedProgram.status = $0 }
-                    )) {
-                        ForEach([OnboardingStatus.notStarted, .inProgress, .completed, .delayed], id: \.self) { status in
+                    Picker("Статус", selection: $editedProgram.status) {
+                        ForEach(OnboardingStatus.allCases, id: \.self) { status in
                             Text(status.rawValue).tag(status)
                         }
                     }
@@ -93,7 +87,7 @@ struct OnboardingProgramEditView: View {
                             }
                         )) {
                             HStack {
-                                Text(editedProgram.stages[stageIndex].name)
+                                Text(editedProgram.stages[stageIndex].title)
                                 Spacer()
                                 Text("\(editedProgram.stages[stageIndex].tasks.filter { $0.isCompleted }.count)/\(editedProgram.stages[stageIndex].tasks.count)")
                                     .font(.caption)
@@ -153,10 +147,16 @@ struct OnboardingProgramEditView: View {
     private func saveChanges() {
         isSaving = true
         
-        // Recalculate progress
+        // Update status if all tasks are completed
         let totalTasks = editedProgram.stages.flatMap { $0.tasks }.count
         let completedTasks = editedProgram.stages.flatMap { $0.tasks }.filter { $0.isCompleted }.count
-        editedProgram.progress = totalTasks > 0 ? Double(completedTasks) / Double(totalTasks) : 0
+        
+        if totalTasks > 0 && completedTasks == totalTasks && editedProgram.status != .completed {
+            editedProgram.status = .completed
+            editedProgram.actualEndDate = Date()
+        } else if completedTasks > 0 && editedProgram.status == .notStarted {
+            editedProgram.status = .inProgress
+        }
         
         // Update in service
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -184,7 +184,7 @@ struct StageEditView: View {
     var body: some View {
         Form {
             Section {
-                TextField("Название этапа", text: $editedStage.name)
+                TextField("Название этапа", text: $editedStage.title)
             } header: {
                 Text("Информация об этапе")
             }
@@ -248,6 +248,6 @@ struct StageEditView: View {
 // MARK: - Preview
 struct OnboardingProgramEditView_Previews: PreviewProvider {
     static var previews: some View {
-        OnboardingProgramEditView(program: OnboardingProgram.mockPrograms[0])
+        OnboardingProgramEditView(program: OnboardingProgram.createMockPrograms()[0])
     }
 } 

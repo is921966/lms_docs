@@ -286,7 +286,7 @@ struct TemplateDetailView: View {
                 }
             }
             .sheet(isPresented: $showingCreateProgram) {
-                CreateProgramFromTemplateView(template: template)
+                NewEmployeeOnboardingView()
             }
             .sheet(isPresented: $showingEditTemplate) {
                 EditTemplateView(template: template)
