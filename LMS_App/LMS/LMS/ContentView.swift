@@ -194,6 +194,14 @@ struct StudentTabView: View {
     
     var body: some View {
         TabView {
+            // Feed - лента новостей
+            NavigationStack {
+                FeedView()
+            }
+            .tabItem {
+                Label("Лента", systemImage: "newspaper")
+            }
+            
             // Main screen - персональный дашборд
             NavigationStack {
                 StudentDashboardView()
@@ -208,14 +216,6 @@ struct StudentTabView: View {
             }
             .tabItem {
                 Label("Обучение", systemImage: "book")
-            }
-            
-            // Competencies - только просмотр
-            NavigationStack {
-                StudentCompetencyView()
-            }
-            .tabItem {
-                Label("Компетенции", systemImage: "star")
             }
             
             // Tests - личные тесты
@@ -244,6 +244,14 @@ struct AdminTabView: View {
     
     var body: some View {
         TabView {
+            // Feed - лента новостей
+            NavigationStack {
+                FeedView()
+            }
+            .tabItem {
+                Label("Лента", systemImage: "newspaper")
+            }
+            
             // Main screen - административный дашборд
             NavigationStack {
                 AdminDashboardView()
@@ -268,28 +276,12 @@ struct AdminTabView: View {
                 Label("Контент", systemImage: "folder")
             }
             
-            // Onboarding - управление адаптацией
-            NavigationStack {
-                OnboardingDashboard()
-            }
-            .tabItem {
-                Label("Онбординг", systemImage: "person.badge.clock")
-            }
-            
             // Analytics - полная аналитика
             NavigationStack {
                 AnalyticsDashboard()
             }
             .tabItem {
                 Label("Аналитика", systemImage: "chart.bar.fill")
-            }
-            
-            // Settings - системные настройки
-            NavigationStack {
-                AdminSettingsView()
-            }
-            .tabItem {
-                Label("Настройки", systemImage: "gearshape")
             }
         }
         .environmentObject(authViewModel)

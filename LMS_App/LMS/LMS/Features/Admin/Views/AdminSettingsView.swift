@@ -44,6 +44,8 @@ struct AdminSettingsView: View {
                         BackupSettingsView()
                     case .system:
                         SystemSettingsView()
+                    case .feed:
+                        FeedSettingsView()
                     default:
                         EmptyView()
                     }
@@ -65,6 +67,7 @@ enum SettingsCategory: Int, CaseIterable {
     case security = 3
     case backup = 4
     case system = 5
+    case feed = 6  // Новая категория для ленты новостей
     
     var title: String {
         switch self {
@@ -74,6 +77,7 @@ enum SettingsCategory: Int, CaseIterable {
         case .security: return "Безопасность"
         case .backup: return "Резервное копирование"
         case .system: return "Система"
+        case .feed: return "Лента новостей"
         }
     }
     
@@ -85,6 +89,7 @@ enum SettingsCategory: Int, CaseIterable {
         case .security: return "lock.shield"
         case .backup: return "externaldrive"
         case .system: return "gearshape.2"
+        case .feed: return "newspaper"
         }
     }
 }

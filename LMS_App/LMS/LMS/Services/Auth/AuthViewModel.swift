@@ -3,7 +3,7 @@ import SwiftUI
 import Combine
 
 // MARK: - User Role
-enum UserRole: String {
+enum UserRole: String, Codable, CaseIterable {
     case student = "student"
     case admin = "admin"
     case superAdmin = "superAdmin"

@@ -3,21 +3,15 @@ import SwiftUI
 
 // MARK: - Notification Model
 struct Notification: Identifiable, Codable {
-    let id = UUID()
-    var title: String
-    var message: String
-    var type: NotificationType
-    var priority: NotificationPriority
-    var createdAt: Date = Date()
-    var readAt: Date?
-    var actionType: NotificationAction?
-    var actionData: [String: String]?
-    var recipientId: UUID
-    var senderId: UUID?
-    
-    var isRead: Bool {
-        readAt != nil
-    }
+    let id: String
+    let type: NotificationType
+    let title: String
+    let message: String
+    let createdAt: Date
+    var isRead: Bool
+    let priority: NotificationPriority
+    let actionUrl: String?
+    let metadata: [String: String]?
     
     var icon: String {
         switch type {
@@ -35,6 +29,10 @@ struct Notification: Identifiable, Codable {
             return "star.fill"
         case .system:
             return "info.circle.fill"
+        case .feedActivity:
+            return "bubble.left.and.bubble.right.fill"
+        case .feedMention:
+            return "at.circle.fill"
         }
     }
     
@@ -52,20 +50,44 @@ struct Notification: Identifiable, Codable {
 
 // MARK: - Notification Types
 enum NotificationType: String, Codable, CaseIterable {
-    case courseAssigned = "Назначен курс"
-    case testReminder = "Напоминание о тесте"
-    case certificateEarned = "Получен сертификат"
-    case onboardingTask = "Задача онбординга"
-    case deadline = "Приближается дедлайн"
-    case achievement = "Достижение"
-    case system = "Системное"
+    case courseAssigned = "course_assigned"
+    case testReminder = "test_reminder"
+    case certificateEarned = "certificate_earned"
+    case onboardingTask = "onboarding_task"
+    case deadline = "deadline"
+    case achievement = "achievement"
+    case system = "system"
+    case feedActivity = "feed_activity"
+    case feedMention = "feed_mention"
+    
+    var displayName: String {
+        switch self {
+        case .courseAssigned: return "Назначен курс"
+        case .testReminder: return "Напоминание о тесте"
+        case .certificateEarned: return "Получен сертификат"
+        case .onboardingTask: return "Задача онбординга"
+        case .deadline: return "Приближается дедлайн"
+        case .achievement: return "Достижение"
+        case .system: return "Системное"
+        case .feedActivity: return "Активность в ленте"
+        case .feedMention: return "Упоминание"
+        }
+    }
 }
 
 // MARK: - Notification Priority
 enum NotificationPriority: String, Codable, CaseIterable {
-    case high = "Высокий"
-    case medium = "Средний"
-    case low = "Низкий"
+    case high = "high"
+    case medium = "medium"
+    case low = "low"
+    
+    var displayName: String {
+        switch self {
+        case .high: return "Высокий"
+        case .medium: return "Средний"
+        case .low: return "Низкий"
+        }
+    }
 }
 
 // MARK: - Notification Actions
@@ -82,41 +104,48 @@ enum NotificationAction: String, Codable {
 extension Notification {
     static let mockNotifications = [
         Notification(
+            id: "1",
+            type: .courseAssigned,
             title: "Новый курс назначен",
             message: "Вам назначен курс 'Основы проектного управления'. Срок прохождения: 30 дней.",
-            type: .courseAssigned,
+            createdAt: Date().addingTimeInterval(-3600),
+            isRead: false,
             priority: .high,
-            actionType: .openCourse,
-            actionData: ["courseId": "course-1"],
-            recipientId: UUID()
+            actionUrl: "course://1",
+            metadata: ["courseId": "1"]
         ),
         Notification(
+            id: "2",
+            type: .testReminder,
             title: "Напоминание о тесте",
             message: "Не забудьте пройти тест по курсу 'Работа с клиентами' до конца недели.",
-            type: .testReminder,
+            createdAt: Date().addingTimeInterval(-7200),
+            isRead: false,
             priority: .medium,
-            actionType: .openTest,
-            actionData: ["testId": "test-1"],
-            recipientId: UUID()
+            actionUrl: "test://1",
+            metadata: ["testId": "1"]
         ),
         Notification(
+            id: "3",
+            type: .certificateEarned,
             title: "Поздравляем с сертификатом!",
             message: "Вы успешно завершили курс и получили сертификат.",
-            type: .certificateEarned,
+            createdAt: Date().addingTimeInterval(-86400),
+            isRead: true,
             priority: .low,
-            readAt: Date().addingTimeInterval(-3600),
-            actionType: .viewCertificate,
-            actionData: ["certificateId": "cert-1"],
-            recipientId: UUID()
+            actionUrl: "certificate://1",
+            metadata: ["certificateId": "1"]
         ),
         Notification(
+            id: "4",
+            type: .onboardingTask,
             title: "Задача онбординга",
             message: "Пожалуйста, завершите знакомство с корпоративными политиками.",
-            type: .onboardingTask,
+            createdAt: Date().addingTimeInterval(-10800),
+            isRead: false,
             priority: .high,
-            actionType: .openOnboardingTask,
-            actionData: ["taskId": "task-1"],
-            recipientId: UUID()
+            actionUrl: "onboarding://task/1",
+            metadata: ["taskId": "1"]
         )
     ]
 } 
