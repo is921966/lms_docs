@@ -55,26 +55,36 @@ final class OnboardingTests: XCTestCase {
         // Given
         var stages = [
             OnboardingStage(
-                orderIndex: 1,
+                id: UUID(),
+                templateStageId: nil,
                 title: "Этап 1",
                 description: "Описание",
+                order: 1,
                 duration: 5,
+                startDate: nil,
+                endDate: nil,
+                status: StageStatus.completed,
+                completionPercentage: 1.0,
                 tasks: [
                     OnboardingTask(title: "Задача 1", description: "", type: .task, isCompleted: true),
                     OnboardingTask(title: "Задача 2", description: "", type: .task, isCompleted: true)
-                ],
-                status: .completed
+                ]
             ),
             OnboardingStage(
-                orderIndex: 2,
+                id: UUID(),
+                templateStageId: nil,
                 title: "Этап 2",
                 description: "Описание",
+                order: 2,
                 duration: 5,
+                startDate: nil,
+                endDate: nil,
+                status: StageStatus.inProgress,
+                completionPercentage: 0.5,
                 tasks: [
                     OnboardingTask(title: "Задача 3", description: "", type: .task, isCompleted: true),
                     OnboardingTask(title: "Задача 4", description: "", type: .task, isCompleted: false)
-                ],
-                status: .inProgress
+                ]
             )
         ]
         
@@ -136,12 +146,17 @@ final class OnboardingTests: XCTestCase {
         ]
         
         let stage = OnboardingStage(
-            orderIndex: 1,
+            id: UUID(),
+            templateStageId: nil,
             title: "Тестовый этап",
             description: "Описание",
+            order: 1,
             duration: 5,
-            tasks: tasks,
-            status: .inProgress
+            startDate: nil,
+            endDate: nil,
+            status: StageStatus.inProgress,
+            completionPercentage: 0.5,
+            tasks: tasks
         )
         
         // Then
@@ -241,17 +256,18 @@ final class OnboardingTests: XCTestCase {
             title: "Тестовый шаблон",
             description: "Описание",
             targetPosition: "Должность",
-            department: "Отдел",
+            targetDepartment: "Отдел",
+            duration: 30,
+            createdAt: Date(),
+            updatedAt: Date(),
             stages: [],
-            totalDuration: 30,
-            icon: "person.fill",
-            color: .blue
+            icon: "person.fill"
         )
         
         // Then
         XCTAssertNotNil(template)
         XCTAssertEqual(template.title, "Тестовый шаблон")
-        XCTAssertEqual(template.totalDuration, 30)
+        XCTAssertEqual(template.duration, 30)
     }
     
     func testMockTemplatesExist() {
