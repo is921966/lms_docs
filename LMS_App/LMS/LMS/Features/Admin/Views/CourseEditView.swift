@@ -22,6 +22,7 @@ struct CourseEditView: View {
     @State private var showingCompetencyLink = false
     @State private var showingPositionLink = false
     @State private var showingTestLink = false
+    @State private var showingMaterialsManagement = false
     
     init(course: Course) {
         self._course = State(initialValue: course)
@@ -92,6 +93,21 @@ struct CourseEditView: View {
                         HStack {
                             Image(systemName: "plus.circle.fill")
                             Text("Добавить модуль")
+                        }
+                        .foregroundColor(.blue)
+                    }
+                }
+                
+                // Materials section
+                Section("Материалы") {
+                    Text("Материалов в курсе: \(course.materials.count)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    Button(action: { showingMaterialsManagement = true }) {
+                        HStack {
+                            Image(systemName: "paperclip.circle.fill")
+                            Text("Управление материалами")
                         }
                         .foregroundColor(.blue)
                     }
@@ -202,6 +218,9 @@ struct CourseEditView: View {
             }
             .sheet(isPresented: $showingTestLink) {
                 CourseTestLinkView(course: $course)
+            }
+            .sheet(isPresented: $showingMaterialsManagement) {
+                CourseMaterialsView(course: $course)
             }
             .alert("Изменения сохранены", isPresented: $showingSaveAlert) {
                 Button("OK") {
