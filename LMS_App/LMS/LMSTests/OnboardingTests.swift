@@ -53,7 +53,7 @@ final class OnboardingTests: XCTestCase {
     
     func testProgramProgressCalculation() {
         // Given
-        var stages = [
+        let stages = [
             OnboardingStage(
                 id: UUID(),
                 templateStageId: nil,
@@ -257,11 +257,10 @@ final class OnboardingTests: XCTestCase {
             description: "Описание",
             targetPosition: "Должность",
             targetDepartment: "Отдел",
+            stages: [],
             duration: 30,
             createdAt: Date(),
-            updatedAt: Date(),
-            stages: [],
-            icon: "person.fill"
+            updatedAt: Date()
         )
         
         // Then

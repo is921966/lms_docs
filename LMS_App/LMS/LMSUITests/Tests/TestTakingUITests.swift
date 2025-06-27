@@ -58,14 +58,15 @@ final class TestTakingUITests: UITestBase {
         // Find single choice question
         if app.staticTexts["Выберите один вариант ответа"].exists {
             // Select first answer option
-            let answerOption = app.buttons[AccessibilityIdentifiers.Tests.answerOption].element(boundBy: 0)
+            let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
+            let answerOption = answerOptions.element(boundBy: 0)
             answerOption.tap()
             
             // Verify selection
             XCTAssertTrue(answerOption.isSelected)
             
             // Try to select another option
-            let secondOption = app.buttons[AccessibilityIdentifiers.Tests.answerOption].element(boundBy: 1)
+            let secondOption = answerOptions.element(boundBy: 1)
             secondOption.tap()
             
             // First should be deselected, second selected
@@ -84,8 +85,9 @@ final class TestTakingUITests: UITestBase {
         
         if app.staticTexts["Выберите несколько вариантов"].exists {
             // Select multiple options
-            let firstOption = app.buttons[AccessibilityIdentifiers.Tests.answerOption].element(boundBy: 0)
-            let secondOption = app.buttons[AccessibilityIdentifiers.Tests.answerOption].element(boundBy: 1)
+            let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
+            let firstOption = answerOptions.element(boundBy: 0)
+            let secondOption = answerOptions.element(boundBy: 1)
             
             firstOption.tap()
             secondOption.tap()
@@ -129,8 +131,9 @@ final class TestTakingUITests: UITestBase {
         try navigateToTestPlayer()
         
         // Answer first question
-        if let firstAnswer = app.buttons[AccessibilityIdentifiers.Tests.answerOption].allElementsBoundByIndex.first {
-            firstAnswer.tap()
+        let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
+        if answerOptions.count > 0 {
+            answerOptions.element(boundBy: 0).tap()
         }
         
         // Go to next question
@@ -150,7 +153,7 @@ final class TestTakingUITests: UITestBase {
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Вопрос 1'")).firstMatch.exists)
         
         // Verify answer is still selected
-        let firstAnswer = app.buttons[AccessibilityIdentifiers.Tests.answerOption].element(boundBy: 0)
+        let firstAnswer = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption).element(boundBy: 0)
         XCTAssertTrue(firstAnswer.isSelected)
     }
     
@@ -252,8 +255,9 @@ final class TestTakingUITests: UITestBase {
         try navigateToTestPlayer()
         
         // Answer only first question
-        if let firstAnswer = app.buttons[AccessibilityIdentifiers.Tests.answerOption].allElementsBoundByIndex.first {
-            firstAnswer.tap()
+        let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
+        if answerOptions.count > 0 {
+            answerOptions.element(boundBy: 0).tap()
         }
         
         // Try to submit
@@ -289,8 +293,9 @@ final class TestTakingUITests: UITestBase {
         try navigateToTestPlayer()
         
         // Answer a question
-        if let firstAnswer = app.buttons[AccessibilityIdentifiers.Tests.answerOption].allElementsBoundByIndex.first {
-            firstAnswer.tap()
+        let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
+        if answerOptions.count > 0 {
+            answerOptions.element(boundBy: 0).tap()
         }
         
         // Go to next question
@@ -318,7 +323,7 @@ final class TestTakingUITests: UITestBase {
         
         // Go back to check first answer is still saved
         app.buttons[AccessibilityIdentifiers.Tests.previousQuestionButton].tap()
-        let firstAnswer = app.buttons[AccessibilityIdentifiers.Tests.answerOption].element(boundBy: 0)
+        let firstAnswer = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption).element(boundBy: 0)
         XCTAssertTrue(firstAnswer.isSelected)
     }
     
@@ -350,7 +355,9 @@ final class TestTakingUITests: UITestBase {
     private func answerAllQuestions() {
         repeat {
             // Answer current question
-            if let firstAnswer = app.buttons[AccessibilityIdentifiers.Tests.answerOption].allElementsBoundByIndex.first {
+            let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
+            if answerOptions.count > 0 {
+                let firstAnswer = answerOptions.element(boundBy: 0)
                 if !firstAnswer.isSelected {
                     firstAnswer.tap()
                 }

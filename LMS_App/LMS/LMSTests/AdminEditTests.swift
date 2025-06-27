@@ -8,6 +8,7 @@
 import XCTest
 @testable import LMS
 
+@MainActor
 final class AdminEditTests: XCTestCase {
     
     var testService: TestMockService!
@@ -74,11 +75,24 @@ final class AdminEditTests: XCTestCase {
             Course.mockCourses[courseIndex] = Course(
                 title: newTitle,
                 description: newDescription,
-                progress: firstCourse.progress,
-                icon: firstCourse.icon,
-                color: firstCourse.color,
+                categoryId: firstCourse.categoryId,
+                status: firstCourse.status,
+                type: firstCourse.type,
+                modules: firstCourse.modules,
+                materials: firstCourse.materials,
+                testId: firstCourse.testId,
+                competencyIds: firstCourse.competencyIds,
+                positionIds: firstCourse.positionIds,
+                prerequisiteCourseIds: firstCourse.prerequisiteCourseIds,
                 duration: firstCourse.duration,
-                modules: firstCourse.modules
+                estimatedHours: firstCourse.estimatedHours,
+                passingScore: firstCourse.passingScore,
+                certificateTemplateId: firstCourse.certificateTemplateId,
+                maxAttempts: firstCourse.maxAttempts,
+                createdBy: firstCourse.createdBy,
+                createdAt: firstCourse.createdAt,
+                updatedAt: Date(),
+                publishedAt: firstCourse.publishedAt
             )
         }
         
@@ -117,11 +131,8 @@ final class AdminEditTests: XCTestCase {
         let newCourse = Course(
             title: "New Course",
             description: "New course description",
-            progress: 0.0,
-            icon: "book.fill",
-            color: .blue,
             duration: "4 часа",
-            modules: []
+            createdBy: UUID()
         )
         
         // When

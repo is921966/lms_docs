@@ -91,7 +91,7 @@ final class CourseEnrollmentUITests: UITestBase {
         app.navigationBars.buttons.firstMatch.tap()
         
         // Course should not be in My Courses anymore
-        let myCourse = coursesList.cells.containing(.staticText, identifier: courseName).firstMatch
+        let myCourse = coursesList.cells.staticTexts[courseName].firstMatch
         XCTAssertFalse(myCourse.exists)
     }
     
