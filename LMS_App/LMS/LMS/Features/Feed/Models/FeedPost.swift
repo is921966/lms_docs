@@ -90,6 +90,7 @@ struct FeedPermissions: Codable {
     let canShare: Bool
     let canDelete: Bool
     let canEdit: Bool
+    let canModerate: Bool
     let visibilityOptions: [FeedVisibility]
     
     static let studentDefault = FeedPermissions(
@@ -99,6 +100,7 @@ struct FeedPermissions: Codable {
         canShare: true,
         canDelete: false,
         canEdit: false,
+        canModerate: false,
         visibilityOptions: []
     )
     
@@ -109,6 +111,7 @@ struct FeedPermissions: Codable {
         canShare: true,
         canDelete: true,
         canEdit: true,
+        canModerate: true,
         visibilityOptions: FeedVisibility.allCases
     )
 }

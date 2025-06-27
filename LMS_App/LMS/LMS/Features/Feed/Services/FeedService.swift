@@ -21,21 +21,25 @@ class FeedService: ObservableObject {
         MockAuthService.shared.$currentUser
             .sink { [weak self] user in
                 guard let user = user else { return }
-                self?.updatePermissions(for: user.role)
+                self?.updatePermissions(for: user)
             }
             .store(in: &cancellables)
     }
     
-    private func updatePermissions(for role: UserRole) {
-        switch role {
-        case .admin, .superAdmin:
+    private func updatePermissions(for user: UserResponse) {
+        // Check user roles
+        if user.roles.contains("admin") || user.roles.contains("superAdmin") {
             permissions = .adminDefault
-        case .student:
+        } else {
             permissions = .studentDefault
         }
     }
     
     // MARK: - Feed Operations
+    
+    func refresh() {
+        loadMockData()
+    }
     
     func createPost(content: String, images: [String] = [], attachments: [FeedAttachment] = [], visibility: FeedVisibility = .everyone) async throws {
         guard permissions.canPost else {
@@ -46,12 +50,15 @@ class FeedService: ObservableObject {
             throw FeedError.notAuthenticated
         }
         
+        // Determine role from user roles array
+        let userRole: UserRole = currentUser.roles.contains("admin") ? .admin : .student
+        
         let newPost = FeedPost(
             id: UUID().uuidString,
             authorId: currentUser.id,
-            authorName: currentUser.name,
-            authorRole: currentUser.role,
-            authorAvatar: currentUser.avatarUrl,
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+            authorRole: userRole,
+            authorAvatar: currentUser.avatar,
             content: content,
             images: images,
             attachments: attachments,
@@ -138,8 +145,8 @@ class FeedService: ObservableObject {
             id: UUID().uuidString,
             postId: postId,
             authorId: currentUser.id,
-            authorName: currentUser.name,
-            authorAvatar: currentUser.avatarUrl,
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+            authorAvatar: currentUser.avatar,
             content: content,
             createdAt: Date(),
             likes: []
@@ -184,17 +191,19 @@ class FeedService: ObservableObject {
             metadata: ["postId": post.id]
         )
         
-        NotificationService.shared.addNotification(notification)
+        // Add notification to the service
+        await NotificationService.shared.add(notification)
     }
     
     private func sendLikeNotification(post: FeedPost) async {
         guard let currentUser = MockAuthService.shared.currentUser,
               currentUser.id != post.authorId else { return }
         
+        let userName = "\(currentUser.firstName) \(currentUser.lastName)"
         let notification = Notification(
             id: UUID().uuidString,
             type: .feedActivity,
-            title: "\(currentUser.name) понравилась ваша запись",
+            title: "\(userName) понравилась ваша запись",
             message: String(post.content.prefix(100)),
             createdAt: Date(),
             isRead: false,
@@ -203,7 +212,7 @@ class FeedService: ObservableObject {
             metadata: ["postId": post.id]
         )
         
-        NotificationService.shared.addNotification(notification)
+        await NotificationService.shared.add(notification)
     }
     
     private func sendCommentNotification(post: FeedPost, comment: FeedComment) async {
@@ -221,7 +230,7 @@ class FeedService: ObservableObject {
             metadata: ["postId": post.id, "commentId": comment.id]
         )
         
-        NotificationService.shared.addNotification(notification)
+        await NotificationService.shared.add(notification)
     }
     
     // MARK: - Mock Data

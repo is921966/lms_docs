@@ -24,15 +24,20 @@ struct CreatePostView: View {
                         .fill(Color.blue.opacity(0.2))
                         .frame(width: 50, height: 50)
                         .overlay(
-                            Text(authService.currentUser?.name.prefix(1).uppercased() ?? "?")
+                            Text(authService.currentUser?.firstName.prefix(1).uppercased() ?? "?")
                                 .font(.title3)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.blue)
                         )
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(authService.currentUser?.name ?? "Пользователь")
-                            .font(.headline)
+                        if let user = authService.currentUser {
+                            Text("\(user.firstName) \(user.lastName)")
+                                .font(.headline)
+                        } else {
+                            Text("Пользователь")
+                                .font(.headline)
+                        }
                         
                         // Visibility selector
                         Menu {

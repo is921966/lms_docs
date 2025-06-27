@@ -25,9 +25,23 @@ class NotificationService: ObservableObject {
         updateUnreadCount()
     }
     
+    // Add notification method for async compatibility
+    func add(_ notification: Notification) async {
+        await MainActor.run {
+            notifications.insert(notification, at: 0)
+            updateUnreadCount()
+            saveNotifications()
+            
+            // In production, also send push notification
+            if notification.priority == .high {
+                scheduleLocalNotification(notification)
+            }
+        }
+    }
+    
     func markAsRead(_ notification: Notification) {
         if let index = notifications.firstIndex(where: { $0.id == notification.id }) {
-            notifications[index].readAt = Date()
+            notifications[index].isRead = true
             updateUnreadCount()
             saveNotifications()
         }
@@ -35,8 +49,8 @@ class NotificationService: ObservableObject {
     
     func markAllAsRead() {
         for index in notifications.indices {
-            if notifications[index].readAt == nil {
-                notifications[index].readAt = Date()
+            if !notifications[index].isRead {
+                notifications[index].isRead = true
             }
         }
         updateUnreadCount()
@@ -58,14 +72,18 @@ class NotificationService: ObservableObject {
         actionType: NotificationAction? = nil,
         actionData: [String: String]? = nil
     ) {
+        let actionUrl = actionType != nil ? "\(actionType!.rawValue)://\(recipientId)" : nil
+        
         let notification = Notification(
+            id: UUID().uuidString,
+            type: type,
             title: title,
             message: message,
-            type: type,
+            createdAt: Date(),
+            isRead: false,
             priority: priority,
-            actionType: actionType,
-            actionData: actionData,
-            recipientId: recipientId
+            actionUrl: actionUrl,
+            metadata: actionData
         )
         
         notifications.insert(notification, at: 0)
@@ -177,22 +195,7 @@ class NotificationService: ObservableObject {
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .medium
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter.string(from: date)
-    }
-    
-    // MARK: - Filtering
-    
-    func getNotifications(for userId: UUID) -> [Notification] {
-        notifications.filter { $0.recipientId == userId }
-    }
-    
-    func getUnreadNotifications(for userId: UUID) -> [Notification] {
-        notifications.filter { $0.recipientId == userId && !$0.isRead }
-    }
-    
-    func getNotificationsByType(_ type: NotificationType, for userId: UUID) -> [Notification] {
-        notifications.filter { $0.recipientId == userId && $0.type == type }
     }
 }

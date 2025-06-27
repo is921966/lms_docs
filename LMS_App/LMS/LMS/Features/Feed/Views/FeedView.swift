@@ -4,95 +4,118 @@ struct FeedView: View {
     @StateObject private var feedService = FeedService.shared
     @StateObject private var authService = MockAuthService.shared
     @State private var showingCreatePost = false
-    @State private var refreshing = false
+    @State private var showingSettings = false
+    @State private var isRefreshing = false
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Create post section (if user has permission)
-                    if feedService.permissions.canPost {
-                        CreatePostSection(showingCreatePost: $showingCreatePost)
-                            .padding()
+        ScrollView {
+            VStack(spacing: 16) {
+                // Create post button (only for admins)
+                if feedService.permissions.canPost {
+                    Button(action: {
+                        showingCreatePost = true
+                    }) {
+                        HStack {
+                            Image(systemName: "square.and.pencil")
+                            Text("Создать запись")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                     }
-                    
-                    // Posts feed
-                    LazyVStack(spacing: 12) {
+                    .padding(.horizontal)
+                }
+                
+                // Posts
+                if feedService.posts.isEmpty && !feedService.isLoading {
+                    EmptyFeedView()
+                        .padding(.top, 50)
+                } else {
+                    LazyVStack(spacing: 16) {
                         ForEach(feedService.posts) { post in
                             FeedPostCard(post: post)
-                                .background(Color(.systemBackground))
-                                .cornerRadius(12)
-                                .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
                                 .padding(.horizontal)
                         }
                     }
-                    .padding(.vertical)
                 }
             }
-            .background(Color(.systemGray6))
-            .navigationTitle("Лента новостей")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
+            .padding(.vertical)
+        }
+        .refreshable {
+            await refreshFeed()
+        }
+        .navigationTitle("Лента новостей")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                // User avatar
+                if let user = authService.currentUser {
+                    Circle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 32, height: 32)
+                        .overlay(
+                            Text(String(user.firstName.prefix(1)).uppercased())
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                        )
+                }
+            }
+            
+            if feedService.permissions.canModerate {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { refreshFeed() }) {
-                        Image(systemName: "arrow.clockwise")
+                    Button(action: {
+                        showingSettings = true
+                    }) {
+                        Image(systemName: "gearshape")
                     }
                 }
             }
-            .refreshable {
-                await refreshFeed()
-            }
-            .sheet(isPresented: $showingCreatePost) {
+        }
+        .sheet(isPresented: $showingCreatePost) {
+            NavigationStack {
                 CreatePostView()
             }
         }
+        .sheet(isPresented: $showingSettings) {
+            NavigationStack {
+                FeedSettingsView()
+            }
+        }
     }
     
-    @MainActor
     private func refreshFeed() async {
-        refreshing = true
-        // In real app, would fetch from server
-        await Task.sleep(1_000_000_000) // 1 second
-        refreshing = false
+        isRefreshing = true
+        // Simulate network delay
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+        feedService.refresh()
+        isRefreshing = false
     }
 }
 
-// MARK: - Create Post Section
-struct CreatePostSection: View {
-    @Binding var showingCreatePost: Bool
-    @StateObject private var authService = MockAuthService.shared
-    
+struct EmptyFeedView: View {
     var body: some View {
-        HStack(spacing: 12) {
-            // User avatar
-            Circle()
-                .fill(Color.blue.opacity(0.2))
-                .frame(width: 40, height: 40)
-                .overlay(
-                    Text(authService.currentUser?.name.prefix(1).uppercased() ?? "?")
-                        .font(.headline)
-                        .foregroundColor(.blue)
-                )
+        VStack(spacing: 20) {
+            Image(systemName: "newspaper")
+                .font(.system(size: 60))
+                .foregroundColor(.gray)
             
-            // Create post button
-            Button(action: { showingCreatePost = true }) {
-                HStack {
-                    Text("Что у вас нового?")
-                        .foregroundColor(.secondary)
-                    Spacer()
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(Color(.systemGray5))
-                .cornerRadius(20)
-            }
+            Text("Пока нет записей")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text("Будьте первым, кто поделится новостями!")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }
+
 #Preview {
-    FeedView()
+    NavigationStack {
+        FeedView()
+    }
 }

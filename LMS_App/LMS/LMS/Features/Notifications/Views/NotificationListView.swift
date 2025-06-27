@@ -8,14 +8,12 @@ struct NotificationListView: View {
     @State private var notificationToDelete: Notification?
     
     var filteredNotifications: [Notification] {
-        let userNotifications = notificationService.getNotifications(
-            for: UUID(uuidString: authService.currentUser?.id ?? "") ?? UUID()
-        )
+        let allNotifications = notificationService.notifications
         
         if let filter = selectedFilter {
-            return userNotifications.filter { $0.type == filter }
+            return allNotifications.filter { $0.type == filter }
         }
-        return userNotifications
+        return allNotifications
     }
     
     var body: some View {
@@ -32,7 +30,7 @@ struct NotificationListView: View {
                         
                         ForEach(NotificationType.allCases, id: \.self) { type in
                             NotificationFilterChip(
-                                title: type.rawValue,
+                                title: type.displayName,
                                 isSelected: selectedFilter == type,
                                 action: { selectedFilter = type }
                             )
@@ -182,31 +180,29 @@ struct NotificationRow: View {
     }
     
     private func handleNotificationAction() {
-        guard let actionType = notification.actionType else { return }
-        
-        switch actionType {
-        case .openCourse, .openTest, .viewCertificate, .openOnboardingTask, .openProfile:
+        // Check if notification has an actionUrl
+        if notification.actionUrl != nil {
             navigateToAction = true
-        case .none:
-            break
         }
     }
     
     @ViewBuilder
     private func destinationView() -> some View {
-        switch notification.actionType {
-        case .openCourse:
+        // Route based on notification type
+        switch notification.type {
+        case .courseAssigned:
             LearningListView()
-        case .openTest:
+        case .testReminder:
             TestListView()
-        case .viewCertificate:
+        case .certificateEarned:
             CertificateListView()
-        case .openOnboardingTask:
+        case .onboardingTask:
             MyOnboardingProgramsView()
-        case .openProfile:
-            ProfileView()
-        case .none:
-            EmptyView()
+        case .feedActivity, .feedMention:
+            // In real app would navigate to specific feed post
+            NavigationStack {
+                FeedView()
+            }
         default:
             EmptyView()
         }
