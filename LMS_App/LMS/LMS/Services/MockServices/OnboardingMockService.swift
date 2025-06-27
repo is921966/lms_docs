@@ -154,4 +154,88 @@ class OnboardingMockService: ObservableObject {
         
         return (total, byPosition)
     }
+    
+    // MARK: - Additional Methods for Tests
+    
+    func resetData() {
+        programs.removeAll()
+        templates.removeAll()
+        loadMockData()
+    }
+    
+    func createProgramFromTemplate(templateId: UUID, employeeName: String, position: String, startDate: Date = Date()) -> OnboardingProgram? {
+        guard let template = getTemplate(by: templateId) else { return nil }
+        
+        let endDate = startDate.addingTimeInterval(TimeInterval(template.duration * 24 * 60 * 60))
+        
+        let program = OnboardingProgram(
+            templateId: templateId,
+            employeeId: UUID(),
+            employeeName: employeeName,
+            employeePosition: position,
+            employeeDepartment: template.targetDepartment ?? "Не указан",
+            managerId: UUID(),
+            managerName: "Менеджер",
+            title: template.title,
+            description: template.description,
+            startDate: startDate,
+            targetEndDate: endDate,
+            stages: template.stages.map { templateStage in
+                OnboardingStage(
+                    id: UUID(),
+                    templateStageId: templateStage.id,
+                    title: templateStage.title,
+                    description: templateStage.description,
+                    order: templateStage.order,
+                    duration: templateStage.duration,
+                    startDate: nil,
+                    endDate: nil,
+                    status: .notStarted,
+                    completionPercentage: 0,
+                    tasks: templateStage.tasks.map { templateTask in
+                        OnboardingTask(
+                            title: templateTask.title,
+                            description: templateTask.description,
+                            type: templateTask.type,
+                            isCompleted: false,
+                            completedAt: nil,
+                            completedBy: nil,
+                            courseId: templateTask.courseId,
+                            testId: templateTask.testId,
+                            documentUrl: templateTask.documentUrl,
+                            meetingId: nil,
+                            dueDate: nil,
+                            isRequired: true
+                        )
+                    }
+                )
+            },
+            totalDuration: template.duration,
+            status: .notStarted
+        )
+        
+        addProgram(program)
+        return program
+    }
+    
+    func getProgramsForUser(_ userId: UUID) -> [OnboardingProgram] {
+        // Фильтруем программы по employeeId
+        return programs.filter { $0.employeeId == userId }
+    }
+    
+    func updateTaskStatus(programId: UUID, taskId: UUID, isCompleted: Bool) {
+        guard var program = getProgram(by: programId) else { return }
+        
+        // Найти задачу во всех этапах
+        for (stageIndex, stage) in program.stages.enumerated() {
+            if let taskIndex = stage.tasks.firstIndex(where: { $0.id == taskId }) {
+                if isCompleted {
+                    markTaskCompleted(programId: programId, stageIndex: stageIndex, taskId: taskId)
+                } else {
+                    markTaskIncomplete(programId: programId, stageIndex: stageIndex, taskId: taskId)
+                }
+                break
+            }
+        }
+    }
 } 

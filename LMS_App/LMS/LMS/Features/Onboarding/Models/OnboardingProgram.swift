@@ -46,7 +46,7 @@ struct OnboardingProgram: Identifiable, Codable {
     var daysRemaining: Int {
         let calendar = Calendar.current
         let days = calendar.dateComponents([.day], from: Date(), to: targetEndDate).day ?? 0
-        return max(0, days)
+        return days
     }
     
     var isOverdue: Bool {

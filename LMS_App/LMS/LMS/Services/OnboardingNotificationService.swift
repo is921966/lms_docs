@@ -217,7 +217,7 @@ class OnboardingNotificationService: ObservableObject {
 
 struct OnboardingNotification: Identifiable {
     let id: UUID
-    let type: NotificationType
+    let type: OnboardingNotificationType
     let title: String
     let body: String
     let programId: UUID
@@ -227,7 +227,7 @@ struct OnboardingNotification: Identifiable {
     var isRead: Bool = false
 }
 
-enum NotificationType {
+enum OnboardingNotificationType {
     case taskReminder
     case taskOverdue
     case stageCompleted

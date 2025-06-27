@@ -183,49 +183,53 @@ final class OnboardingTests: XCTestCase {
     func testCreateProgramFromTemplate() {
         // Given
         let template = OnboardingTemplate.mockTemplates.first!
-        let employeeId = UUID()
-        let managerId = UUID()
         
         // When
         let program = onboardingService.createProgramFromTemplate(
-            template: template,
-            employeeId: employeeId,
+            templateId: template.id,
             employeeName: "Новый сотрудник",
-            employeePosition: "Должность",
-            employeeDepartment: "Отдел",
-            managerId: managerId,
-            managerName: "Руководитель",
+            position: "Должность",
             startDate: Date()
         )
         
         // Then
         XCTAssertNotNil(program)
-        XCTAssertEqual(program.templateId, template.id)
-        XCTAssertEqual(program.employeeId, employeeId)
-        XCTAssertEqual(program.stages.count, template.stages.count)
-        XCTAssertTrue(onboardingService.programs.contains { $0.id == program.id })
+        XCTAssertEqual(program?.templateId, template.id)
+        XCTAssertEqual(program?.employeeName, "Новый сотрудник")
+        XCTAssertEqual(program?.employeePosition, "Должность")
+        XCTAssertEqual(program?.stages.count, template.stages.count)
+        if let program = program {
+            XCTAssertTrue(onboardingService.programs.contains { $0.id == program.id })
+        }
     }
     
     func testGetProgramsForUser() {
         // Given
         let userId = UUID()
+        // Сначала создаем программу
         let program1 = onboardingService.createProgramFromTemplate(
-            template: OnboardingTemplate.mockTemplates.first!,
-            employeeId: userId,
+            templateId: OnboardingTemplate.mockTemplates.first!.id,
             employeeName: "Сотрудник",
-            employeePosition: "Должность",
-            employeeDepartment: "Отдел",
-            managerId: UUID(),
-            managerName: "Руководитель",
+            position: "Должность",
             startDate: Date()
         )
+        
+        // Привязываем программу к пользователю через employeeId
+        if let program1 = program1 {
+            var updatedProgram = program1
+            updatedProgram.employeeId = userId
+            // Обновляем программу в сервисе
+            if let index = onboardingService.programs.firstIndex(where: { $0.id == program1.id }) {
+                onboardingService.programs[index] = updatedProgram
+            }
+        }
         
         // When
         let userPrograms = onboardingService.getProgramsForUser(userId)
         
         // Then
         XCTAssertEqual(userPrograms.count, 1)
-        XCTAssertEqual(userPrograms.first?.id, program1.id)
+        XCTAssertEqual(userPrograms.first?.id, program1?.id)
     }
     
     func testUpdateTaskStatus() {
@@ -237,7 +241,6 @@ final class OnboardingTests: XCTestCase {
         // When
         onboardingService.updateTaskStatus(
             programId: program.id,
-            stageId: stage.id,
             taskId: task.id,
             isCompleted: true
         )

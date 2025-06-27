@@ -64,16 +64,18 @@ struct OnboardingTaskView: View {
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         .sheet(isPresented: $showingCourseDetail) {
-            if let courseId = task.courseId {
+            if let courseId = task.courseId,
+               let course = CourseMockService.shared.courses.first(where: { $0.id == courseId }) {
                 NavigationView {
-                    CourseDetailView(courseId: courseId)
+                    CourseDetailView(course: course)
                 }
             }
         }
         .sheet(isPresented: $showingTestDetail) {
-            if let testId = task.testId {
+            if let testId = task.testId,
+               let test = TestMockService.shared.tests.first(where: { $0.id == testId }) {
                 NavigationView {
-                    TestDetailView(testId: testId)
+                    TestDetailView(test: test, viewModel: TestViewModel())
                 }
             }
         }
@@ -173,137 +175,6 @@ struct OnboardingTaskView: View {
         formatter.timeStyle = .none
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter
-    }
-}
-
-// MARK: - Course Detail View (Placeholder)
-struct CourseDetailView: View {
-    let courseId: UUID
-    @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Course header
-                VStack(alignment: .leading, spacing: 12) {
-                    Image(systemName: "book.closed.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(.blue)
-                        .frame(maxWidth: .infinity)
-                    
-                    Text("Курс: Корпоративная культура")
-                        .font(.largeTitle)
-                        .bold()
-                    
-                    Text("Изучите основные принципы и ценности нашей компании")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                }
-                .padding()
-                
-                // Course content
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(1...5, id: \.self) { lesson in
-                        HStack {
-                            Image(systemName: lesson <= 2 ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(lesson <= 2 ? .green : .gray)
-                            
-                            VStack(alignment: .leading) {
-                                Text("Урок \(lesson)")
-                                    .font(.headline)
-                                Text("Описание урока \(lesson)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                        }
-                        .padding()
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(10)
-                    }
-                }
-                .padding(.horizontal)
-                
-                Button(action: {
-                    // Start course
-                    dismiss()
-                }) {
-                    Text("Начать курс")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(12)
-                }
-                .padding()
-            }
-        }
-        .navigationTitle("Курс")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Закрыть") {
-                    dismiss()
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Test Detail View (Placeholder)
-struct TestDetailView: View {
-    let testId: UUID
-    @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "doc.text.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.purple)
-            
-            Text("Тест по товароведению")
-                .font(.largeTitle)
-                .bold()
-            
-            Text("Проверьте свои знания об ассортименте")
-                .foregroundColor(.secondary)
-            
-            VStack(alignment: .leading, spacing: 12) {
-                Label("20 вопросов", systemImage: "questionmark.circle")
-                Label("30 минут", systemImage: "clock")
-                Label("Проходной балл: 80%", systemImage: "percent")
-            }
-            .padding()
-            .background(Color(.secondarySystemBackground))
-            .cornerRadius(12)
-            
-            Spacer()
-            
-            Button(action: {
-                // Start test
-                dismiss()
-            }) {
-                Text("Начать тест")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.purple)
-                    .cornerRadius(12)
-            }
-        }
-        .padding()
-        .navigationTitle("Тестирование")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Закрыть") {
-                    dismiss()
-                }
-            }
-        }
     }
 }
 
