@@ -54,6 +54,16 @@ struct AdminContentView: View {
                     ) {
                         selectedTab = 3
                     }
+                    
+                    ContentTypeCard(
+                        icon: "person.badge.clock.fill",
+                        title: "Онбординг",
+                        count: 24,
+                        color: .indigo,
+                        isSelected: selectedTab == 4
+                    ) {
+                        selectedTab = 4
+                    }
                 }
                 .padding()
             }
@@ -68,6 +78,8 @@ struct AdminContentView: View {
                 AdminCompetencyListView()
             case 3:
                 AdminCertificateListView()
+            case 4:
+                OnboardingDashboard()
             default:
                 EmptyView()
             }
