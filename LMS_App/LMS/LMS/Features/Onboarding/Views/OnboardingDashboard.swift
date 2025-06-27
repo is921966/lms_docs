@@ -124,26 +124,20 @@ struct OnboardingDashboard: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: OnboardingTemplateListView()) {
+                    Button(action: {
+                        showingCreateProgram = true
+                    }) {
                         VStack(spacing: 4) {
-                            Image(systemName: "plus.rectangle.on.rectangle")
+                            Image(systemName: "plus.circle.fill")
                                 .font(.title3)
-                                .accessibilityIdentifier("createFromTemplateIcon")
-                            Text("Создать из шаблона")
+                                .accessibilityIdentifier("createProgramIcon")
+                            Text("Создать")
                                 .font(.caption2)
-                                .minimumScaleFactor(0.7)
-                                .lineLimit(2)
-                                .multilineTextAlignment(.center)
-                                .accessibilityIdentifier("createFromTemplateText")
+                                .accessibilityIdentifier("createProgramText")
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 6)
-                        .frame(height: 60)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
+                        .foregroundColor(.blue)
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    .accessibilityIdentifier("createFromTemplateButton")
+                    .accessibilityIdentifier("createProgramButton")
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -239,9 +233,7 @@ struct OnboardingDashboard: View {
                 }
             }
             .sheet(isPresented: $showingCreateProgram) {
-                if let selectedTemplate = selectedTemplate {
-                    CreateProgramFromTemplateView(template: selectedTemplate)
-                }
+                NewEmployeeOnboardingView()
             }
         }
     }

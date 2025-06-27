@@ -12,6 +12,7 @@ struct OnboardingProgramView: View {
     @State private var selectedStage: OnboardingStage?
     @State private var showingTask = false
     @State private var showingActions = false
+    @State private var showingEditView = false
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -59,11 +60,11 @@ struct OnboardingProgramView: View {
             ActionSheet(
                 title: Text("Действия с программой"),
                 buttons: [
+                    .default(Text("Редактировать программу")) {
+                        showingEditView = true
+                    },
                     .default(Text("Отправить напоминание")) {
                         // Send reminder
-                    },
-                    .default(Text("Изменить сроки")) {
-                        // Edit dates
                     },
                     .destructive(Text("Отменить программу")) {
                         // Cancel program
@@ -71,6 +72,9 @@ struct OnboardingProgramView: View {
                     .cancel()
                 ]
             )
+        }
+        .sheet(isPresented: $showingEditView) {
+            OnboardingProgramEditView(program: program)
         }
     }
 }

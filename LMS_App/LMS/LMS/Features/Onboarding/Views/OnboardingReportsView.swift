@@ -9,122 +9,77 @@ import SwiftUI
 import Charts
 
 struct OnboardingReportsView: View {
-    @StateObject private var onboardingService = OnboardingMockService.shared
-    @State private var selectedPeriod: ReportPeriod = .thisMonth
+    @ObservedObject var service = OnboardingMockService.shared
+    @State private var selectedPeriod = "Неделя"
     
-    var filteredPrograms: [OnboardingProgram] {
-        switch selectedPeriod {
-        case .thisWeek:
-            return onboardingService.programs.filter { isInCurrentWeek($0.startDate) }
-        case .thisMonth:
-            return onboardingService.programs.filter { isInCurrentMonth($0.startDate) }
-        case .allTime:
-            return onboardingService.programs
-        }
-    }
+    let periods = ["Неделя", "Месяц", "Квартал", "Год"]
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: 20) {
                 // Period selector
                 Picker("Период", selection: $selectedPeriod) {
-                    ForEach(ReportPeriod.allCases, id: \.self) { period in
-                        Text(period.rawValue).tag(period)
+                    ForEach(periods, id: \.self) { period in
+                        Text(period).tag(period)
                     }
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal)
                 
-                // Key metrics
-                MetricsSection(programs: filteredPrograms)
+                // Summary cards
+                summaryCards
                 
-                // Progress distribution chart
-                ProgressDistributionChart(programs: filteredPrograms)
-                
-                // Department statistics
-                DepartmentStatisticsView(programs: filteredPrograms)
-                
-                // Overdue programs
-                OverdueProgramsSection(programs: filteredPrograms)
-                
-                // Stage completion times
-                StageCompletionChart(programs: filteredPrograms)
+                // Charts
+                programStatusChart
+                averageCompletionTimeChart
+                templateUsageChart
+                departmentBreakdownChart
             }
             .padding(.vertical)
         }
-        .navigationTitle("Отчеты по онбордингу")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle("Отчеты по адаптации")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
-    private func isInCurrentWeek(_ date: Date) -> Bool {
-        let calendar = Calendar.current
-        return calendar.isDateInThisWeek(date)
-    }
+    // MARK: - Summary Cards
     
-    private func isInCurrentMonth(_ date: Date) -> Bool {
-        let calendar = Calendar.current
-        return calendar.isDate(date, equalTo: Date(), toGranularity: .month)
-    }
-}
-
-// MARK: - Report Period
-enum ReportPeriod: String, CaseIterable {
-    case thisWeek = "Эта неделя"
-    case thisMonth = "Этот месяц"
-    case allTime = "Все время"
-}
-
-// MARK: - Metrics Section
-struct MetricsSection: View {
-    let programs: [OnboardingProgram]
-    
-    var activePrograms: Int {
-        programs.filter { $0.status == .inProgress }.count
-    }
-    
-    var completedPrograms: Int {
-        programs.filter { $0.status == .completed }.count
-    }
-    
-    var overduePrograms: Int {
-        programs.filter { $0.isOverdue }.count
-    }
-    
-    var averageCompletion: Double {
-        guard !programs.isEmpty else { return 0 }
-        let totalProgress = programs.reduce(0) { $0 + $1.overallProgress }
-        return totalProgress / Double(programs.count)
-    }
-    
-    var body: some View {
+    private var summaryCards: some View {
         VStack(spacing: 16) {
             HStack(spacing: 16) {
-                MetricCard(
-                    title: "Активные",
-                    value: "\(activePrograms)",
-                    icon: "person.badge.clock",
+                ReportCard(
+                    title: "Всего программ",
+                    value: "\(service.programs.count)",
+                    change: "+12%",
+                    isPositive: true,
+                    icon: "person.3.fill",
                     color: .blue
                 )
                 
-                MetricCard(
-                    title: "Завершенные",
-                    value: "\(completedPrograms)",
-                    icon: "checkmark.seal.fill",
+                ReportCard(
+                    title: "Завершено",
+                    value: "\(service.programs.filter { $0.status == .completed }.count)",
+                    change: "+8%",
+                    isPositive: true,
+                    icon: "checkmark.circle.fill",
                     color: .green
                 )
             }
             
             HStack(spacing: 16) {
-                MetricCard(
-                    title: "Просроченные",
-                    value: "\(overduePrograms)",
-                    icon: "exclamationmark.triangle.fill",
-                    color: .red
+                ReportCard(
+                    title: "Ср. время",
+                    value: "21 день",
+                    change: "-3 дня",
+                    isPositive: true,
+                    icon: "clock.fill",
+                    color: .orange
                 )
                 
-                MetricCard(
-                    title: "Средний прогресс",
-                    value: "\(Int(averageCompletion * 100))%",
+                ReportCard(
+                    title: "Успешность",
+                    value: "87%",
+                    change: "+5%",
+                    isPositive: true,
                     icon: "chart.line.uptrend.xyaxis",
                     color: .purple
                 )
@@ -132,260 +87,235 @@ struct MetricsSection: View {
         }
         .padding(.horizontal)
     }
+    
+    // MARK: - Charts
+    
+    private var programStatusChart: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Статус программ")
+                .font(.headline)
+                .padding(.horizontal)
+            
+            Chart {
+                ForEach(statusData, id: \.status) { item in
+                    BarMark(
+                        x: .value("Статус", item.status),
+                        y: .value("Количество", item.count)
+                    )
+                    .foregroundStyle(item.color)
+                    .cornerRadius(8)
+                }
+            }
+            .frame(height: 200)
+            .padding(.horizontal)
+        }
+        .padding(.vertical)
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+    
+    private var averageCompletionTimeChart: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Среднее время завершения по месяцам")
+                .font(.headline)
+                .padding(.horizontal)
+            
+            Chart {
+                ForEach(completionTimeData, id: \.month) { item in
+                    LineMark(
+                        x: .value("Месяц", item.month),
+                        y: .value("Дни", item.days)
+                    )
+                    .foregroundStyle(.blue)
+                    .symbol(Circle())
+                    
+                    AreaMark(
+                        x: .value("Месяц", item.month),
+                        y: .value("Дни", item.days)
+                    )
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.blue.opacity(0.3), .blue.opacity(0.1)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                }
+            }
+            .frame(height: 200)
+            .padding(.horizontal)
+        }
+        .padding(.vertical)
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+    
+    private var templateUsageChart: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Использование шаблонов")
+                .font(.headline)
+                .padding(.horizontal)
+            
+            Chart {
+                ForEach(templateUsageData, id: \.template) { item in
+                    SectorMark(
+                        angle: .value("Использований", item.usage),
+                        innerRadius: .ratio(0.6),
+                        angularInset: 2
+                    )
+                    .foregroundStyle(item.color)
+                    .cornerRadius(4)
+                }
+            }
+            .frame(height: 200)
+            .padding(.horizontal)
+            
+            // Legend
+            HStack(spacing: 20) {
+                ForEach(templateUsageData, id: \.template) { item in
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(item.color)
+                            .frame(width: 8, height: 8)
+                        Text(item.template)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding(.vertical)
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+    
+    private var departmentBreakdownChart: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Распределение по отделам")
+                .font(.headline)
+                .padding(.horizontal)
+            
+            Chart {
+                ForEach(departmentData, id: \.department) { item in
+                    BarMark(
+                        x: .value("Количество", item.count),
+                        y: .value("Отдел", item.department)
+                    )
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.purple, .blue],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(8)
+                }
+            }
+            .frame(height: 250)
+            .padding(.horizontal)
+        }
+        .padding(.vertical)
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Data
+    
+    private var statusData: [(status: String, count: Int, color: Color)] {
+        let stats = service.getProgramStatistics()
+        return [
+            ("В процессе", stats.active, .blue),
+            ("Завершено", stats.completed, .green),
+            ("Не начато", stats.total - stats.active - stats.completed - stats.overdue, .gray),
+            ("Просрочено", stats.overdue, .red)
+        ]
+    }
+    
+    private var completionTimeData: [(month: String, days: Int)] {
+        [
+            ("Янв", 24),
+            ("Фев", 22),
+            ("Мар", 23),
+            ("Апр", 21),
+            ("Май", 20),
+            ("Июн", 21)
+        ]
+    }
+    
+    private var templateUsageData: [(template: String, usage: Int, color: Color)] {
+        [
+            ("Продавец", 35, .blue),
+            ("Кассир", 25, .green),
+            ("Мерчандайзер", 20, .orange),
+            ("Руководитель", 20, .purple)
+        ]
+    }
+    
+    private var departmentData: [(department: String, count: Int)] {
+        [
+            ("Продажи", 45),
+            ("Маркетинг", 23),
+            ("IT", 18),
+            ("HR", 12),
+            ("Финансы", 8)
+        ]
+    }
 }
 
-// MARK: - Metric Card
-struct MetricCard: View {
+// MARK: - Report Card
+struct ReportCard: View {
     let title: String
     let value: String
+    let change: String
+    let isPositive: Bool
     let icon: String
     let color: Color
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: icon)
-                    .font(.title2)
+                    .font(.title3)
                     .foregroundColor(color)
                 
                 Spacer()
+                
+                HStack(spacing: 4) {
+                    Image(systemName: isPositive ? "arrow.up.right" : "arrow.down.right")
+                        .font(.caption)
+                    Text(change)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(isPositive ? .green : .red)
             }
             
             Text(value)
-                .font(.system(size: 32, weight: .bold))
-                .foregroundColor(.primary)
+                .font(.title)
+                .fontWeight(.bold)
             
             Text(title)
-                .font(.subheadline)
+                .font(.caption)
                 .foregroundColor(.secondary)
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background(Color(.systemBackground))
-        .cornerRadius(15)
+        .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }
 
-// MARK: - Progress Distribution Chart
-struct ProgressDistributionChart: View {
-    let programs: [OnboardingProgram]
-    
-    var progressRanges: [(range: String, count: Int)] {
-        let ranges = [
-            ("0-25%", programs.filter { $0.overallProgress <= 0.25 }.count),
-            ("26-50%", programs.filter { $0.overallProgress > 0.25 && $0.overallProgress <= 0.5 }.count),
-            ("51-75%", programs.filter { $0.overallProgress > 0.5 && $0.overallProgress <= 0.75 }.count),
-            ("76-100%", programs.filter { $0.overallProgress > 0.75 }.count)
-        ]
-        return ranges
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Распределение по прогрессу")
-                .font(.headline)
-                .padding(.horizontal)
-            
-            Chart(progressRanges, id: \.range) { item in
-                BarMark(
-                    x: .value("Диапазон", item.range),
-                    y: .value("Количество", item.count)
-                )
-                .foregroundStyle(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.blue, Color.purple]),
-                        startPoint: .bottom,
-                        endPoint: .top
-                    )
-                )
-            }
-            .frame(height: 200)
-            .padding(.horizontal)
+// MARK: - Preview
+struct OnboardingReportsView_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationView {
+            OnboardingReportsView()
         }
-        .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(15)
-        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
-        .padding(.horizontal)
-    }
-}
-
-// MARK: - Department Statistics
-struct DepartmentStatisticsView: View {
-    let programs: [OnboardingProgram]
-    
-    var departmentStats: [(department: String, count: Int, progress: Double)] {
-        let grouped = Dictionary(grouping: programs, by: { $0.employeeDepartment })
-        return grouped.map { department, progs in
-            let avgProgress = progs.reduce(0) { $0 + $1.overallProgress } / Double(progs.count)
-            return (department, progs.count, avgProgress)
-        }.sorted { $0.count > $1.count }
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Статистика по отделам")
-                .font(.headline)
-                .padding(.horizontal)
-            
-            ForEach(departmentStats, id: \.department) { stat in
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(stat.department)
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        
-                        Text("\(stat.count) программ")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text("\(Int(stat.progress * 100))%")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.blue)
-                        
-                        Text("средний прогресс")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding()
-                .background(Color(.systemBackground))
-                .cornerRadius(10)
-            }
-            .padding(.horizontal)
-        }
-    }
-}
-
-// MARK: - Overdue Programs Section
-struct OverdueProgramsSection: View {
-    let programs: [OnboardingProgram]
-    
-    var overduePrograms: [OnboardingProgram] {
-        programs.filter { $0.isOverdue }.sorted { $0.daysRemaining < $1.daysRemaining }
-    }
-    
-    var body: some View {
-        if !overduePrograms.isEmpty {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    Text("Просроченные программы")
-                        .font(.headline)
-                    
-                    Spacer()
-                    
-                    Label("\(overduePrograms.count)", systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption)
-                        .foregroundColor(.red)
-                }
-                .padding(.horizontal)
-                
-                ForEach(overduePrograms.prefix(5)) { program in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(program.employeeName)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                            
-                            Text(program.title)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text("Просрочено на")
-                                .font(.caption2)
-                                .foregroundColor(.red)
-                            
-                            Text("\(abs(program.daysRemaining)) дн.")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.red)
-                        }
-                    }
-                    .padding()
-                    .background(Color.red.opacity(0.1))
-                    .cornerRadius(10)
-                    .padding(.horizontal)
-                }
-                
-                if overduePrograms.count > 5 {
-                    Text("И еще \(overduePrograms.count - 5) программ...")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal)
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Stage Completion Chart
-struct StageCompletionChart: View {
-    let programs: [OnboardingProgram]
-    
-    var averageStageCompletionDays: [(stage: String, days: Double)] {
-        var stageData: [String: [Int]] = [:]
-        
-        for program in programs {
-            for stage in program.stages where stage.status == .completed {
-                let duration = stage.duration
-                if stageData[stage.title] == nil {
-                    stageData[stage.title] = []
-                }
-                stageData[stage.title]?.append(duration)
-            }
-        }
-        
-        return stageData.map { title, durations in
-            let avg = Double(durations.reduce(0, +)) / Double(durations.count)
-            return (title, avg)
-        }.sorted { $0.days < $1.days }
-    }
-    
-    var body: some View {
-        if !averageStageCompletionDays.isEmpty {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Среднее время прохождения этапов")
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                Chart(averageStageCompletionDays, id: \.stage) { item in
-                    BarMark(
-                        x: .value("Дни", item.days),
-                        y: .value("Этап", item.stage)
-                    )
-                    .foregroundStyle(Color.blue.gradient)
-                }
-                .frame(height: Double(averageStageCompletionDays.count) * 50)
-                .padding(.horizontal)
-            }
-            .padding()
-            .background(Color(.systemBackground))
-            .cornerRadius(15)
-            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
-            .padding(.horizontal)
-        }
-    }
-}
-
-// MARK: - Calendar Extension
-extension Calendar {
-    func isDateInThisWeek(_ date: Date) -> Bool {
-        isDate(date, equalTo: Date(), toGranularity: .weekOfYear)
-    }
-}
-
-#Preview {
-    NavigationView {
-        OnboardingReportsView()
     }
 } 
