@@ -257,8 +257,9 @@ final class OnboardingTests: XCTestCase {
             description: "Описание",
             targetPosition: "Должность",
             targetDepartment: "Отдел",
-            stages: [],
             duration: 30,
+            stages: [],
+            isActive: true,
             createdAt: Date(),
             updatedAt: Date()
         )

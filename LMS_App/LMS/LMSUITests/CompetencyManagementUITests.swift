@@ -275,7 +275,7 @@ final class CompetencyManagementUITests: XCTestCase {
         XCTAssertTrue(app.progressIndicators["analysisProgress"].waitForExistence(timeout: 3))
         
         // Verify results displayed
-        XCTAssertTrue(app.charts["gapChart"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.otherElements["gapChart"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.tables["gapDetails"].exists)
         
         // Export report
