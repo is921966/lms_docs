@@ -84,7 +84,7 @@ struct AdminContentView: View {
                 EmptyView()
             }
         }
-        .navigationTitle("Управление контентом")
+        .navigationTitle("Контент")
         .navigationBarTitleDisplayMode(.large)
     }
 }
@@ -113,8 +113,11 @@ struct ContentTypeCard: View {
                 Text(title)
                     .font(.caption)
                     .foregroundColor(isSelected ? .white : .secondary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .multilineTextAlignment(.center)
             }
-            .frame(width: 100, height: 120)
+            .frame(width: 120, height: 120)
             .background(isSelected ? color : Color(.systemGray6))
             .cornerRadius(15)
         }

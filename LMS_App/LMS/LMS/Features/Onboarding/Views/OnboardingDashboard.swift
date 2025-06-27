@@ -125,18 +125,22 @@ struct OnboardingDashboard: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: OnboardingTemplateListView()) {
-                        VStack(spacing: 8) {
+                        VStack(spacing: 4) {
                             Image(systemName: "plus.rectangle.on.rectangle")
-                                .font(.title2)
+                                .font(.title3)
                                 .accessibilityIdentifier("createFromTemplateIcon")
                             Text("Создать из шаблона")
-                                .font(.subheadline)
+                                .font(.caption2)
+                                .minimumScaleFactor(0.7)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.center)
                                 .accessibilityIdentifier("createFromTemplateText")
                         }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 80)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                        .frame(height: 60)
                         .background(Color(.systemGray6))
-                        .cornerRadius(12)
+                        .cornerRadius(10)
                     }
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityIdentifier("createFromTemplateButton")
@@ -400,6 +404,9 @@ struct OnboardingProgramCard: View {
             Text(program.title)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+                .fixedSize(horizontal: false, vertical: true)
             
             // Progress
             VStack(alignment: .leading, spacing: 6) {
