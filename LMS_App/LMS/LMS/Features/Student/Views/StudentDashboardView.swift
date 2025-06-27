@@ -11,60 +11,6 @@ struct StudentDashboardView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var notificationService = NotificationService.shared
     @State private var showingNotifications = false
-    @State private var selectedTab = 0
-    
-    var body: some View {
-        TabView(selection: $selectedTab) {
-            // Feed tab
-            FeedView()
-                .tabItem {
-                    Label("Лента", systemImage: "newspaper")
-                }
-                .tag(0)
-            
-            // Dashboard tab
-            DashboardContent(showingNotifications: $showingNotifications)
-                .tabItem {
-                    Label("Обучение", systemImage: "graduationcap")
-                }
-                .tag(1)
-        }
-        .navigationTitle(selectedTab == 0 ? "Лента новостей" : "Обучение")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    showingNotifications = true
-                }) {
-                    ZStack {
-                        Image(systemName: "bell")
-                            .font(.system(size: 20))
-                        
-                        if notificationService.unreadCount > 0 {
-                            Circle()
-                                .fill(Color.red)
-                                .frame(width: 16, height: 16)
-                                .overlay(
-                                    Text("\(notificationService.unreadCount)")
-                                        .font(.system(size: 10, weight: .bold))
-                                        .foregroundColor(.white)
-                                )
-                                .offset(x: 8, y: -8)
-                        }
-                    }
-                }
-            }
-        }
-        .sheet(isPresented: $showingNotifications) {
-            NotificationListView()
-        }
-    }
-}
-
-// MARK: - Dashboard Content
-struct DashboardContent: View {
-    @Binding var showingNotifications: Bool
-    @EnvironmentObject var authViewModel: AuthViewModel
     
     var body: some View {
         ScrollView {
@@ -99,6 +45,35 @@ struct DashboardContent: View {
                 Spacer(minLength: 100)
             }
             .padding(.vertical)
+        }
+        .navigationTitle("Главная")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showingNotifications = true
+                }) {
+                    ZStack {
+                        Image(systemName: "bell")
+                            .font(.system(size: 20))
+                        
+                        if notificationService.unreadCount > 0 {
+                            Circle()
+                                .fill(Color.red)
+                                .frame(width: 16, height: 16)
+                                .overlay(
+                                    Text("\(notificationService.unreadCount)")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundColor(.white)
+                                )
+                                .offset(x: 8, y: -8)
+                        }
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingNotifications) {
+            NotificationListView()
         }
     }
 }
