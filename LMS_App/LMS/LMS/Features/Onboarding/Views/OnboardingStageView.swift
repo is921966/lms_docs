@@ -14,6 +14,7 @@ struct OnboardingStageView: View {
     @State private var selectedTask: OnboardingTask?
     @State private var showingTaskDetail = false
     @Environment(\.dismiss) private var dismiss
+    @ObservedObject var onboardingService = OnboardingMockService.shared
     
     var body: some View {
         NavigationView {
@@ -62,6 +63,23 @@ struct OnboardingStageView: View {
     private func updateTask(_ updatedTask: OnboardingTask) {
         if let index = tasks.firstIndex(where: { $0.id == updatedTask.id }) {
             tasks[index] = updatedTask
+            
+            // Update in service
+            if let stageIndex = program.stages.firstIndex(where: { $0.id == stage.id }) {
+                if updatedTask.isCompleted {
+                    onboardingService.markTaskCompleted(
+                        programId: program.id,
+                        stageIndex: stageIndex,
+                        taskId: updatedTask.id
+                    )
+                } else {
+                    onboardingService.markTaskIncomplete(
+                        programId: program.id,
+                        stageIndex: stageIndex,
+                        taskId: updatedTask.id
+                    )
+                }
+            }
         }
     }
 }
