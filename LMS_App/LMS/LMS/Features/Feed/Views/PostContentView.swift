@@ -11,7 +11,7 @@ struct PostContentView: View {
             
             // Tags
             if !post.tags.isEmpty {
-                FlowLayout(spacing: 8) {
+                FeedFlowLayout(spacing: 8) {
                     ForEach(post.tags, id: \.self) { tag in
                         Text(tag)
                             .font(.caption)
@@ -30,7 +30,7 @@ struct PostContentView: View {
 }
 
 // Simple flow layout for tags
-struct FlowLayout: Layout {
+struct FeedFlowLayout: Layout {
     var spacing: CGFloat = 8
     
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
@@ -114,7 +114,7 @@ struct PostAttachmentsView: View {
     var body: some View {
         VStack(spacing: 8) {
             ForEach(attachments) { attachment in
-                AttachmentView(attachment: attachment)
+                FeedAttachmentView(attachment: attachment)
             }
         }
         .padding(.horizontal)
@@ -122,8 +122,8 @@ struct PostAttachmentsView: View {
     }
 }
 
-// MARK: - Attachment View
-struct AttachmentView: View {
+// MARK: - Feed Attachment View
+struct FeedAttachmentView: View {
     let attachment: FeedAttachment
     
     var body: some View {
@@ -215,7 +215,7 @@ struct PostCommentsPreview: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ForEach(post.comments.prefix(2)) { comment in
-                CommentPreviewView(comment: comment)
+                FeedCommentPreviewView(comment: comment)
             }
             
             if post.commentsCount > 2 {
@@ -230,8 +230,8 @@ struct PostCommentsPreview: View {
     }
 }
 
-// MARK: - Comment Preview View
-struct CommentPreviewView: View {
+// MARK: - Feed Comment Preview View
+struct FeedCommentPreviewView: View {
     let comment: FeedComment
     
     var body: some View {

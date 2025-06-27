@@ -107,10 +107,10 @@ struct FeedSettingsView: View {
                     .font(.headline)
                 
                 HStack(spacing: 16) {
-                    StatCard(title: "Записей", value: "156", icon: "doc.text", color: .blue)
-                    StatCard(title: "Комментариев", value: "423", icon: "bubble.left", color: .green)
-                    StatCard(title: "Активных авторов", value: "34", icon: "person.2", color: .orange)
-                    StatCard(title: "Лайков", value: "1.2K", icon: "hand.thumbsup", color: .red)
+                    FeedStatCard(title: "Записей", value: "156", icon: "doc.text", color: .blue)
+                    FeedStatCard(title: "Комментариев", value: "423", icon: "bubble.left", color: .green)
+                    FeedStatCard(title: "Активных авторов", value: "34", icon: "person.2", color: .orange)
+                    FeedStatCard(title: "Лайков", value: "1.2K", icon: "hand.thumbsup", color: .red)
                 }
             }
             
@@ -168,8 +168,8 @@ struct PermissionToggle: View {
     }
 }
 
-// MARK: - Stat Card
-struct StatCard: View {
+// MARK: - Feed Stat Card
+struct FeedStatCard: View {
     let title: String
     let value: String
     let icon: String
