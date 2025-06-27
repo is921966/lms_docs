@@ -59,6 +59,7 @@ struct OnboardingDashboard: View {
             VStack(spacing: 0) {
                 // Statistics
                 OnboardingStatsView(programs: service.programs)
+                    .accessibilityIdentifier("onboardingStatsView")
                 
                 // Filter and Search
                 VStack(spacing: 12) {
@@ -70,6 +71,7 @@ struct OnboardingDashboard: View {
                                 isSelected: selectedFilter == .all,
                                 action: { selectedFilter = .all }
                             )
+                            .accessibilityIdentifier("filterChipAll")
                             
                             ForEach(FilterType.allCases, id: \.self) { filter in
                                 OnboardingFilterChip(
@@ -77,37 +79,45 @@ struct OnboardingDashboard: View {
                                     isSelected: selectedFilter == filter,
                                     action: { selectedFilter = filter }
                                 )
+                                .accessibilityIdentifier("filterChip\(filter.rawValue)")
                             }
                         }
                     }
+                    .accessibilityIdentifier("filterChipsScrollView")
                     
                     // Search bar
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.gray)
+                            .accessibilityIdentifier("searchIcon")
                         TextField("Поиск по сотрудникам", text: $searchText)
+                            .accessibilityIdentifier("searchTextField")
                     }
                     .padding(10)
                     .background(Color(.systemGray6))
                     .cornerRadius(10)
                     .padding(.horizontal)
+                    .accessibilityIdentifier("searchBar")
                 }
                 
                 // Programs list
                 if filteredPrograms.isEmpty {
                     OnboardingEmptyStateView(filter: selectedFilter)
+                        .accessibilityIdentifier("emptyStateView")
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(filteredPrograms) { program in
                                 NavigationLink(destination: OnboardingProgramView(program: program)) {
                                     OnboardingProgramCard(program: program)
+                                        .accessibilityIdentifier("programCard_\(program.id)")
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }
                         }
                         .padding()
                     }
+                    .accessibilityIdentifier("programsListScrollView")
                 }
             }
             .navigationTitle("Программы адаптации")
@@ -118,8 +128,10 @@ struct OnboardingDashboard: View {
                         VStack(spacing: 8) {
                             Image(systemName: "plus.rectangle.on.rectangle")
                                 .font(.title2)
+                                .accessibilityIdentifier("createFromTemplateIcon")
                             Text("Создать из шаблона")
                                 .font(.subheadline)
+                                .accessibilityIdentifier("createFromTemplateText")
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 80)
@@ -127,6 +139,7 @@ struct OnboardingDashboard: View {
                         .cornerRadius(12)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .accessibilityIdentifier("createFromTemplateButton")
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -135,6 +148,7 @@ struct OnboardingDashboard: View {
                             .font(.title3)
                             .foregroundColor(.purple)
                     }
+                    .accessibilityIdentifier("reportsButton")
                 }
             }
             .onAppear {

@@ -17,6 +17,7 @@ struct CompetencyListView: View {
                 if viewModel.isLoading {
                     ProgressView("Загрузка компетенций...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .accessibilityIdentifier("loadingIndicator")
                 } else {
                     competencyList
                 }
@@ -33,6 +34,7 @@ struct CompetencyListView: View {
                         viewModel.createCompetency(newCompetency)
                     }
                 }
+                .accessibilityIdentifier("createCompetencySheet")
             }
             .sheet(isPresented: $viewModel.showingEditSheet) {
                 if let competency = viewModel.selectedCompetency {
@@ -41,15 +43,18 @@ struct CompetencyListView: View {
                             viewModel.updateCompetency(updatedCompetency)
                         }
                     }
+                    .accessibilityIdentifier("editCompetencySheet")
                 }
             }
             .sheet(isPresented: $showingFilters) {
                 filterSheet
+                    .accessibilityIdentifier("filtersSheet")
             }
             .navigationDestination(for: Competency.self) { competency in
                 CompetencyDetailView(competency: competency)
             }
         }
+        .accessibilityIdentifier("competencyListView")
     }
     
     // MARK: - Components
@@ -64,11 +69,13 @@ struct CompetencyListView: View {
                         // Statistics card
                         if viewModel.searchText.isEmpty && viewModel.selectedCategory == nil {
                             statisticsCard
+                                .accessibilityIdentifier("statisticsCard")
                         }
                         
                         // Competency cards
                         ForEach(viewModel.filteredCompetencies) { competency in
                             CompetencyCard(competency: competency)
+                                .accessibilityIdentifier("competencyCard_\(competency.id)")
                                 .onTapGesture {
                                     selectedCompetency = competency
                                 }
@@ -82,6 +89,7 @@ struct CompetencyListView: View {
                 .refreshable {
                     viewModel.loadCompetencies()
                 }
+                .accessibilityIdentifier("competencyListScrollView")
             }
         }
     }
@@ -90,6 +98,7 @@ struct CompetencyListView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Статистика")
                 .font(.headline)
+                .accessibilityIdentifier("statisticsTitle")
             
             HStack(spacing: 20) {
                 StatItem(
@@ -98,6 +107,7 @@ struct CompetencyListView: View {
                     icon: "list.bullet",
                     color: .blue
                 )
+                .accessibilityIdentifier("totalStatItem")
                 
                 StatItem(
                     title: "Активных",
@@ -105,6 +115,7 @@ struct CompetencyListView: View {
                     icon: "checkmark.circle",
                     color: .green
                 )
+                .accessibilityIdentifier("activeStatItem")
                 
                 StatItem(
                     title: "Неактивных",
@@ -112,6 +123,7 @@ struct CompetencyListView: View {
                     icon: "xmark.circle",
                     color: .gray
                 )
+                .accessibilityIdentifier("inactiveStatItem")
             }
             
             // Category breakdown
@@ -125,9 +137,11 @@ struct CompetencyListView: View {
                         ) {
                             viewModel.selectedCategory = category
                         }
+                        .accessibilityIdentifier("categoryChip_\(category.rawValue)")
                     }
                 }
             }
+            .accessibilityIdentifier("categoryChipsScrollView")
         }
         .padding()
         .background(Color(.systemGray6))
@@ -139,23 +153,28 @@ struct CompetencyListView: View {
             Image(systemName: "tray")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
+                .accessibilityIdentifier("emptyStateIcon")
             
             Text("Компетенции не найдены")
                 .font(.headline)
+                .accessibilityIdentifier("emptyStateTitle")
             
             Text("Попробуйте изменить параметры поиска или фильтры")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+                .accessibilityIdentifier("emptyStateMessage")
             
             if isAdmin {
                 Button(action: { viewModel.showingCreateSheet = true }) {
                     Label("Создать компетенцию", systemImage: "plus.circle.fill")
                 }
                 .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("createCompetencyButton")
             }
         }
         .padding()
+        .accessibilityIdentifier("emptyStateView")
     }
     
     @ToolbarContentBuilder
@@ -165,11 +184,13 @@ struct CompetencyListView: View {
                 Image(systemName: "line.3.horizontal.decrease.circle")
                     .symbolVariant(hasActiveFilters ? .fill : .none)
             }
+            .accessibilityIdentifier("filtersButton")
             
             if isAdmin {
                 Button(action: { viewModel.showingCreateSheet = true }) {
                     Image(systemName: "plus")
                 }
+                .accessibilityIdentifier("addCompetencyButton")
             }
         }
     }
@@ -185,10 +206,12 @@ struct CompetencyListView: View {
                                 .tag(category as CompetencyCategory?)
                         }
                     }
+                    .accessibilityIdentifier("categoryPicker")
                 }
                 
                 Section("Статус") {
                     Toggle("Показывать неактивные", isOn: $viewModel.showInactiveCompetencies)
+                        .accessibilityIdentifier("showInactiveToggle")
                 }
                 
                 Section {
@@ -197,6 +220,7 @@ struct CompetencyListView: View {
                         showingFilters = false
                     }
                     .foregroundColor(.red)
+                    .accessibilityIdentifier("clearFiltersButton")
                 }
             }
             .navigationTitle("Фильтры")
@@ -206,6 +230,7 @@ struct CompetencyListView: View {
                     Button("Готово") {
                         showingFilters = false
                     }
+                    .accessibilityIdentifier("filtersDoneButton")
                 }
             }
         }

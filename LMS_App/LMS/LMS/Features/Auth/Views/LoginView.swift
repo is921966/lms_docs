@@ -29,16 +29,19 @@ struct LoginView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 120, height: 120)
                         .foregroundColor(.blue)
+                        .accessibilityIdentifier("loginLogo")
                     
                     // Title
                     VStack(spacing: 8) {
                         Text("ЦУМ")
                             .font(.largeTitle)
                             .fontWeight(.bold)
+                            .accessibilityIdentifier("appTitle")
                         
                         Text("Корпоративный университет")
                             .font(.headline)
                             .foregroundColor(.secondary)
+                            .accessibilityIdentifier("appSubtitle")
                     }
                     
                     // Login form
@@ -48,12 +51,14 @@ struct LoginView: View {
                             Text("Email")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
+                                .accessibilityIdentifier("emailLabel")
                             
                             TextField("Введите email", text: $email)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .keyboardType(.emailAddress)
                                 .autocapitalization(.none)
                                 .disableAutocorrection(true)
+                                .accessibilityIdentifier("emailTextField")
                         }
                         
                         // Password field
@@ -61,9 +66,11 @@ struct LoginView: View {
                             Text("Пароль")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
+                                .accessibilityIdentifier("passwordLabel")
                             
                             SecureField("Введите пароль", text: $password)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .accessibilityIdentifier("passwordTextField")
                         }
                         
                         // Login button
@@ -73,17 +80,20 @@ struct LoginView: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 50)
+                                    .accessibilityIdentifier("loginProgressView")
                             } else {
                                 Text("Войти")
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 50)
+                                    .accessibilityIdentifier("loginButtonText")
                             }
                         }
                         .background(loginButtonColor)
                         .cornerRadius(10)
                         .disabled(!isFormValid || authService.isLoading)
+                        .accessibilityIdentifier("loginButton")
                     }
                     .padding(.horizontal, 40)
                     
@@ -93,9 +103,13 @@ struct LoginView: View {
             }
             .navigationBarHidden(true)
             .alert("Ошибка", isPresented: $showingAlert) {
-                Button("OK") { }
+                Button("OK") { 
+                    // Alert dismiss action
+                }
+                .accessibilityIdentifier("alertOKButton")
             } message: {
                 Text(alertMessage)
+                    .accessibilityIdentifier("alertMessage")
             }
             .onReceive(authService.$isAuthenticated) { isAuthenticated in
                 if isAuthenticated {
@@ -103,6 +117,7 @@ struct LoginView: View {
                 }
             }
         }
+        .accessibilityIdentifier("loginView")
     }
     
     // MARK: - Private Properties
