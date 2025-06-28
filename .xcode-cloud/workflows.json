@@ -1,0 +1,81 @@
+{
+  "workflows": [
+    {
+      "id": "build-and-test",
+      "name": "Build and Test",
+      "description": "Build app and run tests on every push",
+      "triggers": [
+        {
+          "type": "BRANCH_CHANGES",
+          "configuration": {
+            "branches": ["master", "develop", "feature/*"]
+          }
+        },
+        {
+          "type": "PULL_REQUEST_CHANGES"
+        },
+        {
+          "type": "TAG_CHANGES",
+          "configuration": {
+            "tags": ["v*"]
+          }
+        }
+      ],
+      "environment": {
+        "xcodeVersion": "LATEST_RELEASE",
+        "macOSVersion": "LATEST"
+      },
+      "actions": [
+        {
+          "id": "build",
+          "type": "BUILD",
+          "name": "Build App",
+          "scheme": "LMS",
+          "platform": "IOS",
+          "configuration": "Debug"
+        },
+        {
+          "id": "test",
+          "type": "TEST",
+          "name": "Run Tests",
+          "scheme": "LMS",
+          "platform": "IOS_SIMULATOR",
+          "testPlan": "AllTests",
+          "destinations": [
+            {
+              "deviceName": "iPhone 16 Pro",
+              "osVersion": "LATEST"
+            }
+          ],
+          "configuration": "Debug",
+          "collectCodeCoverage": true,
+          "parallelTesting": true
+        },
+        {
+          "id": "archive",
+          "type": "ARCHIVE",
+          "name": "Archive for TestFlight",
+          "scheme": "LMS",
+          "platform": "IOS",
+          "configuration": "Release",
+          "condition": {
+            "branch": "master"
+          }
+        }
+      ],
+      "postActions": [
+        {
+          "type": "TESTFLIGHT_DISTRIBUTION",
+          "configuration": {
+            "groups": ["Internal Testers"],
+            "submitForBetaReview": false
+          },
+          "condition": {
+            "actionStatus": "SUCCEEDED",
+            "actionId": "archive"
+          }
+        }
+      ]
+    }
+  ]
+} 

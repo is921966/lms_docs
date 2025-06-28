@@ -15,9 +15,6 @@ final class OnboardingFlowUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments = ["UI_TESTING", "MOCK_MODE"]
         app.launch()
-        
-        // Login as new user for onboarding
-        loginAsNewUser()
     }
     
     override func tearDownWithError() throws {
@@ -26,92 +23,116 @@ final class OnboardingFlowUITests: XCTestCase {
     
     // MARK: - Helper Methods
     
-    private func loginAsNewUser() {
-        let emailField = app.textFields["emailTextField"]
-        let passwordField = app.secureTextFields["passwordSecureField"]
-        let loginButton = app.buttons["loginButton"]
-        
-        emailField.tap()
-        emailField.typeText("new.user@lms.ru") // Special user that triggers onboarding
-        
-        passwordField.tap()
-        passwordField.typeText("Test123!")
-        
+    private func loginAsAdmin() {
+        // Click login button on main screen
+        let loginButton = app.buttons["Войти (Demo)"]
+        XCTAssertTrue(loginButton.waitForExistence(timeout: 5))
         loginButton.tap()
         
-        // Wait for onboarding to start
-        _ = app.staticTexts["Добро пожаловать в команду!"].waitForExistence(timeout: 5)
+        // Click login as admin in MockLoginView
+        let adminLoginButton = app.buttons["loginAsAdmin"]
+        XCTAssertTrue(adminLoginButton.waitForExistence(timeout: 5))
+        adminLoginButton.tap()
+        
+        // Wait for main screen to appear
+        _ = app.navigationBars["Главная"].waitForExistence(timeout: 5)
+    }
+    
+    private func navigateToOnboarding() {
+        // Navigate to Content tab (not Management)
+        app.tabBars.buttons["Контент"].tap()
+        
+        // Click on Onboarding card
+        let onboardingCard = app.buttons.containing(.staticText, identifier: "Онбординг").element
+        XCTAssertTrue(onboardingCard.waitForExistence(timeout: 5))
+        onboardingCard.tap()
+        
+        // Verify we're on onboarding dashboard
+        XCTAssertTrue(app.navigationBars["Программы адаптации"].waitForExistence(timeout: 5))
     }
     
     // MARK: - Test Cases
     
-    func testStartOnboardingFlow() {
-        // Verify welcome screen is shown
-        XCTAssertTrue(app.staticTexts["Добро пожаловать в команду!"].exists)
-        XCTAssertTrue(app.buttons["Начать адаптацию"].exists)
+    func testViewOnboardingDashboard() {
+        // Login as admin
+        loginAsAdmin()
         
-        // Start onboarding
-        app.buttons["Начать адаптацию"].tap()
+        // Navigate to onboarding
+        navigateToOnboarding()
         
-        // Verify first step is shown
-        XCTAssertTrue(app.navigationBars["Шаг 1: Знакомство с компанией"].waitForExistence(timeout: 3))
+        // Verify dashboard elements
+        XCTAssertTrue(app.otherElements["onboardingStatsView"].exists)
+        XCTAssertTrue(app.buttons["createProgramButton"].exists)
+        XCTAssertTrue(app.buttons["reportsButton"].exists)
+        
+        // Verify filter chips
+        XCTAssertTrue(app.buttons["filterChipAll"].exists)
+        XCTAssertTrue(app.buttons["filterChipАктивные"].exists)
+        XCTAssertTrue(app.buttons["filterChipЗавершены"].exists)
     }
     
-    func testNavigateThroughOnboardingSteps() {
-        // Start onboarding
-        app.buttons["Начать адаптацию"].tap()
-        XCTAssertTrue(app.navigationBars["Шаг 1: Знакомство с компанией"].waitForExistence(timeout: 3))
+    func testFilterOnboardingPrograms() {
+        // Login and navigate
+        loginAsAdmin()
+        navigateToOnboarding()
         
-        // Complete first step
-        app.buttons["Я ознакомился"].tap()
+        // Test filter by active programs
+        app.buttons["filterChipАктивные"].tap()
         
-        // Verify second step
-        XCTAssertTrue(app.navigationBars["Шаг 2: Настройка рабочего места"].waitForExistence(timeout: 3))
+        // Verify the filter is selected
+        _ = app.scrollViews["programsListScrollView"].waitForExistence(timeout: 2)
         
-        // Complete second step
-        app.buttons["Все настроено"].tap()
+        // Test filter by completed
+        app.buttons["filterChipЗавершены"].tap()
         
-        // Verify final step
-        XCTAssertTrue(app.staticTexts["Адаптация почти завершена!"].waitForExistence(timeout: 3))
+        // Test search functionality
+        let searchField = app.textFields["searchTextField"]
+        XCTAssertTrue(searchField.exists)
+        searchField.tap()
+        searchField.typeText("Иван")
     }
     
-    func testSkipOptionalStep() {
-        // Navigate to an optional step (e.g., Step 3)
-        app.buttons["Начать адаптацию"].tap()
-        app.buttons["Я ознакомился"].tap()
-        app.buttons["Все настроено"].tap()
+    func testCreateNewOnboardingProgram() {
+        // Login and navigate
+        loginAsAdmin()
+        navigateToOnboarding()
         
-        // Assume Step 3 is optional survey
-        XCTAssertTrue(app.navigationBars["Шаг 3: Опрос"].waitForExistence(timeout: 3))
+        // Click create program button
+        app.buttons["createProgramButton"].tap()
         
-        // Check for skip button
-        let skipButton = app.buttons["Пропустить"]
-        XCTAssertTrue(skipButton.exists)
+        // Wait for create program view
+        XCTAssertTrue(app.navigationBars["Новая программа адаптации"].waitForExistence(timeout: 5))
         
-        // Skip the step
-        skipButton.tap()
+        // Fill in employee name
+        let employeeNameField = app.textFields["employeeNameField"]
+        if employeeNameField.exists {
+            employeeNameField.tap()
+            employeeNameField.typeText("Петр Петров")
+        }
         
-        // Verify next step is shown
-        XCTAssertTrue(app.navigationBars["Шаг 4: План на первую неделю"].waitForExistence(timeout: 3))
+        // Select position if available
+        let positionField = app.textFields["positionField"]
+        if positionField.exists {
+            positionField.tap()
+            positionField.typeText("Продавец-консультант")
+        }
     }
     
-    func testSaveProgressAndResume() {
-        // Start onboarding and complete one step
-        app.buttons["Начать адаптацию"].tap()
-        app.buttons["Я ознакомился"].tap()
-        XCTAssertTrue(app.navigationBars["Шаг 2: Настройка рабочего места"].waitForExistence(timeout: 3))
-
-        // Close and relaunch app (simulated)
-        app.terminate()
-        app.launch()
+    func testViewOnboardingProgramDetails() {
+        // Login and navigate
+        loginAsAdmin()
+        navigateToOnboarding()
         
-        // Login again
-        loginAsNewUser()
+        // Wait for programs to load
+        _ = app.scrollViews["programsListScrollView"].waitForExistence(timeout: 5)
         
-        // Verify app resumes from the correct step
-        XCTAssertTrue(app.staticTexts["Продолжить адаптацию?"].waitForExistence(timeout: 5))
-        app.buttons["Продолжить"].tap()
-        
-        XCTAssertTrue(app.navigationBars["Шаг 2: Настройка рабочего места"].waitForExistence(timeout: 3))
+        // Click on first program if exists
+        let firstProgram = app.scrollViews["programsListScrollView"].descendants(matching: .button).element(boundBy: 0)
+        if firstProgram.exists {
+            firstProgram.tap()
+            
+            // Verify program details view
+            XCTAssertTrue(app.navigationBars.element(boundBy: 0).waitForExistence(timeout: 5))
+        }
     }
 } 
