@@ -2,10 +2,21 @@
 #     https://docs.fastlane.tools/advanced/#appfile
 
 app_identifier("ru.tsum.lms.igor") # The bundle identifier of your app
-apple_id("igor.shirokov@mac.com") # Your Apple email address
+apple_id("igor.shirokov92@gmail.com") # Your Apple Developer Portal username
 
 # Developer Portal Team ID
 team_id("N85286S93X")
 
 # App Store Connect Team ID (if different from Developer Portal Team ID)
 itc_team_id("127933174") # This is needed for App Store Connect
+
+# App Store Connect API
+for_platform :ios do
+  for_lane :beta do
+    app_store_connect_api_key(
+      key_id: "7JF867FY76",
+      issuer_id: "cd103a3c-5d58-4921-aafb-c220081abea3",
+      key_filepath: "./private_keys/AuthKey_7JF867FY76.p8"
+    )
+  end
+end

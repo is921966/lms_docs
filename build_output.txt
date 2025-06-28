@@ -4,6 +4,6 @@ Command line invocation:
 Build settings from command line:
     CODE_SIGNING_REQUIRED = NO
 
-2025-06-26 20:32:16.958 xcodebuild[55105:38033178] Writing error result bundle to /var/folders/8m/gz8y23yj5czcm055zw7bzx600000gn/T/ResultBundle_2025-26-06_20-32-0016.xcresult
+2025-06-28 20:47:17.089 xcodebuild[75195:42513869] Writing error result bundle to /var/folders/8m/gz8y23yj5czcm055zw7bzx600000gn/T/ResultBundle_2025-28-06_20-47-0017.xcresult
 xcodebuild: error: The directory /Users/ishirokov/lms_docs does not contain an Xcode project, workspace or package.
 
