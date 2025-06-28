@@ -64,21 +64,21 @@ enum Feature: String, CaseIterable {
     var view: some View {
         switch self {
         case .auth:
-            AuthenticationView()
+            LoginView()
         case .users:
-            UserManagementView()
+            AdminManagementView()
         case .courses:
-            CoursesListView()
+            CourseListView()
         case .profile:
             ProfileView()
         case .settings:
             SettingsView()
         case .tests:
-            TestsListView()
+            TestListView()
         case .analytics:
-            AnalyticsView()
+            AnalyticsDashboard()
         case .onboarding:
-            OnboardingProgramsView()
+            MyOnboardingProgramsView()
         case .competencies:
             CompetencyListView()
         case .positions:
@@ -164,6 +164,31 @@ extension Feature {
     /// Получить список включенных модулей для табов
     static var enabledTabFeatures: [Feature] {
         allCases.filter { $0.shouldShowInTabs }
+    }
+    
+    /// Включить все готовые модули
+    static func enableReadyModules() {
+        // Включаем модули, которые готовы но не интегрированы
+        Feature.enable(.competencies)
+        Feature.enable(.positions)
+        Feature.enable(.feed)
+        
+        print("✅ Готовые модули включены:")
+        print("  - Компетенции")
+        print("  - Должности")
+        print("  - Новости")
+    }
+    
+    /// Выключить все дополнительные модули
+    static func disableExtraModules() {
+        Feature.disable(.competencies)
+        Feature.disable(.positions)
+        Feature.disable(.feed)
+        Feature.disable(.certificates)
+        Feature.disable(.gamification)
+        Feature.disable(.notifications)
+        
+        print("❌ Дополнительные модули выключены")
     }
 }
 

@@ -22,7 +22,7 @@ struct SettingsView: View {
                             .foregroundColor(.blue)
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(authService.currentUser?.name ?? "Пользователь")
+                            Text(authService.currentUser?.fullName ?? "Пользователь")
                                 .font(.headline)
                             Text(authService.currentUser?.email ?? "")
                                 .font(.caption)

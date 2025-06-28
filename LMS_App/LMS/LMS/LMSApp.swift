@@ -22,6 +22,14 @@ struct LMSApp: App {
         
         // Enable battery monitoring for device info
         UIDevice.current.isBatteryMonitoringEnabled = true
+        
+        #if DEBUG
+        // Автоматически включаем готовые модули для разработки
+        // ВАЖНО: Удалить перед релизом или использовать feature flags из настроек
+        DispatchQueue.main.async {
+            Feature.enableReadyModules()
+        }
+        #endif
     }
     
     var body: some Scene {
