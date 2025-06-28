@@ -23,13 +23,20 @@ struct LMSApp: App {
         // Enable battery monitoring for device info
         UIDevice.current.isBatteryMonitoringEnabled = true
         
+        // Проверяем запущены ли мы в режиме UI тестирования
+        let isUITesting = ProcessInfo.processInfo.arguments.contains("UI-Testing")
+        
+        // В DEBUG режиме или при UI тестировании включаем готовые модули
         #if DEBUG
-        // Автоматически включаем готовые модули для разработки
-        // ВАЖНО: Удалить перед релизом или использовать feature flags из настроек
-        DispatchQueue.main.async {
+        let shouldEnableModules = true
+        #else
+        let shouldEnableModules = isUITesting
+        #endif
+        
+        if shouldEnableModules {
+            // Включаем готовые модули СИНХРОННО при старте
             Feature.enableReadyModules()
         }
-        #endif
     }
     
     var body: some Scene {

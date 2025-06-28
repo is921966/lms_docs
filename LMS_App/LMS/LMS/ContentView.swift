@@ -12,6 +12,11 @@ struct ContentView: View {
     @State private var selectedTab = 0
     @AppStorage("isAdminMode") private var isAdminMode = false
     
+    // Проверяем запущены ли мы в режиме UI тестирования
+    private var isUITesting: Bool {
+        ProcessInfo.processInfo.arguments.contains("UI-Testing")
+    }
+    
     var body: some View {
         if authService.isAuthenticated {
             authenticatedView
@@ -42,8 +47,9 @@ struct ContentView: View {
             }
             .tag(Feature.enabledTabFeatures.count)
             
-            #if DEBUG
-            // Debug menu for development
+            // Debug menu для разработки и тестирования
+            // Всегда показываем в симуляторе (для разработки и UI тестов)
+            #if targetEnvironment(simulator)
             NavigationStack {
                 DebugMenuView()
             }
@@ -82,7 +88,7 @@ struct AdminModeIndicator: View {
     }
 }
 
-#if DEBUG
+// Debug меню теперь не обернуто в #if DEBUG
 struct DebugMenuView: View {
     @AppStorage("isAdminMode") private var isAdminMode = false
     
@@ -174,7 +180,6 @@ struct DebugMenuView: View {
         print("User data reset")
     }
 }
-#endif
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
