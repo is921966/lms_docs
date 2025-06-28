@@ -1,13 +1,11 @@
 import SwiftUI
-import Combine
 
 struct LoginView: View {
-    @StateObject private var authService = AuthService.shared
+    @StateObject private var authService = MockAuthService.shared
     @State private var email = ""
     @State private var password = ""
     @State private var showingAlert = false
     @State private var alertMessage = ""
-    @State private var cancellables = Set<AnyCancellable>()
     
     @Environment(\.dismiss) private var dismiss
     
@@ -133,18 +131,8 @@ struct LoginView: View {
     private func login() {
         guard isFormValid else { return }
         
-        authService.login(email: email, password: password)
-            .sink(
-                receiveCompletion: { completion in
-                    if case .failure(let error) = completion {
-                        alertMessage = error.localizedDescription
-                        showingAlert = true
-                    }
-                },
-                receiveValue: { _ in
-                    // Success handled by onReceive
-                }
-            )
-            .store(in: &cancellables)
+        // For mock login, determine if admin based on email
+        let isAdmin = email.contains("admin")
+        authService.mockLogin(asAdmin: isAdmin)
     }
 } 

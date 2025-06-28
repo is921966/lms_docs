@@ -10,9 +10,9 @@ import SwiftUI
 @main
 struct LMSApp: App {
     // let persistenceController = PersistenceController.shared
-    @StateObject private var authService = AuthService.shared
+    @StateObject private var authService = MockAuthService.shared
     @StateObject private var authViewModel = AuthViewModel()
-    @StateObject private var adminService = AdminService.shared
+    @StateObject private var adminService = MockAdminService.shared
     // @StateObject private var networkMonitor = NetworkMonitor()
     @StateObject private var feedbackManager = FeedbackManager.shared
     
@@ -36,7 +36,7 @@ struct LMSApp: App {
                 .feedbackEnabled()
                 .preferredColorScheme(.light)
                 .onAppear {
-                    authService.loadCurrentUser()
+                    // Auth status is checked automatically in MockAuthService.init()
                 }
         }
     }

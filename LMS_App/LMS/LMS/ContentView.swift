@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var authService: MockAuthService
     @State private var selectedTab = 0
     
     var body: some View {
@@ -23,7 +23,7 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             // Home tab
             NavigationView {
-                if authService.currentUser?.role == .admin || authService.currentUser?.role == .moderator {
+                if authService.currentUser?.roles.contains("admin") == true || authService.currentUser?.roles.contains("moderator") == true {
                     AdminDashboardView()
                 } else {
                     StudentDashboardView()
@@ -125,6 +125,6 @@ struct DebugMenuView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            .environmentObject(AuthService.shared)
+            .environmentObject(MockAuthService.shared)
     }
 }
