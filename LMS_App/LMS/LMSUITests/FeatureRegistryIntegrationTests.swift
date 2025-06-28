@@ -74,40 +74,57 @@ final class FeatureRegistryIntegrationTests: XCTestCase {
     }
     
     func testReadyModulesAreAccessibleInDebug() throws {
-        // Проверяем что включенные модули доступны через Feature Registry
+        // TDD ПРИНЦИП: Проверяем ТОЧНО то, что разработали
+        // Если мы создали готовые модули, они ВСЕ должны быть доступны
+        
         let tabBar = app.tabBars.firstMatch
         XCTAssertTrue(tabBar.waitForExistence(timeout: 5))
         
-        // iOS автоматически помещает табы после 5-го в More
+        // Точный список готовых модулей, которые мы разработали
+        let expectedReadyModules = [
+            "Компетенции", 
+            "Должности", 
+            "Новости"
+        ]
+        
+        // iOS помещает табы после 5-го в More
         let tabCount = tabBar.buttons.count
         print("📊 Количество табов: \(tabCount)")
         
-        // Должно быть минимум 6 табов включая More
-        XCTAssertGreaterThanOrEqual(tabCount, 6, "Должно быть минимум 6 табов (5 основных + More)")
+        // Должно быть минимум 5 основных табов + готовые модули
+        let expectedMinimumTabs = 5 + expectedReadyModules.count
+        XCTAssertGreaterThanOrEqual(tabCount, expectedMinimumTabs, 
+            "Должно быть минимум \(expectedMinimumTabs) табов (5 основных + \(expectedReadyModules.count) готовых)")
         
-        // Проверяем что More содержит дополнительные включенные модули
+        // Если есть More таб, проверяем ВСЕ готовые модули в нем
         let moreTab = tabBar.buttons["More"]
-        if moreTab.exists {
-            moreTab.tap()
+        XCTAssertTrue(moreTab.exists, "More таб должен существовать при наличии готовых модулей")
+        
+        moreTab.tap()
+        
+        let moreTable = app.tables.firstMatch
+        XCTAssertTrue(moreTable.waitForExistence(timeout: 3), 
+            "Список More должен загрузиться")
+        
+        // TDD: Проверяем КАЖДЫЙ разработанный модуль
+        for moduleName in expectedReadyModules {
+            let moduleCell = moreTable.cells.containing(.staticText, identifier: moduleName).firstMatch
             
-            let moreTable = app.tables.firstMatch
-            XCTAssertTrue(moreTable.waitForExistence(timeout: 2))
+            XCTAssertTrue(moduleCell.exists, 
+                "🚨 TDD FAILURE: Модуль '\(moduleName)' должен быть доступен в More! " +
+                "Если тест падает - исправьте Feature Registry, а не тест!")
             
-            // Проверяем готовые модули
-            let readyModules = ["Компетенции", "Должности", "Новости"]
-            var foundCount = 0
-            
-            for moduleName in readyModules {
-                let cell = moreTable.cells.containing(.staticText, identifier: moduleName).firstMatch
-                if cell.exists {
-                    foundCount += 1
-                    print("✅ Найден готовый модуль: \(moduleName)")
-                }
-            }
-            
-            // Хотя бы один готовый модуль должен быть найден
-            XCTAssertGreaterThan(foundCount, 0, "Должен быть найден хотя бы один готовый модуль")
+            print("✅ TDD SUCCESS: Модуль '\(moduleName)' найден и доступен")
         }
+        
+        // Дополнительно: проверяем что модули кликабельны
+        for moduleName in expectedReadyModules {
+            let moduleCell = moreTable.cells.containing(.staticText, identifier: moduleName).firstMatch
+            XCTAssertTrue(moduleCell.isEnabled, 
+                "Модуль '\(moduleName)' должен быть активным (кликабельным)")
+        }
+        
+        print("🎯 TDD VALIDATION: Все \(expectedReadyModules.count) готовых модулей проверены и работают")
     }
     
     func testNavigationToEachModule() throws {

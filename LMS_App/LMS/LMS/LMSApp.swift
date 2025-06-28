@@ -35,7 +35,8 @@ struct LMSApp: App {
         
         if shouldEnableModules {
             // Включаем готовые модули СИНХРОННО при старте
-            Feature.enableReadyModules()
+            // КРИТИЧЕСКИ ВАЖНО: Используем FeatureRegistryManager для уведомления UI
+            FeatureRegistryManager.shared.enableReadyModules()
         }
     }
     

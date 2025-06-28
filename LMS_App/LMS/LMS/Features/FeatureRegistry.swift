@@ -1,5 +1,28 @@
 import SwiftUI
 
+/// Менеджер для реактивного управления Feature Registry
+class FeatureRegistryManager: ObservableObject {
+    static let shared = FeatureRegistryManager()
+    
+    @Published var lastUpdate = Date()
+    
+    private init() {}
+    
+    /// Обновить UI после изменения feature flags
+    func refresh() {
+        DispatchQueue.main.async {
+            self.lastUpdate = Date()
+        }
+    }
+    
+    /// Включить готовые модули с обновлением UI
+    func enableReadyModules() {
+        Feature.enableReadyModules()
+        refresh()
+        print("🔄 FeatureRegistry обновлен - UI получит уведомление")
+    }
+}
+
 /// Единый реестр всех модулей приложения
 enum Feature: String, CaseIterable {
     // Основные модули (включены по умолчанию)
@@ -177,6 +200,10 @@ extension Feature {
         print("  - Компетенции")
         print("  - Должности")
         print("  - Новости")
+        
+        // КРИТИЧЕСКИ ВАЖНО: Уведомляем UI об изменениях
+        FeatureRegistryManager.shared.refresh()
+        print("🔄 UI уведомлен об изменениях Feature Registry")
     }
     
     /// Выключить все дополнительные модули

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var authService: MockAuthService
+    @StateObject private var featureRegistry = FeatureRegistryManager.shared
     @State private var selectedTab = 0
     @AppStorage("isAdminMode") private var isAdminMode = false
     
@@ -28,6 +29,7 @@ struct ContentView: View {
     var authenticatedView: some View {
         TabView(selection: $selectedTab) {
             // Автоматическая генерация табов из FeatureRegistry
+            // КРИТИЧЕСКИ ВАЖНО: Зависимость на featureRegistry.lastUpdate для TDD
             ForEach(Array(Feature.enabledTabFeatures.enumerated()), id: \.element) { index, feature in
                 NavigationStack {
                     feature.view
@@ -37,6 +39,7 @@ struct ContentView: View {
                 }
                 .tag(index)
             }
+            .id(featureRegistry.lastUpdate) // КРИТИЧЕСКОЕ для обновления UI!
             
             // Profile + Settings combined tab
             NavigationStack {
