@@ -1,0 +1,78 @@
+# Xcode Cloud Configuration
+# This file helps configure default settings for Xcode Cloud
+
+workflows:
+  - name: "Build and Test"
+    description: "Main CI/CD workflow"
+    environment:
+      xcode_version: "latest_release"
+      macos_version: "latest"
+    
+    triggers:
+      - branch_changes:
+          - main
+          - develop  
+          - "feature/*"
+      - pull_request_changes: true
+      - tag_changes: "v*"
+    
+    actions:
+      - name: "Build"
+        type: "build"
+        scheme: "LMS"
+        platform: "iOS"
+        configuration: "Debug"
+        
+      - name: "Test"
+        type: "test"
+        scheme: "LMS"
+        destinations:
+          - platform: "iOS Simulator"
+            device: "iPhone 16 Pro"
+            os: "latest"
+        configuration: "Debug"
+        options:
+          - code_coverage: true
+          - parallel_testing: true
+          - maximum_test_execution_time_allowance: 60
+        
+      - name: "Archive"
+        type: "archive"
+        scheme: "LMS"
+        platform: "iOS"
+        configuration: "Release"
+        condition:
+          branch: "main"
+        export_options:
+          method: "app-store"
+          
+    post_actions:
+      - name: "TestFlight"
+        type: "testflight"
+        condition:
+          branch: "main"
+          action: "archive"
+        groups:
+          - "Internal Testers"
+        submit_for_beta_review: false
+        
+      - name: "Notify Slack"
+        type: "notification"
+        destination: "slack"
+        condition:
+          status: ["failed", "succeeded"]
+
+# Environment Variables (set in Xcode Cloud UI)
+environment_variables:
+  - name: "API_BASE_URL"
+    value: "https://api.lms.example.com"
+    is_secret: false
+    
+  - name: "MOCK_MODE"
+    value: "true"
+    is_secret: false
+
+# Custom Scripts
+scripts:
+  post_clone: "ci_scripts/ci_post_clone.sh"
+  post_xcodebuild: "ci_scripts/ci_post_xcodebuild.sh" 
