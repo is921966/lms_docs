@@ -47,6 +47,22 @@ Deploy to App Store
 
 Create a new build without uploading
 
+### ios fetch_feedback
+
+```sh
+[bundle exec] fastlane ios fetch_feedback
+```
+
+Fetch TestFlight feedback and screenshots
+
+### ios fetch_feedback_v2
+
+```sh
+[bundle exec] fastlane ios fetch_feedback_v2
+```
+
+Fetch TestFlight data using improved Spaceship methods
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

@@ -5,6 +5,7 @@ import Combine
 // MARK: - User Role
 enum UserRole: String, Codable, CaseIterable {
     case student = "student"
+    case moderator = "moderator"
     case admin = "admin"
     case superAdmin = "superAdmin"
 }
@@ -24,10 +25,12 @@ struct User: Identifiable {
         self.lastName = userResponse.lastName
         
         // Determine role from roles array
-        if userResponse.roles.contains("admin") {
-            self.role = .admin
-        } else if userResponse.roles.contains("superAdmin") {
+        if userResponse.roles.contains("superAdmin") {
             self.role = .superAdmin
+        } else if userResponse.roles.contains("admin") {
+            self.role = .admin
+        } else if userResponse.roles.contains("moderator") {
+            self.role = .moderator
         } else {
             self.role = .student
         }

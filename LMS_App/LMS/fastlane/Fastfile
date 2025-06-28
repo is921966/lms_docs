@@ -139,4 +139,91 @@ platform :ios do
       output_name: "LMS.ipa"
     )
   end
+
+  desc "Fetch TestFlight feedback and screenshots"
+  lane :fetch_feedback do |options|
+    # Параметры
+    days = options[:days] || 7
+    create_issues = options[:create_issues] || false
+    
+    UI.message "📱 Fetching TestFlight feedback for the last #{days} days..."
+    
+    # Получаем feedback
+    count = fetch_testflight_feedback(
+      app_identifier: ENV["APP_IDENTIFIER"] || "ru.tsum.LMS",
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+      output_directory: "testflight_feedback_#{Time.now.strftime('%Y%m%d_%H%M%S')}",
+      create_github_issues: create_issues,
+      github_token: ENV["GITHUB_TOKEN"],
+      github_repo: ENV["GITHUB_REPOSITORY"] || "ishirokov/lms_docs",
+      verbose: true
+    )
+    
+    if count > 0
+      UI.success "✅ Successfully fetched #{count} feedback items"
+      
+      # Отправляем уведомление в Slack если настроено
+      if ENV["SLACK_WEBHOOK"]
+        send_slack_notification(count)
+      end
+    else
+      UI.important "No feedback found or error occurred"
+    end
+  end
+
+  desc "Send Slack notification about new feedback"
+  private_lane :send_slack_notification do |feedback_count|
+    slack(
+      message: "📱 New TestFlight Feedback",
+      slack_url: ENV["SLACK_WEBHOOK"],
+      default_payloads: [],
+      payload: {
+        "Feedback Count" => feedback_count.to_s,
+        "Build Number" => get_build_number,
+        "Version" => get_version_number
+      },
+      success: true
+    )
+  end
+
+  desc "Create GitHub issues from TestFlight feedback"
+  private_lane :create_github_issues_from_feedback do
+    UI.message "Creating GitHub issues from feedback..."
+    
+    # Читаем последний отчет
+    reports = Dir.glob("testflight_feedback_*/feedback_report.json").sort
+    
+    if reports.empty?
+      UI.error "No feedback reports found"
+      return
+    end
+    
+    latest_report = reports.last
+    UI.message "Using report: #{latest_report}"
+    
+    # Здесь можно добавить дополнительную логику обработки
+  end
+
+  desc "Fetch TestFlight data using improved Spaceship methods"
+  lane :fetch_feedback_v2 do |options|
+    UI.message "📱 Fetching TestFlight data with Spaceship v2..."
+    
+    # Получаем данные через Spaceship
+    count = fetch_testflight_feedback_v2(
+      app_identifier: ENV["APP_IDENTIFIER"] || "ru.tsum.LMS",
+      app_id: ENV["APP_ID"] || "6747716243",
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+      verbose: true
+    )
+    
+    if count > 0
+      UI.success "✅ Successfully fetched data for #{count} testers"
+    else
+      UI.important "No data found or error occurred"
+    end
+  end
 end

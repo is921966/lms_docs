@@ -1,5 +1,7 @@
 import Foundation
 
-class AdminService {
+class AdminService: ObservableObject {
     static let shared = AdminService()
+    
+    private init() {}
 }

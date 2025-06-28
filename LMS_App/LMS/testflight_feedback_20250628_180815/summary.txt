@@ -1,0 +1,75 @@
+TestFlight Summary Report
+========================
+
+App: TSUM LMS
+Generated: 2025-06-28T18:08:25+03:00
+
+Statistics:
+-----------
+Total Testers: 7
+Total Builds: 46
+
+Recent Builds:
+--------------
+• v46 (ID: 17493eab-7701-4b13-967e-4097df99aa79)
+  Uploaded: 2025-06-28T06:11:22-07:00
+  Status: VALID
+  Expired: false
+
+• v45 (ID: d3e976ac-dca4-495e-92f9-75f18c842069)
+  Uploaded: 2025-06-28T05:49:29-07:00
+  Status: VALID
+  Expired: false
+
+• v44 (ID: 6388badb-9db5-47c3-a38d-11fa50d562c8)
+  Uploaded: 2025-06-28T05:47:50-07:00
+  Status: VALID
+  Expired: false
+
+• v43 (ID: 89aec957-4526-466c-b119-2f390237be0f)
+  Uploaded: 2025-06-28T05:38:03-07:00
+  Status: VALID
+  Expired: false
+
+• v42 (ID: e2025ba7-8159-4442-91ed-b5f09e8c1e9a)
+  Uploaded: 2025-06-28T05:07:27-07:00
+  Status: VALID
+  Expired: false
+
+Testers:
+--------
+• 
+  Name: Anonymous 
+  Type: PUBLIC_LINK
+  Groups: 
+
+• 
+  Name: Anonymous 
+  Type: PUBLIC_LINK
+  Groups: 
+
+• 
+  Name: Anonymous 
+  Type: PUBLIC_LINK
+  Groups: 
+
+• 
+  Name: Anonymous 
+  Type: PUBLIC_LINK
+  Groups: 
+
+• lmakukhina@mercury.ru
+  Name: Liliya M
+  Type: EMAIL
+  Groups: 
+
+• igor.shirokov@mac.com
+  Name: Igor Shirokov
+  Type: EMAIL
+  Groups: 
+
+• 
+  Name: Anonymous 
+  Type: PUBLIC_LINK
+  Groups: 
+

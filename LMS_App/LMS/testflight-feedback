@@ -1,0 +1,34 @@
+#!/bin/bash
+# TestFlight Feedback Helper
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+case "$1" in
+    setup)
+        "$SCRIPT_DIR/setup-testflight-feedback.sh"
+        ;;
+    fetch)
+        cd "$SCRIPT_DIR/scripts" && ./fetch-feedback.sh ${@:2}
+        ;;
+    test)
+        cd "$SCRIPT_DIR/scripts"
+        echo "🧪 Тестируем конфигурацию..."
+        python3 -c "import jwt, requests; print('✅ Python модули работают')"
+        if [ -f ".env.local" ]; then
+            echo "✅ Конфигурация найдена"
+        else
+            echo "❌ Конфигурация не найдена"
+        fi
+        ;;
+    help|*)
+        echo "TestFlight Feedback Automation"
+        echo ""
+        echo "Usage: ./testflight-feedback [command]"
+        echo ""
+        echo "Commands:"
+        echo "  setup   - Запустить автоматическую настройку"
+        echo "  fetch   - Получить feedback из TestFlight"
+        echo "  test    - Проверить настройку"
+        echo "  help    - Показать эту справку"
+        ;;
+esac

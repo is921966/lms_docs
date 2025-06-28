@@ -128,10 +128,14 @@ struct PostPreviewInComments: View {
     
     private func roleColor(for role: UserRole) -> Color {
         switch role {
-        case .admin, .superAdmin:
-            return .blue
         case .student:
             return .green
+        case .moderator:
+            return .yellow
+        case .admin:
+            return .blue
+        case .superAdmin:
+            return .red
         }
     }
     

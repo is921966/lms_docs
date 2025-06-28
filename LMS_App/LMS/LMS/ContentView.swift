@@ -8,464 +8,144 @@
 import SwiftUI
 
 struct ContentView: View {
-    // TEMPORARY: Use mock service for TestFlight testing
-    // TODO: Change back to VKIDAuthService when VK ID is fully integrated
-    @StateObject private var authService = MockAuthService.shared
-    
-    @State private var showingLogin = false
+    @EnvironmentObject var authService: AuthService
+    @State private var selectedTab = 0
     
     var body: some View {
-        NavigationView {
-            if authService.isAuthenticated {
-                if authService.isApprovedByAdmin {
-                    // Пользователь авторизован и одобрен - показываем основное приложение
-                    MainTabView()
+        if authService.isAuthenticated {
+            authenticatedView
+        } else {
+            LoginView()
+        }
+    }
+    
+    var authenticatedView: some View {
+        TabView(selection: $selectedTab) {
+            // Home tab
+            NavigationView {
+                if authService.currentUser?.role == .admin || authService.currentUser?.role == .moderator {
+                    AdminDashboardView()
                 } else {
-                    // Пользователь авторизован, но ожидает одобрения
-                    MockPendingApprovalView()
-                }
-            } else {
-                // Пользователь не авторизован
-                VStack(spacing: 20) {
-                    Spacer()
-                    
-                    // App icon
-                    Image(systemName: "graduationcap.fill")
-                        .font(.system(size: 80))
-                        .foregroundColor(.blue)
-                    
-                    // App title
-                    Text("TSUM LMS")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    Text("Корпоративный университет")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    Spacer()
-                    
-                    // Login button
-                    Button(action: {
-                        showingLogin = true
-                    }) {
-                        HStack {
-                            Image(systemName: "person.crop.circle.badge.questionmark")
-                            Text("Войти (Demo)")
-                        }
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: 250, height: 50)
-                        .background(Color(red: 0/255, green: 119/255, blue: 255/255))
-                        .cornerRadius(10)
-                    }
-                    
-                    // Info text
-                    VStack(spacing: 5) {
-                        Text("Демо версия")
-                            .font(.caption)
-                            .foregroundColor(.orange)
-                            .fontWeight(.semibold)
-                        
-                        Text("VK ID будет доступен позже")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.top, 10)
-                    
-                    // Version info
-                    Text("Version 2.0.1 - TestFlight Demo")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .padding(.top, 50)
-                }
-                .padding()
-                .sheet(isPresented: $showingLogin) {
-                    MockLoginView()
+                    StudentDashboardView()
                 }
             }
-        }
-        .onAppear {
-            // Проверяем статус одобрения при запуске
-            if authService.isAuthenticated {
-                // Mock service doesn't need to check approval
+            .tabItem {
+                Label("Главная", systemImage: "house.fill")
             }
-        }
-    }
-}
-
-// MARK: - Mock Pending Approval View
-struct MockPendingApprovalView: View {
-    @StateObject private var authService = MockAuthService.shared
-    
-    var body: some View {
-        VStack(spacing: 30) {
-            Spacer()
+            .tag(0)
             
-            // Icon
-            Image(systemName: "clock.badge.checkmark")
-                .font(.system(size: 80))
-                .foregroundColor(.orange)
-            
-            // Title
-            Text("Ожидание одобрения")
-                .font(.title)
-                .fontWeight(.bold)
-            
-            // User info
-            if let user = authService.currentUser {
-                VStack(spacing: 10) {
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: 80))
-                        .foregroundColor(.gray)
-                    
-                    Text("\(user.firstName) \(user.lastName)")
-                        .font(.headline)
-                    
-                    Text(user.email)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(15)
-            }
-            
-            // Description
-            VStack(spacing: 10) {
-                Text("Ваша учетная запись создана")
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                
-                Text("Администратор должен одобрить вашу заявку для доступа к курсам")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            .padding(.horizontal)
-            
-            // Mock approve button (for development)
-            Button(action: {
-                authService.mockApprove()
-            }) {
-                HStack {
-                    Image(systemName: "checkmark.circle")
-                    Text("Одобрить себя (Dev)")
-                }
-                .padding()
-                .background(Color.green)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-            }
-            
-            // Logout button
-            Button(action: {
-                authService.logout()
-            }) {
-                Text("Выйти")
-                    .foregroundColor(.red)
-            }
-            
-            Spacer()
-        }
-        .padding()
-    }
-}
-
-// MARK: - Main Tab View
-struct MainTabView: View {
-    @StateObject private var authViewModel = AuthViewModel()
-    
-    var body: some View {
-        Group {
-            if authViewModel.isAdmin {
-                AdminTabView()
-            } else {
-                StudentTabView()
-            }
-        }
-        .environmentObject(authViewModel)
-    }
-}
-
-// MARK: - Student Tab View
-struct StudentTabView: View {
-    @StateObject private var authViewModel = AuthViewModel()
-    
-    var body: some View {
-        TabView {
-            // Feed - лента новостей
-            NavigationStack {
-                FeedView()
+            // Learning tab
+            NavigationView {
+                LearningListView()
             }
             .tabItem {
-                Label("Лента", systemImage: "newspaper")
+                Label("Обучение", systemImage: "book.fill")
             }
+            .tag(1)
             
-            // Main screen - персональный дашборд
-            NavigationStack {
-                StudentDashboardView()
-            }
-            .tabItem {
-                Label("Главная", systemImage: "house")
-            }
-            
-            // Learning - мои курсы
-            NavigationStack {
-                StudentCourseListView()
-            }
-            .tabItem {
-                Label("Обучение", systemImage: "book")
-            }
-            
-            // Tests - личные тесты
-            NavigationStack {
-                StudentTestListView()
-            }
-            .tabItem {
-                Label("Тесты", systemImage: "doc.text.magnifyingglass")
-            }
-            
-            // Profile - личный кабинет
-            NavigationStack {
-                ProfileView()
-            }
-            .tabItem {
-                Label("Профиль", systemImage: "person.circle")
-            }
-        }
-        .environmentObject(authViewModel)
-    }
-}
-
-// MARK: - Admin Tab View
-struct AdminTabView: View {
-    @StateObject private var authViewModel = AuthViewModel()
-    
-    var body: some View {
-        TabView {
-            // Feed - лента новостей
-            NavigationStack {
-                FeedView()
-            }
-            .tabItem {
-                Label("Лента", systemImage: "newspaper")
-            }
-            
-            // Main screen - административный дашборд
-            NavigationStack {
-                AdminDashboardView()
-            }
-            .tabItem {
-                Label("Главная", systemImage: "house")
-            }
-            
-            // Management - управление пользователями
-            NavigationStack {
-                AdminManagementView()
-            }
-            .tabItem {
-                Label("Управление", systemImage: "person.3")
-            }
-            
-            // Content - управление контентом
-            NavigationStack {
-                AdminContentView()
-            }
-            .tabItem {
-                Label("Контент", systemImage: "folder")
-            }
-            
-            // Analytics - полная аналитика
-            NavigationStack {
+            // Analytics tab
+            NavigationView {
                 AnalyticsDashboard()
             }
             .tabItem {
                 Label("Аналитика", systemImage: "chart.bar.fill")
             }
+            .tag(2)
             
-            // Profile - личный кабинет (с кнопкой выхода)
-            NavigationStack {
+            // Profile
+            NavigationView {
                 ProfileView()
             }
             .tabItem {
-                Label("Профиль", systemImage: "person.circle")
+                Label("Профиль", systemImage: "person.fill")
             }
+            .tag(3)
+            
+            #if DEBUG
+            // Debug menu for development
+            NavigationView {
+                DebugMenuView()
+            }
+            .tabItem {
+                Label("Debug", systemImage: "wrench.fill")
+            }
+            .tag(4)
+            #endif
         }
-        .environmentObject(authViewModel)
+        .accentColor(.blue)
     }
 }
 
-// MARK: - Main Dashboard View
-struct MainDashboardView: View {
-    @EnvironmentObject var authViewModel: AuthViewModel
-    @StateObject private var notificationService = NotificationService.shared
-    @State private var showingNotifications = false
+#if DEBUG
+struct DebugMenuView: View {
+    var body: some View {
+        List {
+            Section("Feedback System") {
+                NavigationLink(destination: FeedbackDebugMenu()) {
+                    Label("Feedback Debug", systemImage: "exclamationmark.bubble")
+                }
+            }
+            
+            Section("Network") {
+                NavigationLink(destination: NetworkDebugView()) {
+                    Label("Network Monitor", systemImage: "wifi")
+                }
+            }
+            
+            Section("Data") {
+                Button("Clear All Cache") {
+                    clearCache()
+                }
+                .foregroundColor(.red)
+                
+                Button("Reset User Data") {
+                    resetUserData()
+                }
+                .foregroundColor(.red)
+            }
+        }
+        .navigationTitle("Debug Menu")
+    }
+    
+    private func clearCache() {
+        // Clear cache implementation
+        print("Cache cleared")
+    }
+    
+    private func resetUserData() {
+        // Reset user data implementation
+        print("User data reset")
+    }
+}
+
+struct NetworkDebugView: View {
+    @EnvironmentObject var networkMonitor: NetworkMonitor
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Header
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Добро пожаловать!")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    if let userName = authViewModel.currentUser?.firstName {
-                        Text("Привет, \(userName)")
-                            .font(.title2)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal)
-                
-                // Quick stats
-                HStack(spacing: 16) {
-                    DashboardCard(
-                        title: "Курсов",
-                        value: "12",
-                        icon: "book.fill",
-                        color: .blue
-                    )
-                    
-                    DashboardCard(
-                        title: "Компетенций",
-                        value: "8",
-                        icon: "star.fill",
-                        color: .orange
-                    )
-                }
-                .padding(.horizontal)
-                
-                // Recent activities
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Последняя активность")
-                        .font(.headline)
-                        .padding(.horizontal)
-                    
-                    VStack(spacing: 12) {
-                        ActivityRow(
-                            title: "Завершен курс iOS разработка",
-                            time: "2 часа назад",
-                            icon: "checkmark.circle.fill",
-                            color: .green
-                        )
-                        
-                        ActivityRow(
-                            title: "Новая компетенция: SwiftUI",
-                            time: "Вчера",
-                            icon: "star.fill",
-                            color: .orange
-                        )
-                        
-                        ActivityRow(
-                            title: "Начат курс по архитектуре",
-                            time: "3 дня назад",
-                            icon: "play.circle.fill",
-                            color: .blue
-                        )
-                    }
-                    .padding(.horizontal)
+        List {
+            Section("Status") {
+                HStack {
+                    Text("Connection")
+                    Spacer()
+                    Text(networkMonitor.isConnected ? "Connected" : "Disconnected")
+                        .foregroundColor(networkMonitor.isConnected ? .green : .red)
                 }
                 
-                Spacer(minLength: 100)
-            }
-            .padding(.vertical)
-        }
-        .navigationTitle("Главная")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    showingNotifications = true
-                }) {
-                    ZStack {
-                        Image(systemName: "bell")
-                            .font(.system(size: 20))
-                        
-                        if notificationService.unreadCount > 0 {
-                            Circle()
-                                .fill(Color.red)
-                                .frame(width: 16, height: 16)
-                                .overlay(
-                                    Text("\(notificationService.unreadCount)")
-                                        .font(.system(size: 10, weight: .bold))
-                                        .foregroundColor(.white)
-                                )
-                                .offset(x: 8, y: -8)
-                        }
-                    }
+                HStack {
+                    Text("Connection Type")
+                    Spacer()
+                    Text(networkMonitor.connectionType)
                 }
             }
         }
-        .sheet(isPresented: $showingNotifications) {
-            NotificationListView()
-        }
+        .navigationTitle("Network Debug")
     }
 }
+#endif
 
-struct DashboardCard: View {
-    let title: String
-    let value: String
-    let icon: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(color)
-            
-            Text(value)
-                .font(.title)
-                .fontWeight(.bold)
-            
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
-    }
-}
-
-struct ActivityRow: View {
-    let title: String
-    let time: String
-    let icon: String
-    let color: Color
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundColor(color)
-                .frame(width: 30)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                
-                Text(time)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
-    }
-}
-
-// MARK: - Preview Provider
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .environmentObject(AuthService.shared)
     }
 }

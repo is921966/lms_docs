@@ -1,0 +1,93 @@
+name: Fetch TestFlight Feedback
+
+on:
+  schedule:
+    # Запускать каждый день в 9:00 UTC (12:00 MSK)
+    - cron: '0 9 * * *'
+  workflow_dispatch:  # Позволяет запускать вручную
+
+jobs:
+  fetch-feedback:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        cd LMS_App/LMS/scripts
+        pip install -r requirements.txt
+        
+    - name: Fetch TestFlight feedback
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        APP_ID: ${{ secrets.APP_ID }}
+      run: |
+        # Сохраняем ключ в файл
+        echo "$APP_STORE_CONNECT_API_KEY" > private_key.p8
+        export APP_STORE_CONNECT_API_KEY_PATH="./private_key.p8"
+        
+        # Запускаем скрипт
+        cd LMS_App/LMS/scripts
+        python fetch_testflight_feedback.py
+        
+    - name: Upload feedback report
+      uses: actions/upload-artifact@v4
+      with:
+        name: testflight-feedback-report
+        path: |
+          LMS_App/LMS/scripts/testflight_feedback_report.json
+          LMS_App/LMS/scripts/screenshots/
+        
+    - name: Create issues from critical feedback
+      if: success()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(
+            fs.readFileSync('LMS_App/LMS/scripts/testflight_feedback_report.json', 'utf8')
+          );
+          
+          // Проверяем критичные feedback
+          for (const feedback of report.feedbacks) {
+            if (feedback.comment && 
+                (feedback.comment.toLowerCase().includes('crash') ||
+                 feedback.comment.toLowerCase().includes('critical'))) {
+              
+              // Создаем issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🚨 Critical TestFlight Feedback from ${feedback.tester_email}`,
+                body: `## TestFlight Feedback
+                
+**From:** ${feedback.tester_email}
+**Date:** ${feedback.submitted_date}
+**Build:** ${feedback.build_version}
+
+**Comment:**
+${feedback.comment}
+
+---
+*Automatically created from TestFlight feedback*`,
+                labels: ['testflight-feedback', 'critical', 'bug']
+              });
+            }
+          }
+          
+    - name: Send Slack notification
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: '❌ Failed to fetch TestFlight feedback'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }} 

@@ -26,7 +26,7 @@ struct TokensResponse: Decodable {
 }
 
 // MARK: - User Response
-struct UserResponse: Decodable, Identifiable {
+struct UserResponse: Codable, Identifiable {
     let id: String
     let email: String
     let firstName: String
