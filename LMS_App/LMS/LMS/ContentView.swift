@@ -86,11 +86,13 @@ struct DebugMenuView: View {
                 }
             }
             
+            /*
             Section("Network") {
                 NavigationLink(destination: NetworkDebugView()) {
                     Label("Network Monitor", systemImage: "wifi")
                 }
             }
+            */
             
             Section("Data") {
                 Button("Clear All Cache") {
@@ -118,6 +120,7 @@ struct DebugMenuView: View {
     }
 }
 
+/*
 struct NetworkDebugView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     
@@ -141,6 +144,7 @@ struct NetworkDebugView: View {
         .navigationTitle("Network Debug")
     }
 }
+*/
 #endif
 
 struct ContentView_Previews: PreviewProvider {
