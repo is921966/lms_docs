@@ -48,6 +48,10 @@ struct ProfileView: View {
                         .padding(.horizontal)
                         .padding(.top, 20)
                     
+                    // Quick settings section
+                    QuickSettingsSection()
+                        .environmentObject(authService)
+                    
                     // Logout button
                     Button(action: {
                         authService.logout()
@@ -71,7 +75,7 @@ struct ProfileView: View {
                     .padding(.horizontal)
                     
                     // Version info
-                    Text("Версия 2.0.1")
+                    Text("Версия 2.0.1 (Build 52)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .padding(.top, 10)

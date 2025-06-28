@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var authService: MockAuthService
     @State private var selectedTab = 0
+    @AppStorage("isAdminMode") private var isAdminMode = false
     
     var body: some View {
         if authService.isAuthenticated {
@@ -21,78 +22,99 @@ struct ContentView: View {
     
     var authenticatedView: some View {
         TabView(selection: $selectedTab) {
-            // Home tab
-            NavigationView {
-                if authService.currentUser?.roles.contains("admin") == true || authService.currentUser?.roles.contains("moderator") == true {
-                    AdminDashboardView()
-                } else {
-                    StudentDashboardView()
+            // Автоматическая генерация табов из FeatureRegistry
+            ForEach(Array(Feature.enabledTabFeatures.enumerated()), id: \.element) { index, feature in
+                NavigationStack {
+                    feature.view
                 }
+                .tabItem {
+                    Label(feature.rawValue, systemImage: feature.icon)
+                }
+                .tag(index)
             }
-            .tabItem {
-                Label("Главная", systemImage: "house.fill")
-            }
-            .tag(0)
             
-            // Learning tab
-            NavigationView {
-                LearningListView()
-            }
-            .tabItem {
-                Label("Обучение", systemImage: "book.fill")
-            }
-            .tag(1)
-            
-            // Analytics tab
-            NavigationView {
-                AnalyticsDashboard()
-            }
-            .tabItem {
-                Label("Аналитика", systemImage: "chart.bar.fill")
-            }
-            .tag(2)
-            
-            // Profile
-            NavigationView {
+            // Profile + Settings combined tab
+            NavigationStack {
                 ProfileView()
             }
             .tabItem {
                 Label("Профиль", systemImage: "person.fill")
             }
-            .tag(3)
+            .tag(Feature.enabledTabFeatures.count)
             
             #if DEBUG
             // Debug menu for development
-            NavigationView {
+            NavigationStack {
                 DebugMenuView()
             }
             .tabItem {
                 Label("Debug", systemImage: "wrench.fill")
             }
-            .tag(4)
+            .tag(Feature.enabledTabFeatures.count + 1)
             #endif
         }
         .accentColor(.blue)
+        // Добавляем индикатор админского режима
+        .overlay(alignment: .topTrailing) {
+            if isAdminMode {
+                AdminModeIndicator()
+                    .padding()
+            }
+        }
+    }
+}
+
+// Индикатор админского режима
+struct AdminModeIndicator: View {
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "crown.fill")
+                .font(.caption)
+            Text("ADMIN")
+                .font(.caption2.bold())
+        }
+        .foregroundColor(.white)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Color.red)
+        .cornerRadius(12)
+        .shadow(radius: 2)
     }
 }
 
 #if DEBUG
 struct DebugMenuView: View {
+    @AppStorage("isAdminMode") private var isAdminMode = false
+    
     var body: some View {
         List {
+            Section("Admin Tools") {
+                Toggle("Admin Mode", isOn: $isAdminMode)
+                    .tint(.red)
+                
+                NavigationLink(destination: FeatureToggleSettings()) {
+                    Label("Feature Flags", systemImage: "flag.2.crossed")
+                }
+            }
+            
             Section("Feedback System") {
                 NavigationLink(destination: FeedbackDebugMenu()) {
                     Label("Feedback Debug", systemImage: "exclamationmark.bubble")
                 }
             }
             
-            /*
-            Section("Network") {
-                NavigationLink(destination: NetworkDebugView()) {
-                    Label("Network Monitor", systemImage: "wifi")
+            Section("Quick Actions") {
+                // Быстрое включение всех готовых модулей
+                Button("Enable All Ready Modules") {
+                    enableReadyModules()
                 }
+                .foregroundColor(.blue)
+                
+                Button("Disable Extra Modules") {
+                    disableExtraModules()
+                }
+                .foregroundColor(.orange)
             }
-            */
             
             Section("Data") {
                 Button("Clear All Cache") {
@@ -105,8 +127,41 @@ struct DebugMenuView: View {
                 }
                 .foregroundColor(.red)
             }
+            
+            Section("Module Status") {
+                ForEach(Feature.allCases, id: \.self) { feature in
+                    HStack {
+                        Label(feature.rawValue, systemImage: feature.icon)
+                        Spacer()
+                        if feature.isEnabled {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                        } else {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+            }
         }
         .navigationTitle("Debug Menu")
+    }
+    
+    private func enableReadyModules() {
+        // Включаем готовые модули
+        Feature.enable(.competencies)
+        Feature.enable(.positions)
+        Feature.enable(.feed)
+    }
+    
+    private func disableExtraModules() {
+        // Выключаем дополнительные модули
+        Feature.disable(.competencies)
+        Feature.disable(.positions)
+        Feature.disable(.feed)
+        Feature.disable(.certificates)
+        Feature.disable(.gamification)
+        Feature.disable(.notifications)
     }
     
     private func clearCache() {
@@ -119,7 +174,6 @@ struct DebugMenuView: View {
         print("User data reset")
     }
 }
-
 #endif
 
 struct ContentView_Previews: PreviewProvider {
