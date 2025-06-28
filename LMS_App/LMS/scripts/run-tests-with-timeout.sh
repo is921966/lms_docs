@@ -1,200 +1,178 @@
 #!/bin/bash
 
-# Скрипт для запуска UI тестов с таймаутом
-# Предотвращает зависание тестов
+# Управление таймаутами для UI тестов
+# Использование: ./scripts/run-tests-with-timeout.sh [timeout_seconds] [test_pattern]
 
-set -e
+TIMEOUT_SECONDS="${1:-300}"  # По умолчанию 5 минут
+TEST_PATTERN="${2:-}"
 
-# Цвета для вывода
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-NC='\033[0m' # No Color
-
-# Параметры по умолчанию
-DEFAULT_TIMEOUT=300  # 5 минут (должно быть достаточно для большинства тестов)
-TIMEOUT=${1:-$DEFAULT_TIMEOUT}
-TEST_TARGET=${2:-"LMSUITests"}
-
-echo "🧪 Запуск тестов с таймаутом..."
-echo "⏱️  Таймаут: ${TIMEOUT} секунд"
-echo "🎯 Цель: ${TEST_TARGET}"
-echo ""
-
-# Функция для очистки процессов
-cleanup() {
-    echo -e "\n${YELLOW}⚠️  Прерывание тестов...${NC}"
-    # Убиваем все связанные процессы
-    pkill -f "xcodebuild.*${TEST_TARGET}" 2>/dev/null || true
-    pkill -f "xctest" 2>/dev/null || true
-    pkill -f "SimulatorTrampoline" 2>/dev/null || true
-    exit 1
-}
-
-# Устанавливаем обработчик сигналов
-trap cleanup INT TERM
-
-# Переходим в директорию проекта
-cd "$(dirname "$0")/.."
-
-# Проверяем, что мы в правильной директории
-if [ ! -f "LMS.xcodeproj/project.pbxproj" ]; then
-    echo -e "${RED}❌ Ошибка: LMS.xcodeproj не найден!${NC}"
-    echo "Убедитесь, что скрипт запущен из правильной директории"
-    exit 1
-fi
-
-# Создаем директорию для результатов если её нет
-mkdir -p TestResults
-
-# Генерируем имя файла для результатов
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RESULT_BUNDLE="TestResults/${TEST_TARGET}_${TIMESTAMP}.xcresult"
-LOG_FILE="TestResults/${TEST_TARGET}_${TIMESTAMP}.log"
-
-# Функция для запуска тестов с таймаутом
-run_tests_with_timeout() {
-    local test_command="xcodebuild test \
-        -scheme LMS \
-        -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
-        -resultBundlePath ${RESULT_BUNDLE} \
-        -only-testing:${TEST_TARGET}"
-    
-    echo "📋 Команда: ${test_command}"
+# Функция для выбора теста
+select_test() {
+    echo "🎯 Выберите тест для запуска:"
     echo ""
-    
-    # Запускаем тесты в фоне
-    ${test_command} 2>&1 | tee "${LOG_FILE}" &
-    local test_pid=$!
-    
-    # Ждем завершения или таймаута
-    local elapsed=0
-    while kill -0 $test_pid 2>/dev/null; do
-        if [ $elapsed -ge $TIMEOUT ]; then
-            echo -e "\n${RED}❌ Таймаут! Тесты выполнялись более ${TIMEOUT} секунд${NC}"
-            
-            # Убиваем процесс тестирования
-            kill -TERM $test_pid 2>/dev/null || true
-            sleep 2
-            kill -KILL $test_pid 2>/dev/null || true
-            
-            # Убиваем связанные процессы
-            pkill -f "xcodebuild.*${TEST_TARGET}" 2>/dev/null || true
-            pkill -f "xctest" 2>/dev/null || true
-            
-            echo -e "${YELLOW}📄 Лог сохранен в: ${LOG_FILE}${NC}"
-            echo -e "${YELLOW}📊 Частичные результаты в: ${RESULT_BUNDLE}${NC}"
-            
-            return 1
-        fi
-        
-        # Показываем прогресс каждые 10 секунд
-        if [ $((elapsed % 10)) -eq 0 ] && [ $elapsed -gt 0 ]; then
-            echo -e "${YELLOW}⏳ Прошло ${elapsed} секунд...${NC}"
-        fi
-        
-        sleep 1
-        ((elapsed++))
-    done
-    
-    # Проверяем код завершения
-    wait $test_pid
-    local exit_code=$?
-    
-    if [ $exit_code -eq 0 ]; then
-        echo -e "\n${GREEN}✅ Тесты успешно завершены за ${elapsed} секунд!${NC}"
-    else
-        echo -e "\n${RED}❌ Тесты завершились с ошибкой (код: ${exit_code})${NC}"
-    fi
-    
-    echo -e "${YELLOW}📄 Лог сохранен в: ${LOG_FILE}${NC}"
-    echo -e "${YELLOW}📊 Результаты в: ${RESULT_BUNDLE}${NC}"
-    
-    return $exit_code
-}
-
-# Специфичные функции для разных типов тестов
-run_feature_registry_tests() {
-    echo "🔧 Запуск Feature Registry Integration Tests..."
-    TEST_TARGET="LMSUITests/FeatureRegistryIntegrationTests"
-    TIMEOUT=180  # 3 минуты для integration тестов
-    run_tests_with_timeout
-}
-
-run_onboarding_tests() {
-    echo "🚀 Запуск Onboarding Tests..."
-    TEST_TARGET="LMSUITests/OnboardingFlowUITests"
-    TIMEOUT=240  # 4 минуты для onboarding тестов
-    run_tests_with_timeout
-}
-
-run_all_ui_tests() {
-    echo "🎯 Запуск всех UI тестов..."
-    TEST_TARGET="LMSUITests"
-    TIMEOUT=600  # 10 минут для всех тестов
-    run_tests_with_timeout
-}
-
-# Меню выбора тестов
-if [ -z "$1" ]; then
-    echo "Выберите тесты для запуска:"
-    echo "1) Feature Registry Integration Tests (3 мин)"
-    echo "2) Onboarding Tests (4 мин)"
-    echo "3) Все UI тесты (10 мин)"
-    echo "4) Произвольная цель с таймаутом"
+    echo "1) Все UI тесты (LMSUITests)"
+    echo "2) Onboarding тесты"
+    echo "3) Feature Registry тесты"
+    echo "4) Course тесты"
+    echo "5) Analytics тесты"
+    echo "6) Конкретный тест (введите путь)"
     echo ""
-    read -p "Ваш выбор (1-4): " choice
+    read -p "Выбор (1-6): " choice
     
     case $choice in
-        1)
-            run_feature_registry_tests
+        1) TEST_PATTERN="LMSUITests" ;;
+        2) TEST_PATTERN="LMSUITests/OnboardingFlowUITests" ;;
+        3) TEST_PATTERN="LMSUITests/FeatureRegistryIntegrationTests" ;;
+        4) TEST_PATTERN="LMSUITests/CourseManagementUITests" ;;
+        5) TEST_PATTERN="LMSUITests/AnalyticsUITests" ;;
+        6) 
+            read -p "Введите путь к тесту: " custom_test
+            TEST_PATTERN="$custom_test"
             ;;
-        2)
-            run_onboarding_tests
-            ;;
-        3)
-            run_all_ui_tests
-            ;;
-        4)
-            read -p "Введите цель тестирования (например, LMSUITests/SomeTest): " custom_target
-            read -p "Введите таймаут в секундах (по умолчанию 300): " custom_timeout
-            TEST_TARGET=${custom_target}
-            TIMEOUT=${custom_timeout:-300}
-            run_tests_with_timeout
-            ;;
-        *)
-            echo -e "${RED}Неверный выбор!${NC}"
+        *) 
+            echo "❌ Неверный выбор"
             exit 1
             ;;
     esac
-else
-    # Если переданы параметры командной строки
-    run_tests_with_timeout
+}
+
+# Если тест не указан, показываем меню
+if [ -z "$TEST_PATTERN" ]; then
+    select_test
 fi
+
+echo "⏰ Запуск тестов с управляемым таймаутом"
+echo "🎯 Тесты: $TEST_PATTERN"
+echo "⏱️  Таймаут: $TIMEOUT_SECONDS секунд"
+echo ""
+
+# Очистка старых процессов
+echo "🧹 Очистка старых процессов..."
+pkill -f "xctest" 2>/dev/null || true
+pkill -f "XCTestAgent" 2>/dev/null || true
+
+# Запуск симулятора
+echo "📱 Подготовка симулятора..."
+open -a Simulator
+sleep 3
+
+# Временные файлы
+TEMP_LOG=$(mktemp)
+RESULT_FILE=$(mktemp)
+echo "0" > "$RESULT_FILE"  # Начальный статус
+
+echo "📝 Лог: $TEMP_LOG"
+echo ""
+
+# Запуск тестов в фоне
+echo "▶️  Запуск тестов..."
+START_TIME=$(date +%s)
+
+xcodebuild test \
+    -scheme LMS \
+    -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+    -only-testing:"$TEST_PATTERN" \
+    -parallel-testing-enabled NO \
+    -maximum-concurrent-test-simulator-destinations 1 \
+    -resultBundlePath "TestResults/${TEST_PATTERN//\//_}_$(date +%Y%m%d_%H%M%S).xcresult" \
+    2>&1 | tee "$TEMP_LOG" &
+
+TEST_PID=$!
+
+# Мониторинг прогресса
+SECONDS_WAITED=0
+LAST_LINE=""
+while [ $SECONDS_WAITED -lt $TIMEOUT_SECONDS ]; do
+    if ! kill -0 $TEST_PID 2>/dev/null; then
+        # Процесс завершился
+        wait $TEST_PID
+        EXIT_CODE=$?
+        echo "$EXIT_CODE" > "$RESULT_FILE"
+        break
+    fi
+    
+    # Показываем текущий тест каждые 5 секунд
+    if [ $((SECONDS_WAITED % 5)) -eq 0 ]; then
+        CURRENT_TEST=$(tail -100 "$TEMP_LOG" | grep -E "Test Case.*started" | tail -1 || echo "")
+        if [ -n "$CURRENT_TEST" ] && [ "$CURRENT_TEST" != "$LAST_LINE" ]; then
+            echo "🔄 $CURRENT_TEST"
+            LAST_LINE="$CURRENT_TEST"
+        elif [ $((SECONDS_WAITED % 20)) -eq 0 ]; then
+            echo "⏳ Прошло $SECONDS_WAITED секунд..."
+        fi
+    fi
+    
+    sleep 1
+    ((SECONDS_WAITED++))
+done
+
+# Обработка таймаута
+if kill -0 $TEST_PID 2>/dev/null; then
+    echo ""
+    echo "⏰ Таймаут! Останавливаем тесты..."
+    
+    # Пытаемся корректно завершить
+    kill -TERM $TEST_PID 2>/dev/null
+    sleep 5
+    
+    # Если не завершился - принудительно
+    if kill -0 $TEST_PID 2>/dev/null; then
+        kill -KILL $TEST_PID 2>/dev/null
+    fi
+    
+    # Очистка всех связанных процессов
+    pkill -f "xctest" 2>/dev/null || true
+    pkill -f "XCTestAgent" 2>/dev/null || true
+    
+    echo "124" > "$RESULT_FILE"  # Код таймаута
+fi
+
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+EXIT_CODE=$(cat "$RESULT_FILE")
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📊 РЕЗУЛЬТАТЫ ТЕСТИРОВАНИЯ"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Анализ результатов
-echo ""
-echo "📊 Анализ результатов..."
+TOTAL_TESTS=$(grep -c "Test Case.*started" "$TEMP_LOG" || echo "0")
+PASSED_TESTS=$(grep -c "Test Case.*passed" "$TEMP_LOG" || echo "0")
+FAILED_TESTS=$(grep -c "Test Case.*failed" "$TEMP_LOG" || echo "0")
 
-# Проверяем наличие ошибок в логе
-if [ -f "${LOG_FILE}" ]; then
-    # Подсчитываем количество тестов
-    total_tests=$(grep -c "Test Case.*started" "${LOG_FILE}" 2>/dev/null || echo "0")
-    passed_tests=$(grep -c "Test Case.*passed" "${LOG_FILE}" 2>/dev/null || echo "0")
-    failed_tests=$(grep -c "Test Case.*failed" "${LOG_FILE}" 2>/dev/null || echo "0")
-    
-    echo "📈 Статистика:"
-    echo "   Всего тестов: ${total_tests}"
-    echo "   ✅ Прошло: ${passed_tests}"
-    echo "   ❌ Провалено: ${failed_tests}"
-    
-    # Показываем проваленные тесты
-    if [ $failed_tests -gt 0 ]; then
-        echo ""
-        echo "❌ Проваленные тесты:"
-        grep "Test Case.*failed" "${LOG_FILE}" | sed 's/^/   /'
-    fi
+echo "⏱️  Время выполнения: ${DURATION} сек"
+echo "📋 Всего тестов: $TOTAL_TESTS"
+echo "✅ Прошло: $PASSED_TESTS"
+echo "❌ Провалилось: $FAILED_TESTS"
+echo ""
+
+# Итоговый статус
+if [ "$EXIT_CODE" -eq 0 ]; then
+    echo "🎉 ВСЕ ТЕСТЫ ПРОШЛИ УСПЕШНО!"
+elif [ "$EXIT_CODE" -eq 124 ]; then
+    echo "⏰ ТЕСТЫ ПРЕВЫСИЛИ ТАЙМАУТ!"
+    echo ""
+    echo "💡 Рекомендации:"
+    echo "   • Увеличьте таймаут: $0 600 $TEST_PATTERN"
+    echo "   • Запустите меньше тестов"
+    echo "   • Используйте test-quick-ui.sh для одного теста"
+else
+    echo "❌ ТЕСТЫ ПРОВАЛИЛИСЬ!"
+    echo ""
+    echo "📋 Провалившиеся тесты:"
+    grep "Test Case.*failed" "$TEMP_LOG" | sed 's/^/   /' || echo "   Не удалось определить"
 fi
 
-echo ""
-echo "✨ Готово!" 
+# Сохранение результатов
+if [ -f "$TEMP_LOG" ]; then
+    REPORT_FILE="test_report_$(date +%Y%m%d_%H%M%S).log"
+    cp "$TEMP_LOG" "$REPORT_FILE"
+    echo ""
+    echo "📄 Полный отчет сохранен в: $REPORT_FILE"
+fi
+
+# Очистка
+rm -f "$TEMP_LOG" "$RESULT_FILE"
+
+exit $EXIT_CODE 

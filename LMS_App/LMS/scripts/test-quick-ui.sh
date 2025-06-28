@@ -1,77 +1,102 @@
 #!/bin/bash
 
-# Быстрый запуск UI тестов с коротким таймаутом
-# Использование: ./test-quick-ui.sh [TestClass/testMethod]
+# Быстрый запуск одного UI теста с таймаутом
+# Использование: ./scripts/test-quick-ui.sh TestClass/testMethod
 
-set -e
+TEST_NAME="$1"
+TIMEOUT_SECONDS="${2:-60}"
 
-# Цвета
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-# Параметры
-TEST_TO_RUN=${1:-"LMSUITests/FeatureRegistryIntegrationTests/testAllMainModulesAreAccessible"}
-QUICK_TIMEOUT=60  # 1 минута для быстрых тестов
-
-echo -e "${BLUE}⚡ Быстрый запуск UI теста${NC}"
-echo -e "🎯 Тест: ${TEST_TO_RUN}"
-echo -e "⏱️  Таймаут: ${QUICK_TIMEOUT} секунд"
-echo ""
-
-# Переходим в директорию проекта
-cd "$(dirname "$0")/.."
-
-# Убиваем старые процессы симулятора если есть
-echo "🧹 Очистка старых процессов..."
-pkill -f "Simulator" 2>/dev/null || true
-pkill -f "xctest" 2>/dev/null || true
-
-# Запускаем симулятор
-echo "📱 Запуск симулятора..."
-open -a Simulator --args -CurrentDeviceUDID 899AAE09-580D-4FF5-BF16-3574382CD796
-
-# Ждем пока симулятор запустится
-sleep 3
-
-# Запускаем тест с timeout
-echo -e "\n${YELLOW}▶️  Запуск теста...${NC}"
-
-# Используем gtimeout если установлен (brew install coreutils)
-if command -v gtimeout &> /dev/null; then
-    TIMEOUT_CMD="gtimeout"
-else
-    # Fallback на встроенный timeout
-    TIMEOUT_CMD="timeout"
+if [ -z "$TEST_NAME" ]; then
+    echo "❌ Укажите имя теста"
+    echo "Использование: $0 TestClass/testMethod [timeout_seconds]"
+    echo "Пример: $0 LMSUITests/OnboardingFlowUITests/testViewOnboardingDashboard 120"
+    exit 1
 fi
 
-# Запускаем тест
-${TIMEOUT_CMD} ${QUICK_TIMEOUT} xcodebuild test \
+echo "⚡ Быстрый запуск UI теста"
+echo "🎯 Тест: $TEST_NAME"
+echo "⏱️  Таймаут: $TIMEOUT_SECONDS секунд"
+echo ""
+
+# Очистка возможных зависших процессов
+echo "🧹 Очистка старых процессов..."
+pkill -f "xctest" 2>/dev/null || true
+pkill -f "XCTestAgent" 2>/dev/null || true
+
+# Запуск симулятора если не запущен
+echo "📱 Запуск симулятора..."
+open -a Simulator
+sleep 3
+
+# Подготовка временного файла для вывода
+TEMP_LOG=$(mktemp)
+echo "📝 Лог: $TEMP_LOG"
+echo ""
+
+# Запуск теста в фоне
+echo "▶️  Запуск теста..."
+xcodebuild test \
     -scheme LMS \
     -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
-    -only-testing:"${TEST_TO_RUN}" \
-    2>&1 | tee test_quick_output.log | grep -E "(Test Case|started|passed|failed|\[.*\])" &
+    -only-testing:"$TEST_NAME" \
+    -parallel-testing-enabled NO \
+    -maximum-concurrent-test-simulator-destinations 1 \
+    2>&1 | tee "$TEMP_LOG" &
 
+# Сохраняем PID процесса
 TEST_PID=$!
 
-# Ждем завершения
-if wait $TEST_PID; then
-    echo -e "\n${GREEN}✅ Тест успешно завершен!${NC}"
-    exit 0
-else
-    EXIT_CODE=$?
-    if [ $EXIT_CODE -eq 124 ] || [ $EXIT_CODE -eq 143 ]; then
-        echo -e "\n${RED}❌ Таймаут! Тест не завершился за ${QUICK_TIMEOUT} секунд${NC}"
-        echo -e "${YELLOW}💡 Совет: Попробуйте запустить конкретный тестовый метод${NC}"
-        echo -e "${YELLOW}   Пример: ./test-quick-ui.sh LMSUITests/SomeTest/testSpecificMethod${NC}"
-    else
-        echo -e "\n${RED}❌ Тест провалился (код: ${EXIT_CODE})${NC}"
-        
-        # Показываем последние строки лога
-        echo -e "\n${YELLOW}📋 Последние строки лога:${NC}"
-        tail -20 test_quick_output.log | grep -v "^$"
+# Ждем завершения теста или таймаута
+SECONDS_WAITED=0
+while [ $SECONDS_WAITED -lt $TIMEOUT_SECONDS ]; do
+    if ! kill -0 $TEST_PID 2>/dev/null; then
+        # Процесс завершился
+        wait $TEST_PID
+        EXIT_CODE=$?
+        break
     fi
-    exit $EXIT_CODE
-fi 
+    sleep 1
+    ((SECONDS_WAITED++))
+    
+    # Показываем прогресс каждые 10 секунд
+    if [ $((SECONDS_WAITED % 10)) -eq 0 ]; then
+        echo "⏳ Прошло $SECONDS_WAITED секунд..."
+    fi
+done
+
+# Если процесс все еще работает - убиваем его
+if kill -0 $TEST_PID 2>/dev/null; then
+    echo ""
+    echo "⏰ Таймаут! Останавливаем тест..."
+    kill -TERM $TEST_PID 2>/dev/null
+    sleep 2
+    kill -KILL $TEST_PID 2>/dev/null
+    
+    # Очистка зависших процессов
+    pkill -f "xctest" 2>/dev/null || true
+    pkill -f "XCTestAgent" 2>/dev/null || true
+    
+    EXIT_CODE=124  # Стандартный код для таймаута
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Проверка результата
+if [ ${EXIT_CODE:-1} -eq 0 ]; then
+    echo "✅ Тест прошел успешно!"
+elif [ ${EXIT_CODE:-1} -eq 124 ]; then
+    echo "⏰ Тест превысил таймаут ($TIMEOUT_SECONDS сек)"
+else
+    echo "❌ Тест провалился (код: ${EXIT_CODE:-1})"
+fi
+
+# Показать последние строки лога
+echo ""
+echo "📋 Последние строки лога:"
+tail -20 "$TEMP_LOG" | grep -E "(Test Case|passed|failed|error)" || tail -10 "$TEMP_LOG"
+
+# Очистка
+rm -f "$TEMP_LOG"
+
+exit ${EXIT_CODE:-1} 
