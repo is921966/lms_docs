@@ -120,31 +120,6 @@ struct DebugMenuView: View {
     }
 }
 
-/*
-struct NetworkDebugView: View {
-    @EnvironmentObject var networkMonitor: NetworkMonitor
-    
-    var body: some View {
-        List {
-            Section("Status") {
-                HStack {
-                    Text("Connection")
-                    Spacer()
-                    Text(networkMonitor.isConnected ? "Connected" : "Disconnected")
-                        .foregroundColor(networkMonitor.isConnected ? .green : .red)
-                }
-                
-                HStack {
-                    Text("Connection Type")
-                    Spacer()
-                    Text(networkMonitor.connectionType)
-                }
-            }
-        }
-        .navigationTitle("Network Debug")
-    }
-}
-*/
 #endif
 
 struct ContentView_Previews: PreviewProvider {

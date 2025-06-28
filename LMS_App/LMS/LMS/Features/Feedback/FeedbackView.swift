@@ -193,7 +193,8 @@ struct FeedbackView: View {
     private func takeScreenshot() {
         // Скрываем текущий view перед скриншотом
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else { return }
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else { return }
             
             let renderer = UIGraphicsImageRenderer(bounds: window.bounds)
             let image = renderer.image { context in

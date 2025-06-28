@@ -11,6 +11,7 @@ import SwiftUI
 struct LMSApp: App {
     // let persistenceController = PersistenceController.shared
     @StateObject private var authService = AuthService.shared
+    @StateObject private var authViewModel = AuthViewModel()
     @StateObject private var adminService = AdminService.shared
     // @StateObject private var networkMonitor = NetworkMonitor()
     @StateObject private var feedbackManager = FeedbackManager.shared
@@ -27,6 +28,7 @@ struct LMSApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(authService)
+                .environmentObject(authViewModel)
                 .environmentObject(adminService)
                 .environmentObject(feedbackManager)
                 // .environment(\.managedObjectContext, persistenceController.container.viewContext)

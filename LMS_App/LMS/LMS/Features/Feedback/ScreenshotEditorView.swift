@@ -128,7 +128,8 @@ struct ScreenshotEditorView: View {
         canvasView.tool = PKInkingTool(.pen, color: UIColor.red, width: 3)
         
         // Enable tool picker on devices that support it
-        if let window = UIApplication.shared.windows.first {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let _ = windowScene.windows.first {
             toolPicker.setVisible(false, forFirstResponder: canvasView)
             toolPicker.addObserver(canvasView)
             canvasView.becomeFirstResponder()
