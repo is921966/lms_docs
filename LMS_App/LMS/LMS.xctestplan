@@ -1,0 +1,40 @@
+{
+  "configurations" : [
+    {
+      "id" : "6F5E8F4A-2F3C-4B9A-8D7E-1A2B3C4D5E6F",
+      "name" : "Test Scheme Action",
+      "options" : {
+        "targetForVariableExpansion" : {
+          "containerPath" : "container:LMS.xcodeproj",
+          "identifier" : "B8E410C82E0AE6E900ED8A6F",
+          "name" : "LMS"
+        }
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:LMS.xcodeproj",
+          "identifier" : "B8E410C82E0AE6E900ED8A6F",
+          "name" : "LMS"
+        }
+      ]
+    },
+    "testExecutionOrdering" : "random",
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "enabled" : true,
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:LMS.xcodeproj",
+        "identifier" : "B8E410D52E0AE6EA00ED8A6F",
+        "name" : "LMSTests"
+      }
+    }
+  ],
+  "version" : 1
+} 

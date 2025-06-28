@@ -1,0 +1,78 @@
+# Xcode Cloud Workflow Configuration
+# This file defines the CI/CD pipeline for LMS app
+
+workflows:
+  - name: "Build and Deploy"
+    description: "Build, test (unit only), and deploy to TestFlight"
+    
+    triggers:
+      - branch:
+          name: master
+          autoCancel: true
+      - pullRequest:
+          source: "*"
+          destination: master
+      - tag:
+          name: "v*"
+    
+    environment:
+      platform: iOS
+      xcodeVersion: latest
+      macOSVersion: latest
+    
+    actions:
+      - name: Build
+        type: build
+        scheme: LMS
+        platform: iOS
+        configuration: Release
+        
+      - name: Test
+        type: test
+        scheme: LMS
+        platform: iOS
+        configuration: Debug
+        destination: "platform=iOS Simulator,name=iPhone 16 Pro"
+        testPlan: UnitTestsOnly
+        maximumDuration: 20  # 20 minutes timeout
+        
+      - name: Archive
+        type: archive
+        scheme: LMS
+        platform: iOS
+        configuration: Release
+        exportMethod: app-store
+        
+      - name: TestFlight
+        type: testflight
+        groups:
+          - "Internal Testers"
+        submitForReview: false
+        
+  - name: "Quick Build"
+    description: "Fast build without tests for urgent fixes"
+    
+    triggers:
+      - branch:
+          name: hotfix/*
+          autoCancel: true
+    
+    actions:
+      - name: Build
+        type: build
+        scheme: LMS
+        platform: iOS
+        configuration: Release
+        
+      - name: Archive
+        type: archive
+        scheme: LMS
+        platform: iOS
+        configuration: Release
+        exportMethod: app-store
+        
+      - name: TestFlight
+        type: testflight
+        groups:
+          - "Internal Testers"
+        submitForReview: false 
