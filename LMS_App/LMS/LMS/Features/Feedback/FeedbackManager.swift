@@ -1,13 +1,25 @@
 import SwiftUI
 import Combine
+import Foundation
+import UIKit
 
 class FeedbackManager: ObservableObject {
     static let shared = FeedbackManager()
     
     @Published var showFeedback = false
     @Published var feedbackButtonVisible = true
+    @Published var isShowingFeedback = false
+    @Published var isShakeEnabled = true
+    @Published var feedbackType: FeedbackType = .bug
+    @Published var feedbackText = ""
+    @Published var screenshot: UIImage?
+    @Published var isSubmitting = false
+    @Published var submitSuccess = false
+    @Published var errorMessage: String?
     
     private var cancellables = Set<AnyCancellable>()
+    private let feedbackService = GitHubFeedbackService()
+    private let serverFeedbackService = ServerFeedbackService.shared
     
     private init() {
         setupShakeDetection()
@@ -24,9 +36,186 @@ class FeedbackManager: ObservableObject {
     }
     
     func presentFeedback() {
-        showFeedback = true
+        isShowingFeedback = true
+    }
+    
+    func showFeedback(type: FeedbackType = .bug, screenshot: UIImage? = nil) {
+        self.feedbackType = type
+        self.screenshot = screenshot
+        self.feedbackText = ""
+        self.isShowingFeedback = true
+    }
+    
+    func submitFeedback() {
+        guard !feedbackText.isEmpty else {
+            errorMessage = "Пожалуйста, введите описание"
+            return
+        }
+        
+        isSubmitting = true
+        errorMessage = nil
+        
+        Task {
+            do {
+                // Сначала отправляем на сервер
+                let serverSuccess = await sendToServer()
+                
+                if serverSuccess {
+                    // Если успешно отправлено на сервер, создаем issue в GitHub
+                    let issueNumber = try await feedbackService.submitFeedback(
+                        type: feedbackType.rawValue,
+                        title: generateTitle(),
+                        body: feedbackText,
+                        screenshot: screenshot
+                    )
+                    
+                    await MainActor.run {
+                        self.submitSuccess = true
+                        self.isSubmitting = false
+                        self.feedbackText = ""
+                        self.screenshot = nil
+                        
+                        // Закрываем форму через 2 секунды
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            self.isShowingFeedback = false
+                            self.submitSuccess = false
+                        }
+                    }
+                } else {
+                    throw FeedbackError.serverError
+                }
+            } catch {
+                await MainActor.run {
+                    self.errorMessage = error.localizedDescription
+                    self.isSubmitting = false
+                }
+            }
+        }
+    }
+    
+    private func sendToServer() async -> Bool {
+        let feedback = FeedbackModel(
+            type: feedbackType.rawValue,
+            text: feedbackText,
+            screenshot: screenshot?.base64String,
+            deviceInfo: DeviceInfo(
+                model: UIDevice.current.model,
+                osVersion: UIDevice.current.systemVersion,
+                appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown",
+                buildNumber: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown",
+                locale: Locale.current.identifier,
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+            ),
+            userId: MockAuthService.shared.currentUser?.id,
+            userEmail: MockAuthService.shared.currentUser?.email,
+            appContext: AppContext.current()
+        )
+        
+        return await withCheckedContinuation { continuation in
+            serverFeedbackService.submitFeedback(feedback) { result in
+                switch result {
+                case .success:
+                    continuation.resume(returning: true)
+                case .failure:
+                    continuation.resume(returning: false)
+                }
+            }
+        }
+    }
+    
+    private func generateTitle() -> String {
+        let prefix = feedbackType.title
+        let preview = String(feedbackText.prefix(50))
+        return "\(prefix): \(preview)\(feedbackText.count > 50 ? "..." : "")"
+    }
+    
+    func resetFeedback() {
+        feedbackText = ""
+        screenshot = nil
+        errorMessage = nil
+        submitSuccess = false
     }
 }
+
+// Error types
+enum FeedbackError: LocalizedError {
+    case invalidData
+    case networkError
+    case serverError
+    case githubError(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidData:
+            return "Неверные данные"
+        case .networkError:
+            return "Ошибка сети. Проверьте подключение к интернету."
+        case .serverError:
+            return "Ошибка сервера. Попробуйте позже."
+        case .githubError(let message):
+            return "GitHub ошибка: \(message)"
+        }
+    }
+}
+
+// Extension for UIImage to Base64
+extension UIImage {
+    var base64String: String? {
+        guard let imageData = self.jpegData(compressionQuality: 0.8) else { return nil }
+        return imageData.base64EncodedString()
+    }
+}
+
+// Helper to get device info
+extension FeedbackManager {
+    func getDeviceInfo() -> String {
+        let device = UIDevice.current
+        let bundle = Bundle.main
+        let appVersion = bundle.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        let buildNumber = bundle.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
+        
+        return """
+        Device: \(device.model)
+        iOS: \(device.systemVersion)
+        App Version: \(appVersion) (\(buildNumber))
+        """
+    }
+}
+
+// MARK: - Test Helpers
+#if DEBUG
+extension FeedbackManager {
+    func sendTestFeedback() {
+        Task {
+            let testFeedback = FeedbackModel(
+                type: "test",
+                text: "Test feedback from iOS app",
+                screenshot: nil,
+                deviceInfo: DeviceInfo(
+                    model: "iPhone",
+                    osVersion: "iOS 18.0",
+                    appVersion: "2.0.0",
+                    buildNumber: "1",
+                    locale: "ru-RU",
+                    screenSize: "390x844"
+                ),
+                userId: "test-user",
+                userEmail: "test@example.com",
+                appContext: nil
+            )
+            
+            serverFeedbackService.submitFeedback(testFeedback) { result in
+                switch result {
+                case .success(let issueUrl):
+                    print("✅ Test feedback sent successfully: \(issueUrl)")
+                case .failure(let error):
+                    print("❌ Failed to send test feedback: \(error)")
+                }
+            }
+        }
+    }
+}
+#endif
 
 // ⚡ НОВОЕ: Расширенный Debug menu с мониторингом производительности
 struct FeedbackDebugMenu: View {
@@ -179,7 +368,9 @@ struct FeedbackDebugMenu: View {
                 model: UIDevice.current.model,
                 osVersion: UIDevice.current.systemVersion,
                 appVersion: "1.0.0",
-                buildNumber: "100"
+                buildNumber: "100",
+                locale: Locale.current.identifier,
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
             )
         )
         
@@ -207,7 +398,9 @@ struct FeedbackDebugMenu: View {
                         model: UIDevice.current.model,
                         osVersion: UIDevice.current.systemVersion,
                         appVersion: "1.0.0",
-                        buildNumber: "100"
+                        buildNumber: "100",
+                        locale: Locale.current.identifier,
+                        screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
                     )
                 )
                 

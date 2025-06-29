@@ -216,7 +216,9 @@ struct FeedbackView: View {
                 model: UIDevice.current.model,
                 osVersion: UIDevice.current.systemVersion,
                 appVersion: getAppVersion(),
-                buildNumber: getBuildNumber()
+                buildNumber: getBuildNumber(),
+                locale: Locale.current.identifier,
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
             ),
             timestamp: Date()
         )

@@ -35,31 +35,6 @@ struct FeedbackModel: Codable {
     }
 }
 
-struct DeviceInfo: Codable {
-    let model: String
-    let osVersion: String
-    let appVersion: String
-    let buildNumber: String
-    let screenSize: String?
-    let locale: String?
-    
-    init(
-        model: String,
-        osVersion: String,
-        appVersion: String,
-        buildNumber: String,
-        screenSize: String? = nil,
-        locale: String? = nil
-    ) {
-        self.model = model
-        self.osVersion = osVersion
-        self.appVersion = appVersion
-        self.buildNumber = buildNumber
-        self.screenSize = screenSize ?? "\(UIScreen.main.bounds.width)x\(UIScreen.main.bounds.height)"
-        self.locale = locale ?? Locale.current.identifier
-    }
-}
-
 struct AppContext: Codable {
     let currentScreen: String?
     let previousScreen: String?

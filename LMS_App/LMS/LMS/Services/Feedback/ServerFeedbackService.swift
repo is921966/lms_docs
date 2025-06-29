@@ -1,6 +1,49 @@
 import Foundation
 
+// Протокол для feedback сервисов
+protocol FeedbackServiceProtocol {
+    func submitFeedback(_ feedback: FeedbackModel, completion: @escaping (Result<String, Error>) -> Void)
+}
+
+// Расширение для работы с FeedbackItem
+extension ServerFeedbackService {
+    func sendFeedbackItem(_ item: FeedbackItem) async -> Bool {
+        let feedback = FeedbackModel(
+            id: item.id,
+            type: item.type.rawValue,
+            text: item.description,
+            screenshot: nil,
+            deviceInfo: DeviceInfo(
+                model: "iPhone",
+                osVersion: "iOS 18.0",
+                appVersion: "2.0.0",
+                buildNumber: "1",
+                locale: "ru-RU",
+                screenSize: "390x844"
+            ),
+            timestamp: item.createdAt,
+            userId: item.authorId,
+            userEmail: item.author,
+            appContext: nil
+        )
+        
+        return await withCheckedContinuation { continuation in
+            submitFeedback(feedback) { result in
+                switch result {
+                case .success:
+                    continuation.resume(returning: true)
+                case .failure:
+                    continuation.resume(returning: false)
+                }
+            }
+        }
+    }
+}
+
 class ServerFeedbackService: FeedbackServiceProtocol {
+    // Singleton instance
+    static let shared = ServerFeedbackService()
+    
     // Облачный сервер на Render - работает для всех устройств
     private let serverURL = "https://lms-feedback-server.onrender.com/api/v1/feedback"
     
@@ -12,9 +55,11 @@ class ServerFeedbackService: FeedbackServiceProtocol {
     private let session = URLSession.shared
     private let queue = DispatchQueue(label: "feedback.queue")
     
+    private init() {}
+    
     func submitFeedback(_ feedback: FeedbackModel, completion: @escaping (Result<String, Error>) -> Void) {
         guard let url = URL(string: serverURL) else {
-            completion(.failure(FeedbackError.invalidURL))
+            completion(.failure(NSError(domain: "ServerFeedbackService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return
         }
         
@@ -34,7 +79,7 @@ class ServerFeedbackService: FeedbackServiceProtocol {
                 }
                 
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    completion(.failure(FeedbackError.invalidResponse))
+                    completion(.failure(NSError(domain: "ServerFeedbackService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])))
                     return
                 }
                 
@@ -47,7 +92,7 @@ class ServerFeedbackService: FeedbackServiceProtocol {
                         completion(.success("Feedback отправлен успешно"))
                     }
                 } else {
-                    completion(.failure(FeedbackError.serverError(httpResponse.statusCode)))
+                    completion(.failure(NSError(domain: "ServerFeedbackService", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server error: HTTP \(httpResponse.statusCode)"])))
                 }
             }.resume()
         } catch {
@@ -64,20 +109,12 @@ private struct FeedbackResponse: Codable {
     let github_issue: String?
 }
 
-// Error types
-enum FeedbackError: LocalizedError {
-    case invalidURL
-    case invalidResponse
-    case serverError(Int)
-    
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL:
-            return "Invalid server URL"
-        case .invalidResponse:
-            return "Invalid server response"
-        case .serverError(let code):
-            return "Server error: HTTP \(code)"
-        }
-    }
+// Device info для совместимости
+struct DeviceInfo: Codable {
+    let model: String
+    let osVersion: String
+    let appVersion: String
+    let buildNumber: String
+    let locale: String
+    let screenSize: String
 }

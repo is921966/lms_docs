@@ -16,7 +16,7 @@ class GitHubFeedbackService {
     private let maxRetries: Int = 3
     private let retryDelay: TimeInterval = 2.0
     
-    private init() {
+    init() {
         // TODO: Получить из конфигурации или Keychain
         self.githubToken = ProcessInfo.processInfo.environment["GITHUB_TOKEN"] ?? ""
         self.repositoryOwner = "ishirokov" // Обновлено на реальный username
@@ -63,6 +63,28 @@ class GitHubFeedbackService {
         
         print("❌ Не удалось создать GitHub Issue после \(maxRetries) попыток")
         return false
+    }
+    
+    /// Метод для совместимости с FeedbackManager
+    func submitFeedback(type: String, title: String, body: String, screenshot: UIImage?) async throws -> String {
+        // Создаем FeedbackItem из параметров
+        let feedback = FeedbackItem(
+            title: title,
+            description: body,
+            type: FeedbackType(rawValue: type) ?? .bug,
+            author: MockAuthService.shared.currentUser?.email ?? "Anonymous",
+            authorId: MockAuthService.shared.currentUser?.id ?? "unknown",
+            isOwnFeedback: true
+        )
+        
+        // Пытаемся создать issue
+        let success = await createIssueFromFeedback(feedback)
+        
+        if success {
+            return "GitHub Issue created successfully"
+        } else {
+            throw FeedbackError.githubError("Failed to create GitHub issue")
+        }
     }
     
     /// Обновляет статус GitHub Issue
