@@ -1,0 +1,44 @@
+name: 📲 TestFlight Deploy (Minimal)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - 'LMS_App/LMS/**'
+      - '.github/workflows/testflight-deploy-minimal.yml'
+
+env:
+  WORKING_DIRECTORY: LMS_App/LMS
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to TestFlight
+    runs-on: macos-latest
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        
+      - name: 🍎 Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+          
+      - name: 🏗️ Build & Upload
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+        run: |
+          # Setup API key
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
+          
+          # Use existing build script
+          ./build-testflight.sh
+          
+      - name: 🧹 Cleanup
+        if: always()
+        run: rm -rf ~/.appstoreconnect/private_keys
