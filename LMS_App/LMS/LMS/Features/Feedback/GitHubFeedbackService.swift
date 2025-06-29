@@ -11,6 +11,11 @@ class GitHubFeedbackService {
     private let repositoryName: String
     private let baseURL = "https://api.github.com"
     
+    // ⚡ НОВОЕ: Конфигурация производительности
+    private let requestTimeout: TimeInterval = 10.0 // 10 секунд timeout
+    private let maxRetries: Int = 3
+    private let retryDelay: TimeInterval = 2.0
+    
     private init() {
         // TODO: Получить из конфигурации или Keychain
         self.githubToken = ProcessInfo.processInfo.environment["GITHUB_TOKEN"] ?? ""
@@ -20,7 +25,7 @@ class GitHubFeedbackService {
     
     // MARK: - Public Methods
     
-    /// Создает GitHub Issue из фидбэка пользователя
+    /// Создает GitHub Issue из фидбэка пользователя с retry механизмом
     func createIssueFromFeedback(_ feedback: FeedbackItem) async -> Bool {
         guard !githubToken.isEmpty else {
             print("❌ GitHub token не настроен")
@@ -29,12 +34,35 @@ class GitHubFeedbackService {
         
         let issueData = createIssueData(from: feedback)
         
-        let success = await createGitHubIssue(issueData)
-        if success {
-            print("✅ GitHub Issue создан для фидбэка: \(feedback.title)")
-            await notifyFeedbackCreated(feedback)
+        // ⚡ НОВОЕ: Retry механизм для надежности
+        for attempt in 1...maxRetries {
+            let startTime = Date()
+            let success = await createGitHubIssue(issueData)
+            let duration = Date().timeIntervalSince(startTime)
+            
+            if success {
+                print("✅ GitHub Issue создан за \(String(format: "%.2f", duration))с (попытка \(attempt))")
+                await notifyFeedbackCreated(feedback)
+                
+                // 📊 Логируем производительность
+                await logPerformanceMetrics(duration: duration, attempt: attempt, success: true)
+                return true
+            } else {
+                print("⚠️ Попытка \(attempt)/\(maxRetries) не удалась (время: \(String(format: "%.2f", duration))с)")
+                
+                if attempt < maxRetries {
+                    // Exponential backoff
+                    let delay = retryDelay * pow(2.0, Double(attempt - 1))
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                } else {
+                    // 📊 Логируем неудачу
+                    await logPerformanceMetrics(duration: duration, attempt: attempt, success: false)
+                }
+            }
         }
-        return success
+        
+        print("❌ Не удалось создать GitHub Issue после \(maxRetries) попыток")
+        return false
     }
     
     /// Обновляет статус GitHub Issue
@@ -172,6 +200,9 @@ class GitHubFeedbackService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("LMS-Mobile-App/1.0", forHTTPHeaderField: "User-Agent")
         
+        // ⚡ НОВОЕ: Timeout для быстрого отказа
+        request.timeoutInterval = requestTimeout
+        
         do {
             let jsonData = try JSONEncoder().encode(issueData)
             request.httpBody = jsonData
@@ -198,6 +229,20 @@ class GitHubFeedbackService {
         }
         
         return false
+    }
+    
+    // ⚡ НОВОЕ: Логирование производительности
+    private func logPerformanceMetrics(duration: TimeInterval, attempt: Int, success: Bool) async {
+        let metrics = """
+        📊 GitHub API Performance:
+        - Duration: \(String(format: "%.2f", duration))s
+        - Attempt: \(attempt)
+        - Success: \(success)
+        - Timestamp: \(Date())
+        """
+        print(metrics)
+        
+        // TODO: Отправить метрики в аналитику
     }
     
     private func notifyFeedbackCreated(_ feedback: FeedbackItem) async {

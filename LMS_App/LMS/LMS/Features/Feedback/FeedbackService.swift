@@ -10,9 +10,26 @@ class FeedbackService: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
+    // ⚡ НОВОЕ: Offline queue для надежности
+    @Published var pendingFeedbacks: [FeedbackItem] = []
+    @Published var networkStatus: NetworkStatus = .unknown
+    
     private let mockData = true // Для демонстрации
     
-    private init() {}
+    // 📊 НОВОЕ: Метрики производительности
+    struct PerformanceMetrics {
+        var averageGitHubCreateTime: TimeInterval = 0
+        var successRate: Double = 0
+        var totalFeedbacksCreated: Int = 0
+        var lastSyncTime: Date?
+    }
+    
+    @Published var performanceMetrics = PerformanceMetrics()
+    
+    private init() {
+        startNetworkMonitoring()
+        startOfflineQueueProcessor()
+    }
     
     // MARK: - Public Methods
     
@@ -36,39 +53,32 @@ class FeedbackService: ObservableObject {
         await loadFeedbacks()
     }
     
-    /// Создает новый фидбэк
+    /// Создает новый фидбэк с offline support
     func createFeedback(_ feedback: FeedbackModel) async -> Bool {
         isLoading = true
         defer { isLoading = false }
+        
+        let newFeedbackItem = FeedbackItem(
+            title: "\(feedback.type.capitalized) Report",
+            description: feedback.text,
+            type: FeedbackType(rawValue: feedback.type) ?? .question,
+            author: "Текущий пользователь",
+            authorId: "current_user",
+            isOwnFeedback: true
+        )
+        
+        // ✅ 1. Мгновенно добавляем в UI (< 0.5 сек)
+        feedbacks.insert(newFeedbackItem, at: 0)
         
         if mockData {
             // Симуляция создания
             try? await Task.sleep(nanoseconds: 500_000_000)
             
-            let newFeedbackItem = FeedbackItem(
-                title: "\(feedback.type.capitalized) Report",
-                description: feedback.text,
-                type: FeedbackType(rawValue: feedback.type) ?? .question,
-                author: "Текущий пользователь",
-                authorId: "current_user",
-                isOwnFeedback: true
-            )
-            
-            feedbacks.insert(newFeedbackItem, at: 0)
-            
-            // 🚀 НОВОЕ: Автоматически создаем GitHub Issue
-            Task.detached {
-                let success = await GitHubFeedbackService.shared.createIssueFromFeedback(newFeedbackItem)
-                if success {
-                    print("✅ Фидбэк успешно залогирован в GitHub Issues")
-                } else {
-                    print("⚠️ Не удалось создать GitHub Issue (возможно, не настроен токен)")
-                }
-            }
+            // ✅ 2. Пытаемся отправить в GitHub (асинхронно)
+            await processGitHubIntegration(newFeedbackItem)
             
             return true
         } else {
-            // TODO: Отправка на сервер
             return await createFeedbackOnServer(feedback)
         }
     }
@@ -234,5 +244,155 @@ class FeedbackService: ObservableObject {
     
     private func addCommentOnServer(feedbackId: UUID, comment: FeedbackComment) async {
         // TODO: Реализовать добавление комментария на сервере
+    }
+    
+    // ⚡ НОВОЕ: Обработка GitHub интеграции с метриками
+    private func processGitHubIntegration(_ feedback: FeedbackItem) async {
+        let startTime = Date()
+        
+        if networkStatus == .connected {
+            // ✅ Есть сеть - отправляем сразу
+            let success = await GitHubFeedbackService.shared.createIssueFromFeedback(feedback)
+            let duration = Date().timeIntervalSince(startTime)
+            
+            await updatePerformanceMetrics(duration: duration, success: success)
+            
+            if success {
+                print("✅ Фидбэк мгновенно отправлен в GitHub (\(String(format: "%.2f", duration))с)")
+            } else {
+                print("⚠️ Не удалось отправить - добавляем в offline queue")
+                addToOfflineQueue(feedback)
+            }
+        } else {
+            // ❌ Нет сети - добавляем в offline queue
+            print("📴 Нет сети - фидбэк сохранен в offline queue")
+            addToOfflineQueue(feedback)
+        }
+    }
+    
+    // ⚡ НОВОЕ: Offline queue management
+    private func addToOfflineQueue(_ feedback: FeedbackItem) {
+        if !pendingFeedbacks.contains(where: { $0.id == feedback.id }) {
+            pendingFeedbacks.append(feedback)
+            print("📦 Добавлен в offline queue (\(pendingFeedbacks.count) ожидают)")
+        }
+    }
+    
+    private func startOfflineQueueProcessor() {
+        Task {
+            while true {
+                if networkStatus == .connected && !pendingFeedbacks.isEmpty {
+                    await processOfflineQueue()
+                }
+                try? await Task.sleep(nanoseconds: 30_000_000_000) // Проверяем каждые 30 секунд
+            }
+        }
+    }
+    
+    private func processOfflineQueue() async {
+        print("🔄 Обрабатываем offline queue (\(pendingFeedbacks.count) элементов)")
+        
+        var processedItems: [UUID] = []
+        
+        for feedback in pendingFeedbacks {
+            let success = await GitHubFeedbackService.shared.createIssueFromFeedback(feedback)
+            if success {
+                processedItems.append(feedback.id)
+                print("✅ Offline фидбэк отправлен: \(feedback.title)")
+            }
+        }
+        
+        // Удаляем обработанные элементы
+        pendingFeedbacks.removeAll { processedItems.contains($0.id) }
+        
+        if !processedItems.isEmpty {
+            print("🎉 Обработано \(processedItems.count) offline фидбэков")
+        }
+    }
+    
+    // 📊 НОВОЕ: Метрики производительности
+    private func updatePerformanceMetrics(duration: TimeInterval, success: Bool) async {
+        let currentMetrics = performanceMetrics
+        
+        performanceMetrics = PerformanceMetrics(
+            averageGitHubCreateTime: calculateAverageTime(current: currentMetrics.averageGitHubCreateTime, 
+                                                         new: duration, 
+                                                         count: currentMetrics.totalFeedbacksCreated),
+            successRate: calculateSuccessRate(currentRate: currentMetrics.successRate, 
+                                            newSuccess: success, 
+                                            total: currentMetrics.totalFeedbacksCreated),
+            totalFeedbacksCreated: currentMetrics.totalFeedbacksCreated + 1,
+            lastSyncTime: Date()
+        )
+        
+        // Логируем текущие метрики
+        print("""
+        📊 Feedback Performance Update:
+        - Average GitHub time: \(String(format: "%.2f", performanceMetrics.averageGitHubCreateTime))s
+        - Success rate: \(String(format: "%.1f", performanceMetrics.successRate * 100))%
+        - Total created: \(performanceMetrics.totalFeedbacksCreated)
+        - Pending: \(pendingFeedbacks.count)
+        """)
+    }
+    
+    private func calculateAverageTime(current: TimeInterval, new: TimeInterval, count: Int) -> TimeInterval {
+        if count == 0 { return new }
+        return (current * Double(count) + new) / Double(count + 1)
+    }
+    
+    private func calculateSuccessRate(currentRate: Double, newSuccess: Bool, total: Int) -> Double {
+        let currentSuccesses = currentRate * Double(total)
+        let newSuccesses = currentSuccesses + (newSuccess ? 1 : 0)
+        return newSuccesses / Double(total + 1)
+    }
+    
+    // ⚡ НОВОЕ: Мониторинг сети
+    private func startNetworkMonitoring() {
+        // Упрощенная проверка сети
+        Task {
+            while true {
+                await checkNetworkStatus()
+                try? await Task.sleep(nanoseconds: 10_000_000_000) // Проверяем каждые 10 секунд
+            }
+        }
+    }
+    
+    private func checkNetworkStatus() async {
+        // Простая проверка доступности GitHub API
+        guard let url = URL(string: "https://api.github.com") else { return }
+        
+        do {
+            let (_, response) = try await URLSession.shared.data(from: url)
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                networkStatus = .connected
+            } else {
+                networkStatus = .disconnected
+            }
+        } catch {
+            networkStatus = .disconnected
+        }
+    }
+}
+
+// ⚡ НОВОЕ: Network status enum
+enum NetworkStatus {
+    case connected
+    case disconnected
+    case unknown
+    
+    var emoji: String {
+        switch self {
+        case .connected: return "🟢"
+        case .disconnected: return "🔴"
+        case .unknown: return "🟡"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .connected: return "Connected"
+        case .disconnected: return "Offline"
+        case .unknown: return "Unknown"
+        }
     }
 }
