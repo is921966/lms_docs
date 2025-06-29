@@ -1,0 +1,12 @@
+{
+    "github": {
+        "token": "your_github_token_here",
+        "owner": "is921966",
+        "repo": "lms_docs",
+        "labels": ["feedback", "mobile-app", "ios"]
+    },
+    "server": {
+        "port": 5001,
+        "host": "0.0.0.0"
+    }
+}
