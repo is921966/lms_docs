@@ -246,19 +246,20 @@ class FeedbackService: ObservableObject {
         // TODO: Реализовать добавление комментария на сервере
     }
     
-    // ⚡ НОВОЕ: Обработка GitHub интеграции с метриками
+    // ⚡ НОВОЕ: Обработка GitHub интеграции через сервер с метриками
     private func processGitHubIntegration(_ feedback: FeedbackItem) async {
         let startTime = Date()
         
         if networkStatus == .connected {
-            // ✅ Есть сеть - отправляем сразу
-            let success = await GitHubFeedbackService.shared.createIssueFromFeedback(feedback)
+            // ✅ Есть сеть - отправляем на сервер
+            let success = await ServerFeedbackService.shared.sendFeedbackItem(feedback)
             let duration = Date().timeIntervalSince(startTime)
             
             await updatePerformanceMetrics(duration: duration, success: success)
             
             if success {
-                print("✅ Фидбэк мгновенно отправлен в GitHub (\(String(format: "%.2f", duration))с)")
+                print("✅ Фидбэк отправлен на сервер (\(String(format: "%.2f", duration))с)")
+                print("📝 Сервер автоматически создаст GitHub Issue")
             } else {
                 print("⚠️ Не удалось отправить - добавляем в offline queue")
                 addToOfflineQueue(feedback)
@@ -295,10 +296,10 @@ class FeedbackService: ObservableObject {
         var processedItems: [UUID] = []
         
         for feedback in pendingFeedbacks {
-            let success = await GitHubFeedbackService.shared.createIssueFromFeedback(feedback)
+            let success = await ServerFeedbackService.shared.sendFeedbackItem(feedback)
             if success {
                 processedItems.append(feedback.id)
-                print("✅ Offline фидбэк отправлен: \(feedback.title)")
+                print("✅ Offline фидбэк отправлен на сервер: \(feedback.title)")
             }
         }
         
