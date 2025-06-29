@@ -103,11 +103,14 @@ enum Feature: String, CaseIterable {
         case .onboarding:
             MyOnboardingProgramsView()
         case .competencies:
-            CompetencyListView()
+            // Wrapper view для CompetencyListView чтобы передать environment object
+            CompetencyListWrapper()
         case .positions:
-            PositionListView()
+            // Wrapper view для PositionListView чтобы передать environment object
+            PositionListWrapper()
         case .feed:
-            FeedView()
+            // Wrapper view для FeedView чтобы передать environment object
+            FeedWrapper()
         case .certificates:
             PlaceholderView(title: "Сертификаты", icon: "rosette")
         case .gamification:
@@ -129,6 +132,38 @@ enum Feature: String, CaseIterable {
         default:
             return isEnabled
         }
+    }
+}
+
+// MARK: - Wrapper Views для модулей, требующих @EnvironmentObject
+
+/// Wrapper для CompetencyListView
+struct CompetencyListWrapper: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
+    
+    var body: some View {
+        CompetencyListView()
+            .environmentObject(authViewModel)
+    }
+}
+
+/// Wrapper для PositionListView  
+struct PositionListWrapper: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
+    
+    var body: some View {
+        PositionListView()
+            .environmentObject(authViewModel)
+    }
+}
+
+/// Wrapper для FeedView
+struct FeedWrapper: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
+    
+    var body: some View {
+        FeedView()
+            .environmentObject(authViewModel)
     }
 }
 
