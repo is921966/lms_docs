@@ -70,6 +70,10 @@ struct ContentView: View {
                     .padding()
             }
         }
+        // Добавляем обработку shake gesture
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("deviceDidShake"))) { _ in
+            FeedbackManager.shared.presentFeedback()
+        }
     }
 }
 

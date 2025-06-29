@@ -33,7 +33,7 @@ struct FeedbackEnabledModifier: ViewModifier {
                     HStack {
                         Spacer()
                         Button(action: {
-                            feedbackManager.showFeedback = true
+                            feedbackManager.presentFeedback()
                         }) {
                             Image(systemName: "bubble.left.and.bubble.right.fill")
                                 .font(.system(size: 24))
@@ -49,7 +49,7 @@ struct FeedbackEnabledModifier: ViewModifier {
                 }
             }
         }
-        .sheet(isPresented: $feedbackManager.showFeedback) {
+        .sheet(isPresented: $feedbackManager.isShowingFeedback) {
             FeedbackView()
         }
     }
