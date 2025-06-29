@@ -58,12 +58,16 @@ class FeedbackService: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         
+        // Конвертируем base64 скриншот обратно в строку для хранения
+        let screenshotString = feedback.screenshot
+        
         let newFeedbackItem = FeedbackItem(
             title: "\(feedback.type.capitalized) Report",
             description: feedback.text,
             type: FeedbackType(rawValue: feedback.type) ?? .question,
             author: "Текущий пользователь",
             authorId: "current_user",
+            screenshot: screenshotString,  // Передаем скриншот
             isOwnFeedback: true
         )
         

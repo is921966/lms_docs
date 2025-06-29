@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 // Протокол для feedback сервисов
 protocol FeedbackServiceProtocol {
@@ -8,18 +9,21 @@ protocol FeedbackServiceProtocol {
 // Расширение для работы с FeedbackItem
 extension ServerFeedbackService {
     func sendFeedbackItem(_ item: FeedbackItem) async -> Bool {
+        // Скриншот уже в формате base64 строки
+        let screenshotBase64 = item.screenshot
+        
         let feedback = FeedbackModel(
             id: item.id,
             type: item.type.rawValue,
             text: item.description,
-            screenshot: nil,
+            screenshot: screenshotBase64,
             deviceInfo: DeviceInfo(
-                model: "iPhone",
-                osVersion: "iOS 18.0",
-                appVersion: "2.0.0",
-                buildNumber: "1",
-                locale: "ru-RU",
-                screenSize: "390x844"
+                model: UIDevice.current.model,
+                osVersion: UIDevice.current.systemVersion,
+                appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown",
+                buildNumber: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown",
+                locale: Locale.current.identifier,
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
             ),
             timestamp: item.createdAt,
             userId: item.authorId,

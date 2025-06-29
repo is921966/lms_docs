@@ -221,6 +221,23 @@ struct FeedbackCardView: View {
                 .lineLimit(3)
                 .foregroundColor(.primary)
             
+            // Скриншот (если есть)
+            if let screenshot = feedback.screenshot {
+                if let imageData = Data(base64Encoded: screenshot),
+                   let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(maxHeight: 150)
+                        .clipped()
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                }
+            }
+            
             // Реакции и комментарии
             HStack {
                 // Реакции

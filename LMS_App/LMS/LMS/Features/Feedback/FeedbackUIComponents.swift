@@ -69,11 +69,13 @@ struct FeedbackScreenshotView: View {
     
     var body: some View {
         Button(action: { showingFullScreen = true }) {
-            AsyncImage(url: URL(string: screenshot)) { image in
-                image
+            if let imageData = Data(base64Encoded: screenshot),
+               let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-            } placeholder: {
+                    .clipped()
+            } else {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.gray.opacity(0.3))
                     .overlay(
@@ -81,7 +83,6 @@ struct FeedbackScreenshotView: View {
                             .foregroundColor(.gray)
                     )
             }
-            .clipped()
         }
         .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: $showingFullScreen) {
@@ -100,13 +101,19 @@ struct FeedbackScreenshotFullScreenView: View {
             ZStack {
                 Color.black.ignoresSafeArea()
                 
-                AsyncImage(url: URL(string: screenshot)) { image in
-                    image
+                if let imageData = Data(base64Encoded: screenshot),
+                   let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    VStack {
+                        Image(systemName: "photo")
+                            .font(.largeTitle)
+                            .foregroundColor(.gray)
+                        Text("Не удалось загрузить изображение")
+                            .foregroundColor(.gray)
+                    }
                 }
             }
             .navigationTitle("Скриншот")
