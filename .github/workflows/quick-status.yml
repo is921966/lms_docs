@@ -1,0 +1,121 @@
+name: Quick Status Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+
+jobs:
+  status-check:
+    name: Quick Project Status
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Environment Check
+        run: |
+          echo "# 🔍 GitHub Actions Environment Report" > environment_report.md
+          echo "" >> environment_report.md
+          echo "**Generated:** $(date)" >> environment_report.md
+          echo "" >> environment_report.md
+          
+          echo "## 📱 Xcode Environment" >> environment_report.md
+          echo "\`\`\`" >> environment_report.md
+          xcodebuild -version >> environment_report.md
+          echo "\`\`\`" >> environment_report.md
+          echo "" >> environment_report.md
+          
+          echo "## 📊 Available Simulators" >> environment_report.md
+          echo "\`\`\`" >> environment_report.md
+          xcrun simctl list devices | grep -E "iPhone (14|15|16)" | head -5 >> environment_report.md
+          echo "\`\`\`" >> environment_report.md
+          echo "" >> environment_report.md
+
+      - name: Check GitHub Secrets
+        env:
+          HAS_BUILD_CERT: ${{ secrets.BUILD_CERTIFICATE_BASE64 != '' }}
+          HAS_P12_PASSWORD: ${{ secrets.P12_PASSWORD != '' }}
+          HAS_PROVISION_PROFILE: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 != '' }}
+          HAS_PROVISION_UUID: ${{ secrets.PROVISION_PROFILE_UUID != '' }}
+          HAS_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID != '' }}
+          HAS_API_ISSUER: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID != '' }}
+          HAS_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY != '' }}
+          HAS_APP_ID: ${{ secrets.APP_ID != '' }}
+        run: |
+          echo "## 🔐 GitHub Secrets Status" >> environment_report.md
+          echo "" >> environment_report.md
+          echo "| Secret | Status |" >> environment_report.md
+          echo "|--------|--------|" >> environment_report.md
+          echo "| BUILD_CERTIFICATE_BASE64 | $( [ '$HAS_BUILD_CERT' = 'true' ] && echo '✅' || echo '❌' ) |" >> environment_report.md
+          echo "| P12_PASSWORD | $( [ '$HAS_P12_PASSWORD' = 'true' ] && echo '✅' || echo '❌' ) |" >> environment_report.md
+          echo "| BUILD_PROVISION_PROFILE_BASE64 | $( [ '$HAS_PROVISION_PROFILE' = 'true' ] && echo '✅' || echo '❌' ) |" >> environment_report.md
+          echo "| PROVISION_PROFILE_UUID | $( [ '$HAS_PROVISION_UUID' = 'true' ] && echo '✅' || echo '❌' ) |" >> environment_report.md
+          echo "| APP_STORE_CONNECT_API_KEY_ID | $( [ '$HAS_API_KEY_ID' = 'true' ] && echo '✅' || echo '❌' ) |" >> environment_report.md
+          echo "| APP_STORE_CONNECT_API_KEY_ISSUER_ID | $( [ '$HAS_API_ISSUER' = 'true' ] && echo '✅' || echo '❌' ) |" >> environment_report.md
+          echo "| APP_STORE_CONNECT_API_KEY_KEY | $( [ '$HAS_API_KEY' = 'true' ] && echo '✅' || echo '❌' ) |" >> environment_report.md
+          echo "| APP_ID | $( [ '$HAS_APP_ID' = 'true' ] && echo '✅' || echo '❌' ) |" >> environment_report.md
+          echo "" >> environment_report.md
+          
+          # Подсчет отсутствующих секретов
+          missing=0
+          if [ "$HAS_BUILD_CERT" = "false" ]; then missing=$((missing+1)); fi
+          if [ "$HAS_P12_PASSWORD" = "false" ]; then missing=$((missing+1)); fi
+          if [ "$HAS_PROVISION_PROFILE" = "false" ]; then missing=$((missing+1)); fi
+          if [ "$HAS_PROVISION_UUID" = "false" ]; then missing=$((missing+1)); fi
+          if [ "$HAS_API_KEY_ID" = "false" ]; then missing=$((missing+1)); fi
+          if [ "$HAS_API_ISSUER" = "false" ]; then missing=$((missing+1)); fi
+          if [ "$HAS_API_KEY" = "false" ]; then missing=$((missing+1)); fi
+          if [ "$HAS_APP_ID" = "false" ]; then missing=$((missing+1)); fi
+          
+          echo "## 📊 Summary" >> environment_report.md
+          if [ $missing -eq 0 ]; then
+            echo "✅ **All secrets configured!** TestFlight deploy should work." >> environment_report.md
+          else
+            echo "❌ **$missing secrets missing.** TestFlight deploy will fail." >> environment_report.md
+            echo "" >> environment_report.md
+            echo "### Missing secrets:" >> environment_report.md
+            if [ "$HAS_BUILD_CERT" = "false" ]; then echo "- BUILD_CERTIFICATE_BASE64" >> environment_report.md; fi
+            if [ "$HAS_P12_PASSWORD" = "false" ]; then echo "- P12_PASSWORD" >> environment_report.md; fi
+            if [ "$HAS_PROVISION_PROFILE" = "false" ]; then echo "- BUILD_PROVISION_PROFILE_BASE64" >> environment_report.md; fi
+            if [ "$HAS_PROVISION_UUID" = "false" ]; then echo "- PROVISION_PROFILE_UUID" >> environment_report.md; fi
+            if [ "$HAS_API_KEY_ID" = "false" ]; then echo "- APP_STORE_CONNECT_API_KEY_ID" >> environment_report.md; fi
+            if [ "$HAS_API_ISSUER" = "false" ]; then echo "- APP_STORE_CONNECT_API_KEY_ISSUER_ID" >> environment_report.md; fi
+            if [ "$HAS_API_KEY" = "false" ]; then echo "- APP_STORE_CONNECT_API_KEY_KEY" >> environment_report.md; fi
+            if [ "$HAS_APP_ID" = "false" ]; then echo "- APP_ID" >> environment_report.md; fi
+          fi
+
+      - name: Test Simple Build
+        run: |
+          echo "" >> environment_report.md
+          echo "## 🔨 Build Test" >> environment_report.md
+          cd LMS_App/LMS
+          if xcodebuild build \
+            -project LMS.xcodeproj \
+            -scheme LMS \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO > build_test.log 2>&1; then
+            echo "✅ **Build successful!** Code compiles correctly." >> ../../environment_report.md
+          else
+            echo "❌ **Build failed!** There are compilation errors." >> ../../environment_report.md
+            echo "\`\`\`" >> ../../environment_report.md
+            tail -10 build_test.log >> ../../environment_report.md
+            echo "\`\`\`" >> ../../environment_report.md
+          fi
+
+      - name: Commit results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Обновляем README с результатами
+          echo "" >> README.md
+          echo "---" >> README.md
+          echo "" >> README.md
+          cat environment_report.md >> README.md
+          
+          git add README.md environment_report.md
+          git commit -m "🔍 Environment report: $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
+          git push || echo "Push failed" 
