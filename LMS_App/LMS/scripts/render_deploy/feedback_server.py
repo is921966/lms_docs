@@ -42,6 +42,10 @@ def upload_to_imgur(base64_image):
         return None
     
     try:
+        print(f"📤 Attempting Imgur upload...")
+        print(f"   Client ID: {CONFIG['imgur']['client_id'][:8]}...")
+        print(f"   Image size: {len(base64_image)} chars")
+        
         if ',' in base64_image:
             base64_image = base64_image.split(',')[1]
         
@@ -57,18 +61,26 @@ def upload_to_imgur(base64_image):
         
         response = requests.post('https://api.imgur.com/3/image', headers=headers, data=data)
         
+        print(f"   Response status: {response.status_code}")
+        
         if response.status_code == 200:
             result = response.json()
             if result['success']:
                 image_url = result['data']['link']
                 print(f"✅ Uploaded screenshot to Imgur: {image_url}")
                 return image_url
+            else:
+                print(f"❌ Imgur API returned success=false: {result}")
+        else:
+            print(f"❌ Failed to upload to Imgur: {response.status_code}")
+            print(f"   Response: {response.text[:200]}...")
         
-        print(f"❌ Failed to upload to Imgur: {response.status_code}")
         return None
         
     except Exception as e:
         print(f"❌ Error uploading to Imgur: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 def create_github_issue_with_screenshot(feedback):
