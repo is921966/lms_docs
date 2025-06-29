@@ -90,8 +90,12 @@ struct SettingsView: View {
                 
                 // Support section
                 Section("Поддержка") {
+                    NavigationLink(destination: FeedbackFeedView()) {
+                        Label("Лента отзывов", systemImage: "message.badge.filled.fill")
+                    }
+                    
                     NavigationLink(destination: FeedbackView()) {
-                        Label("Обратная связь", systemImage: "exclamationmark.bubble")
+                        Label("Отправить отзыв", systemImage: "exclamationmark.bubble")
                     }
                     
                     NavigationLink(destination: Text("FAQ")) {

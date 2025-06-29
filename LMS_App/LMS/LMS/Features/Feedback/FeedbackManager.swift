@@ -45,8 +45,8 @@ struct FeedbackDebugMenu: View {
                     sendTestFeedback()
                 }
                 
-                Button("View Local Feedback") {
-                    viewLocalFeedback()
+                NavigationLink("View Feedback Feed") {
+                    FeedbackFeedView()
                 }
             }
         }
@@ -65,16 +65,11 @@ struct FeedbackDebugMenu: View {
             )
         )
         
-        FeedbackService.shared.submit(testFeedback) { success in
-            print("Test feedback sent: \(success)")
-        }
-    }
-    
-    private func viewLocalFeedback() {
-        let feedbacks = FeedbackService.shared.getLocalFeedback()
-        print("Local feedback count: \(feedbacks.count)")
-        feedbacks.forEach { feedback in
-            print("- \(feedback.type): \(feedback.text)")
+        Task {
+            let success = await FeedbackService.shared.createFeedback(testFeedback)
+            await MainActor.run {
+                print("Test feedback sent: \(success)")
+            }
         }
     }
 } 

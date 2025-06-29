@@ -1,0 +1,150 @@
+name: 📱 LMS Feedback Automation
+
+on:
+  issues:
+    types: [opened, labeled, edited]
+  issue_comment:
+    types: [created]
+
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+  process-feedback:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'feedback')
+    
+    steps:
+    - name: 📝 Process New Feedback
+      if: github.event.action == 'opened'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const issue = context.payload.issue;
+          
+          // Автоматически назначаем ответственных
+          let assignees = [];
+          if (issue.labels.some(label => label.name === 'bug')) {
+            assignees = ['ishirokov']; // Технический лид для багов
+          } else if (issue.labels.some(label => label.name === 'enhancement')) {
+            assignees = ['ishirokov']; // Продукт-менеджер для фич
+          } else if (issue.labels.some(label => label.name === 'question')) {
+            assignees = ['ishirokov']; // Саппорт для вопросов
+          }
+          
+          // Назначаем ответственных
+          if (assignees.length > 0) {
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              assignees: assignees
+            });
+          }
+          
+          // Добавляем автоматический комментарий
+          const welcomeComment = `🤖 **Автоматическая обработка фидбэка**
+          
+          Спасибо за ваш отзыв! Мы получили ваше сообщение и обработаем его в ближайшее время.
+          
+          **Статус**: Ожидает рассмотрения
+          **Назначено**: ${assignees.length > 0 ? assignees.join(', ') : 'Будет назначено вручную'}
+          
+          Мы свяжемся с вами, если потребуется дополнительная информация.
+          
+          ---
+          *Отправлено автоматически из мобильного приложения LMS*`;
+          
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issue.number,
+            body: welcomeComment
+          });
+
+    - name: 🏷️ Auto-assign Additional Labels
+      if: github.event.action == 'opened'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const issue = context.payload.issue;
+          const body = issue.body.toLowerCase();
+          const title = issue.title.toLowerCase();
+          
+          let additionalLabels = [];
+          
+          // Автоматическое определение компонентов
+          if (body.includes('курс') || title.includes('course')) {
+            additionalLabels.push('component:courses');
+          }
+          if (body.includes('пользователь') || title.includes('user')) {
+            additionalLabels.push('component:users');
+          }
+          if (body.includes('тест') || title.includes('test')) {
+            additionalLabels.push('component:testing');
+          }
+          if (body.includes('компетенц') || title.includes('competenc')) {
+            additionalLabels.push('component:competencies');
+          }
+          
+          // Автоматическое определение платформы
+          if (body.includes('iphone') || body.includes('ios')) {
+            additionalLabels.push('platform:ios');
+          }
+          
+          // Добавляем лейблы
+          if (additionalLabels.length > 0) {
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              labels: additionalLabels
+            });
+          }
+
+  notify-high-priority:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'priority:high') && github.event.action == 'opened'
+    
+    steps:
+    - name: 🚨 High Priority Notification
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const issue = context.payload.issue;
+          console.log(`🚨 Высокоприоритетный фидбэк: ${issue.title}`);
+          console.log(`📝 Issue #${issue.number}: ${issue.html_url}`);
+
+  auto-close-resolved:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && github.event.label.name == 'status:resolved'
+    
+    steps:
+    - name: ✅ Auto-close Resolved Issues
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const issue = context.payload.issue;
+          
+          // Автоматически закрываем resolved issues
+          await github.rest.issues.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issue.number,
+            state: 'closed'
+          });
+          
+          // Добавляем благодарственный комментарий
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issue.number,
+            body: `✅ **Проблема решена!**
+            
+            Спасибо за ваш отзыв! Проблема была успешно решена нашей командой.
+            
+            Если у вас остались вопросы или проблема возникла снова, пожалуйста, создайте новый Issue.
+            
+            ---
+            *Автоматически закрыто системой обработки фидбэков*`
+          });

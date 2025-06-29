@@ -1,173 +1,238 @@
 import Foundation
-import UIKit
+import SwiftUI
 
-class FeedbackService {
+/// Сервис для управления фидбэками
+@MainActor
+class FeedbackService: ObservableObject {
     static let shared = FeedbackService()
     
-    // Конфигурация для вашего backend
-    private let baseURL = "https://your-api.com/api/v1" // Замените на ваш URL
-    private let apiKey = "your-api-key" // Замените на ваш API ключ
+    @Published var feedbacks: [FeedbackItem] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
     
-    // Для тестирования можно использовать mock endpoint
-    private let useMockEndpoint = true
-    private let mockEndpoint = "https://httpbin.org/post"
+    private let mockData = true // Для демонстрации
     
     private init() {}
     
-    func submit(_ feedback: FeedbackModel, completion: @escaping (Bool) -> Void) {
-        if useMockEndpoint {
-            // Для тестирования отправляем на httpbin
-            submitToMockEndpoint(feedback, completion: completion)
+    // MARK: - Public Methods
+    
+    /// Загружает все фидбэки
+    func loadFeedbacks() async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        if mockData {
+            // Симуляция загрузки
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            feedbacks = createMockFeedbacks()
         } else {
-            // Реальная отправка на ваш backend
-            submitToBackend(feedback, completion: completion)
+            // TODO: Загрузка с сервера
+            await loadFeedbacksFromServer()
         }
     }
     
-    private func submitToBackend(_ feedback: FeedbackModel, completion: @escaping (Bool) -> Void) {
-        guard let url = URL(string: "\(baseURL)/feedback") else {
-            completion(false)
-            return
-        }
+    /// Обновляет ленту фидбэков
+    func refreshFeedbacks() async {
+        await loadFeedbacks()
+    }
+    
+    /// Создает новый фидбэк
+    func createFeedback(_ feedback: FeedbackModel) async -> Bool {
+        isLoading = true
+        defer { isLoading = false }
         
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        
-        do {
-            let encoder = JSONEncoder()
-            encoder.dateEncodingStrategy = .iso8601
-            request.httpBody = try encoder.encode(feedback)
+        if mockData {
+            // Симуляция создания
+            try? await Task.sleep(nanoseconds: 500_000_000)
             
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    print("Feedback submission error: \(error)")
-                    completion(false)
-                    return
-                }
-                
-                if let httpResponse = response as? HTTPURLResponse {
-                    let success = (200...299).contains(httpResponse.statusCode)
-                    
-                    if !success, let data = data {
-                        let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-                        print("Feedback submission failed: \(errorMessage)")
-                    }
-                    
-                    completion(success)
+            let newFeedbackItem = FeedbackItem(
+                title: "\(feedback.type.capitalized) Report",
+                description: feedback.text,
+                type: FeedbackType(rawValue: feedback.type) ?? .question,
+                author: "Текущий пользователь",
+                authorId: "current_user",
+                isOwnFeedback: true
+            )
+            
+            feedbacks.insert(newFeedbackItem, at: 0)
+            
+            // 🚀 НОВОЕ: Автоматически создаем GitHub Issue
+            Task.detached {
+                let success = await GitHubFeedbackService.shared.createIssueFromFeedback(newFeedbackItem)
+                if success {
+                    print("✅ Фидбэк успешно залогирован в GitHub Issues")
                 } else {
-                    completion(false)
+                    print("⚠️ Не удалось создать GitHub Issue (возможно, не настроен токен)")
                 }
-            }.resume()
-        } catch {
-            print("Feedback encoding error: \(error)")
-            completion(false)
+            }
+            
+            return true
+        } else {
+            // TODO: Отправка на сервер
+            return await createFeedbackOnServer(feedback)
         }
     }
     
-    private func submitToMockEndpoint(_ feedback: FeedbackModel, completion: @escaping (Bool) -> Void) {
-        // Для демонстрации отправляем на httpbin.org
-        guard let url = URL(string: mockEndpoint) else {
-            completion(false)
-            return
+    /// Добавляет реакцию к фидбэку
+    func addReaction(to feedbackId: UUID, reaction: ReactionType) {
+        guard let index = feedbacks.firstIndex(where: { $0.id == feedbackId }) else { return }
+        
+        var feedback = feedbacks[index]
+        var reactions = feedback.reactions
+        
+        // Убираем предыдущую реакцию пользователя
+        if let currentReaction = feedback.userReaction {
+            switch currentReaction {
+            case .like: reactions.like = max(0, reactions.like - 1)
+            case .dislike: reactions.dislike = max(0, reactions.dislike - 1)
+            case .heart: reactions.heart = max(0, reactions.heart - 1)
+            case .fire: reactions.fire = max(0, reactions.fire - 1)
+            }
         }
         
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Добавляем новую реакцию или убираем, если повторно нажали
+        let newUserReaction: ReactionType?
+        if feedback.userReaction == reaction {
+            newUserReaction = nil
+        } else {
+            newUserReaction = reaction
+            switch reaction {
+            case .like: reactions.like += 1
+            case .dislike: reactions.dislike += 1
+            case .heart: reactions.heart += 1
+            case .fire: reactions.fire += 1
+            }
+        }
         
-        // Создаем упрощенную версию для отправки
-        let simplifiedFeedback: [String: Any] = [
-            "id": feedback.id.uuidString,
-            "type": feedback.type,
-            "text": feedback.text,
-            "hasScreenshot": feedback.screenshot != nil,
-            "device": feedback.deviceInfo.model,
-            "osVersion": feedback.deviceInfo.osVersion,
-            "appVersion": feedback.deviceInfo.appVersion,
-            "timestamp": ISO8601DateFormatter().string(from: feedback.timestamp)
+        // Обновляем фидбэк
+        feedbacks[index] = FeedbackItem(
+            id: feedback.id,
+            title: feedback.title,
+            description: feedback.description,
+            type: feedback.type,
+            status: feedback.status,
+            author: feedback.author,
+            authorId: feedback.authorId,
+            createdAt: feedback.createdAt,
+            updatedAt: Date(),
+            screenshot: feedback.screenshot,
+            reactions: reactions,
+            comments: feedback.comments,
+            userReaction: newUserReaction,
+            isOwnFeedback: feedback.isOwnFeedback
+        )
+        
+        // TODO: Отправить изменение на сервер
+        Task {
+            await updateReactionOnServer(feedbackId: feedbackId, reaction: newUserReaction)
+        }
+    }
+    
+    /// Добавляет комментарий к фидбэку
+    func addComment(to feedbackId: UUID, comment: String) {
+        guard let index = feedbacks.firstIndex(where: { $0.id == feedbackId }) else { return }
+        guard !comment.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        
+        var feedback = feedbacks[index]
+        let newComment = FeedbackComment(
+            text: comment.trimmingCharacters(in: .whitespacesAndNewlines),
+            author: "Текущий пользователь",
+            authorId: "current_user"
+        )
+        
+        var updatedComments = feedback.comments
+        updatedComments.append(newComment)
+        
+        // Обновляем фидбэк
+        feedbacks[index] = FeedbackItem(
+            id: feedback.id,
+            title: feedback.title,
+            description: feedback.description,
+            type: feedback.type,
+            status: feedback.status,
+            author: feedback.author,
+            authorId: feedback.authorId,
+            createdAt: feedback.createdAt,
+            updatedAt: Date(),
+            screenshot: feedback.screenshot,
+            reactions: feedback.reactions,
+            comments: updatedComments,
+            userReaction: feedback.userReaction,
+            isOwnFeedback: feedback.isOwnFeedback
+        )
+        
+        // TODO: Отправить комментарий на сервер
+        Task {
+            await addCommentOnServer(feedbackId: feedbackId, comment: newComment)
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    private func createMockFeedbacks() -> [FeedbackItem] {
+        return [
+            FeedbackItem(
+                title: "Ошибка при загрузке курсов",
+                description: "При попытке открыть раздел Курсы приложение зависает на экране загрузки более 30 секунд.",
+                type: .bug,
+                status: .inProgress,
+                author: "Иван Петров",
+                authorId: "user1",
+                createdAt: Date().addingTimeInterval(-3600),
+                reactions: FeedbackReactions(like: 5, dislike: 1, heart: 2, fire: 0),
+                comments: [
+                    FeedbackComment(
+                        text: "Та же проблема! Очень неудобно.",
+                        author: "Мария Сидорова",
+                        authorId: "user2",
+                        createdAt: Date().addingTimeInterval(-1800)
+                    ),
+                    FeedbackComment(
+                        text: "Мы работаем над исправлением. Ожидайте обновления в ближайшие дни.",
+                        author: "Техподдержка",
+                        authorId: "admin1",
+                        createdAt: Date().addingTimeInterval(-900),
+                        isAdmin: true
+                    )
+                ],
+                userReaction: .like
+            ),
+            FeedbackItem(
+                title: "Добавить темную тему",
+                description: "Было бы здорово иметь возможность переключиться на темную тему, особенно для работы в вечернее время.",
+                type: .feature,
+                status: .open,
+                author: "Анна Козлова",
+                authorId: "user3",
+                createdAt: Date().addingTimeInterval(-7200),
+                reactions: FeedbackReactions(like: 12, dislike: 0, heart: 8, fire: 3),
+                comments: [
+                    FeedbackComment(
+                        text: "Полностью поддерживаю! Глаза устают от белого фона.",
+                        author: "Дмитрий Волков",
+                        authorId: "user4",
+                        createdAt: Date().addingTimeInterval(-3600)
+                    )
+                ],
+                userReaction: .heart
+            )
         ]
-        
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: simplifiedFeedback)
-            
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    print("Mock submission error: \(error)")
-                    completion(false)
-                    return
-                }
-                
-                // Для mock endpoint считаем успешным любой ответ
-                if let data = data,
-                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    print("Mock response: \(json)")
-                    completion(true)
-                } else {
-                    completion(false)
-                }
-            }.resume()
-        } catch {
-            print("Mock encoding error: \(error)")
-            completion(false)
-        }
     }
     
-    // Дополнительный метод для сохранения feedback локально
-    func saveLocally(_ feedback: FeedbackModel) {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, 
-                                                     in: .userDomainMask).first!
-        let feedbackPath = documentsPath.appendingPathComponent("feedback")
-        
-        // Создаем директорию если не существует
-        try? FileManager.default.createDirectory(at: feedbackPath, 
-                                                withIntermediateDirectories: true)
-        
-        // Сохраняем feedback
-        let filePath = feedbackPath.appendingPathComponent("\(feedback.id.uuidString).json")
-        
-        do {
-            let encoder = JSONEncoder()
-            encoder.dateEncodingStrategy = .iso8601
-            encoder.outputFormatting = .prettyPrinted
-            let data = try encoder.encode(feedback)
-            try data.write(to: filePath)
-            
-            // Сохраняем скриншот отдельно если есть
-            if let screenshotBase64 = feedback.screenshot,
-               let screenshotData = Data(base64Encoded: screenshotBase64) {
-                let screenshotPath = feedbackPath.appendingPathComponent("\(feedback.id.uuidString).png")
-                try screenshotData.write(to: screenshotPath)
-            }
-            
-            print("Feedback saved locally: \(filePath.path)")
-        } catch {
-            print("Failed to save feedback locally: \(error)")
-        }
+    private func loadFeedbacksFromServer() async {
+        // TODO: Реализовать загрузку с сервера
     }
     
-    // Метод для получения всех локальных feedback (для отправки позже)
-    func getLocalFeedback() -> [FeedbackModel] {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, 
-                                                     in: .userDomainMask).first!
-        let feedbackPath = documentsPath.appendingPathComponent("feedback")
-        
-        guard let files = try? FileManager.default.contentsOfDirectory(at: feedbackPath, 
-                                                                      includingPropertiesForKeys: nil) else {
-            return []
-        }
-        
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        
-        return files.compactMap { file in
-            guard file.pathExtension == "json",
-                  let data = try? Data(contentsOf: file),
-                  let feedback = try? decoder.decode(FeedbackModel.self, from: data) else {
-                return nil
-            }
-            return feedback
-        }
+    private func createFeedbackOnServer(_ feedback: FeedbackModel) async -> Bool {
+        // TODO: Реализовать отправку на сервер
+        return false
     }
-} 
+    
+    private func updateReactionOnServer(feedbackId: UUID, reaction: ReactionType?) async {
+        // TODO: Реализовать обновление реакции на сервере
+    }
+    
+    private func addCommentOnServer(feedbackId: UUID, comment: FeedbackComment) async {
+        // TODO: Реализовать добавление комментария на сервере
+    }
+}

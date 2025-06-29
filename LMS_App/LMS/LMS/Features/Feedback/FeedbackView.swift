@@ -221,8 +221,9 @@ struct FeedbackView: View {
             timestamp: Date()
         )
         
-        FeedbackService.shared.submit(feedback) { success in
-            DispatchQueue.main.async {
+        Task {
+            let success = await FeedbackService.shared.createFeedback(feedback)
+            await MainActor.run {
                 isSubmitting = false
                 if success {
                     showSuccessAlert = true

@@ -1,0 +1,103 @@
+{
+  "repository": {
+    "owner": "ishirokov",
+    "name": "lms_docs"
+  },
+  "labels": {
+    "feedback": {
+      "name": "feedback",
+      "color": "0052cc",
+      "description": "Фидбэк от пользователей"
+    },
+    "mobile-app": {
+      "name": "mobile-app", 
+      "color": "1d76db",
+      "description": "Связано с мобильным приложением"
+    },
+    "bug": {
+      "name": "bug",
+      "color": "d73a4a",
+      "description": "Ошибка в работе"
+    },
+    "enhancement": {
+      "name": "enhancement",
+      "color": "a2eeef",
+      "description": "Новая функция или улучшение"
+    },
+    "question": {
+      "name": "question",
+      "color": "d876e3",
+      "description": "Вопрос пользователя"
+    },
+    "priority-high": {
+      "name": "priority:high",
+      "color": "ff0000",
+      "description": "Высокий приоритет"
+    },
+    "priority-medium": {
+      "name": "priority:medium",
+      "color": "ff8800",
+      "description": "Средний приоритет"
+    },
+    "priority-low": {
+      "name": "priority:low",
+      "color": "00ff00",
+      "description": "Низкий приоритет"
+    },
+    "status-open": {
+      "name": "status:open",
+      "color": "0052cc",
+      "description": "Ожидает рассмотрения"
+    },
+    "status-in-progress": {
+      "name": "status:in-progress",
+      "color": "fbca04",
+      "description": "В работе"
+    },
+    "status-resolved": {
+      "name": "status:resolved",
+      "color": "0e8a16",
+      "description": "Решено"
+    },
+    "component-courses": {
+      "name": "component:courses",
+      "color": "c5def5",
+      "description": "Относится к курсам"
+    },
+    "component-users": {
+      "name": "component:users", 
+      "color": "c5def5",
+      "description": "Относится к пользователям"
+    },
+    "component-competencies": {
+      "name": "component:competencies",
+      "color": "c5def5", 
+      "description": "Относится к компетенциям"
+    },
+    "platform-ios": {
+      "name": "platform:ios",
+      "color": "1d76db",
+      "description": "Относится к iOS приложению"
+    }
+  },
+  "assignees": {
+    "bug": ["ishirokov"],
+    "enhancement": ["ishirokov"],
+    "question": ["ishirokov"],
+    "default": ["ishirokov"]
+  },
+  "notifications": {
+    "slack": {
+      "enabled": false,
+      "webhook_url": ""
+    },
+    "email": {
+      "enabled": true,
+      "recipients": ["admin@example.com"]
+    }
+  },
+  "auto_close": {
+    "resolved_issues": true,
+    "stale_days": 30
+  }
+}

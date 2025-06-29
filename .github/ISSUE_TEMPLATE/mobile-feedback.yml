@@ -1,0 +1,92 @@
+name: 📱 Mobile App Feedback
+description: Автоматически созданный фидбэк из мобильного приложения LMS
+title: "[Mobile Feedback] "
+labels: ["feedback", "mobile-app", "triage"]
+assignees:
+  - ishirokov
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📱 Фидбэк из мобильного приложения
+        
+        Этот Issue был автоматически создан из мобильного приложения LMS.
+        
+  - type: dropdown
+    id: feedback-type
+    attributes:
+      label: Тип фидбэка
+      description: Какой тип отзыва это?
+      options:
+        - Ошибка (Bug)
+        - Предложение функции (Feature Request)
+        - Улучшение (Improvement)
+        - Вопрос (Question)
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Описание
+      description: Подробное описание проблемы или предложения
+      placeholder: Расскажите подробно о проблеме или предложении...
+    validations:
+      required: true
+      
+  - type: input
+    id: app-version
+    attributes:
+      label: Версия приложения
+      placeholder: "1.0.0"
+    validations:
+      required: true
+      
+  - type: input
+    id: ios-version
+    attributes:
+      label: Версия iOS
+      placeholder: "18.5"
+    validations:
+      required: true
+      
+  - type: input
+    id: device-model
+    attributes:
+      label: Модель устройства
+      placeholder: "iPhone 16 Pro"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Шаги для воспроизведения (для ошибок)
+      description: Если это ошибка, опишите шаги для её воспроизведения
+      placeholder: |
+        1. Перейти в раздел...
+        2. Нажать на...
+        3. Видим ошибку...
+        
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Ожидаемое поведение
+      description: Что должно было произойти?
+      
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Фактическое поведение
+      description: Что произошло на самом деле?
+      
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Подтверждение
+      description: Подтвердите следующее
+      options:
+        - label: Я проверил, что похожая проблема еще не была создана
+          required: true
+        - label: Я предоставил всю необходимую информацию
+          required: true
