@@ -1,0 +1,81 @@
+name: iOS Deploy Debug
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+
+env:
+  WORKSPACE_PATH: LMS_App/LMS/LMS.xcodeproj
+  SCHEME: LMS
+  BUNDLE_IDENTIFIER: ru.tsum.lms.igor
+
+jobs:
+  debug:
+    name: Debug iOS Build Environment
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Debug Environment
+        run: |
+          echo "🔍 Environment Debug Information:"
+          echo "📱 Xcode version:"
+          xcodebuild -version
+          echo "📁 Available Xcode installations:"
+          ls -la /Applications/ | grep -i xcode || true
+          echo "📋 Current developer directory:"
+          xcode-select -p
+          echo "📊 Available simulators:"
+          xcrun simctl list devices | head -20
+
+      - name: Check Project Structure
+        run: |
+          echo "🏗️ Project Structure:"
+          echo "📁 Root directory:"
+          ls -la
+          echo "📁 LMS_App directory:"
+          ls -la LMS_App/ || echo "❌ LMS_App directory not found"
+          echo "📁 LMS project directory:"
+          ls -la LMS_App/LMS/ || echo "❌ LMS project directory not found"
+          echo "📁 Xcode project:"
+          ls -la LMS_App/LMS/*.xcodeproj/ || echo "❌ Xcode project not found"
+
+      - name: Check Schemes and Targets
+        run: |
+          cd LMS_App/LMS
+          echo "📋 Available schemes:"
+          xcodebuild -list -project LMS.xcodeproj || echo "❌ Failed to list schemes"
+          echo "🎯 Available destinations:"
+          xcodebuild -showdestinations -project LMS.xcodeproj -scheme LMS || echo "❌ Failed to show destinations"
+
+      - name: Test Simple Build
+        run: |
+          cd LMS_App/LMS
+          echo "🔨 Testing simple build (no signing):"
+          xcodebuild build \
+            -project LMS.xcodeproj \
+            -scheme LMS \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            | head -50
+
+      - name: Check GitHub Secrets
+        env:
+          HAS_BUILD_CERT: ${{ secrets.BUILD_CERTIFICATE_BASE64 != '' }}
+          HAS_P12_PASSWORD: ${{ secrets.P12_PASSWORD != '' }}
+          HAS_PROVISION_PROFILE: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 != '' }}
+          HAS_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID != '' }}
+          HAS_API_KEY_ISSUER: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID != '' }}
+          HAS_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY != '' }}
+        run: |
+          echo "🔐 GitHub Secrets Status:"
+          echo "BUILD_CERTIFICATE_BASE64: $HAS_BUILD_CERT"
+          echo "P12_PASSWORD: $HAS_P12_PASSWORD"  
+          echo "BUILD_PROVISION_PROFILE_BASE64: $HAS_PROVISION_PROFILE"
+          echo "APP_STORE_CONNECT_API_KEY_ID: $HAS_API_KEY_ID"
+          echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID: $HAS_API_KEY_ISSUER"
+          echo "APP_STORE_CONNECT_API_KEY_KEY: $HAS_API_KEY" 
