@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: lms-feedback-server
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "cd LMS_App/LMS/scripts/render_deploy && pip install -r requirements.txt"
+    startCommand: "cd LMS_App/LMS/scripts/render_deploy && python feedback_server.py"
+    envVars:
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_OWNER
+        value: is921966
+      - key: GITHUB_REPO
+        value: lms_docs
+      - key: PORT
+        value: 5000
+      - key: PYTHON_VERSION
+        value: 3.11.0 

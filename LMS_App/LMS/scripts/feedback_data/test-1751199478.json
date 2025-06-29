@@ -1,0 +1,17 @@
+{
+  "id": "test-1751199478",
+  "text": "Тестовый feedback с реального устройства",
+  "type": "test",
+  "timestamp": "2025-06-29T12:17:58Z",
+  "deviceInfo": {
+    "model": "iPhone Test",
+    "osVersion": "18.0",
+    "appVersion": "1.1.0",
+    "buildNumber": "100",
+    "screenSize": "393x852",
+    "locale": "ru_RU"
+  },
+  "received_at": "2025-06-29T12:17:58.825455",
+  "ip_address": "192.168.68.104",
+  "user_agent": "curl/8.7.1"
+}

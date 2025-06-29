@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: lms-feedback-server
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python feedback_server.py"
+    envVars:
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_OWNER
+        value: is921966
+      - key: GITHUB_REPO
+        value: lms_docs
+      - key: PORT
+        value: 5000
+    rootDir: LMS_App/LMS/scripts/render_deploy 
