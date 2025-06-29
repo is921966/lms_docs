@@ -14,5 +14,10 @@
     <true/>
     <key>signingStyle</key>
     <string>automatic</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>ru.tsum.lms.igor</key>
+        <string>Automatic</string>
+    </dict>
 </dict>
 </plist>
