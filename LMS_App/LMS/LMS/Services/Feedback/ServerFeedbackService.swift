@@ -1,11 +1,13 @@
 import Foundation
 
 class ServerFeedbackService: FeedbackServiceProtocol {
-    // Автоматически настроенный URL для реального устройства
-    private let serverURL = "http://192.168.68.104:5001/api/v1/feedback"
+    // Облачный сервер на Render - работает для всех устройств
+    private let serverURL = "https://lms-feedback-server.onrender.com/api/v1/feedback"
     
-    // Для симулятора используйте:
+    // Для локального тестирования используйте:
     // private let serverURL = "http://localhost:5001/api/v1/feedback"
+    // Для реального устройства в локальной сети:
+    // private let serverURL = "http://192.168.68.104:5001/api/v1/feedback"
     
     private let session = URLSession.shared
     private let queue = DispatchQueue(label: "feedback.queue")
