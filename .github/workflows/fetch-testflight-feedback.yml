@@ -14,6 +14,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Check project structure
+      run: |
+        echo "📁 Project structure:"
+        ls -la LMS_App/LMS/scripts/ || echo "❌ Scripts directory not found"
+        echo "📋 Requirements.txt:"
+        cat LMS_App/LMS/scripts/requirements.txt || echo "❌ requirements.txt not found"
+        echo "📄 Python script:"
+        ls -la LMS_App/LMS/scripts/fetch_testflight_feedback.py || echo "❌ fetch_testflight_feedback.py not found"
+      
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -21,8 +30,27 @@ jobs:
         
     - name: Install dependencies
       run: |
-        cd LMS_App/LMS/scripts
-        pip install -r requirements.txt
+        echo "📦 Installing dependencies..."
+        if [ -f LMS_App/LMS/scripts/requirements.txt ]; then
+          cd LMS_App/LMS/scripts
+          pip install -r requirements.txt
+        else
+          echo "⚠️ No requirements.txt found, installing basic dependencies"
+          pip install requests
+        fi
+        
+    - name: Check environment variables
+      env:
+        HAS_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID != '' }}
+        HAS_API_ISSUER: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID != '' }}
+        HAS_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY != '' }}
+        HAS_APP_ID: ${{ secrets.APP_ID != '' }}
+      run: |
+        echo "🔐 Environment variables check:"
+        echo "APP_STORE_CONNECT_API_KEY_ID: $HAS_API_KEY_ID"
+        echo "APP_STORE_CONNECT_API_ISSUER_ID: $HAS_API_ISSUER"
+        echo "APP_STORE_CONNECT_API_KEY: $HAS_API_KEY"
+        echo "APP_ID: $HAS_APP_ID"
         
     - name: Fetch TestFlight feedback
       env:
@@ -31,21 +59,38 @@ jobs:
         APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         APP_ID: ${{ secrets.APP_ID }}
       run: |
-        # Сохраняем ключ в файл
-        echo "$APP_STORE_CONNECT_API_KEY" > private_key.p8
-        export APP_STORE_CONNECT_API_KEY_PATH="./private_key.p8"
-        
-        # Запускаем скрипт
-        cd LMS_App/LMS/scripts
-        python fetch_testflight_feedback.py
+        if [ -f LMS_App/LMS/scripts/fetch_testflight_feedback.py ]; then
+          echo "🔍 Running TestFlight feedback fetch..."
+          cd LMS_App/LMS/scripts
+          
+          # Сохраняем ключ в файл если есть
+          if [ -n "$APP_STORE_CONNECT_API_KEY" ]; then
+            echo "$APP_STORE_CONNECT_API_KEY" > private_key.p8
+            export APP_STORE_CONNECT_API_KEY_PATH="./private_key.p8"
+          fi
+          
+          # Запускаем скрипт с ловлей ошибок
+          python fetch_testflight_feedback.py || {
+            echo "❌ Script failed with exit code $?"
+            echo "📋 Working directory:"
+            pwd
+            echo "📁 Files in directory:"
+            ls -la
+            exit 1
+          }
+        else
+          echo "⚠️ fetch_testflight_feedback.py not found, skipping..."
+        fi
         
     - name: Upload feedback report
       uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: testflight-feedback-report
         path: |
           LMS_App/LMS/scripts/testflight_feedback_report.json
           LMS_App/LMS/scripts/screenshots/
+        continue-on-error: true
         
     - name: Create issues from critical feedback
       if: success()

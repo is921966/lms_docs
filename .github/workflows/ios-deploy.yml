@@ -8,7 +8,6 @@ on:
   workflow_dispatch:
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_16.0.app/Contents/Developer
   WORKSPACE_PATH: LMS_App/LMS/LMS.xcodeproj
   SCHEME: LMS
   CONFIGURATION: Release
@@ -17,13 +16,17 @@ env:
 jobs:
   test:
     name: Run Tests
-    runs-on: macos-15
+    runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Xcode
-        run: sudo xcode-select -s $DEVELOPER_DIR
+        run: |
+          echo "📱 Current Xcode version:"
+          xcodebuild -version
+          echo "📋 Current developer directory:"
+          xcode-select -p
 
       - name: Run tests
         run: |
@@ -31,15 +34,14 @@ jobs:
           xcodebuild test \
             -project LMS.xcodeproj \
             -scheme LMS \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.0' \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
             -configuration Debug \
             CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            | xcpretty --test
+            CODE_SIGNING_REQUIRED=NO
 
   build-and-deploy:
     name: Build and Deploy to TestFlight
-    runs-on: macos-15
+    runs-on: macos-latest
     needs: test
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
@@ -47,7 +49,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Xcode
-        run: sudo xcode-select -s $DEVELOPER_DIR
+        run: |
+          echo "📱 Current Xcode version:"
+          xcodebuild -version
+          echo "📋 Current developer directory:"
+          xcode-select -p
 
       - name: Import certificate
         env:

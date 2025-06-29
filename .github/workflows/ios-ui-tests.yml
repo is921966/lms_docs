@@ -20,39 +20,36 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       
-    - name: Select Xcode
-      run: sudo xcode-select -s /Applications/Xcode_16.2.app
-      
-    - name: Show available simulators
-      run: xcrun simctl list devices
-      
-    - name: Create iPhone 16 Simulator
+    - name: Check Xcode
       run: |
-        # Create simulator if it doesn't exist
-        xcrun simctl create "iPhone 16" "iPhone 16" iOS18.2 || true
-        
-    - name: Boot Simulator
-      run: |
-        DEVICE_ID=$(xcrun simctl list devices | grep "iPhone 16" | grep -E -o '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}' | head -1)
-        xcrun simctl boot $DEVICE_ID || true
+        echo "📱 Current Xcode version:"
+        xcodebuild -version
+        echo "📋 Current developer directory:"
+        xcode-select -p
+        echo "📊 Available simulators:"
+        xcrun simctl list devices | grep -E "iPhone 15|iPhone 14" | head -5
         
     - name: Build for testing
       working-directory: LMS_App/LMS
       run: |
         xcodebuild build-for-testing \
           -scheme LMS \
-          -destination "platform=iOS Simulator,name=iPhone 16" \
-          -derivedDataPath build/DerivedData
+          -destination "platform=iOS Simulator,name=iPhone 15" \
+          -derivedDataPath build/DerivedData \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO
           
     - name: Run UI Tests
       working-directory: LMS_App/LMS
       run: |
         xcodebuild test-without-building \
           -scheme LMS \
-          -destination "platform=iOS Simulator,name=iPhone 16" \
+          -destination "platform=iOS Simulator,name=iPhone 15" \
           -derivedDataPath build/DerivedData \
           -only-testing:LMSUITests \
-          -resultBundlePath TestResults.xcresult
+          -resultBundlePath TestResults.xcresult \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO
           
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -65,21 +62,35 @@ jobs:
       if: always()
       working-directory: LMS_App/LMS
       run: |
-        xcrun xcresulttool get --path TestResults.xcresult --format json > test-results.json
-        echo "📊 Test Summary:"
-        cat test-results.json | python3 -c "
+        if [ -f TestResults.xcresult ]; then
+          xcrun xcresulttool get --path TestResults.xcresult --format json > test-results.json || true
+          echo "📊 Test Summary:"
+          if [ -f test-results.json ]; then
+            cat test-results.json | python3 -c "
 import json
 import sys
-data = json.load(sys.stdin)
-metrics = data.get('metrics', {})
-tests = metrics.get('testsCount', {}).get('_value', 0)
-failures = metrics.get('testsFailedCount', {}).get('_value', 0)
-print(f'Total tests: {tests}')
-print(f'Passed: {tests - failures}')
-print(f'Failed: {failures}')
-if failures > 0:
-    print('❌ Tests failed!')
+try:
+    data = json.load(sys.stdin)
+    metrics = data.get('metrics', {})
+    tests = metrics.get('testsCount', {}).get('_value', 0)
+    failures = metrics.get('testsFailedCount', {}).get('_value', 0)
+    print(f'Total tests: {tests}')
+    print(f'Passed: {tests - failures}')
+    print(f'Failed: {failures}')
+    if failures > 0:
+        print('❌ Tests failed!')
+        sys.exit(1)
+    else:
+        print('✅ All tests passed!')
+except Exception as e:
+    print(f'Error parsing results: {e}')
     sys.exit(1)
-else:
-    print('✅ All tests passed!')
 " 
+          else
+            echo "❌ No test results found"
+            exit 1
+          fi
+        else
+          echo "❌ TestResults.xcresult not found"
+          exit 1
+        fi 
