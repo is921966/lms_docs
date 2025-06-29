@@ -1,0 +1,49 @@
+name: iOS Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - 'LMS_App/**'
+      - 'ios/**'
+      - '.github/workflows/ios-test.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'LMS_App/**'
+      - 'ios/**'
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_16.0.app/Contents/Developer
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: macos-15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        run: sudo xcode-select -s $DEVELOPER_DIR
+
+      - name: Run tests
+        run: |
+          cd LMS_App/LMS
+          xcodebuild test \
+            -project LMS.xcodeproj \
+            -scheme LMS \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.0' \
+            -configuration Debug \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            | xcpretty --test --color
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results
+          path: |
+            LMS_App/LMS/build/
+            LMS_App/LMS/*.log 
