@@ -14,30 +14,8 @@ struct FeedbackView: View {
     @State private var showSuccessAlert = false
     @Environment(\.dismiss) var dismiss
     
-    enum FeedbackType: String, CaseIterable {
-        case bug = "Ошибка"
-        case feature = "Предложение"
-        case improvement = "Улучшение"
-        case question = "Вопрос"
-        
-        var icon: String {
-            switch self {
-            case .bug: return "ladybug"
-            case .feature: return "lightbulb"
-            case .improvement: return "wand.and.stars"
-            case .question: return "questionmark.circle"
-            }
-        }
-        
-        var color: Color {
-            switch self {
-            case .bug: return .red
-            case .feature: return .blue
-            case .improvement: return .orange
-            case .question: return .purple
-            }
-        }
-    }
+    // Получаем скриншот из FeedbackManager
+    @StateObject private var feedbackManager = FeedbackManager.shared
     
     var body: some View {
         NavigationView {
@@ -47,7 +25,7 @@ struct FeedbackView: View {
                     Section("Тип обращения") {
                         Picker("Тип", selection: $feedbackType) {
                             ForEach(FeedbackType.allCases, id: \.self) { type in
-                                Label(type.rawValue, systemImage: type.icon)
+                                Label(type.title, systemImage: type.icon)
                                     .tag(type)
                             }
                         }
@@ -74,7 +52,7 @@ struct FeedbackView: View {
                     
                     // Скриншот
                     Section("Скриншот") {
-                        if let image = annotatedScreenshot ?? screenshot {
+                        if let image = annotatedScreenshot ?? screenshot ?? feedbackManager.screenshot {
                             VStack {
                                 Image(uiImage: image)
                                     .resizable()
@@ -82,7 +60,7 @@ struct FeedbackView: View {
                                     .frame(maxHeight: 200)
                                     .cornerRadius(10)
                                     .onTapGesture {
-                                        if screenshot != nil {
+                                        if screenshot != nil || feedbackManager.screenshot != nil {
                                             showScreenshotEditor = true
                                         }
                                     }
@@ -99,6 +77,7 @@ struct FeedbackView: View {
                                     Button(action: { 
                                         screenshot = nil
                                         annotatedScreenshot = nil
+                                        feedbackManager.screenshot = nil
                                     }) {
                                         Label("Удалить", systemImage: "trash")
                                             .font(.caption)
@@ -167,8 +146,8 @@ struct FeedbackView: View {
                 }
             }
             .sheet(isPresented: $showScreenshotEditor) {
-                if let screenshot = screenshot {
-                    ScreenshotEditorView(image: screenshot) { editedImage in
+                if let image = screenshot ?? feedbackManager.screenshot {
+                    ScreenshotEditorView(image: image) { editedImage in
                         self.annotatedScreenshot = editedImage
                         self.showScreenshotEditor = false
                     }
@@ -183,35 +162,35 @@ struct FeedbackView: View {
             }
         }
         .onAppear {
-            // Автоматический скриншот при открытии
-            if screenshot == nil {
-                takeScreenshot()
+            // Используем скриншот из FeedbackManager, если он есть
+            if let managerScreenshot = feedbackManager.screenshot {
+                self.screenshot = managerScreenshot
             }
         }
     }
     
     private func takeScreenshot() {
-        // Скрываем текущий view перед скриншотом
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let window = windowScene.windows.first else { return }
-            
-            let renderer = UIGraphicsImageRenderer(bounds: window.bounds)
-            let image = renderer.image { context in
-                window.layer.render(in: context.cgContext)
-            }
-            
-            self.screenshot = image
+        // Делаем новый скриншот текущего состояния
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else { return }
+        
+        let renderer = UIGraphicsImageRenderer(bounds: window.bounds)
+        let image = renderer.image { context in
+            window.layer.render(in: context.cgContext)
         }
+        
+        self.screenshot = image
     }
     
     private func submitFeedback() {
         isSubmitting = true
         
+        let finalScreenshot = annotatedScreenshot ?? screenshot ?? feedbackManager.screenshot
+        
         let feedback = FeedbackModel(
             type: feedbackType.rawValue,
             text: feedbackText,
-            screenshot: (annotatedScreenshot ?? screenshot)?.pngData()?.base64EncodedString(),
+            screenshot: finalScreenshot?.pngData()?.base64EncodedString(),
             deviceInfo: DeviceInfo(
                 model: UIDevice.current.model,
                 osVersion: UIDevice.current.systemVersion,
@@ -229,6 +208,8 @@ struct FeedbackView: View {
                 isSubmitting = false
                 if success {
                     showSuccessAlert = true
+                    // Очищаем скриншот в FeedbackManager после отправки
+                    feedbackManager.screenshot = nil
                 }
             }
         }

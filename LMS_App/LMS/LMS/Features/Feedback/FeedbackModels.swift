@@ -50,41 +50,6 @@ struct FeedbackItem: Identifiable, Codable {
     }
 }
 
-/// Типы фидбэков
-enum FeedbackType: String, CaseIterable, Codable {
-    case bug = "bug"
-    case feature = "feature"
-    case improvement = "improvement"
-    case question = "question"
-    
-    var title: String {
-        switch self {
-        case .bug: return "Ошибка"
-        case .feature: return "Функция"
-        case .improvement: return "Улучшение"
-        case .question: return "Вопрос"
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .bug: return "ladybug"
-        case .feature: return "star"
-        case .improvement: return "arrow.up.circle"
-        case .question: return "questionmark.circle"
-        }
-    }
-    
-    var color: String {
-        switch self {
-        case .bug: return "red"
-        case .feature: return "blue"
-        case .improvement: return "green"
-        case .question: return "orange"
-        }
-    }
-}
-
 /// Статус фидбэка
 enum FeedbackStatus: String, CaseIterable, Codable {
     case open = "open"

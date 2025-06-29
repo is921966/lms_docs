@@ -28,22 +28,56 @@ class FeedbackManager: ObservableObject {
     private func setupShakeDetection() {
         NotificationCenter.default.publisher(for: NSNotification.Name("deviceDidShake"))
             .sink { _ in
-                withAnimation {
-                    self.showFeedback = true
+                // Захватываем скриншот перед показом формы
+                self.captureScreenBeforeFeedback()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation {
+                        self.showFeedback = true
+                        self.isShowingFeedback = true
+                    }
                 }
             }
             .store(in: &cancellables)
     }
     
+    /// Захватывает скриншот текущего экрана перед показом формы обратной связи
+    func captureScreenBeforeFeedback() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else { return }
+        
+        let renderer = UIGraphicsImageRenderer(bounds: window.bounds)
+        let image = renderer.image { context in
+            window.layer.render(in: context.cgContext)
+        }
+        
+        self.screenshot = image
+    }
+    
     func presentFeedback() {
-        isShowingFeedback = true
+        // Захватываем скриншот перед показом формы
+        captureScreenBeforeFeedback()
+        
+        // Показываем форму с небольшой задержкой, чтобы скриншот успел сохраниться
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.isShowingFeedback = true
+        }
     }
     
     func showFeedback(type: FeedbackType = .bug, screenshot: UIImage? = nil) {
         self.feedbackType = type
-        self.screenshot = screenshot
+        
+        // Если передан скриншот, используем его, иначе делаем новый
+        if let providedScreenshot = screenshot {
+            self.screenshot = providedScreenshot
+        } else {
+            captureScreenBeforeFeedback()
+        }
+        
         self.feedbackText = ""
-        self.isShowingFeedback = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.isShowingFeedback = true
+        }
     }
     
     func submitFeedback() {
@@ -124,7 +158,7 @@ class FeedbackManager: ObservableObject {
     }
     
     private func generateTitle() -> String {
-        let prefix = feedbackType.title
+        let prefix = feedbackType.emoji + " " + feedbackType.title
         let preview = String(feedbackText.prefix(50))
         return "\(prefix): \(preview)\(feedbackText.count > 50 ? "..." : "")"
     }
@@ -188,7 +222,7 @@ extension FeedbackManager {
     func sendTestFeedback() {
         Task {
             let testFeedback = FeedbackModel(
-                type: "test",
+                type: FeedbackType.bug.rawValue,
                 text: "Test feedback from iOS app",
                 screenshot: nil,
                 deviceInfo: DeviceInfo(
