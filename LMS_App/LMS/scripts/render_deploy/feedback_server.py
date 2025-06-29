@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cloud-ready Feedback Server для приема отзывов из iOS приложения
+Cloud-ready Feedback Server с поддержкой скриншотов для iOS приложения
 """
 
 from flask import Flask, request, jsonify
@@ -14,9 +14,9 @@ from pathlib import Path
 import requests
 
 app = Flask(__name__)
-CORS(app)  # Разрешаем CORS для всех источников
+CORS(app)
 
-# Конфигурация из переменных окружения
+# Конфигурация
 CONFIG = {
     'github': {
         'token': os.getenv('GITHUB_TOKEN', ''),
@@ -24,200 +24,55 @@ CONFIG = {
         'repo': os.getenv('GITHUB_REPO', 'lms_docs'),
         'labels': ['feedback', 'mobile-app', 'ios']
     },
+    'imgur': {
+        'client_id': os.getenv('IMGUR_CLIENT_ID', ''),
+    },
     'server': {
         'port': int(os.getenv('PORT', 5001)),
         'host': '0.0.0.0'
     }
 }
 
-# Создаем директории для локального хранения (если используется volume)
-FEEDBACK_DIR = Path("feedback_data")
-SCREENSHOTS_DIR = FEEDBACK_DIR / "screenshots"
-FEEDBACK_DIR.mkdir(exist_ok=True)
-SCREENSHOTS_DIR.mkdir(exist_ok=True)
-
-# In-memory storage для облачного развертывания
 FEEDBACK_STORAGE = []
 
-@app.route('/')
-def index():
-    """Веб-интерфейс для просмотра feedback"""
-    # Читаем из памяти вместо файлов
-    feedbacks = sorted(FEEDBACK_STORAGE, key=lambda x: x.get('received_at', ''), reverse=True)
+def upload_to_imgur(base64_image):
+    """Загружает изображение на Imgur и возвращает URL"""
+    if not CONFIG['imgur']['client_id']:
+        print("⚠️ Imgur client ID не настроен")
+        return None
     
-    html = """<!DOCTYPE html>
-<html>
-<head>
-    <title>LMS Feedback Dashboard</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            margin: 20px; 
-            background: #f5f5f7; 
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { color: #1d1d1f; }
-        .info { 
-            background: #e3f2fd; 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-        }
-        .feedback { 
-            background: white; 
-            padding: 20px; 
-            margin: 15px 0; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-        }
-        .type { 
-            display: inline-block; 
-            padding: 4px 12px; 
-            border-radius: 20px; 
-            font-size: 12px; 
-            font-weight: 600; 
-            margin-right: 10px; 
-        }
-        .bug { background: #fee; color: #c33; }
-        .feature { background: #e3f2fd; color: #1976d2; }
-        .question { background: #f3e5f5; color: #7b1fa2; }
-        .improvement { background: #e8f5e9; color: #388e3c; }
-        .test { background: #fff3e0; color: #ef6c00; }
-        .meta { color: #86868b; font-size: 14px; margin: 10px 0; }
-        .text { margin: 15px 0; line-height: 1.5; }
-        .device { 
-            background: #f5f5f7; 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-size: 13px; 
-            color: #86868b; 
-        }
-        .github-link {
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .github-link a {
-            color: #0366d6;
-            text-decoration: none;
-        }
-        .github-link a:hover {
-            text-decoration: underline;
-        }
-        @media (max-width: 600px) {
-            body { margin: 10px; }
-            .feedback { padding: 15px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>📱 LMS Feedback Dashboard</h1>
-        <div class="info">
-            <strong>Cloud Instance</strong><br>
-            GitHub Integration: """ + ('✅ Configured' if CONFIG['github']['token'] else '❌ Not configured') + """<br>
-            Total feedbacks: """ + str(len(feedbacks)) + """
-        </div>
-"""
-    
-    for feedback in feedbacks:
-        device_info = feedback.get('deviceInfo', {})
-        feedback_type = feedback.get('type', 'unknown').lower()
-        
-        html += f"""
-        <div class="feedback">
-            <span class="type {feedback_type}">{feedback.get('type', 'Unknown')}</span>
-            <span class="meta">{feedback.get('timestamp', 'Unknown time')}</span>
-            <div class="text">{feedback.get('text', 'No text')}</div>
-            <div class="device">
-                {device_info.get('model', 'Unknown')} • 
-                iOS {device_info.get('osVersion', 'Unknown')} • 
-                v{device_info.get('appVersion', 'Unknown')} 
-                ({device_info.get('buildNumber', 'Unknown')})
-            </div>
-"""
-        
-        if feedback.get('github_issue_url'):
-            html += f"""
-            <div class="github-link">
-                📝 <a href="{feedback['github_issue_url']}" target="_blank">View GitHub Issue</a>
-            </div>
-"""
-        
-        html += "</div>"
-    
-    html += """
-    </div>
-</body>
-</html>"""
-    
-    return html
-
-@app.route('/api/v1/feedback', methods=['POST'])
-def receive_feedback():
-    """Принимает feedback от iOS приложения"""
     try:
-        data = request.get_json()
+        if ',' in base64_image:
+            base64_image = base64_image.split(',')[1]
         
-        # Валидация
-        if not data or 'text' not in data:
-            return jsonify({'error': 'Missing feedback text'}), 400
-        
-        # Добавляем серверные данные
-        feedback = {
-            **data,
-            'received_at': datetime.utcnow().isoformat(),
-            'ip_address': request.remote_addr,
-            'user_agent': request.headers.get('User-Agent', '')
+        headers = {
+            'Authorization': f"Client-ID {CONFIG['imgur']['client_id']}"
         }
         
-        # Создаем GitHub issue
-        github_url = create_github_issue(feedback)
-        if github_url:
-            feedback['github_issue_url'] = github_url
+        data = {
+            'image': base64_image,
+            'type': 'base64',
+            'title': 'LMS Feedback Screenshot'
+        }
         
-        # Сохраняем в памяти
-        feedback_id = data.get('id', str(uuid.uuid4()))
-        feedback['id'] = feedback_id
-        FEEDBACK_STORAGE.append(feedback)
+        response = requests.post('https://api.imgur.com/3/image', headers=headers, data=data)
         
-        # Ограничиваем размер хранилища (последние 100 записей)
-        if len(FEEDBACK_STORAGE) > 100:
-            FEEDBACK_STORAGE.pop(0)
+        if response.status_code == 200:
+            result = response.json()
+            if result['success']:
+                image_url = result['data']['link']
+                print(f"✅ Uploaded screenshot to Imgur: {image_url}")
+                return image_url
         
-        print(f"✅ Received feedback: {feedback_id}")
-        if github_url:
-            print(f"📝 GitHub Issue: {github_url}")
-        
-        return jsonify({
-            'status': 'success',
-            'id': feedback_id,
-            'message': 'Feedback received successfully',
-            'github_issue': github_url
-        }), 201
+        print(f"❌ Failed to upload to Imgur: {response.status_code}")
+        return None
         
     except Exception as e:
-        print(f"❌ Error processing feedback: {e}")
-        return jsonify({'error': str(e)}), 500
+        print(f"❌ Error uploading to Imgur: {e}")
+        return None
 
-@app.route('/api/v1/feedback/list')
-def list_feedback():
-    """API endpoint для получения списка feedback"""
-    feedbacks = sorted(FEEDBACK_STORAGE, key=lambda x: x.get('received_at', ''), reverse=True)
-    return jsonify(feedbacks)
-
-@app.route('/health')
-def health_check():
-    """Health check endpoint"""
-    return jsonify({
-        'status': 'healthy',
-        'github_configured': bool(CONFIG['github']['token']),
-        'feedback_count': len(FEEDBACK_STORAGE)
-    })
-
-def create_github_issue(feedback):
-    """Создает GitHub issue для всех отзывов"""
+def create_github_issue_with_screenshot(feedback):
+    """Создает GitHub issue с поддержкой скриншотов"""
     token = CONFIG['github']['token']
     if not token:
         print("❌ GitHub token не настроен!")
@@ -228,45 +83,66 @@ def create_github_issue(feedback):
         'Accept': 'application/vnd.github.v3+json'
     }
     
+    # Обрабатываем скриншот
+    screenshot_section = ""
+    if feedback.get('screenshot'):
+        imgur_url = upload_to_imgur(feedback['screenshot'])
+        if imgur_url:
+            screenshot_section = f"\n\n## 📸 Скриншот\n![Screenshot]({imgur_url})\n"
+        else:
+            screenshot_section = "\n\n## 📸 Скриншот\n*Скриншот был приложен к отзыву*\n"
+    
     # Формируем тело issue
     device_info = feedback.get('deviceInfo', {})
+    feedback_type = feedback.get('type', 'unknown')
+    
+    # Определяем emoji для типа
+    type_emoji = {
+        'bug': '🐛',
+        'feature': '💡',
+        'improvement': '✨',
+        'question': '❓'
+    }.get(feedback_type.lower(), '📝')
+    
     body = f"""## 📱 Feedback из iOS приложения
 
-**Тип**: {feedback.get('type', 'unknown')}
+**Тип**: {type_emoji} {feedback_type}
 **Дата**: {feedback.get('timestamp', 'unknown')}
-**Устройство**: {device_info.get('model', 'unknown')} (iOS {device_info.get('osVersion', 'unknown')})
-**Версия приложения**: {device_info.get('appVersion', 'unknown')} (Build {device_info.get('buildNumber', 'unknown')})
+**Пользователь**: {feedback.get('userEmail', 'Anonymous')}
 
 ### 📝 Описание:
 {feedback.get('text', 'No description provided')}
-
-### 📱 Детали устройства:
-- Размер экрана: {device_info.get('screenSize', 'unknown')}
-- Локаль: {device_info.get('locale', 'unknown')}
-
-### 🌐 Метаданные:
-- IP адрес: {feedback.get('ip_address', 'unknown')}
-- User Agent: {feedback.get('user_agent', 'unknown')}
+{screenshot_section}
+### 📱 Информация об устройстве:
+- **Модель**: {device_info.get('model', 'unknown')}
+- **iOS**: {device_info.get('osVersion', 'unknown')}
+- **Версия приложения**: {device_info.get('appVersion', 'unknown')} (Build {device_info.get('buildNumber', 'unknown')})
+- **Размер экрана**: {device_info.get('screenSize', 'unknown')}
+- **Локаль**: {device_info.get('locale', 'unknown')}
 
 ---
-*Этот issue был автоматически создан из feedback в мобильном приложении*
+*Автоматически создано из мобильного приложения*
 """
     
-    # Определяем лейблы
+    # Определяем лейблы на основе типа
     labels = CONFIG['github']['labels'].copy()
-    feedback_type = feedback.get('type', 'bug').lower()
-    if feedback_type in ['bug', 'error', 'ошибка']:
-        labels.append('bug')
-    elif feedback_type in ['feature', 'предложение']:
-        labels.append('enhancement')
-    elif feedback_type in ['question', 'вопрос']:
-        labels.append('question')
     
-    # Формируем заголовок
+    type_to_label = {
+        'bug': 'bug',
+        'feature': 'enhancement',
+        'improvement': 'improvement',
+        'question': 'question'
+    }
+    
+    github_label = type_to_label.get(feedback_type.lower())
+    if github_label:
+        labels.append(github_label)
+    
+    # Формируем заголовок с emoji
     title_text = feedback.get('text', '')[:50]
     if len(feedback.get('text', '')) > 50:
         title_text += '...'
-    title = f"[Feedback] {feedback.get('type', 'Bug')}: {title_text}"
+    title = f"{type_emoji} [{feedback_type}] {title_text}"
     
     issue_data = {
         'title': title,
@@ -284,30 +160,76 @@ def create_github_issue(feedback):
             return issue_url
         else:
             print(f"❌ Failed to create GitHub issue: {response.status_code}")
-            print(f"Response: {response.text}")
             return None
     except Exception as e:
         print(f"❌ Error creating GitHub issue: {e}")
         return None
 
+@app.route('/api/v1/feedback', methods=['POST'])
+def receive_feedback():
+    """Принимает feedback от iOS приложения"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'text' not in data:
+            return jsonify({'error': 'Missing feedback text'}), 400
+        
+        feedback = {
+            **data,
+            'received_at': datetime.utcnow().isoformat(),
+            'ip_address': request.remote_addr,
+            'user_agent': request.headers.get('User-Agent', '')
+        }
+        
+        github_url = create_github_issue_with_screenshot(feedback)
+        if github_url:
+            feedback['github_issue_url'] = github_url
+        
+        feedback_id = data.get('id', str(uuid.uuid4()))
+        feedback_for_storage = {k: v for k, v in feedback.items() if k != 'screenshot'}
+        feedback_for_storage['has_screenshot'] = bool(feedback.get('screenshot'))
+        feedback_for_storage['id'] = feedback_id
+        FEEDBACK_STORAGE.append(feedback_for_storage)
+        
+        if len(FEEDBACK_STORAGE) > 100:
+            FEEDBACK_STORAGE.pop(0)
+        
+        print(f"✅ Received feedback: {feedback_id}")
+        print(f"   Type: {feedback.get('type', 'unknown')}")
+        print(f"   Has screenshot: {bool(feedback.get('screenshot'))}")
+        
+        return jsonify({
+            'status': 'success',
+            'id': feedback_id,
+            'message': 'Feedback received successfully',
+            'github_issue': github_url
+        }), 201
+        
+    except Exception as e:
+        print(f"❌ Error processing feedback: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'github_configured': bool(CONFIG['github']['token']),
+        'imgur_configured': bool(CONFIG['imgur']['client_id']),
+        'feedback_count': len(FEEDBACK_STORAGE)
+    })
+
 if __name__ == '__main__':
     port = CONFIG['server']['port']
     print(f"""
-🚀 LMS Feedback Server (Cloud Edition) Started!
-==============================================
+🚀 LMS Feedback Server (Enhanced Edition) Started!
+================================================
 📍 Port: {port}
-🔐 GitHub Token: {'✅ Configured' if CONFIG['github']['token'] else '❌ Not configured - set GITHUB_TOKEN env var'}
+🔐 GitHub Token: {'✅ Configured' if CONFIG['github']['token'] else '❌ Not configured'}
+🖼️  Imgur Client: {'✅ Configured' if CONFIG['imgur']['client_id'] else '❌ Not configured'}
 📦 Repository: {CONFIG['github']['owner']}/{CONFIG['github']['repo']}
 
-Environment Variables:
-- GITHUB_TOKEN: {'Set' if CONFIG['github']['token'] else 'Not set'}
-- GITHUB_OWNER: {CONFIG['github']['owner']}
-- GITHUB_REPO: {CONFIG['github']['repo']}
-- PORT: {port}
+Note: To enable screenshot uploads, register an app at https://api.imgur.com/oauth2/addclient
 """)
     
-    app.run(
-        host=CONFIG['server']['host'], 
-        port=port,
-        debug=os.getenv('DEBUG', 'False').lower() == 'true'
-    ) 
+    app.run(host=CONFIG['server']['host'], port=port)
