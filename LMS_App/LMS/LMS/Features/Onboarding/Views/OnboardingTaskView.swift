@@ -3,12 +3,12 @@ import SwiftUI
 struct OnboardingTaskView: View {
     let task: OnboardingTask
     let onComplete: (OnboardingTask) -> Void
-    
+
     @State private var showingCourseDetail = false
     @State private var showingTestDetail = false
     @State private var showingDocument = false
     @State private var showingMeetingDetail = false
-    
+
     var body: some View {
         HStack(spacing: 12) {
             // Task icon
@@ -16,24 +16,24 @@ struct OnboardingTaskView: View {
                 Circle()
                     .fill(task.iconColor.opacity(0.2))
                     .frame(width: 40, height: 40)
-                
+
                 Image(systemName: task.icon)
                     .foregroundColor(task.iconColor)
                     .font(.system(size: 18))
             }
-            
+
             // Task info
             VStack(alignment: .leading, spacing: 4) {
                 Text(task.title)
                     .font(.headline)
                     .foregroundColor(task.isCompleted ? .secondary : .primary)
                     .strikethrough(task.isCompleted)
-                
+
                 Text(task.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
-                
+
                 if let dueDate = task.dueDate {
                     HStack(spacing: 4) {
                         Image(systemName: "calendar")
@@ -44,9 +44,9 @@ struct OnboardingTaskView: View {
                     .foregroundColor(isOverdue(dueDate) ? .red : .secondary)
                 }
             }
-            
+
             Spacer()
-            
+
             // Action button
             Button(action: { handleTaskAction() }) {
                 if task.isCompleted {
@@ -94,7 +94,7 @@ struct OnboardingTaskView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var actionButtonContent: some View {
         switch task.type {
@@ -105,7 +105,7 @@ struct OnboardingTaskView: View {
             }
             .font(.caption)
             .foregroundColor(.blue)
-            
+
         case .test:
             HStack(spacing: 4) {
                 Text("Пройти")
@@ -113,7 +113,7 @@ struct OnboardingTaskView: View {
             }
             .font(.caption)
             .foregroundColor(.purple)
-            
+
         case .document:
             HStack(spacing: 4) {
                 Text("Читать")
@@ -121,7 +121,7 @@ struct OnboardingTaskView: View {
             }
             .font(.caption)
             .foregroundColor(.orange)
-            
+
         case .meeting:
             HStack(spacing: 4) {
                 Text("Детали")
@@ -129,14 +129,14 @@ struct OnboardingTaskView: View {
             }
             .font(.caption)
             .foregroundColor(.green)
-            
+
         case .task, .checklist, .feedback:
             Image(systemName: "circle")
                 .foregroundColor(.gray)
                 .font(.title2)
         }
     }
-    
+
     private func handleTaskAction() {
         switch task.type {
         case .course:
@@ -164,11 +164,11 @@ struct OnboardingTaskView: View {
             }
         }
     }
-    
+
     private func isOverdue(_ date: Date) -> Bool {
         return date < Date() && !task.isCompleted
     }
-    
+
     private var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -182,16 +182,16 @@ struct OnboardingTaskView: View {
 struct DocumentViewerView: View {
     let url: String
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         VStack {
             Text("Просмотр документа")
                 .font(.largeTitle)
                 .padding()
-            
+
             Text("URL: \(url)")
                 .foregroundColor(.secondary)
-            
+
             Spacer()
         }
         .navigationTitle("Документ")
@@ -210,17 +210,17 @@ struct DocumentViewerView: View {
 struct MeetingDetailView: View {
     let meetingId: UUID
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "video.circle.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.green)
-            
+
             Text("Встреча с руководителем")
                 .font(.largeTitle)
                 .bold()
-            
+
             VStack(alignment: .leading, spacing: 12) {
                 Label("Завтра, 10:00", systemImage: "calendar")
                 Label("Кабинет 305", systemImage: "location")
@@ -229,7 +229,7 @@ struct MeetingDetailView: View {
             .padding()
             .background(Color(.secondarySystemBackground))
             .cornerRadius(12)
-            
+
             Spacer()
         }
         .padding()
@@ -254,11 +254,11 @@ struct MeetingDetailView: View {
                 description: "Пройдите вводный курс о ценностях компании",
                 type: .course,
                 courseId: UUID(),
-                dueDate: Date().addingTimeInterval(3*24*60*60)
+                dueDate: Date().addingTimeInterval(3 * 24 * 60 * 60)
             ),
             onComplete: { _ in }
         )
-        
+
         OnboardingTaskView(
             task: OnboardingTask(
                 title: "Тест по товароведению",
@@ -272,4 +272,4 @@ struct MeetingDetailView: View {
         )
     }
     .padding()
-} 
+}

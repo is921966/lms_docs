@@ -1,0 +1,538 @@
+# UI/UX Guidelines for LMS iOS App
+
+## Apple Human Interface Guidelines (HIG) Compliance
+
+This project strictly follows Apple's Human Interface Guidelines to ensure a native iOS experience.
+
+### Core HIG Principles
+- **Clarity**: Text is legible at every size, icons are precise and lucid
+- **Deference**: Fluid motion and a crisp interface help people understand content
+- **Depth**: Distinct visual layers and realistic motion convey hierarchy
+
+### Platform Conventions
+- Use standard iOS navigation patterns (tab bars, navigation bars)
+- Implement platform-specific gestures (swipe to go back, pull to refresh)
+- Respect safe areas and Dynamic Type settings
+- Support both light and dark modes
+
+## SwiftUI Best Practices
+
+### View Composition
+- Keep views small and focused (< 100 lines per view)
+- Extract reusable components into separate files
+- Use view modifiers for common styling
+- Prefer composition over inheritance
+
+### Example View Structure:
+```swift
+// Views/Components/CourseCard.swift
+struct CourseCard: View {
+    let course: Course
+    @EnvironmentObject var theme: ThemeEnvironment
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.small) {
+            courseThumbnail
+            courseInfo
+        }
+        .frame(maxWidth: .infinity)
+        .background(theme.colors.surface)
+        .cornerRadius(theme.cornerRadius.medium)
+        .shadow(color: theme.colors.shadow, radius: 4)
+    }
+    
+    private var courseThumbnail: some View {
+        // Extracted subview for clarity
+    }
+    
+    private var courseInfo: some View {
+        // Extracted subview for clarity
+    }
+}
+```
+
+### State Management
+- Use `@State` for local view state
+- Use `@StateObject` for view-owned reference types
+- Use `@ObservedObject` for external observable objects
+- Use `@EnvironmentObject` for shared app-wide state
+- Prefer `@Published` properties in ViewModels
+
+### Performance Optimization
+```swift
+// Use lazy loading for lists
+List {
+    LazyVStack(spacing: theme.spacing.medium) {
+        ForEach(courses) { course in
+            CourseRow(course: course)
+                .onAppear {
+                    // Load more if needed
+                    viewModel.loadMoreIfNeeded(course)
+                }
+        }
+    }
+}
+
+// Use .task for async operations
+.task {
+    await viewModel.loadInitialData()
+}
+
+// Optimize image loading
+AsyncImage(url: imageURL) { phase in
+    switch phase {
+    case .success(let image):
+        image
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+    case .failure:
+        Image(systemName: "photo")
+    case .empty:
+        ProgressView()
+    @unknown default:
+        EmptyView()
+    }
+}
+```
+
+## Design System Implementation
+
+### Design Tokens
+Create a centralized design system with tokens for consistency:
+
+```swift
+// Design/Tokens/DesignTokens.swift
+struct DesignTokens {
+    struct Colors {
+        // Primary palette
+        let primary = Color("Primary")
+        let primaryVariant = Color("PrimaryVariant")
+        let secondary = Color("Secondary")
+        
+        // Semantic colors
+        let success = Color("Success")
+        let warning = Color("Warning")
+        let error = Color("Error")
+        let info = Color("Info")
+        
+        // Surface colors
+        let background = Color("Background")
+        let surface = Color("Surface")
+        let onSurface = Color("OnSurface")
+    }
+    
+    struct Typography {
+        let largeTitle = Font.largeTitle
+        let title1 = Font.title
+        let title2 = Font.title2
+        let title3 = Font.title3
+        let headline = Font.headline
+        let body = Font.body
+        let callout = Font.callout
+        let subheadline = Font.subheadline
+        let footnote = Font.footnote
+        let caption = Font.caption
+        let caption2 = Font.caption2
+    }
+    
+    struct Spacing {
+        let xxSmall: CGFloat = 4
+        let xSmall: CGFloat = 8
+        let small: CGFloat = 12
+        let medium: CGFloat = 16
+        let large: CGFloat = 24
+        let xLarge: CGFloat = 32
+        let xxLarge: CGFloat = 48
+    }
+    
+    struct CornerRadius {
+        let small: CGFloat = 4
+        let medium: CGFloat = 8
+        let large: CGFloat = 16
+        let xLarge: CGFloat = 24
+    }
+}
+```
+
+### Theme Environment
+```swift
+// Design/Theme/ThemeEnvironment.swift
+class ThemeEnvironment: ObservableObject {
+    @Published var colors = DesignTokens.Colors()
+    @Published var typography = DesignTokens.Typography()
+    @Published var spacing = DesignTokens.Spacing()
+    @Published var cornerRadius = DesignTokens.CornerRadius()
+    
+    // Theme variations
+    func applyDarkMode() {
+        // Update colors for dark mode
+    }
+    
+    func applyHighContrast() {
+        // Update for accessibility
+    }
+}
+
+// Usage in App
+@main
+struct LMSApp: App {
+    @StateObject private var theme = ThemeEnvironment()
+    
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environmentObject(theme)
+        }
+    }
+}
+```
+
+## Accessibility Requirements
+
+### VoiceOver Support
+```swift
+struct CourseListItem: View {
+    let course: Course
+    
+    var body: some View {
+        HStack {
+            courseImage
+            courseInfo
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(course.title), \(course.instructor)")
+        .accessibilityHint("Double tap to view course details")
+        .accessibilityAddTraits(.isButton)
+    }
+}
+```
+
+### Dynamic Type
+```swift
+Text(course.title)
+    .font(.headline)
+    .minimumScaleFactor(0.7)
+    .lineLimit(2)
+    .fixedSize(horizontal: false, vertical: true)
+```
+
+### Color Contrast
+- Ensure minimum contrast ratio of 4.5:1 for normal text
+- Use 3:1 for large text (18pt+ or 14pt+ bold)
+- Test with accessibility tools
+
+### Semantic Colors
+```swift
+extension Color {
+    // Semantic colors that adapt to color blind modes
+    static let successSemantic = Color("SuccessSemantic")
+    static let warningSemantic = Color("WarningSemantic")
+    static let errorSemantic = Color("ErrorSemantic")
+}
+```
+
+## Component Library
+
+### Standard Components
+Create reusable components following Apple's design patterns:
+
+```swift
+// Components/Buttons/PrimaryButton.swift
+struct PrimaryButton: View {
+    let title: String
+    let action: () -> Void
+    @Environment(\.isEnabled) private var isEnabled
+    @EnvironmentObject var theme: ThemeEnvironment
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(theme.typography.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(
+                    isEnabled ? theme.colors.primary : Color.gray
+                )
+                .cornerRadius(theme.cornerRadius.medium)
+        }
+        .buttonStyle(ScaleButtonStyle())
+    }
+}
+
+// Custom button style with haptic feedback
+struct ScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+            .onChange(of: configuration.isPressed) { isPressed in
+                if isPressed {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                }
+            }
+    }
+}
+```
+
+### Loading States
+```swift
+struct LoadingView: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle())
+                .scaleEffect(1.5)
+            
+            Text("Loading...")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
+        .onAppear {
+            isAnimating = true
+        }
+    }
+}
+```
+
+### Empty States
+```swift
+struct EmptyStateView: View {
+    let icon: String
+    let title: String
+    let message: String
+    let actionTitle: String?
+    let action: (() -> Void)?
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: icon)
+                .font(.system(size: 60))
+                .foregroundColor(.secondary)
+            
+            Text(title)
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text(message)
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            if let actionTitle = actionTitle, let action = action {
+                Button(actionTitle, action: action)
+                    .buttonStyle(.borderedProminent)
+                    .padding(.top)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
+    }
+}
+```
+
+## Navigation Patterns
+
+### Tab-Based Navigation
+```swift
+struct MainTabView: View {
+    @State private var selectedTab = 0
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            CoursesView()
+                .tabItem {
+                    Label("Courses", systemImage: "book.fill")
+                }
+                .tag(0)
+            
+            CompetenciesView()
+                .tabItem {
+                    Label("Skills", systemImage: "star.fill")
+                }
+                .tag(1)
+            
+            ProfileView()
+                .tabItem {
+                    Label("Profile", systemImage: "person.fill")
+                }
+                .tag(2)
+        }
+    }
+}
+```
+
+### Navigation Stack
+```swift
+NavigationStack {
+    List(courses) { course in
+        NavigationLink(value: course) {
+            CourseRow(course: course)
+        }
+    }
+    .navigationTitle("My Courses")
+    .navigationDestination(for: Course.self) { course in
+        CourseDetailView(course: course)
+    }
+}
+```
+
+## Animation Guidelines
+
+### Smooth Transitions
+```swift
+// Use matched geometry for smooth transitions
+@Namespace private var animation
+
+if isExpanded {
+    ExpandedView()
+        .matchedGeometryEffect(id: "card", in: animation)
+} else {
+    CollapsedView()
+        .matchedGeometryEffect(id: "card", in: animation)
+}
+
+// Spring animations for natural motion
+.animation(.spring(response: 0.4, dampingFraction: 0.8), value: isExpanded)
+```
+
+### Loading Animations
+```swift
+struct PulsingView: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        Circle()
+            .fill(Color.blue)
+            .frame(width: 100, height: 100)
+            .scaleEffect(isAnimating ? 1.2 : 1.0)
+            .opacity(isAnimating ? 0.6 : 1.0)
+            .animation(
+                Animation.easeInOut(duration: 1.0)
+                    .repeatForever(autoreverses: true),
+                value: isAnimating
+            )
+            .onAppear {
+                isAnimating = true
+            }
+    }
+}
+```
+
+## Error Handling UI
+
+### Error Presentation
+```swift
+struct ErrorBanner: View {
+    let error: Error
+    let retry: (() -> Void)?
+    @Binding var isPresented: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.white)
+                
+                Text(error.localizedDescription)
+                    .font(.subheadline)
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                Button {
+                    withAnimation {
+                        isPresented = false
+                    }
+                } label: {
+                    Image(systemName: "xmark")
+                        .foregroundColor(.white)
+                }
+            }
+            
+            if let retry = retry {
+                Button("Retry", action: retry)
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.2))
+                    .cornerRadius(4)
+            }
+        }
+        .padding()
+        .background(Color.red)
+        .cornerRadius(8)
+        .transition(.move(edge: .top).combined(with: .opacity))
+    }
+}
+```
+
+## Responsive Design
+
+### Size Classes
+```swift
+struct AdaptiveLayout: View {
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    var body: some View {
+        if horizontalSizeClass == .regular && verticalSizeClass == .regular {
+            // iPad layout
+            HStack {
+                SidebarView()
+                DetailView()
+            }
+        } else {
+            // iPhone layout
+            NavigationStack {
+                CompactView()
+            }
+        }
+    }
+}
+```
+
+### Dynamic Grid
+```swift
+struct CourseGrid: View {
+    let courses: [Course]
+    @Environment(\.horizontalSizeClass) var sizeClass
+    
+    var columns: [GridItem] {
+        let count = sizeClass == .regular ? 3 : 2
+        return Array(repeating: GridItem(.flexible()), count: count)
+    }
+    
+    var body: some View {
+        LazyVGrid(columns: columns, spacing: 16) {
+            ForEach(courses) { course in
+                CourseCard(course: course)
+            }
+        }
+        .padding()
+    }
+}
+```
+
+## AI Code Generation Instructions
+
+When generating UI code:
+
+1. **Always use SwiftUI** - no UIKit unless absolutely necessary
+2. **Follow HIG** - ensure native iOS look and feel
+3. **Use design tokens** - reference theme environment for consistency
+4. **Make it accessible** - include VoiceOver labels and hints
+5. **Support Dynamic Type** - use system fonts and scaling
+6. **Handle all states** - loading, empty, error, and success
+7. **Keep views small** - extract complex views into components
+8. **Use semantic colors** - support dark mode automatically
+9. **Add smooth animations** - but keep them subtle and purposeful
+10. **Test on all devices** - iPhone SE to iPad Pro
+
+Remember: Great iOS apps feel at home on the platform. When in doubt, refer to Apple's HIG and native iOS apps for guidance. 

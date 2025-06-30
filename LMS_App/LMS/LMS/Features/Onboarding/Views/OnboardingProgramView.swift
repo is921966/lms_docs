@@ -14,22 +14,22 @@ struct OnboardingProgramView: View {
     @State private var showingActions = false
     @State private var showingEditView = false
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Header
                 ProgramHeaderView(program: program)
-                
+
                 // Progress Overview
                 ProgressOverview(program: program)
-                
+
                 // Timeline
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Этапы программы")
                         .font(.headline)
                         .padding(.horizontal)
-                    
+
                     ForEach(Array(program.stages.enumerated()), id: \.element.id) { index, stage in
                         StageTimelineItem(
                             stage: stage,
@@ -82,7 +82,7 @@ struct OnboardingProgramView: View {
 // MARK: - Program Header
 struct ProgramHeaderView: View {
     let program: OnboardingProgram
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Title and status
@@ -91,17 +91,17 @@ struct ProgramHeaderView: View {
                     Text(program.title)
                         .font(.title2)
                         .fontWeight(.bold)
-                    
+
                     Text(program.description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 StatusBadge(status: program.status, isOverdue: program.isOverdue)
             }
-            
+
             // Employee info
             HStack(spacing: 20) {
                 EmployeeInfoItem(
@@ -109,22 +109,22 @@ struct ProgramHeaderView: View {
                     title: "Сотрудник",
                     value: program.employeeName
                 )
-                
+
                 EmployeeInfoItem(
                     icon: "briefcase.fill",
                     title: "Должность",
                     value: program.employeePosition
                 )
-                
+
                 EmployeeInfoItem(
                     icon: "building.2.fill",
                     title: "Отдел",
                     value: program.employeeDepartment
                 )
             }
-            
+
             Divider()
-            
+
             // Dates and manager
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
@@ -135,9 +135,9 @@ struct ProgramHeaderView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                 }
-                
+
                 Spacer()
-                
+
                 VStack(alignment: .trailing, spacing: 4) {
                     Text("Срок выполнения")
                         .font(.caption)
@@ -155,7 +155,7 @@ struct ProgramHeaderView: View {
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
         .padding(.horizontal)
     }
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMMM yyyy"
@@ -169,7 +169,7 @@ struct EmployeeInfoItem: View {
     let icon: String
     let title: String
     let value: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 4) {
@@ -190,7 +190,7 @@ struct EmployeeInfoItem: View {
 // MARK: - Progress Overview
 struct ProgressOverview: View {
     let program: OnboardingProgram
-    
+
     var body: some View {
         VStack(spacing: 16) {
             // Overall progress
@@ -198,21 +198,21 @@ struct ProgressOverview: View {
                 HStack {
                     Text("Общий прогресс")
                         .font(.headline)
-                    
+
                     Spacer()
-                    
+
                     Text("\(Int(program.overallProgress * 100))%")
                         .font(.title3)
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
                 }
-                
+
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.gray.opacity(0.1))
                             .frame(height: 12)
-                        
+
                         RoundedRectangle(cornerRadius: 8)
                             .fill(
                                 LinearGradient(
@@ -226,7 +226,7 @@ struct ProgressOverview: View {
                 }
                 .frame(height: 12)
             }
-            
+
             // Stats
             HStack(spacing: 20) {
                 ProgressStat(
@@ -235,14 +235,14 @@ struct ProgressOverview: View {
                     icon: "flag.checkered",
                     color: .green
                 )
-                
+
                 ProgressStat(
                     title: "Дней осталось",
                     value: program.isOverdue ? "Просрочено" : "\(program.daysRemaining)",
                     icon: "calendar",
                     color: program.isOverdue ? .red : .orange
                 )
-                
+
                 if let currentStage = program.currentStage {
                     ProgressStat(
                         title: "Текущий этап",
@@ -252,7 +252,7 @@ struct ProgressOverview: View {
                     )
                 }
             }
-            
+
             // Calculate estimated completion date
             if let template = OnboardingMockService.shared.templates.first(where: { $0.id == program.templateId }) {
                 let estimatedDate = Calendar.current.date(byAdding: .day, value: template.duration, to: program.startDate) ?? program.startDate
@@ -266,7 +266,7 @@ struct ProgressOverview: View {
         .cornerRadius(15)
         .padding(.horizontal)
     }
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMMM yyyy"
@@ -281,17 +281,17 @@ struct ProgressStat: View {
     let value: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
-            
+
             Text(value)
                 .font(.headline)
                 .fontWeight(.bold)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -307,7 +307,7 @@ struct StageTimelineItem: View {
     let isLast: Bool
     let isCurrent: Bool
     let action: () -> Void
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             // Timeline indicator
@@ -317,17 +317,17 @@ struct StageTimelineItem: View {
                         .fill(stage.status == StageStatus.completed ? Color.green : Color.gray.opacity(0.3))
                         .frame(width: 2, height: 20)
                 }
-                
+
                 ZStack {
                     Circle()
                         .fill(backgroundColor)
                         .frame(width: 40, height: 40)
-                    
+
                     Image(systemName: stage.icon)
                         .font(.system(size: 18))
                         .foregroundColor(.white)
                 }
-                
+
                 if !isLast {
                     Rectangle()
                         .fill(stage.status == StageStatus.completed ? Color.green : Color.gray.opacity(0.3))
@@ -335,7 +335,7 @@ struct StageTimelineItem: View {
                 }
             }
             .frame(width: 40)
-            
+
             // Stage content
             Button(action: action) {
                 VStack(alignment: .leading, spacing: 8) {
@@ -344,14 +344,14 @@ struct StageTimelineItem: View {
                             Text("Этап \(stage.order): \(stage.title)")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
-                            
+
                             Text(stage.description)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         Spacer()
-                        
+
                         if isCurrent {
                             Text("Текущий")
                                 .font(.caption)
@@ -363,27 +363,27 @@ struct StageTimelineItem: View {
                                 .cornerRadius(10)
                         }
                     }
-                    
+
                     // Progress
                     HStack {
                         Text("\(stage.completedTasks)/\(stage.tasks.count) задач")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         Spacer()
-                        
+
                         Text("\(stage.duration) дн.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     // Progress bar
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 2)
                                 .fill(Color.gray.opacity(0.2))
                                 .frame(height: 4)
-                            
+
                             RoundedRectangle(cornerRadius: 2)
                                 .fill(progressColor)
                                 .frame(width: geometry.size.width * stage.progress, height: 4)
@@ -400,7 +400,7 @@ struct StageTimelineItem: View {
         }
         .padding(.horizontal)
     }
-    
+
     private var backgroundColor: Color {
         switch stage.status {
         case StageStatus.completed: return .green
@@ -409,7 +409,7 @@ struct StageTimelineItem: View {
         case StageStatus.cancelled: return .red
         }
     }
-    
+
     private var progressColor: Color {
         if stage.status == StageStatus.completed {
             return .green
@@ -427,4 +427,4 @@ struct StageTimelineItem: View {
             program: OnboardingProgram.createMockPrograms()[0]
         )
     }
-} 
+}

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MetricsView: View {
     let metrics: [MetricData]
-    
+
     var body: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
             ForEach(metrics) { metric in
@@ -14,7 +14,7 @@ struct MetricsView: View {
 
 struct MetricMiniCard: View {
     let metric: MetricData
-    
+
     var body: some View {
         VStack(spacing: 4) {
             if let icon = metric.icon {
@@ -22,19 +22,19 @@ struct MetricMiniCard: View {
                     .font(.caption)
                     .foregroundColor(.blue)
             }
-            
+
             HStack(spacing: 2) {
                 Text(metric.value)
                     .font(.caption)
                     .fontWeight(.semibold)
-                
+
                 if let unit = metric.unit {
                     Text(unit)
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             Text(metric.title)
                 .font(.caption2)
                 .foregroundColor(.secondary)

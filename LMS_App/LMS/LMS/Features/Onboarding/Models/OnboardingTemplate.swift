@@ -16,12 +16,12 @@ struct OnboardingTemplate: Identifiable, Codable {
     let targetPosition: String
     let targetDepartment: String?
     let duration: Int // in days
-    
+
     var stages: [OnboardingTemplateStage]
     var isActive: Bool = true
     let createdAt: Date
     var updatedAt: Date
-    
+
     var icon: String {
         switch targetPosition.lowercased() {
         case let pos where pos.contains("продав"):
@@ -36,7 +36,7 @@ struct OnboardingTemplate: Identifiable, Codable {
             return "person.fill.badge.plus"
         }
     }
-    
+
     var color: Color {
         switch targetPosition.lowercased() {
         case let pos where pos.contains("продав"):
@@ -61,7 +61,7 @@ struct OnboardingTemplateStage: Identifiable, Codable {
     var order: Int
     var duration: Int // in days
     var tasks: [OnboardingTemplateTask]
-    
+
     init(id: UUID = UUID(), title: String, description: String, order: Int, duration: Int, tasks: [OnboardingTemplateTask] = []) {
         self.id = id
         self.title = title
@@ -82,13 +82,13 @@ struct OnboardingTemplateTask: Identifiable, Codable {
     var assigneeType: AssigneeType
     var requiredDocuments: [String]
     var checklistItems: [String]
-    
+
     // Optional links
     var courseId: UUID?
     var testId: UUID?
     var documentUrl: String?
     var documentTemplateId: UUID?
-    
+
     init(id: UUID = UUID(), title: String, description: String, type: OnboardingTaskType, order: Int, assigneeType: AssigneeType, requiredDocuments: [String] = [], checklistItems: [String] = []) {
         self.id = id
         self.title = title
@@ -99,7 +99,7 @@ struct OnboardingTemplateTask: Identifiable, Codable {
         self.requiredDocuments = requiredDocuments
         self.checklistItems = checklistItems
     }
-    
+
     init(title: String, description: String, type: OnboardingTaskType, order: Int, assigneeType: AssigneeType, requiredDocuments: [String] = [], checklistItems: [String] = []) {
         self.title = title
         self.description = description
@@ -109,7 +109,7 @@ struct OnboardingTemplateTask: Identifiable, Codable {
         self.requiredDocuments = requiredDocuments
         self.checklistItems = checklistItems
     }
-    
+
     func apply(_ block: (inout OnboardingTemplateTask) -> Void) -> OnboardingTemplateTask {
         var task = self
         block(&task)
@@ -150,23 +150,23 @@ extension OnboardingTemplateTask {
         task.courseId = courseId
         return task
     }
-    
+
     static func test(title: String, description: String, order: Int, assigneeType: AssigneeType, testId: UUID = UUID()) -> OnboardingTemplateTask {
         var task = OnboardingTemplateTask(title: title, description: description, type: .test, order: order, assigneeType: assigneeType)
         task.testId = testId
         return task
     }
-    
+
     static func document(title: String, description: String, order: Int, assigneeType: AssigneeType, documentUrl: String) -> OnboardingTemplateTask {
         var task = OnboardingTemplateTask(title: title, description: description, type: .document, order: order, assigneeType: assigneeType)
         task.documentUrl = documentUrl
         return task
     }
-    
+
     static func meeting(title: String, description: String, order: Int, assigneeType: AssigneeType) -> OnboardingTemplateTask {
         OnboardingTemplateTask(title: title, description: description, type: .meeting, order: order, assigneeType: assigneeType)
     }
-    
+
     static func task(title: String, description: String, order: Int, assigneeType: AssigneeType) -> OnboardingTemplateTask {
         OnboardingTemplateTask(title: title, description: description, type: .task, order: order, assigneeType: assigneeType)
     }
@@ -250,10 +250,10 @@ extension OnboardingTemplate {
                 )
             ],
             isActive: true,
-            createdAt: Date().addingTimeInterval(-90*24*60*60),
-            updatedAt: Date().addingTimeInterval(-30*24*60*60)
+            createdAt: Date().addingTimeInterval(-90 * 24 * 60 * 60),
+            updatedAt: Date().addingTimeInterval(-30 * 24 * 60 * 60)
         ),
-        
+
         OnboardingTemplate(
             title: "Адаптация кассира",
             description: "Программа для сотрудников кассовой зоны",
@@ -309,10 +309,10 @@ extension OnboardingTemplate {
                 )
             ],
             isActive: true,
-            createdAt: Date().addingTimeInterval(-60*24*60*60),
-            updatedAt: Date().addingTimeInterval(-7*24*60*60)
+            createdAt: Date().addingTimeInterval(-60 * 24 * 60 * 60),
+            updatedAt: Date().addingTimeInterval(-7 * 24 * 60 * 60)
         ),
-        
+
         OnboardingTemplate(
             title: "Адаптация визуального мерчандайзера",
             description: "Специализированная программа для VM",
@@ -369,10 +369,10 @@ extension OnboardingTemplate {
                 )
             ],
             isActive: true,
-            createdAt: Date().addingTimeInterval(-45*24*60*60),
-            updatedAt: Date().addingTimeInterval(-14*24*60*60)
+            createdAt: Date().addingTimeInterval(-45 * 24 * 60 * 60),
+            updatedAt: Date().addingTimeInterval(-14 * 24 * 60 * 60)
         ),
-        
+
         OnboardingTemplate(
             title: "Адаптация руководителя отдела",
             description: "Программа для управленческих позиций",
@@ -409,8 +409,8 @@ extension OnboardingTemplate {
                 )
             ],
             isActive: true,
-            createdAt: Date().addingTimeInterval(-120*24*60*60),
-            updatedAt: Date().addingTimeInterval(-60*24*60*60)
+            createdAt: Date().addingTimeInterval(-120 * 24 * 60 * 60),
+            updatedAt: Date().addingTimeInterval(-60 * 24 * 60 * 60)
         )
     ]
-} 
+}

@@ -5,27 +5,27 @@ struct CareerPathDetailView: View {
     let currentPosition: Position
     @State private var completedRequirements: Set<UUID> = []
     @State private var showingProgress = false
-    
+
     var completionPercentage: Double {
         guard !path.requirements.isEmpty else { return 0 }
         return Double(completedRequirements.count) / Double(path.requirements.count) * 100
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 // Header
                 headerSection
-                
+
                 // Progress overview
                 progressSection
-                
+
                 // Requirements checklist
                 requirementsSection
-                
+
                 // Success factors
                 successFactorsSection
-                
+
                 // Timeline
                 timelineSection
             }
@@ -49,9 +49,9 @@ struct CareerPathDetailView: View {
             }
         }
     }
-    
+
     // MARK: - Sections
-    
+
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             // From -> To visualization
@@ -61,25 +61,25 @@ struct CareerPathDetailView: View {
                     level: currentPosition.level,
                     isCurrent: true
                 )
-                
+
                 Image(systemName: "arrow.right")
                     .font(.title3)
                     .foregroundColor(.secondary)
-                
+
                 PositionBadge(
                     name: path.toPositionName,
                     level: getNextLevel(currentPosition.level),
                     isCurrent: false
                 )
             }
-            
+
             // Description
             if !path.description.isEmpty {
                 Text(path.description)
                     .font(.body)
                     .foregroundColor(.secondary)
             }
-            
+
             // Key metrics
             HStack(spacing: 16) {
                 MetricBadge(
@@ -87,13 +87,13 @@ struct CareerPathDetailView: View {
                     text: path.estimatedDuration.rawValue,
                     color: .blue
                 )
-                
+
                 MetricBadge(
                     icon: path.difficulty.icon,
                     text: path.difficulty.rawValue,
                     color: path.difficulty.color
                 )
-                
+
                 MetricBadge(
                     icon: "percent",
                     text: "\(Int(path.successRate * 100))%",
@@ -102,28 +102,28 @@ struct CareerPathDetailView: View {
             }
         }
     }
-    
+
     private var progressSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Ваш прогресс")
                     .font(.headline)
-                
+
                 Spacer()
-                
+
                 Text("\(Int(completionPercentage))%")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(completionPercentage > 50 ? .green : .orange)
             }
-            
+
             // Progress bar
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: 20)
-                    
+
                     RoundedRectangle(cornerRadius: 8)
                         .fill(
                             LinearGradient(
@@ -139,7 +139,7 @@ struct CareerPathDetailView: View {
                 }
             }
             .frame(height: 20)
-            
+
             Text("\(completedRequirements.count) из \(path.requirements.count) требований выполнено")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -148,12 +148,12 @@ struct CareerPathDetailView: View {
         .background(Color(.systemGray6))
         .cornerRadius(12)
     }
-    
+
     private var requirementsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Требования")
                 .font(.headline)
-            
+
             ForEach(path.requirements) { requirement in
                 RequirementRow(
                     requirement: requirement,
@@ -164,25 +164,25 @@ struct CareerPathDetailView: View {
             }
         }
     }
-    
+
     private var successFactorsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Факторы успеха")
                 .font(.headline)
-            
+
             VStack(spacing: 12) {
                 SuccessFactorRow(
                     icon: "lightbulb",
                     title: "Активное обучение",
                     description: "Постоянное развитие навыков через курсы и практику"
                 )
-                
+
                 SuccessFactorRow(
                     icon: "person.2",
                     title: "Менторинг",
                     description: "Поддержка опытного наставника ускорит развитие"
                 )
-                
+
                 SuccessFactorRow(
                     icon: "target",
                     title: "Четкие цели",
@@ -191,21 +191,21 @@ struct CareerPathDetailView: View {
             }
         }
     }
-    
+
     private var timelineSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Примерный план")
                 .font(.headline)
-            
+
             TimelineView(duration: path.estimatedDuration, requirements: path.requirements)
                 .frame(height: 200)
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
         }
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func toggleRequirement(_ id: UUID) {
         if completedRequirements.contains(id) {
             completedRequirements.remove(id)
@@ -213,7 +213,7 @@ struct CareerPathDetailView: View {
             completedRequirements.insert(id)
         }
     }
-    
+
     private func getNextLevel(_ current: PositionLevel) -> PositionLevel {
         let allLevels = PositionLevel.allCases
         guard let currentIndex = allLevels.firstIndex(of: current),
@@ -222,7 +222,7 @@ struct CareerPathDetailView: View {
         }
         return allLevels[currentIndex + 1]
     }
-    
+
     private func getSuccessRateColor(_ rate: Double) -> Color {
         switch rate {
         case 0.8...1.0: return .green
@@ -238,13 +238,13 @@ struct PositionBadge: View {
     let name: String
     let level: PositionLevel
     let isCurrent: Bool
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: level.icon)
                 .font(.title2)
                 .foregroundColor(isCurrent ? .white : level.color)
-            
+
             Text(name)
                 .font(.caption)
                 .fontWeight(.medium)
@@ -263,7 +263,7 @@ struct MetricBadge: View {
     let icon: String
     let text: String
     let color: Color
-    
+
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: icon)
@@ -284,7 +284,7 @@ struct RequirementRow: View {
     let requirement: CareerPathRequirement
     let isCompleted: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Button(action: onToggle) {
@@ -292,26 +292,26 @@ struct RequirementRow: View {
                     .font(.title3)
                     .foregroundColor(isCompleted ? .green : .gray)
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Image(systemName: requirement.type.icon)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Text(requirement.title)
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .strikethrough(isCompleted)
                 }
-                
+
                 if !requirement.description.isEmpty {
                     Text(requirement.description)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             Spacer()
         }
         .padding()
@@ -324,19 +324,19 @@ struct SuccessFactorRow: View {
     let icon: String
     let title: String
     let description: String
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundColor(.orange)
                 .frame(width: 30)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                
+
                 Text(description)
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -351,20 +351,20 @@ struct SuccessFactorRow: View {
 struct TimelineView: View {
     let duration: CareerPathDuration
     let requirements: [CareerPathRequirement]
-    
+
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .leading, spacing: 20) {
                 Text("0 мес")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 // Timeline bar
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: 8)
-                    
+
                     // Milestones
                     HStack(spacing: 0) {
                         ForEach(0..<3) { index in
@@ -375,14 +375,14 @@ struct TimelineView: View {
                         }
                     }
                 }
-                
+
                 HStack {
                     Spacer()
                     Text("\(duration.months) мес")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 // Phases
                 HStack(spacing: 8) {
                     PhaseCard(title: "Подготовка", icon: "book", color: .blue)
@@ -399,7 +399,7 @@ struct PhaseCard: View {
     let title: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 4) {
             Image(systemName: icon)
@@ -419,19 +419,19 @@ struct ProgressTrackerView: View {
     let path: CareerPath
     let completedRequirements: Set<UUID>
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Text("Отслеживание прогресса")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             Text("Здесь будет функционал для детального отслеживания прогресса")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding()
-            
+
             Button("Закрыть") {
                 dismiss()
             }
@@ -441,4 +441,4 @@ struct ProgressTrackerView: View {
         .navigationTitle("Прогресс")
         .navigationBarTitleDisplayMode(.inline)
     }
-} 
+}

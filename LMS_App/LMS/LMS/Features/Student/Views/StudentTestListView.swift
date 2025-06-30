@@ -11,7 +11,7 @@ struct StudentTestListView: View {
     @StateObject private var viewModel = TestViewModel()
     @State private var selectedTab = 0
     @State private var searchText = ""
-    
+
     var filteredTests: [Test] {
         let tests: [Test]
         switch selectedTab {
@@ -20,17 +20,17 @@ struct StudentTestListView: View {
         case 2: tests = viewModel.practiceTests
         default: tests = []
         }
-        
+
         if searchText.isEmpty {
             return tests
         }
-        
+
         return tests.filter { test in
             test.title.localizedCaseInsensitiveContains(searchText) ||
             test.description.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Tabs
@@ -41,7 +41,7 @@ struct StudentTestListView: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding()
-            
+
             // Search bar
             HStack {
                 Image(systemName: "magnifyingglass")
@@ -53,7 +53,7 @@ struct StudentTestListView: View {
             .cornerRadius(10)
             .padding(.horizontal)
             .padding(.bottom)
-            
+
             // Test list
             if filteredTests.isEmpty {
                 EmptyTestStateView(selectedTab: selectedTab)
@@ -91,7 +91,7 @@ struct StudentTestCard: View {
     let test: Test
     let testType: StudentTestType
     @State private var showingTestPlayer = false
-    
+
     var cardColor: Color {
         switch testType {
         case .assigned: return test.deadline?.isWithinNext24Hours ?? false ? .red : .blue
@@ -99,7 +99,7 @@ struct StudentTestCard: View {
         case .practice: return .purple
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
@@ -111,21 +111,21 @@ struct StudentTestCard: View {
                     .frame(width: 50, height: 50)
                     .background(cardColor)
                     .cornerRadius(10)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(test.title)
                         .font(.headline)
                         .lineLimit(2)
-                    
+
                     if let courseName = test.courseName {
                         Text(courseName)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // Result or status
                 if testType == .completed {
                     VStack(alignment: .trailing, spacing: 2) {
@@ -133,40 +133,40 @@ struct StudentTestCard: View {
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(test.isPassed ? .green : .orange)
-                        
+
                         Text(test.isPassed ? "Пройден" : "Не пройден")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
             }
-            
+
             // Description
-            
+
             Text(test.description)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .lineLimit(2)
-            
+
             // Test info
             HStack(spacing: 16) {
                 TestInfoChip(
                     icon: "questionmark.circle",
                     text: "\(test.questionsCount) вопросов"
                 )
-                
+
                 TestInfoChip(
                     icon: "clock",
                     text: "\(test.duration) мин"
                 )
-                
+
                 if test.attempts > 0 {
                     TestInfoChip(
                         icon: "arrow.counterclockwise",
                         text: "\(test.attempts) попыток"
                     )
                 }
-                
+
                 if let deadline = test.deadline, testType == .assigned {
                     TestInfoChip(
                         icon: "calendar",
@@ -175,7 +175,7 @@ struct StudentTestCard: View {
                     )
                 }
             }
-            
+
             // Action button
             actionButton
         }
@@ -187,7 +187,7 @@ struct StudentTestCard: View {
             TestPlayerView(test: test, viewModel: TestViewModel())
         }
     }
-    
+
     private var iconForTestType: String {
         switch testType {
         case .assigned: return "doc.text.magnifyingglass"
@@ -195,7 +195,7 @@ struct StudentTestCard: View {
         case .practice: return "pencil.and.ellipsis.rectangle"
         }
     }
-    
+
     @ViewBuilder
     private var actionButton: some View {
         switch testType {
@@ -207,9 +207,9 @@ struct StudentTestCard: View {
                     Text("Начать тест")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: "play.circle.fill")
                 }
                 .foregroundColor(.white)
@@ -217,7 +217,7 @@ struct StudentTestCard: View {
                 .background(cardColor)
                 .cornerRadius(10)
             }
-            
+
         case .completed:
             HStack(spacing: 12) {
                 NavigationLink(destination: TestResultView(test: test)) {
@@ -234,7 +234,7 @@ struct StudentTestCard: View {
                     .background(Color.blue.opacity(0.1))
                     .cornerRadius(8)
                 }
-                
+
                 if test.allowsRetake && !test.isPassed {
                     Button(action: {
                         showingTestPlayer = true
@@ -254,7 +254,7 @@ struct StudentTestCard: View {
                     }
                 }
             }
-            
+
         case .practice:
             Button(action: {
                 showingTestPlayer = true
@@ -263,9 +263,9 @@ struct StudentTestCard: View {
                     Text("Начать тренировку")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: "play.circle.fill")
                 }
                 .foregroundColor(.purple)
@@ -282,7 +282,7 @@ struct TestInfoChip: View {
     let icon: String
     let text: String
     var isUrgent: Bool = false
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
@@ -298,7 +298,7 @@ struct TestInfoChip: View {
 // MARK: - Empty State View
 struct EmptyTestStateView: View {
     let selectedTab: Int
-    
+
     var emptyStateInfo: (icon: String, title: String, subtitle: String) {
         switch selectedTab {
         case 0: return (
@@ -319,25 +319,25 @@ struct EmptyTestStateView: View {
         default: return ("", "", "")
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 16) {
             Spacer()
-            
+
             Image(systemName: emptyStateInfo.icon)
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text(emptyStateInfo.title)
                 .font(.headline)
                 .foregroundColor(.primary)
-            
+
             Text(emptyStateInfo.subtitle)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
+
             Spacer()
         }
     }
@@ -350,11 +350,11 @@ extension Date {
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now) ?? now
         return self >= now && self <= tomorrow
     }
-    
+
     var daysUntilString: String {
         let now = Date()
         let days = Calendar.current.dateComponents([.day], from: now, to: self).day ?? 0
-        
+
         if days < 0 {
             return "Просрочено"
         } else if days == 0 {
@@ -371,4 +371,4 @@ extension Date {
     NavigationView {
         StudentTestListView()
     }
-} 
+}

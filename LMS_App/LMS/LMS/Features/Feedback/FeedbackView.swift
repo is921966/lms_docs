@@ -13,10 +13,10 @@ struct FeedbackView: View {
     @State private var showScreenshotEditor = false
     @State private var showSuccessAlert = false
     @Environment(\.dismiss) var dismiss
-    
+
     // Получаем скриншот из FeedbackManager
     @StateObject private var feedbackManager = FeedbackManager.shared
-    
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -31,7 +31,7 @@ struct FeedbackView: View {
                         }
                         .pickerStyle(SegmentedPickerStyle())
                     }
-                    
+
                     // Текст отзыва
                     Section("Опишите подробно") {
                         TextEditor(text: $feedbackText)
@@ -49,7 +49,7 @@ struct FeedbackView: View {
                                 alignment: .topLeading
                             )
                     }
-                    
+
                     // Скриншот
                     Section("Скриншот") {
                         if let image = annotatedScreenshot ?? screenshot ?? feedbackManager.screenshot {
@@ -64,17 +64,17 @@ struct FeedbackView: View {
                                             showScreenshotEditor = true
                                         }
                                     }
-                                
+
                                 HStack {
                                     if annotatedScreenshot != nil {
                                         Label("Отредактировано", systemImage: "pencil.circle.fill")
                                             .font(.caption)
                                             .foregroundColor(.green)
                                     }
-                                    
+
                                     Spacer()
-                                    
-                                    Button(action: { 
+
+                                    Button(action: {
                                         screenshot = nil
                                         annotatedScreenshot = nil
                                         feedbackManager.screenshot = nil
@@ -98,7 +98,7 @@ struct FeedbackView: View {
                             }
                         }
                     }
-                    
+
                     // Информация об устройстве
                     Section("Информация об устройстве") {
                         InfoRow(label: "Устройство", value: UIDevice.current.model)
@@ -107,11 +107,11 @@ struct FeedbackView: View {
                         InfoRow(label: "Сборка", value: getBuildNumber())
                     }
                 }
-                
+
                 // Кнопка отправки
                 VStack {
                     Spacer()
-                    
+
                     Button(action: submitFeedback) {
                         HStack {
                             if isSubmitting {
@@ -168,25 +168,25 @@ struct FeedbackView: View {
             }
         }
     }
-    
+
     private func takeScreenshot() {
         // Делаем новый скриншот текущего состояния
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else { return }
-        
+
         let renderer = UIGraphicsImageRenderer(bounds: window.bounds)
         let image = renderer.image { context in
             window.layer.render(in: context.cgContext)
         }
-        
+
         self.screenshot = image
     }
-    
+
     private func submitFeedback() {
         isSubmitting = true
-        
+
         let finalScreenshot = annotatedScreenshot ?? screenshot ?? feedbackManager.screenshot
-        
+
         let feedback = FeedbackModel(
             type: feedbackType.rawValue,
             text: feedbackText,
@@ -201,7 +201,7 @@ struct FeedbackView: View {
             ),
             timestamp: Date()
         )
-        
+
         Task {
             let success = await FeedbackService.shared.createFeedback(feedback)
             await MainActor.run {
@@ -214,11 +214,11 @@ struct FeedbackView: View {
             }
         }
     }
-    
+
     private func getAppVersion() -> String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
     }
-    
+
     private func getBuildNumber() -> String {
         Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
     }
@@ -227,7 +227,7 @@ struct FeedbackView: View {
 struct InfoRow: View {
     let label: String
     let value: String
-    
+
     var body: some View {
         HStack {
             Text(label)
@@ -241,9 +241,9 @@ struct InfoRow: View {
 
 // MARK: - Shake Gesture Extension
 extension UIWindow {
-    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+    override open func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
             NotificationCenter.default.post(name: NSNotification.Name("deviceDidShake"), object: nil)
         }
     }
-} 
+}

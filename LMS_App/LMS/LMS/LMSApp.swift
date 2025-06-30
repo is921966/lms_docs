@@ -15,31 +15,31 @@ struct LMSApp: App {
     @StateObject private var adminService = MockAdminService.shared
     // @StateObject private var networkMonitor = NetworkMonitor()
     @StateObject private var feedbackManager = FeedbackManager.shared
-    
+
     init() {
         setupAppearance()
         setupFeedback()
-        
+
         // Enable battery monitoring for device info
         UIDevice.current.isBatteryMonitoringEnabled = true
-        
+
         // Проверяем запущены ли мы в режиме UI тестирования
         let isUITesting = ProcessInfo.processInfo.arguments.contains("UI-Testing")
-        
+
         // В DEBUG режиме или при UI тестировании включаем готовые модули
         #if DEBUG
         let shouldEnableModules = true
         #else
         let shouldEnableModules = isUITesting
         #endif
-        
+
         if shouldEnableModules {
             // Включаем готовые модули СИНХРОННО при старте
             // КРИТИЧЕСКИ ВАЖНО: Используем FeatureRegistryManager для уведомления UI
             FeatureRegistryManager.shared.enableReadyModules()
         }
     }
-    
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -56,7 +56,7 @@ struct LMSApp: App {
                 }
         }
     }
-    
+
     private func setupAppearance() {
         // Navigation bar appearance
         let appearance = UINavigationBarAppearance()
@@ -64,16 +64,16 @@ struct LMSApp: App {
         appearance.backgroundColor = UIColor.systemBackground
         appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
-        
+
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().compactAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        
+
         // Tab bar appearance
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithOpaqueBackground()
         tabBarAppearance.backgroundColor = UIColor.systemBackground
-        
+
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
     }

@@ -13,12 +13,12 @@ struct CourseTestLinkView: View {
     @State private var selectedTestId: UUID?
     @State private var searchText = ""
     @State private var showingCreateTest = false
-    
+
     // Mock tests from TestMockService
     var tests: [Test] {
         TestMockService.shared.tests
     }
-    
+
     var filteredTests: [Test] {
         if searchText.isEmpty {
             return tests
@@ -28,7 +28,7 @@ struct CourseTestLinkView: View {
             test.description.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -38,7 +38,7 @@ struct CourseTestLinkView: View {
                         Image(systemName: course.icon)
                             .font(.title2)
                             .foregroundColor(course.color)
-                        
+
                         VStack(alignment: .leading) {
                             Text(course.title)
                                 .font(.headline)
@@ -46,34 +46,34 @@ struct CourseTestLinkView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         Spacer()
                     }
                     .padding()
-                    
+
                     if let testId = course.testId,
                        let currentTest = tests.first(where: { $0.id == testId }) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Текущий тест:")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
+
                             HStack {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
-                                
+
                                 VStack(alignment: .leading) {
                                     Text(currentTest.title)
                                         .font(.subheadline)
                                         .fontWeight(.medium)
-                                    
+
                                     Text("\(currentTest.questions.count) вопросов • \(currentTest.timeLimit ?? 0) мин")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
-                                
+
                                 Spacer()
-                                
+
                                 Button("Удалить") {
                                     selectedTestId = nil
                                     saveTest()
@@ -91,15 +91,15 @@ struct CourseTestLinkView: View {
                     }
                 }
                 .background(Color(.systemGroupedBackground))
-                
+
                 // Search bar
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
-                    
+
                     TextField("Поиск тестов", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
-                    
+
                     if !searchText.isEmpty {
                         Button(action: { searchText = "" }) {
                             Image(systemName: "xmark.circle.fill")
@@ -111,7 +111,7 @@ struct CourseTestLinkView: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
                 .padding()
-                
+
                 // Create new test button
                 Button(action: { showingCreateTest = true }) {
                     HStack {
@@ -122,7 +122,7 @@ struct CourseTestLinkView: View {
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 8)
-                
+
                 // Test list
                 List(filteredTests) { test in
                     TestSelectionRow(
@@ -155,13 +155,13 @@ struct CourseTestLinkView: View {
             selectedTestId = course.testId
         }
     }
-    
+
     private func saveTest() {
         course.testId = selectedTestId
-        
+
         // In real app, would save to backend
         // await courseService.updateTest(courseId: course.id, testId: selectedTestId)
-        
+
         dismiss()
     }
 }
@@ -171,41 +171,41 @@ struct TestSelectionRow: View {
     let test: Test
     let isSelected: Bool
     let onSelect: () -> Void
-    
+
     var body: some View {
         Button(action: onSelect) {
             HStack {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(isSelected ? .blue : .gray)
                     .font(.title3)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(test.title)
                         .font(.body)
                         .foregroundColor(.primary)
-                    
+
                     Text(test.description)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
-                    
+
                     HStack {
                         Label("\(test.questions.count) вопросов", systemImage: "questionmark.circle")
                             .font(.caption2)
                             .foregroundColor(.secondary)
-                        
+
                         if let timeLimit = test.timeLimit {
                             Text("•")
                                 .foregroundColor(.secondary)
-                            
+
                             Label("\(timeLimit) мин", systemImage: "clock")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         Text("•")
                             .foregroundColor(.secondary)
-                        
+
                         Text(test.type.rawValue)
                             .font(.caption2)
                             .padding(.horizontal, 6)
@@ -215,7 +215,7 @@ struct TestSelectionRow: View {
                             .cornerRadius(4)
                     }
                 }
-                
+
                 Spacer()
             }
             .padding(.vertical, 4)
@@ -228,4 +228,4 @@ struct TestSelectionRow: View {
     CourseTestLinkView(
         course: .constant(Course.createMockCourses().first!)
     )
-} 
+}

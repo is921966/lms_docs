@@ -18,41 +18,41 @@ struct OnboardingProgram: Identifiable, Codable {
     var employeeDepartment: String
     var managerId: UUID
     var managerName: String
-    
+
     var title: String
     var description: String
     var startDate: Date
     var targetEndDate: Date
     var actualEndDate: Date?
-    
+
     var stages: [OnboardingStage]
     var totalDuration: Int // in days
-    
+
     var status: OnboardingStatus
     var overallProgress: Double {
         guard !stages.isEmpty else { return 0 }
         let totalProgress = stages.reduce(0) { $0 + $1.progress }
         return totalProgress / Double(stages.count)
     }
-    
+
     var completedStages: Int {
         stages.filter { $0.status == .completed }.count
     }
-    
+
     var currentStage: OnboardingStage? {
         stages.first { $0.status == .inProgress }
     }
-    
+
     var daysRemaining: Int {
         let calendar = Calendar.current
         let days = calendar.dateComponents([.day], from: Date(), to: targetEndDate).day ?? 0
         return days
     }
-    
+
     var isOverdue: Bool {
         Date() > targetEndDate && status != .completed
     }
-    
+
     var statusColor: Color {
         switch status {
         case .notStarted: return .gray
@@ -81,20 +81,20 @@ struct OnboardingStage: Identifiable, Codable {
     var duration: Int // in days
     var startDate: Date?
     var endDate: Date?
-    var status: StageStatus = StageStatus.notStarted
+    var status = StageStatus.notStarted
     var completionPercentage: Double = 0
     var tasks: [OnboardingTask]
-    
+
     var progress: Double {
         guard !tasks.isEmpty else { return 0 }
         let completed = tasks.filter { $0.isCompleted }.count
         return Double(completed) / Double(tasks.count)
     }
-    
+
     var completedTasks: Int {
         tasks.filter { $0.isCompleted }.count
     }
-    
+
     var icon: String {
         switch order {
         case 1: return "1.circle.fill"
@@ -112,20 +112,20 @@ struct OnboardingTask: Identifiable, Codable {
     var title: String
     var description: String
     var type: OnboardingTaskType
-    
+
     var isCompleted: Bool = false
     var completedAt: Date?
     var completedBy: UUID?
-    
+
     // Links to other entities
     var courseId: UUID?
     var testId: UUID?
     var documentUrl: String?
     var meetingId: UUID?
-    
+
     var dueDate: Date?
     var isRequired: Bool = true
-    
+
     var icon: String {
         switch type {
         case .course: return "book.closed.fill"
@@ -137,7 +137,7 @@ struct OnboardingTask: Identifiable, Codable {
         case .feedback: return "bubble.left.and.bubble.right.fill"
         }
     }
-    
+
     var iconColor: Color {
         switch type {
         case .course: return .blue
@@ -168,8 +168,8 @@ extension OnboardingProgram {
                 managerName: "Анна Смирнова",
                 title: "Адаптация продавца-консультанта",
                 description: "Программа адаптации для новых сотрудников отдела продаж",
-                startDate: Date().addingTimeInterval(-7*24*60*60), // 7 days ago
-                targetEndDate: Date().addingTimeInterval(23*24*60*60), // 23 days from now
+                startDate: Date().addingTimeInterval(-7 * 24 * 60 * 60), // 7 days ago
+                targetEndDate: Date().addingTimeInterval(23 * 24 * 60 * 60), // 23 days from now
                 stages: createMockStages(),
                 totalDuration: 30,
                 status: .inProgress
@@ -184,8 +184,8 @@ extension OnboardingProgram {
                 managerName: "Елена Козлова",
                 title: "Адаптация кассира",
                 description: "Программа для новых сотрудников кассовой зоны",
-                startDate: Date().addingTimeInterval(-2*24*60*60), // 2 days ago
-                targetEndDate: Date().addingTimeInterval(19*24*60*60), // 19 days from now
+                startDate: Date().addingTimeInterval(-2 * 24 * 60 * 60), // 2 days ago
+                targetEndDate: Date().addingTimeInterval(19 * 24 * 60 * 60), // 19 days from now
                 stages: createMockStagesForCashier(),
                 totalDuration: 21,
                 status: .inProgress
@@ -200,8 +200,8 @@ extension OnboardingProgram {
                 managerName: "Ольга Белова",
                 title: "Адаптация мерчандайзера",
                 description: "Специализированная программа для визуальных мерчандайзеров",
-                startDate: Date().addingTimeInterval(-14*24*60*60), // 14 days ago
-                targetEndDate: Date().addingTimeInterval(16*24*60*60), // 16 days from now
+                startDate: Date().addingTimeInterval(-14 * 24 * 60 * 60), // 14 days ago
+                targetEndDate: Date().addingTimeInterval(16 * 24 * 60 * 60), // 16 days from now
                 actualEndDate: nil,
                 stages: createCompletedStages(),
                 totalDuration: 30,
@@ -209,7 +209,7 @@ extension OnboardingProgram {
             )
         ]
     }
-    
+
     static func createMockStages() -> [OnboardingStage] {
         [
             OnboardingStage(
@@ -219,8 +219,8 @@ extension OnboardingProgram {
                 description: "Первые шаги в компании",
                 order: 1,
                 duration: 3,
-                startDate: Date().addingTimeInterval(-7*24*60*60),
-                endDate: Date().addingTimeInterval(-4*24*60*60),
+                startDate: Date().addingTimeInterval(-7 * 24 * 60 * 60),
+                endDate: Date().addingTimeInterval(-4 * 24 * 60 * 60),
                 status: StageStatus.completed,
                 completionPercentage: 1.0,
                 tasks: [
@@ -229,28 +229,28 @@ extension OnboardingProgram {
                         description: "Знакомство с непосредственным руководителем и командой",
                         type: .meeting,
                         isCompleted: true,
-                        completedAt: Date().addingTimeInterval(-6*24*60*60)
+                        completedAt: Date().addingTimeInterval(-6 * 24 * 60 * 60)
                     ),
                     OnboardingTask(
                         title: "Экскурсия по офису",
                         description: "Ознакомление с рабочим пространством",
                         type: .task,
                         isCompleted: true,
-                        completedAt: Date().addingTimeInterval(-6*24*60*60)
+                        completedAt: Date().addingTimeInterval(-6 * 24 * 60 * 60)
                     ),
                     OnboardingTask(
                         title: "Получение пропуска и оборудования",
                         description: "Оформление доступов и получение рабочих инструментов",
                         type: .task,
                         isCompleted: true,
-                        completedAt: Date().addingTimeInterval(-5*24*60*60)
+                        completedAt: Date().addingTimeInterval(-5 * 24 * 60 * 60)
                     ),
                     OnboardingTask(
                         title: "Изучение корпоративной культуры",
                         description: "Курс о ценностях и принципах компании",
                         type: .course,
                         isCompleted: true,
-                        completedAt: Date().addingTimeInterval(-4*24*60*60),
+                        completedAt: Date().addingTimeInterval(-4 * 24 * 60 * 60),
                         courseId: UUID()
                     )
                 ]
@@ -262,7 +262,7 @@ extension OnboardingProgram {
                 description: "Изучение ассортимента и особенностей товаров",
                 order: 2,
                 duration: 7,
-                startDate: Date().addingTimeInterval(-3*24*60*60),
+                startDate: Date().addingTimeInterval(-3 * 24 * 60 * 60),
                 endDate: nil,
                 status: StageStatus.inProgress,
                 completionPercentage: 0.5,
@@ -272,7 +272,7 @@ extension OnboardingProgram {
                         description: "Базовые знания об ассортименте магазина",
                         type: .course,
                         isCompleted: true,
-                        completedAt: Date().addingTimeInterval(-2*24*60*60),
+                        completedAt: Date().addingTimeInterval(-2 * 24 * 60 * 60),
                         courseId: UUID()
                     ),
                     OnboardingTask(
@@ -281,7 +281,7 @@ extension OnboardingProgram {
                         type: .test,
                         isCompleted: false,
                         testId: UUID(),
-                        dueDate: Date().addingTimeInterval(2*24*60*60)
+                        dueDate: Date().addingTimeInterval(2 * 24 * 60 * 60)
                     ),
                     OnboardingTask(
                         title: "Практика в торговом зале",
@@ -364,7 +364,7 @@ extension OnboardingProgram {
             )
         ]
     }
-    
+
     static func createMockStagesForCashier() -> [OnboardingStage] {
         [
             OnboardingStage(
@@ -374,8 +374,8 @@ extension OnboardingProgram {
                 description: "Знакомство с компанией и рабочим местом",
                 order: 1,
                 duration: 2,
-                startDate: Date().addingTimeInterval(-2*24*60*60),
-                endDate: Date().addingTimeInterval(-1*24*60*60),
+                startDate: Date().addingTimeInterval(-2 * 24 * 60 * 60),
+                endDate: Date().addingTimeInterval(-1 * 24 * 60 * 60),
                 status: StageStatus.completed,
                 completionPercentage: 1.0,
                 tasks: [
@@ -384,14 +384,14 @@ extension OnboardingProgram {
                         description: "Приветствие и введение в должность",
                         type: .meeting,
                         isCompleted: true,
-                        completedAt: Date().addingTimeInterval(-1*24*60*60)
+                        completedAt: Date().addingTimeInterval(-1 * 24 * 60 * 60)
                     ),
                     OnboardingTask(
                         title: "Знакомство с кассовой зоной",
                         description: "Изучение рабочего места",
                         type: .task,
                         isCompleted: true,
-                        completedAt: Date().addingTimeInterval(-1*24*60*60)
+                        completedAt: Date().addingTimeInterval(-1 * 24 * 60 * 60)
                     )
                 ]
             ),
@@ -423,7 +423,7 @@ extension OnboardingProgram {
             )
         ]
     }
-    
+
     static func createCompletedStages() -> [OnboardingStage] {
         var stages = createMockStages()
         // Mark most tasks as completed
@@ -431,13 +431,13 @@ extension OnboardingProgram {
             stages[i].status = StageStatus.completed
             for j in 0..<stages[i].tasks.count {
                 stages[i].tasks[j].isCompleted = true
-                stages[i].tasks[j].completedAt = Date().addingTimeInterval(Double(-10 + i*3 + j)*24*60*60)
+                stages[i].tasks[j].completedAt = Date().addingTimeInterval(Double(-10 + i * 3 + j) * 24 * 60 * 60)
             }
         }
         stages[3].status = StageStatus.inProgress
         stages[3].tasks[0].isCompleted = true
-        stages[3].tasks[0].completedAt = Date().addingTimeInterval(-1*24*60*60)
-        
+        stages[3].tasks[0].completedAt = Date().addingTimeInterval(-1 * 24 * 60 * 60)
+
         return stages
     }
 }
@@ -446,4 +446,4 @@ extension OnboardingProgram {
     static let mockData: [OnboardingProgram] = [
         // ... existing code ...
     ]
-} 
+}

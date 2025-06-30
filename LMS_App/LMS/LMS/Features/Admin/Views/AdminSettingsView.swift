@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AdminSettingsView: View {
     @State private var selectedCategory = 0
-    
+
     var body: some View {
         HStack(spacing: 0) {
             // Settings categories sidebar
@@ -22,12 +22,12 @@ struct AdminSettingsView: View {
                         selectedCategory = category.rawValue
                     }
                 }
-                
+
                 Spacer()
             }
             .frame(width: 250)
             .background(Color(.systemGray6))
-            
+
             // Settings content
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
@@ -68,7 +68,7 @@ enum SettingsCategory: Int, CaseIterable {
     case backup = 4
     case system = 5
     case feed = 6  // Новая категория для ленты новостей
-    
+
     var title: String {
         switch self {
         case .organization: return "Организация"
@@ -80,7 +80,7 @@ enum SettingsCategory: Int, CaseIterable {
         case .feed: return "Лента новостей"
         }
     }
-    
+
     var icon: String {
         switch self {
         case .organization: return "building.2"
@@ -99,7 +99,7 @@ struct SettingsCategoryRow: View {
     let category: SettingsCategory
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
@@ -107,12 +107,12 @@ struct SettingsCategoryRow: View {
                     .font(.title3)
                     .foregroundColor(isSelected ? .white : .primary)
                     .frame(width: 24)
-                
+
                 Text(category.title)
                     .font(.subheadline)
                     .fontWeight(isSelected ? .semibold : .regular)
                     .foregroundColor(isSelected ? .white : .primary)
-                
+
                 Spacer()
             }
             .padding(.horizontal)
@@ -129,62 +129,62 @@ struct OrganizationSettingsView: View {
     @State private var organizationDomain = "tsum.ru"
     @State private var defaultLanguage = "Русский"
     @State private var timeZone = "Moscow (UTC+3)"
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Настройки организации")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             VStack(alignment: .leading, spacing: 16) {
                 SettingsField(
                     title: "Название организации",
                     value: $organizationName
                 )
-                
+
                 SettingsField(
                     title: "Домен",
                     value: $organizationDomain
                 )
-                
+
                 SettingsDropdown(
                     title: "Язык по умолчанию",
                     selection: $defaultLanguage,
                     options: ["Русский", "English"]
                 )
-                
+
                 SettingsDropdown(
                     title: "Часовой пояс",
                     selection: $timeZone,
                     options: ["Moscow (UTC+3)", "London (UTC+0)", "New York (UTC-5)"]
                 )
             }
-            
+
             // Logo upload
             VStack(alignment: .leading, spacing: 12) {
                 Text("Логотип организации")
                     .font(.headline)
-                
+
                 HStack(spacing: 16) {
                     Image(systemName: "building.2.crop.circle.fill")
                         .font(.system(size: 80))
                         .foregroundColor(.gray)
-                    
+
                     VStack(spacing: 8) {
                         Button("Загрузить логотип") {
                             // Upload logo
                         }
                         .buttonStyle(.bordered)
-                        
+
                         Text("PNG, JPG до 5MB")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
             }
-            
+
             Divider()
-            
+
             Button("Сохранить изменения") {
                 // Save settings
             }
@@ -198,13 +198,13 @@ struct IntegrationsSettingsView: View {
     @State private var ldapEnabled = true
     @State private var samlEnabled = false
     @State private var vkidEnabled = true
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Настройки интеграций")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             // LDAP Settings
             IntegrationCard(
                 title: "Microsoft Active Directory (LDAP)",
@@ -220,7 +220,7 @@ struct IntegrationsSettingsView: View {
                     SettingsSecureField(title: "Bind пароль", value: .constant(""))
                 }
             }
-            
+
             // SAML Settings
             IntegrationCard(
                 title: "SAML 2.0",
@@ -235,7 +235,7 @@ struct IntegrationsSettingsView: View {
                     SettingsField(title: "SLO URL", value: .constant(""))
                 }
             }
-            
+
             // VK ID Settings
             IntegrationCard(
                 title: "VK ID",
@@ -259,13 +259,13 @@ struct NotificationSettingsView: View {
     @State private var emailEnabled = true
     @State private var pushEnabled = true
     @State private var smsEnabled = false
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Настройки уведомлений")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             // Email settings
             SettingsToggleSection(
                 title: "Email уведомления",
@@ -278,7 +278,7 @@ struct NotificationSettingsView: View {
                     SettingsToggle(title: "Использовать TLS", isOn: .constant(true))
                 }
             }
-            
+
             // Push settings
             SettingsToggleSection(
                 title: "Push уведомления",
@@ -290,7 +290,7 @@ struct NotificationSettingsView: View {
                     SettingsToggle(title: "Отправлять на Android", isOn: .constant(true))
                 }
             }
-            
+
             // SMS settings
             SettingsToggleSection(
                 title: "SMS уведомления",
@@ -305,12 +305,12 @@ struct NotificationSettingsView: View {
                     SettingsField(title: "API ключ", value: .constant(""))
                 }
             }
-            
+
             // Notification templates
             VStack(alignment: .leading, spacing: 12) {
                 Text("Шаблоны уведомлений")
                     .font(.headline)
-                
+
                 ForEach(["Регистрация", "Назначение курса", "Напоминание о тесте", "Выдача сертификата"], id: \.self) { template in
                     HStack {
                         Text(template)
@@ -337,23 +337,23 @@ struct SecuritySettingsView: View {
     @State private var sessionTimeout = "30"
     @State private var maxLoginAttempts = "5"
     @State private var enable2FA = false
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Настройки безопасности")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             // Password policy
             VStack(alignment: .leading, spacing: 16) {
                 Text("Политика паролей")
                     .font(.headline)
-                
+
                 SettingsToggle(
                     title: "Требовать сложный пароль",
                     isOn: $requireStrongPassword
                 )
-                
+
                 if requireStrongPassword {
                     VStack(alignment: .leading, spacing: 8) {
                         PasswordRequirement(text: "Минимум 8 символов")
@@ -364,34 +364,34 @@ struct SecuritySettingsView: View {
                     .padding(.leading, 32)
                 }
             }
-            
+
             // Session settings
             VStack(alignment: .leading, spacing: 16) {
                 Text("Настройки сессий")
                     .font(.headline)
-                
+
                 SettingsField(
                     title: "Таймаут сессии (минуты)",
                     value: $sessionTimeout
                 )
-                
+
                 SettingsField(
                     title: "Максимум попыток входа",
                     value: $maxLoginAttempts
                 )
             }
-            
+
             // 2FA settings
             VStack(alignment: .leading, spacing: 16) {
                 Text("Двухфакторная аутентификация")
                     .font(.headline)
-                
+
                 SettingsToggle(
                     title: "Включить 2FA для администраторов",
                     isOn: $enable2FA
                 )
             }
-            
+
             // Audit log
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
@@ -403,7 +403,7 @@ struct SecuritySettingsView: View {
                     }
                     .buttonStyle(.bordered)
                 }
-                
+
                 Text("Последние события безопасности")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -418,13 +418,13 @@ struct BackupSettingsView: View {
     @State private var backupFrequency = "Ежедневно"
     @State private var backupTime = "02:00"
     @State private var retentionDays = "30"
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Настройки резервного копирования")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             // Auto backup settings
             SettingsToggleSection(
                 title: "Автоматическое резервное копирование",
@@ -436,24 +436,24 @@ struct BackupSettingsView: View {
                         selection: $backupFrequency,
                         options: ["Ежедневно", "Еженедельно", "Ежемесячно"]
                     )
-                    
+
                     SettingsField(
                         title: "Время запуска",
                         value: $backupTime
                     )
-                    
+
                     SettingsField(
                         title: "Хранить копии (дней)",
                         value: $retentionDays
                     )
                 }
             }
-            
+
             // Manual backup
             VStack(alignment: .leading, spacing: 12) {
                 Text("Ручное резервное копирование")
                     .font(.headline)
-                
+
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Последняя копия: Сегодня, 02:00")
@@ -462,9 +462,9 @@ struct BackupSettingsView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Spacer()
-                    
+
                     Button("Создать копию сейчас") {
                         // Create backup
                     }
@@ -474,15 +474,15 @@ struct BackupSettingsView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(8)
             }
-            
+
             // Backup history
             VStack(alignment: .leading, spacing: 12) {
                 Text("История резервных копий")
                     .font(.headline)
-                
+
                 ForEach(0..<3) { index in
                     BackupHistoryRow(
-                        date: Date().addingTimeInterval(-Double(index) * 86400),
+                        date: Date().addingTimeInterval(-Double(index) * 86_400),
                         size: "2.\(index + 1) GB",
                         status: index == 0 ? .success : .success
                     )
@@ -499,7 +499,7 @@ struct SystemSettingsView: View {
             Text("Системная информация")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             // System info
             VStack(alignment: .leading, spacing: 12) {
                 SystemInfoRow(label: "Версия системы", value: "10.2.0")
@@ -508,28 +508,28 @@ struct SystemSettingsView: View {
                 SystemInfoRow(label: "Сервер", value: "Ubuntu 22.04 LTS")
                 SystemInfoRow(label: "PHP версия", value: "8.1.12")
             }
-            
+
             Divider()
-            
+
             // System maintenance
             VStack(alignment: .leading, spacing: 16) {
                 Text("Обслуживание системы")
                     .font(.headline)
-                
+
                 MaintenanceAction(
                     title: "Очистить кэш",
                     description: "Удалить временные файлы и кэш",
                     icon: "trash",
                     action: {}
                 )
-                
+
                 MaintenanceAction(
                     title: "Оптимизировать базу данных",
                     description: "Выполнить оптимизацию таблиц",
                     icon: "cylinder",
                     action: {}
                 )
-                
+
                 MaintenanceAction(
                     title: "Проверить обновления",
                     description: "Проверить наличие новых версий",
@@ -537,9 +537,9 @@ struct SystemSettingsView: View {
                     action: {}
                 )
             }
-            
+
             Divider()
-            
+
             // System logs
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
@@ -551,7 +551,7 @@ struct SystemSettingsView: View {
                     }
                     .buttonStyle(.bordered)
                 }
-                
+
                 Text("Логи за последние 7 дней")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -564,7 +564,7 @@ struct SystemSettingsView: View {
 struct SettingsField: View {
     let title: String
     @Binding var value: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
@@ -579,7 +579,7 @@ struct SettingsField: View {
 struct SettingsSecureField: View {
     let title: String
     @Binding var value: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
@@ -595,7 +595,7 @@ struct SettingsDropdown: View {
     let title: String
     @Binding var selection: String
     let options: [String]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
@@ -615,7 +615,7 @@ struct SettingsDropdown: View {
 struct SettingsToggle: View {
     let title: String
     @Binding var isOn: Bool
-    
+
     var body: some View {
         Toggle(title, isOn: $isOn)
     }
@@ -625,12 +625,12 @@ struct SettingsToggleSection<Content: View>: View {
     let title: String
     @Binding var isEnabled: Bool
     @ViewBuilder let content: () -> Content
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Toggle(title, isOn: $isEnabled)
                 .font(.headline)
-            
+
             if isEnabled {
                 content()
                     .padding(.leading, 32)
@@ -649,14 +649,14 @@ struct IntegrationCard<Content: View>: View {
     let icon: String
     let color: Color
     @ViewBuilder let content: () -> Content
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: icon)
                     .font(.title2)
                     .foregroundColor(color)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.headline)
@@ -664,12 +664,12 @@ struct IntegrationCard<Content: View>: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 Toggle("", isOn: $isEnabled)
             }
-            
+
             if isEnabled {
                 Divider()
                 content()
@@ -683,7 +683,7 @@ struct IntegrationCard<Content: View>: View {
 
 struct PasswordRequirement: View {
     let text: String
-    
+
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
@@ -700,10 +700,10 @@ struct BackupHistoryRow: View {
     let date: Date
     let size: String
     let status: BackupStatus
-    
+
     enum BackupStatus {
         case success, failed, inProgress
-        
+
         var color: Color {
             switch self {
             case .success: return .green
@@ -711,7 +711,7 @@ struct BackupHistoryRow: View {
             case .inProgress: return .orange
             }
         }
-        
+
         var icon: String {
             switch self {
             case .success: return "checkmark.circle.fill"
@@ -720,12 +720,12 @@ struct BackupHistoryRow: View {
             }
         }
     }
-    
+
     var body: some View {
         HStack {
             Image(systemName: status.icon)
                 .foregroundColor(status.color)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(date.formatted(date: .abbreviated, time: .shortened))
                     .font(.subheadline)
@@ -733,9 +733,9 @@ struct BackupHistoryRow: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
+
             Button("Восстановить") {
                 // Restore backup
             }
@@ -751,7 +751,7 @@ struct BackupHistoryRow: View {
 struct SystemInfoRow: View {
     let label: String
     let value: String
-    
+
     var body: some View {
         HStack {
             Text(label)
@@ -771,7 +771,7 @@ struct MaintenanceAction: View {
     let description: String
     let icon: String
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack {
@@ -779,7 +779,7 @@ struct MaintenanceAction: View {
                     .font(.title3)
                     .foregroundColor(.blue)
                     .frame(width: 30)
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.subheadline)
@@ -789,9 +789,9 @@ struct MaintenanceAction: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
                     .foregroundColor(.secondary)
             }
@@ -807,4 +807,4 @@ struct MaintenanceAction: View {
     NavigationView {
         AdminSettingsView()
     }
-} 
+}

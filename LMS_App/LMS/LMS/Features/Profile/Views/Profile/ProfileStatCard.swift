@@ -5,17 +5,17 @@ struct ProfileStatCard: View {
     let value: String
     let title: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 10) {
             Image(systemName: icon)
                 .font(.system(size: 24))
                 .foregroundColor(color)
-            
+
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)

@@ -5,7 +5,7 @@ struct LessonNavigationBar: View {
     let totalLessons: Int
     let onPrevious: () -> Void
     let onNext: () -> Void
-    
+
     var body: some View {
         HStack(spacing: 15) {
             if currentIndex > 0 {
@@ -15,7 +15,7 @@ struct LessonNavigationBar: View {
                 }
                 .buttonStyle(.bordered)
             }
-            
+
             Button(action: onNext) {
                 if currentIndex < totalLessons - 1 {
                     Label("Далее", systemImage: "chevron.right")

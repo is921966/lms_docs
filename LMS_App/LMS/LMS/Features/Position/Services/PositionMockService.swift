@@ -4,21 +4,21 @@ import Combine
 // MARK: - Position Mock Service
 class PositionMockService: ObservableObject {
     static let shared = PositionMockService()
-    
+
     @Published private(set) var positions: [Position] = []
     @Published private(set) var careerPaths: [CareerPath] = []
     private let competencyService = CompetencyMockService.shared
     private var cancellables = Set<AnyCancellable>()
-    
+
     init() {
         loadMockData()
     }
-    
+
     // MARK: - Mock Data Generation
     private func loadMockData() {
         // Get competencies for requirements
         let competencies = competencyService.competencies
-        
+
         // Create positions
         positions = [
             // Engineering positions
@@ -43,7 +43,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 12
             ),
-            
+
             Position(
                 name: "iOS Developer Middle",
                 description: "Самостоятельная разработка фичей, менторинг джуниоров",
@@ -71,7 +71,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 8
             ),
-            
+
             Position(
                 name: "iOS Developer Senior",
                 description: "Архитектурные решения, лидерство в проектах",
@@ -99,7 +99,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 4
             ),
-            
+
             Position(
                 name: "iOS Team Lead",
                 description: "Управление командой iOS разработчиков",
@@ -127,7 +127,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 2
             ),
-            
+
             // Backend positions
             Position(
                 name: "Backend Developer Middle",
@@ -150,7 +150,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 10
             ),
-            
+
             // Management positions
             Position(
                 name: "Product Manager",
@@ -179,7 +179,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 5
             ),
-            
+
             Position(
                 name: "Engineering Manager",
                 description: "Управление инженерными командами",
@@ -201,7 +201,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 3
             ),
-            
+
             // Sales positions
             Position(
                 name: "Sales Manager",
@@ -225,19 +225,19 @@ class PositionMockService: ObservableObject {
                 employeeCount: 7
             )
         ]
-        
+
         // Create career paths
         createCareerPaths()
     }
-    
+
     private func createCareerPaths() {
         guard positions.count >= 4 else { return }
-        
+
         let juniorIOS = positions[0]
         let middleIOS = positions[1]
         let seniorIOS = positions[2]
         let leadIOS = positions[3]
-        
+
         careerPaths = [
             // Junior to Middle
             CareerPath(
@@ -266,7 +266,7 @@ class PositionMockService: ObservableObject {
                 description: "Стандартный путь развития iOS разработчика",
                 successRate: 0.85
             ),
-            
+
             // Middle to Senior
             CareerPath(
                 fromPositionId: middleIOS.id,
@@ -299,7 +299,7 @@ class PositionMockService: ObservableObject {
                 description: "Требует глубоких технических знаний и лидерских качеств",
                 successRate: 0.65
             ),
-            
+
             // Senior to Lead
             CareerPath(
                 fromPositionId: seniorIOS.id,
@@ -329,18 +329,18 @@ class PositionMockService: ObservableObject {
             )
         ]
     }
-    
+
     // MARK: - CRUD Operations
-    
+
     // Positions
     func createPosition(_ position: Position) {
         positions.append(position)
     }
-    
+
     func getPosition(by id: UUID) -> Position? {
         positions.first { $0.id == id }
     }
-    
+
     func updatePosition(_ position: Position) {
         if let index = positions.firstIndex(where: { $0.id == position.id }) {
             var updated = position
@@ -348,68 +348,68 @@ class PositionMockService: ObservableObject {
             positions[index] = updated
         }
     }
-    
+
     func deletePosition(_ id: UUID) {
         positions.removeAll { $0.id == id }
         // Also remove related career paths
         careerPaths.removeAll { $0.fromPositionId == id || $0.toPositionId == id }
     }
-    
+
     // Career Paths
     func createCareerPath(_ path: CareerPath) {
         careerPaths.append(path)
     }
-    
+
     func getCareerPaths(for positionId: UUID) -> [CareerPath] {
         careerPaths.filter { $0.fromPositionId == positionId }
     }
-    
+
     func getIncomingCareerPaths(for positionId: UUID) -> [CareerPath] {
         careerPaths.filter { $0.toPositionId == positionId }
     }
-    
+
     // MARK: - Search and Filter
-    
+
     func searchPositions(query: String) -> [Position] {
         guard !query.isEmpty else { return positions }
-        
+
         return positions.filter { position in
             position.name.localizedCaseInsensitiveContains(query) ||
             position.description.localizedCaseInsensitiveContains(query) ||
             position.department.localizedCaseInsensitiveContains(query)
         }
     }
-    
+
     func getPositions(by level: PositionLevel? = nil, department: String? = nil, activeOnly: Bool = true) -> [Position] {
         var filtered = positions
-        
+
         if let level = level {
             filtered = filtered.filter { $0.level == level }
         }
-        
+
         if let department = department {
             filtered = filtered.filter { $0.department == department }
         }
-        
+
         if activeOnly {
             filtered = filtered.filter { $0.isActive }
         }
-        
+
         return filtered
     }
-    
+
     // MARK: - Statistics
-    
+
     var departments: [String] {
         Array(Set(positions.map { $0.department })).sorted()
     }
-    
+
     var totalEmployees: Int {
         positions.reduce(0) { $0 + $1.employeeCount }
     }
-    
+
     var positionsByLevel: [PositionLevel: Int] {
         Dictionary(grouping: positions, by: { $0.level })
             .mapValues { $0.count }
     }
-} 
+}

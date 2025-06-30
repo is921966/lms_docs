@@ -4,7 +4,7 @@ struct PostHeaderView: View {
     let post: FeedPost
     @Binding var showingOptions: Bool
     let canShowOptions: Bool
-    
+
     var body: some View {
         HStack {
             // Author avatar
@@ -16,32 +16,32 @@ struct PostHeaderView: View {
                         .font(.headline)
                         .foregroundColor(.white)
                 )
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
                     Text(post.authorName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                    
+
                     if post.authorRole == .admin {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.caption)
                             .foregroundColor(.blue)
                     }
                 }
-                
+
                 HStack(spacing: 4) {
                     Text(timeAgo(from: post.createdAt))
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Text("•")
                         .foregroundColor(.secondary)
-                    
+
                     Image(systemName: post.visibility.icon)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     if post.isEdited {
                         Text("•")
                             .foregroundColor(.secondary)
@@ -51,9 +51,9 @@ struct PostHeaderView: View {
                     }
                 }
             }
-            
+
             Spacer()
-            
+
             // Options button
             if canShowOptions {
                 Button(action: { showingOptions = true }) {
@@ -65,7 +65,7 @@ struct PostHeaderView: View {
         }
         .padding()
     }
-    
+
     private func roleColor(for role: UserRole) -> Color {
         switch role {
         case .student:
@@ -78,7 +78,7 @@ struct PostHeaderView: View {
             return .red
         }
     }
-    
+
     private func timeAgo(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated

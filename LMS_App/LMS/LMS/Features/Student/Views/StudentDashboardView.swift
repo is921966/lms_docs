@@ -11,7 +11,7 @@ struct StudentDashboardView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var notificationService = NotificationService.shared
     @State private var showingNotifications = false
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -20,7 +20,7 @@ struct StudentDashboardView: View {
                     Text("Добро пожаловать!")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                    
+
                     if let userName = authViewModel.currentUser?.firstName {
                         Text("Привет, \(userName)")
                             .font(.title2)
@@ -29,19 +29,19 @@ struct StudentDashboardView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
-                
+
                 // Personal stats
                 PersonalStatsSection()
-                
+
                 // Active courses
                 ActiveCoursesSection()
-                
+
                 // Upcoming tests
                 UpcomingTestsSection()
-                
+
                 // Recent achievements
                 RecentAchievementsSection()
-                
+
                 Spacer(minLength: 100)
             }
             .padding(.vertical)
@@ -56,7 +56,7 @@ struct StudentDashboardView: View {
                     ZStack {
                         Image(systemName: "bell")
                             .font(.system(size: 20))
-                        
+
                         if notificationService.unreadCount > 0 {
                             Circle()
                                 .fill(Color.red)
@@ -85,7 +85,7 @@ struct PersonalStatsSection: View {
             Text("Моя статистика")
                 .font(.headline)
                 .padding(.horizontal)
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     PersonalStatCard(
@@ -95,7 +95,7 @@ struct PersonalStatsSection: View {
                         icon: "book.fill",
                         color: .blue
                     )
-                    
+
                     PersonalStatCard(
                         title: "Средний балл",
                         value: "4.5",
@@ -103,7 +103,7 @@ struct PersonalStatsSection: View {
                         icon: "star.fill",
                         color: .orange
                     )
-                    
+
                     PersonalStatCard(
                         title: "Компетенций",
                         value: "6",
@@ -111,7 +111,7 @@ struct PersonalStatsSection: View {
                         icon: "chart.bar.fill",
                         color: .green
                     )
-                    
+
                     PersonalStatCard(
                         title: "Сертификатов",
                         value: "3",
@@ -133,9 +133,9 @@ struct ActiveCoursesSection: View {
             HStack {
                 Text("Активные курсы")
                     .font(.headline)
-                
+
                 Spacer()
-                
+
                 NavigationLink(destination: StudentCourseListView()) {
                     Text("Все курсы")
                         .font(.subheadline)
@@ -143,7 +143,7 @@ struct ActiveCoursesSection: View {
                 }
             }
             .padding(.horizontal)
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(0..<3) { _ in
@@ -163,9 +163,9 @@ struct UpcomingTestsSection: View {
             HStack {
                 Text("Предстоящие тесты")
                     .font(.headline)
-                
+
                 Spacer()
-                
+
                 NavigationLink(destination: StudentTestListView()) {
                     Text("Все тесты")
                         .font(.subheadline)
@@ -173,7 +173,7 @@ struct UpcomingTestsSection: View {
                 }
             }
             .padding(.horizontal)
-            
+
             VStack(spacing: 12) {
                 UpcomingTestRow(
                     title: "Основы iOS разработки",
@@ -182,7 +182,7 @@ struct UpcomingTestsSection: View {
                     duration: 45,
                     isUrgent: true
                 )
-                
+
                 UpcomingTestRow(
                     title: "SwiftUI Advanced",
                     deadline: "Через 3 дня",
@@ -203,7 +203,7 @@ struct RecentAchievementsSection: View {
             Text("Последние достижения")
                 .font(.headline)
                 .padding(.horizontal)
-            
+
             VStack(spacing: 12) {
                 AchievementRow(
                     title: "Завершен курс iOS разработка",
@@ -211,14 +211,14 @@ struct RecentAchievementsSection: View {
                     icon: "checkmark.circle.fill",
                     color: .green
                 )
-                
+
                 AchievementRow(
                     title: "Получена компетенция: SwiftUI",
                     time: "Вчера",
                     icon: "star.fill",
                     color: .orange
                 )
-                
+
                 AchievementRow(
                     title: "Сертификат: Mobile Development",
                     time: "3 дня назад",
@@ -238,13 +238,13 @@ struct PersonalStatCard: View {
     let total: String?
     let icon: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
-            
+
             if let total = total {
                 Text("\(value)/\(total)")
                     .font(.title3)
@@ -254,7 +254,7 @@ struct PersonalStatCard: View {
                     .font(.title)
                     .fontWeight(.bold)
             }
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -272,30 +272,30 @@ struct ActiveCourseCard: View {
             Image(systemName: "book.fill")
                 .font(.title2)
                 .foregroundColor(.blue)
-            
+
             Text("iOS Development")
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .lineLimit(2)
-            
+
             Text("Модуль 3 из 8")
                 .font(.caption)
                 .foregroundColor(.secondary)
-            
+
             // Progress
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 2)
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: 4)
-                    
+
                     RoundedRectangle(cornerRadius: 2)
                         .fill(Color.blue)
                         .frame(width: geometry.size.width * 0.65, height: 4)
                 }
             }
             .frame(height: 4)
-            
+
             Text("65%")
                 .font(.caption)
                 .fontWeight(.semibold)
@@ -314,36 +314,36 @@ struct UpcomingTestRow: View {
     let questions: Int
     let duration: Int
     let isUrgent: Bool
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.title3)
                 .foregroundColor(isUrgent ? .red : .blue)
                 .frame(width: 30)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                
+
                 HStack(spacing: 12) {
                     Label(deadline, systemImage: "calendar")
                         .font(.caption)
                         .foregroundColor(isUrgent ? .red : .secondary)
-                    
+
                     Label("\(questions) вопросов", systemImage: "questionmark.circle")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Label("\(duration) мин", systemImage: "clock")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             Spacer()
-            
+
             if isUrgent {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.red)
@@ -360,24 +360,24 @@ struct AchievementRow: View {
     let time: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundColor(color)
                 .frame(width: 30)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                
+
                 Text(time)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
         }
         .padding()
@@ -391,4 +391,4 @@ struct AchievementRow: View {
         StudentDashboardView()
             .environmentObject(AuthViewModel())
     }
-} 
+}

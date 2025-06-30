@@ -10,7 +10,7 @@ import SwiftUI
 struct TestQuestionView: View {
     let question: Question
     let points: Int
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Question type badge
@@ -24,12 +24,12 @@ struct TestQuestionView: View {
             .padding(.vertical, 5)
             .background(Color.blue)
             .cornerRadius(8)
-            
+
             // Question text
             Text(question.text)
                 .font(.title3)
                 .fontWeight(.semibold)
-            
+
             // Question image if exists
             if let imageUrl = question.imageUrl {
                 // В реальном приложении загружать изображение
@@ -42,7 +42,7 @@ struct TestQuestionView: View {
                             .foregroundColor(.gray)
                     )
             }
-            
+
             // Points
             HStack {
                 Image(systemName: "star.fill")
@@ -51,7 +51,7 @@ struct TestQuestionView: View {
                     .foregroundColor(.secondary)
             }
             .font(.caption)
-            
+
             // Hint if available
             if let hint = question.hint {
                 HStack {

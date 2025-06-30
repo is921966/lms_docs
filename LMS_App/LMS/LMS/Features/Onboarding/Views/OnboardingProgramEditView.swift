@@ -3,18 +3,18 @@ import SwiftUI
 struct OnboardingProgramEditView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var service = OnboardingMockService.shared
-    
+
     let program: OnboardingProgram
-    
+
     @State private var editedProgram: OnboardingProgram
     @State private var showingSaveAlert = false
     @State private var isSaving = false
-    
+
     init(program: OnboardingProgram) {
         self.program = program
         self._editedProgram = State(initialValue: program)
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -26,7 +26,7 @@ struct OnboardingProgramEditView: View {
                         Spacer()
                         Text(editedProgram.employeeName)
                     }
-                    
+
                     HStack {
                         Text("Должность")
                             .foregroundColor(.secondary)
@@ -36,17 +36,17 @@ struct OnboardingProgramEditView: View {
                 } header: {
                     Text("Информация о сотруднике")
                 }
-                
+
                 // Program details
                 Section {
-                    DatePicker("Дата начала", 
+                    DatePicker("Дата начала",
                               selection: $editedProgram.startDate,
                               displayedComponents: .date)
-                    
+
                     DatePicker("Планируемая дата окончания",
                               selection: $editedProgram.targetEndDate,
                               displayedComponents: .date)
-                    
+
                     if let actualEndDate = editedProgram.actualEndDate {
                         DatePicker("Фактическая дата окончания",
                                   selection: Binding(
@@ -55,7 +55,7 @@ struct OnboardingProgramEditView: View {
                                   ),
                                   displayedComponents: .date)
                     }
-                    
+
                     HStack {
                         Text("Руководитель")
                             .foregroundColor(.secondary)
@@ -65,7 +65,7 @@ struct OnboardingProgramEditView: View {
                 } header: {
                     Text("Детали программы")
                 }
-                
+
                 // Status
                 Section {
                     Picker("Статус", selection: $editedProgram.status) {
@@ -76,7 +76,7 @@ struct OnboardingProgramEditView: View {
                 } header: {
                     Text("Статус программы")
                 }
-                
+
                 // Stages
                 Section {
                     ForEach(editedProgram.stages.indices, id: \.self) { stageIndex in
@@ -110,7 +110,7 @@ struct OnboardingProgramEditView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Сохранить") {
                         saveChanges()
@@ -132,7 +132,7 @@ struct OnboardingProgramEditView: View {
                     ZStack {
                         Color.black.opacity(0.3)
                             .ignoresSafeArea()
-                        
+
                         ProgressView("Сохранение...")
                             .padding()
                             .background(Color(.systemBackground))
@@ -143,21 +143,21 @@ struct OnboardingProgramEditView: View {
             }
         }
     }
-    
+
     private func saveChanges() {
         isSaving = true
-        
+
         // Update status if all tasks are completed
         let totalTasks = editedProgram.stages.flatMap { $0.tasks }.count
         let completedTasks = editedProgram.stages.flatMap { $0.tasks }.filter { $0.isCompleted }.count
-        
+
         if totalTasks > 0 && completedTasks == totalTasks && editedProgram.status != .completed {
             editedProgram.status = .completed
             editedProgram.actualEndDate = Date()
         } else if completedTasks > 0 && editedProgram.status == .notStarted {
             editedProgram.status = .inProgress
         }
-        
+
         // Update in service
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             service.updateProgram(editedProgram)
@@ -172,15 +172,15 @@ struct StageEditView: View {
     @Binding var stage: OnboardingStage
     let onSave: (OnboardingStage) -> Void
     @Environment(\.dismiss) private var dismiss
-    
+
     @State private var editedStage: OnboardingStage
-    
+
     init(stage: Binding<OnboardingStage>, onSave: @escaping (OnboardingStage) -> Void) {
         self._stage = stage
         self.onSave = onSave
         self._editedStage = State(initialValue: stage.wrappedValue)
     }
-    
+
     var body: some View {
         Form {
             Section {
@@ -188,7 +188,7 @@ struct StageEditView: View {
             } header: {
                 Text("Информация об этапе")
             }
-            
+
             Section {
                 ForEach(editedStage.tasks.indices, id: \.self) { taskIndex in
                     HStack {
@@ -205,11 +205,11 @@ struct StageEditView: View {
                                 .font(.title2)
                         }
                         .buttonStyle(PlainButtonStyle())
-                        
+
                         VStack(alignment: .leading) {
                             Text(editedStage.tasks[taskIndex].title)
                                 .strikethrough(editedStage.tasks[taskIndex].isCompleted)
-                            
+
                             if let dueDate = editedStage.tasks[taskIndex].dueDate {
                                 Text("До: \(dueDate, formatter: dateFormatter)")
                                     .font(.caption)
@@ -235,7 +235,7 @@ struct StageEditView: View {
             }
         }
     }
-    
+
     private var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -250,4 +250,4 @@ struct OnboardingProgramEditView_Previews: PreviewProvider {
     static var previews: some View {
         OnboardingProgramEditView(program: OnboardingProgram.createMockPrograms()[0])
     }
-} 
+}

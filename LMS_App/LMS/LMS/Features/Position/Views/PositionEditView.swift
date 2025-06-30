@@ -3,10 +3,10 @@ import SwiftUI
 struct PositionEditView: View {
     let position: Position?
     let onSave: (Position) -> Void
-    
+
     @Environment(\.dismiss) private var dismiss
     @StateObject private var competencyService = CompetencyMockService.shared
-    
+
     @State private var name: String = ""
     @State private var description: String = ""
     @State private var department: String = ""
@@ -14,26 +14,26 @@ struct PositionEditView: View {
     @State private var isActive: Bool = true
     @State private var employeeCount: Int = 0
     @State private var competencyRequirements: [CompetencyRequirement] = []
-    
+
     @State private var showingCompetencyPicker = false
     @State private var editingRequirement: CompetencyRequirement?
-    
+
     init(position: Position?, onSave: @escaping (Position) -> Void) {
         self.position = position
         self.onSave = onSave
     }
-    
+
     var body: some View {
         Form {
             // Basic information
             basicInfoSection
-            
+
             // Level and department
             organizationSection
-            
+
             // Competency requirements
             competencySection
-            
+
             // Status
             statusSection
         }
@@ -59,22 +59,22 @@ struct PositionEditView: View {
             loadPositionData()
         }
     }
-    
+
     // MARK: - Sections
-    
+
     private var basicInfoSection: some View {
         Section("Основная информация") {
             TextField("Название должности", text: $name)
-            
+
             TextField("Описание", text: $description, axis: .vertical)
                 .lineLimit(3...6)
         }
     }
-    
+
     private var organizationSection: some View {
         Section("Организация") {
             TextField("Отдел", text: $department)
-            
+
             Picker("Уровень", selection: $level) {
                 ForEach(PositionLevel.allCases, id: \.self) { level in
                     HStack {
@@ -85,11 +85,11 @@ struct PositionEditView: View {
                     .tag(level)
                 }
             }
-            
+
             Stepper("Сотрудников: \(employeeCount)", value: $employeeCount, in: 0...999)
         }
     }
-    
+
     private var competencySection: some View {
         Section {
             if competencyRequirements.isEmpty {
@@ -103,7 +103,7 @@ struct PositionEditView: View {
                     }
                 }
             }
-            
+
             Button(action: { showingCompetencyPicker = true }) {
                 Label("Добавить компетенцию", systemImage: "plus.circle.fill")
             }
@@ -117,13 +117,13 @@ struct PositionEditView: View {
             }
         }
     }
-    
+
     private var statusSection: some View {
         Section("Статус") {
             Toggle("Активная должность", isOn: $isActive)
         }
     }
-    
+
     private var emptyCompetencyState: some View {
         VStack(spacing: 8) {
             Image(systemName: "star.slash")
@@ -136,9 +136,9 @@ struct PositionEditView: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
     }
-    
+
     // MARK: - Toolbar
-    
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
@@ -146,7 +146,7 @@ struct PositionEditView: View {
                 dismiss()
             }
         }
-        
+
         ToolbarItem(placement: .navigationBarTrailing) {
             Button("Сохранить") {
                 savePosition()
@@ -155,12 +155,12 @@ struct PositionEditView: View {
             .disabled(!isValid)
         }
     }
-    
+
     // MARK: - Methods
-    
+
     private func loadPositionData() {
         guard let position = position else { return }
-        
+
         name = position.name
         description = position.description
         department = position.department
@@ -169,7 +169,7 @@ struct PositionEditView: View {
         employeeCount = position.employeeCount
         competencyRequirements = position.competencyRequirements
     }
-    
+
     private func savePosition() {
         let updatedPosition = Position(
             id: position?.id ?? UUID(),
@@ -184,11 +184,11 @@ struct PositionEditView: View {
             createdAt: position?.createdAt ?? Date(),
             updatedAt: Date()
         )
-        
+
         onSave(updatedPosition)
         dismiss()
     }
-    
+
     private func addCompetencyRequirement(_ competency: Competency) {
         let requirement = CompetencyRequirement(
             competencyId: competency.id,
@@ -198,17 +198,17 @@ struct PositionEditView: View {
         )
         competencyRequirements.append(requirement)
     }
-    
+
     private func updateRequirement(_ updated: CompetencyRequirement) {
         if let index = competencyRequirements.firstIndex(where: { $0.id == updated.id }) {
             competencyRequirements[index] = updated
         }
     }
-    
+
     private func removeRequirement(_ requirement: CompetencyRequirement) {
         competencyRequirements.removeAll { $0.id == requirement.id }
     }
-    
+
     private var isValid: Bool {
         !name.isEmpty && !department.isEmpty
     }
@@ -221,14 +221,14 @@ struct CompetencyPickerView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var service = CompetencyMockService.shared
     @State private var searchText = ""
-    
+
     var filteredCompetencies: [Competency] {
         if searchText.isEmpty {
             return service.competencies
         }
         return service.searchCompetencies(query: searchText)
     }
-    
+
     var body: some View {
         NavigationStack {
             List(filteredCompetencies) { competency in
@@ -254,26 +254,26 @@ struct CompetencyPickerView: View {
 struct CompetencySelectionRow: View {
     let competency: Competency
     let onSelect: () -> Void
-    
+
     var body: some View {
         Button(action: onSelect) {
             HStack {
                 Circle()
                     .fill(Color(hex: competency.color.rawValue))
                     .frame(width: 12, height: 12)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(competency.name)
                         .font(.subheadline)
                         .foregroundColor(.primary)
-                    
+
                     Text(competency.category.rawValue)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -287,18 +287,18 @@ struct CompetencySelectionRow: View {
 struct RequirementEditView: View {
     let requirement: CompetencyRequirement
     let onSave: (CompetencyRequirement) -> Void
-    
+
     @Environment(\.dismiss) private var dismiss
     @State private var requiredLevel: Int
     @State private var isCritical: Bool
-    
+
     init(requirement: CompetencyRequirement, onSave: @escaping (CompetencyRequirement) -> Void) {
         self.requirement = requirement
         self.onSave = onSave
         _requiredLevel = State(initialValue: requirement.requiredLevel)
         _isCritical = State(initialValue: requirement.isCritical)
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -309,7 +309,7 @@ struct RequirementEditView: View {
                         Spacer()
                     }
                 }
-                
+
                 Section("Требуемый уровень") {
                     Picker("Уровень", selection: $requiredLevel) {
                         ForEach(1...5, id: \.self) { level in
@@ -323,11 +323,11 @@ struct RequirementEditView: View {
                     }
                     .pickerStyle(.inline)
                 }
-                
+
                 Section("Важность") {
                     Toggle("Критичная компетенция", isOn: $isCritical)
-                    
-                    Text(isCritical ? 
+
+                    Text(isCritical ?
                         "Обязательная для выполнения должностных обязанностей" :
                         "Желательная, но не обязательная компетенция"
                     )
@@ -343,7 +343,7 @@ struct RequirementEditView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Сохранить") {
                         saveRequirement()
@@ -353,7 +353,7 @@ struct RequirementEditView: View {
             }
         }
     }
-    
+
     private func saveRequirement() {
         var updated = requirement
         updated.requiredLevel = requiredLevel
@@ -369,27 +369,27 @@ struct CompetencyRequirementEditRow: View {
     let requirement: CompetencyRequirement
     let onEdit: () -> Void
     let onDelete: () -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(requirement.competencyName)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                
+
                 Spacer()
-                
+
                 if requirement.isCritical {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.caption)
                         .foregroundColor(.red)
                 }
-                
+
                 Menu {
                     Button(action: onEdit) {
                         Label("Изменить", systemImage: "pencil")
                     }
-                    
+
                     Button(role: .destructive, action: onDelete) {
                         Label("Удалить", systemImage: "trash")
                     }
@@ -399,17 +399,17 @@ struct CompetencyRequirementEditRow: View {
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             HStack {
                 Text("Уровень \(requirement.requiredLevel)")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 LevelIndicator(level: requirement.requiredLevel)
             }
         }
         .padding(.vertical, 4)
     }
-} 
+}

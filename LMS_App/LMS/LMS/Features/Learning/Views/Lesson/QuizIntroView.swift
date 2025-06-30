@@ -2,24 +2,24 @@ import SwiftUI
 
 struct QuizIntroView: View {
     @Binding var showingQuiz: Bool
-    
+
     var body: some View {
         VStack(spacing: 30) {
             Image(systemName: "questionmark.circle.fill")
                 .font(.system(size: 80))
                 .foregroundColor(.blue)
-            
+
             Text("Проверка знаний")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("Пройдите тест, чтобы проверить усвоение материала модуля")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
+
             QuizInfoSection()
-            
+
             Button(action: { showingQuiz = true }) {
                 Text("Начать тест")
                     .fontWeight(.semibold)
@@ -51,7 +51,7 @@ struct QuizInfoSection: View {
 struct QuizInfoRow: View {
     let icon: String
     let text: String
-    
+
     var body: some View {
         HStack {
             Image(systemName: icon)

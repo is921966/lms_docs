@@ -4,7 +4,7 @@ struct LearningListView: View {
     @State private var searchText = ""
     @State private var selectedCategory = "Все"
     @State private var courses: [Course] = []
-    
+
     init() {
         // Initialize mock courses on first load
         if Course.mockCourses.isEmpty {
@@ -15,19 +15,19 @@ struct LearningListView: View {
     @State private var showingEditView = false
     @State private var courseToEdit: Course?
     @State private var showingAddCourse = false
-    
+
     let categories = ["Все", "В процессе", "Назначенные", "Завершенные"]
-    
+
     var isAdmin: Bool {
         if let user = MockAuthService.shared.currentUser {
             return user.roles.contains("admin") || user.permissions.contains("manage_courses")
         }
         return false
     }
-    
+
     var filteredCourses: [Course] {
         var filtered = courses
-        
+
         // Filter by category
         if selectedCategory != "Все" {
             switch selectedCategory {
@@ -41,7 +41,7 @@ struct LearningListView: View {
                 break
             }
         }
-        
+
         // Filter by search text
         if !searchText.isEmpty {
             filtered = filtered.filter {
@@ -49,20 +49,20 @@ struct LearningListView: View {
                 $0.description.localizedCaseInsensitiveContains(searchText)
             }
         }
-        
+
         return filtered
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Search bar
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
-                
+
                 TextField("Поиск курсов", text: $searchText)
                     .textFieldStyle(PlainTextFieldStyle())
-                
+
                 if !searchText.isEmpty {
                     Button(action: { searchText = "" }) {
                         Image(systemName: "xmark.circle.fill")
@@ -74,7 +74,7 @@ struct LearningListView: View {
             .background(Color.gray.opacity(0.1))
             .cornerRadius(10)
             .padding()
-            
+
             // Category filter
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
@@ -89,14 +89,14 @@ struct LearningListView: View {
                 .padding(.horizontal)
             }
             .padding(.bottom)
-            
+
             // Course list
             if filteredCourses.isEmpty {
                 VStack(spacing: 20) {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 50))
                         .foregroundColor(.gray)
-                    
+
                     Text("Курсы не найдены")
                         .font(.headline)
                         .foregroundColor(.secondary)
@@ -113,7 +113,7 @@ struct LearningListView: View {
                         }
                     }
                     .buttonStyle(PlainButtonStyle())
-                }
+                                        }
                     }
                     .padding()
                 }
@@ -149,7 +149,7 @@ struct CategoryChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text(title)
@@ -168,13 +168,13 @@ struct CourseCard: View {
     let course: Course
     let isAdmin: Bool
     let onEdit: ((Course) -> Void)?
-    
+
     init(course: Course, isAdmin: Bool = false, onEdit: ((Course) -> Void)? = nil) {
         self.course = course
         self.isAdmin = isAdmin
         self.onEdit = onEdit
     }
-    
+
     var body: some View {
         HStack(spacing: 15) {
             // Course icon
@@ -184,47 +184,47 @@ struct CourseCard: View {
                 .frame(width: 60, height: 60)
                 .background(course.color.opacity(0.1))
                 .cornerRadius(15)
-            
+
             // Course info
             VStack(alignment: .leading, spacing: 8) {
                 Text(course.title)
                     .font(.headline)
                     .foregroundColor(.primary)
-                
+
                 Text(course.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
-                
+
                 // Progress bar
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 2)
                             .fill(Color.gray.opacity(0.2))
                             .frame(height: 4)
-                        
+
                         RoundedRectangle(cornerRadius: 2)
                             .fill(course.color)
                             .frame(width: geometry.size.width * course.progress, height: 4)
                     }
                 }
                 .frame(height: 4)
-                
+
                 HStack {
                     Text("\(Int(course.progress * 100))% завершено")
                         .font(.caption2)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     Text(course.duration)
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             Spacer()
-            
+
             // Chevron
             Image(systemName: "chevron.right")
                 .foregroundColor(.gray)

@@ -4,21 +4,21 @@ import Charts
 struct ProfileView: View {
     // TEMPORARY: Use mock service for TestFlight testing
     @StateObject private var authService = MockAuthService.shared
-    
+
     @State private var selectedTab = 0
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 // Profile header
                 ProfileHeaderView(user: authService.currentUser)
-                
+
                 // Stats cards
                 StatsCardsView()
-                
+
                 // Quick actions
                 QuickActionsView()
-                
+
                 // Tab selector
                 Picker("", selection: $selectedTab) {
                     Text("Достижения").tag(0)
@@ -27,7 +27,7 @@ struct ProfileView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal)
-                
+
                 // Tab content
                 switch selectedTab {
                 case 0:
@@ -39,7 +39,7 @@ struct ProfileView: View {
                 default:
                     EmptyView()
                 }
-                
+
                 // Settings section
                 VStack(spacing: 12) {
                     Text("Настройки")
@@ -47,11 +47,11 @@ struct ProfileView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
                         .padding(.top, 20)
-                    
+
                     // Quick settings section
                     QuickSettingsSection()
                         .environmentObject(authService)
-                    
+
                     // Logout button
                     Button(action: {
                         authService.logout()
@@ -73,7 +73,7 @@ struct ProfileView: View {
                         .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
                     }
                     .padding(.horizontal)
-                    
+
                     // Version info
                     Text("Версия 2.0.1 (Build 52)")
                         .font(.caption)

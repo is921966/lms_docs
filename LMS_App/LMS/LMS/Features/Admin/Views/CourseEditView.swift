@@ -23,7 +23,7 @@ struct CourseEditView: View {
     @State private var showingPositionLink = false
     @State private var showingTestLink = false
     @State private var showingMaterialsManagement = false
-    
+
     init(course: Course) {
         self._course = State(initialValue: course)
         self._title = State(initialValue: course.title)
@@ -34,24 +34,24 @@ struct CourseEditView: View {
         self._selectedStatus = State(initialValue: course.status)
         self._modules = State(initialValue: course.modules)
     }
-    
+
     var selectedCategory: CourseCategory? {
         CourseCategory.categories.first { $0.id == selectedCategoryId }
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
                 // Basic info section
                 Section("Основная информация") {
                     TextField("Название курса", text: $title)
-                    
+
                     TextField("Описание", text: $description, axis: .vertical)
                         .lineLimit(3...6)
-                    
+
                     TextField("Длительность", text: $duration)
                 }
-                
+
                 // Category and type section
                 Section("Категория и тип") {
                     Picker("Категория", selection: $selectedCategoryId) {
@@ -61,14 +61,14 @@ struct CourseEditView: View {
                                 .tag(category.id as UUID?)
                         }
                     }
-                    
+
                     Picker("Тип курса", selection: $selectedType) {
                         ForEach(CourseType.allCases, id: \.self) { type in
                             Label(type.rawValue, systemImage: type.icon)
                                 .tag(type)
                         }
                     }
-                    
+
                     Picker("Статус", selection: $selectedStatus) {
                         ForEach(CourseStatus.allCases, id: \.self) { status in
                             HStack {
@@ -81,14 +81,14 @@ struct CourseEditView: View {
                         }
                     }
                 }
-                
+
                 // Modules section
                 Section("Модули курса") {
                     ForEach($modules) { $module in
                         ModuleEditRow(module: $module)
                     }
                     .onDelete(perform: deleteModule)
-                    
+
                     Button(action: { showingAddModule = true }) {
                         HStack {
                             Image(systemName: "plus.circle.fill")
@@ -97,13 +97,13 @@ struct CourseEditView: View {
                         .foregroundColor(.blue)
                     }
                 }
-                
+
                 // Materials section
                 Section("Материалы") {
                     Text("Материалов в курсе: \(course.materials.count)")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
+
                     Button(action: { showingMaterialsManagement = true }) {
                         HStack {
                             Image(systemName: "paperclip.circle.fill")
@@ -112,7 +112,7 @@ struct CourseEditView: View {
                         .foregroundColor(.blue)
                     }
                 }
-                
+
                 // Competencies section
                 Section("Компетенции") {
                     if !course.competencyIds.isEmpty {
@@ -124,7 +124,7 @@ struct CourseEditView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Button(action: { showingCompetencyLink = true }) {
                         HStack {
                             Image(systemName: "link.circle.fill")
@@ -133,7 +133,7 @@ struct CourseEditView: View {
                         .foregroundColor(.blue)
                     }
                 }
-                
+
                 // Positions section
                 Section("Должности") {
                     if !course.positionIds.isEmpty {
@@ -145,7 +145,7 @@ struct CourseEditView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Button(action: { showingPositionLink = true }) {
                         HStack {
                             Image(systemName: "person.badge.shield.checkmark")
@@ -154,7 +154,7 @@ struct CourseEditView: View {
                         .foregroundColor(.blue)
                     }
                 }
-                
+
                 // Test section
                 Section("Итоговый тест") {
                     if course.testId != nil {
@@ -166,7 +166,7 @@ struct CourseEditView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Button(action: { showingTestLink = true }) {
                         HStack {
                             Image(systemName: "doc.badge.gearshape")
@@ -175,7 +175,7 @@ struct CourseEditView: View {
                         .foregroundColor(.blue)
                     }
                 }
-                
+
                 // Preview section
                 Section("Предпросмотр") {
                     CoursePreviewCard(
@@ -197,7 +197,7 @@ struct CourseEditView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Сохранить") {
                         saveCourse()
@@ -231,11 +231,11 @@ struct CourseEditView: View {
             }
         }
     }
-    
+
     private func deleteModule(at offsets: IndexSet) {
         modules.remove(atOffsets: offsets)
     }
-    
+
     private func saveCourse() {
         // Обновляем курс в сервисе
         if let courseIndex = Course.mockCourses.firstIndex(where: { $0.id == course.id }) {
@@ -248,13 +248,13 @@ struct CourseEditView: View {
             updatedCourse.status = selectedStatus
             updatedCourse.modules = modules
             updatedCourse.updatedAt = Date()
-            
+
             Course.mockCourses[courseIndex] = updatedCourse
         }
-        
+
         // В реальном приложении здесь будет вызов API
         // await courseService.updateCourse(course)
-        
+
         showingSaveAlert = true
     }
 }
@@ -265,24 +265,24 @@ struct ModuleEditRow: View {
     @State private var isEditing = false
     @State private var editedTitle: String
     @State private var editedDescription: String
-    
+
     init(module: Binding<Module>) {
         self._module = module
         self._editedTitle = State(initialValue: module.wrappedValue.title)
         self._editedDescription = State(initialValue: module.wrappedValue.description ?? "")
     }
-    
+
     var body: some View {
         HStack {
             if isEditing {
                 VStack(alignment: .leading) {
                     TextField("Название модуля", text: $editedTitle)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
+
                     TextField("Описание (необязательно)", text: $editedDescription)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
-                
+
                 Button("Готово") {
                     module.title = editedTitle
                     module.description = editedDescription.isEmpty ? nil : editedDescription
@@ -302,9 +302,9 @@ struct ModuleEditRow: View {
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 Button(action: { isEditing = true }) {
                     Image(systemName: "pencil")
                         .foregroundColor(.blue)
@@ -320,7 +320,7 @@ struct AddModuleView: View {
     @State private var title = ""
     @State private var description = ""
     let onAdd: (Module) -> Void
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -336,7 +336,7 @@ struct AddModuleView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Добавить") {
                         let newModule = Module(
@@ -364,7 +364,7 @@ struct CoursePreviewCard: View {
     let status: CourseStatus
     let duration: String
     let progress: Double
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -383,14 +383,14 @@ struct CoursePreviewCard: View {
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(15)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text(title)
                             .font(.headline)
-                        
+
                         Spacer()
-                        
+
                         HStack(spacing: 4) {
                             Circle()
                                 .fill(status.color)
@@ -400,40 +400,40 @@ struct CoursePreviewCard: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    
+
                     Text(description)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
-                    
+
                     HStack {
                         Label(type.rawValue, systemImage: type.icon)
                             .font(.caption2)
                             .foregroundColor(.secondary)
-                        
+
                         Spacer()
-                        
+
                         Text(duration)
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
                 }
             }
-            
+
             if progress > 0 {
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 2)
                             .fill(Color.gray.opacity(0.2))
                             .frame(height: 4)
-                        
+
                         RoundedRectangle(cornerRadius: 2)
                             .fill(category?.color ?? .blue)
                             .frame(width: geometry.size.width * progress, height: 4)
                     }
                 }
                 .frame(height: 4)
-                
+
                 Text("\(Int(progress * 100))% завершено")
                     .font(.caption2)
                     .foregroundColor(.secondary)
@@ -443,4 +443,4 @@ struct CoursePreviewCard: View {
         .background(Color.gray.opacity(0.05))
         .cornerRadius(15)
     }
-} 
+}

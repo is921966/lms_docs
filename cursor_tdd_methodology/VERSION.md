@@ -1,16 +1,44 @@
 # TDD Methodology Version
 
-## Current Version: 1.3.0
-**Release Date:** 2025-01-19
+## Current Version: 1.8.0
+**Release Date:** 2025-06-30
 
-## What's New in 1.3.0
-- Added automatic methodology synchronization between projects
-- New command "обнови методологию" for AI-driven updates
-- Central repository for methodology at `/Users/ishirokov/lms_docs/cursor_tdd_methodology`
-- sync-methodology.sh script for manual synchronization
-- Makefile commands for easy sync operations
+## What's New in 1.8.0
+- **Comprehensive Cursor Rules System**: 7 specialized rule files for different aspects
+- **BDD/ATDD Framework**: Gherkin scenarios and Quick/Nimble integration
+- **Enhanced Clean Architecture**: DTOs, Mappers, Value Objects
+- **AI Security Guidelines**: Data protection and responsible AI usage
+- **UI/UX Excellence**: Design Tokens, Accessibility, SwiftUI best practices
+- **Advanced CI/CD Pipeline**: SwiftLint, SonarCloud, Security scanning
+- **Network Layer Standards**: Offline support, interceptors, error handling
 
 ## Version History
+
+### 1.8.0 (2025-06-30)
+- Cursor Rules System (7 files)
+- BDD/ATDD integration
+- AI security guidelines
+- Design System implementation
+- Enhanced CI/CD pipeline
+
+### 1.7.1 (2025-06-29)
+- Feedback System integration
+- Sprint 12 completion
+
+### 1.7.0 (2025-06-28)
+- Feature Registry Framework
+- Navigation auto-registration
+
+### 1.6.0 (2025-06-27)
+- Central methodology repository sync
+- "обнови методологию" command
+
+### 1.5.0 (2025-06-26)
+- Feedback System design
+
+### 1.4.0 (2025-06-25)
+- Fixed report locations
+- Structured folders
 
 ### 1.3.0 (2025-01-19)
 - Automatic methodology synchronization
@@ -38,41 +66,41 @@
 
 ## Upgrade Instructions
 
-### From 1.1.0 to 1.2.0:
-1. Create `test-quick.sh` in your project root:
+### From 1.7.x to 1.8.0:
+1. Copy new Cursor Rules to your project:
    ```bash
-   cp test-quick.sh /your/project/
-   chmod +x /your/project/test-quick.sh
+   cp -r rules /your/project/.cursor/
    ```
 
-2. Update your workflow to use quick tests:
+2. Configure SwiftLint:
    ```bash
-   # Instead of: make test-run-specific TEST=...
-   # Use: ./test-quick.sh path/to/test.php
+   swiftlint init
+   # Add rules from ci-cd-review.mdc
    ```
 
-3. Update documentation with new testing approach
+3. Update CI/CD pipeline with new quality gates
 
-### From 1.0.0 to 1.1.0:
-1. Copy new files:
-   ```bash
-   cp productmanager.md /your/project/
-   cp PRODUCT_MANAGER_GUIDE.md /your/project/
-   ```
+4. Implement Design Tokens system from ui-guidelines.mdc
 
-2. Update `.cursorrules` with new version
+5. Review AI security guidelines in ai-interaction.mdc
 
-3. Review new methodology requirements
+### From 1.6.x to 1.7.x:
+1. Implement Feature Registry pattern
+2. Update navigation to use auto-registration
+3. Add integration tests for all modules
+
+### From earlier versions:
+See individual version upgrade instructions below
 
 ---
 
-## Planned for Next Version (1.3.0)
+## Planned for Next Version (1.9.0)
 
-- [ ] Watch mode for automatic test execution
-- [ ] Coverage reports in test-quick.sh
-- [ ] IDE integration guides
-- [ ] Performance benchmarking tools
-- [ ] Multi-language test-quick scripts
+- [ ] Performance monitoring integration
+- [ ] Advanced caching strategies
+- [ ] GraphQL support
+- [ ] Multi-platform rules (macOS, watchOS)
+- [ ] AI-powered refactoring tools
 
 ---
 
@@ -88,7 +116,8 @@ We follow Semantic Versioning:
 Found a new pattern or antipattern? 
 1. Update relevant files
 2. Add entry to this VERSION.md
-3. Update version numbers
-4. Document the change
+3. Update version numbers in all files
+4. Document the change in CHANGELOG.md
+5. Create METHODOLOGY_UPDATE_vX.X.X.md
 
 Remember: **Continuous improvement is key!** 

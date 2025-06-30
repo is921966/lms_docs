@@ -10,7 +10,7 @@ import SwiftUI
 struct StudentCompetencyView: View {
     @StateObject private var viewModel = CompetencyViewModel()
     @State private var selectedTab = 0
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Tabs
@@ -20,7 +20,7 @@ struct StudentCompetencyView: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding()
-            
+
             if selectedTab == 0 {
                 // My competencies
                 ScrollView {
@@ -30,7 +30,7 @@ struct StudentCompetencyView: View {
                             achieved: viewModel.myCompetencies.count,
                             total: viewModel.requiredCompetencies.count
                         )
-                        
+
                         // Competency list
                         ForEach(viewModel.myCompetencies) { competency in
                             StudentCompetencyCard(competency: competency)
@@ -47,7 +47,7 @@ struct StudentCompetencyView: View {
                             position: "iOS Developer",
                             department: "IT Department"
                         )
-                        
+
                         // Required competencies
                         ForEach(viewModel.requiredCompetencies) { competency in
                             RequiredCompetencyCard(
@@ -72,12 +72,12 @@ struct StudentCompetencyView: View {
 struct CompetencyOverallProgress: View {
     let achieved: Int
     let total: Int
-    
+
     var progress: Double {
         guard total > 0 else { return 0 }
         return Double(achieved) / Double(total)
     }
-    
+
     var body: some View {
         VStack(spacing: 16) {
             HStack {
@@ -88,15 +88,15 @@ struct CompetencyOverallProgress: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 // Progress circle
                 ZStack {
                     Circle()
                         .stroke(Color.gray.opacity(0.2), lineWidth: 8)
                         .frame(width: 80, height: 80)
-                    
+
                     Circle()
                         .trim(from: 0, to: progress)
                         .stroke(
@@ -105,7 +105,7 @@ struct CompetencyOverallProgress: View {
                         )
                         .rotationEffect(.degrees(-90))
                         .frame(width: 80, height: 80)
-                    
+
                     Text("\(Int(progress * 100))%")
                         .font(.title3)
                         .fontWeight(.bold)
@@ -121,7 +121,7 @@ struct CompetencyOverallProgress: View {
 // MARK: - Student Competency Card
 struct StudentCompetencyCard: View {
     let competency: Competency
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -129,18 +129,18 @@ struct StudentCompetencyCard: View {
                 Image(systemName: "star.fill")
                     .font(.title2)
                     .foregroundColor(.orange)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(competency.name)
                         .font(.headline)
-                    
+
                     Text(competency.category.rawValue)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 // Current level
                 Text("Уровень \(competency.currentLevel)")
                     .font(.subheadline)
@@ -151,7 +151,7 @@ struct StudentCompetencyCard: View {
                     .background(levelColor(competency.currentLevel))
                     .cornerRadius(20)
             }
-            
+
             // Level progress
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
@@ -161,27 +161,27 @@ struct StudentCompetencyCard: View {
                             .frame(height: 6)
                     }
                 }
-                
+
                 HStack {
                     Text("Начальный")
                         .font(.caption2)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     Text("Эксперт")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             // Courses for improvement
             if competency.currentLevel < 5 {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Рекомендуемые курсы для развития:")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     HStack {
                         ForEach(competency.recommendedCourses?.prefix(2) ?? [], id: \.self) { course in
                             HStack(spacing: 4) {
@@ -206,7 +206,7 @@ struct StudentCompetencyCard: View {
         .cornerRadius(15)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
-    
+
     func levelColor(_ level: Int) -> Color {
         switch level {
         case 1: return .gray
@@ -223,7 +223,7 @@ struct StudentCompetencyCard: View {
 struct PositionRequirementsCard: View {
     let position: String
     let department: String
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
@@ -233,9 +233,9 @@ struct PositionRequirementsCard: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
+
             Image(systemName: "briefcase.fill")
                 .font(.title2)
                 .foregroundColor(.blue)
@@ -250,11 +250,11 @@ struct PositionRequirementsCard: View {
 struct RequiredCompetencyCard: View {
     let competency: Competency
     let currentLevel: Int
-    
+
     var hasCompetency: Bool {
         currentLevel >= competency.requiredLevel
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -262,18 +262,18 @@ struct RequiredCompetencyCard: View {
                 Image(systemName: hasCompetency ? "checkmark.circle.fill" : "xmark.circle.fill")
                     .font(.title2)
                     .foregroundColor(hasCompetency ? .green : .red)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(competency.name)
                         .font(.headline)
-                    
+
                     Text("Требуется: Уровень \(competency.requiredLevel)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 if currentLevel > 0 {
                     Text("Текущий: \(currentLevel)")
                         .font(.subheadline)
@@ -285,7 +285,7 @@ struct RequiredCompetencyCard: View {
                         .foregroundColor(.red)
                 }
             }
-            
+
             // Progress to required level
             if currentLevel > 0 && !hasCompetency {
                 VStack(alignment: .leading, spacing: 6) {
@@ -296,13 +296,13 @@ struct RequiredCompetencyCard: View {
                                 .frame(height: 6)
                         }
                     }
-                    
+
                     Text("Необходимо повысить на \(competency.requiredLevel - currentLevel) уровень")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             // Action button
             if !hasCompetency {
                 NavigationLink(destination: StudentCourseListView()) {
@@ -332,4 +332,4 @@ struct RequiredCompetencyCard: View {
     NavigationView {
         StudentCompetencyView()
     }
-} 
+}

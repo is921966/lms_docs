@@ -5,7 +5,7 @@ struct FeedPermissionsView: View {
     @State private var studentPermissions = FeedPermissions.studentDefault
     @State private var adminPermissions = FeedPermissions.adminDefault
     @State private var showingSaveAlert = false
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -20,7 +20,7 @@ struct FeedPermissionsView: View {
                 } footer: {
                     Text("Определите, какие действия могут выполнять студенты в ленте новостей")
                 }
-                
+
                 // Admin permissions section
                 Section {
                     Toggle("Создавать записи", isOn: .constant(adminPermissions.canPost))
@@ -40,31 +40,31 @@ struct FeedPermissionsView: View {
                 } footer: {
                     Text("Администраторы имеют полный доступ ко всем функциям ленты")
                 }
-                
+
                 // Visibility settings
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Кто может видеть записи:")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        
+
                         ForEach(FeedVisibility.allCases, id: \.self) { visibility in
                             HStack {
                                 Image(systemName: visibility.icon)
                                     .foregroundColor(.blue)
                                     .frame(width: 30)
-                                
+
                                 VStack(alignment: .leading) {
                                     Text(visibility.title)
                                         .font(.subheadline)
-                                    
+
                                     Text(visibilityDescription(for: visibility))
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
-                                
+
                                 Spacer()
-                                
+
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
                             }
@@ -74,7 +74,7 @@ struct FeedPermissionsView: View {
                 } header: {
                     Label("Настройки видимости", systemImage: "eye")
                 }
-                
+
                 // Moderation settings
                 Section {
                     Toggle("Премодерация записей студентов", isOn: .constant(false))
@@ -94,7 +94,7 @@ struct FeedPermissionsView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Сохранить") {
                         savePermissions()
@@ -111,7 +111,7 @@ struct FeedPermissionsView: View {
             }
         }
     }
-    
+
     private func visibilityDescription(for visibility: FeedVisibility) -> String {
         switch visibility {
         case .everyone:
@@ -124,7 +124,7 @@ struct FeedPermissionsView: View {
             return "Определенные группы пользователей"
         }
     }
-    
+
     private func savePermissions() {
         // In real app, would save to server
         showingSaveAlert = true
@@ -133,4 +133,4 @@ struct FeedPermissionsView: View {
 
 #Preview {
     FeedPermissionsView()
-} 
+}

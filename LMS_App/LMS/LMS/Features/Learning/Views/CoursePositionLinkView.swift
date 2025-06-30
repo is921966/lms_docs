@@ -12,7 +12,7 @@ struct CoursePositionLinkView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedPositions: Set<UUID> = []
     @State private var searchText = ""
-    
+
     // Mock positions
     let positions = [
         Position(
@@ -46,7 +46,7 @@ struct CoursePositionLinkView: View {
             level: .middle
         )
     ]
-    
+
     var filteredPositions: [Position] {
         if searchText.isEmpty {
             return positions
@@ -57,7 +57,7 @@ struct CoursePositionLinkView: View {
             position.description.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -67,7 +67,7 @@ struct CoursePositionLinkView: View {
                         Image(systemName: course.icon)
                             .font(.title2)
                             .foregroundColor(course.color)
-                        
+
                         VStack(alignment: .leading) {
                             Text(course.title)
                                 .font(.headline)
@@ -75,21 +75,21 @@ struct CoursePositionLinkView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         Spacer()
                     }
                     .padding()
                 }
                 .background(Color(.systemGroupedBackground))
-                
+
                 // Search bar
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
-                    
+
                     TextField("Поиск должностей", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
-                    
+
                     if !searchText.isEmpty {
                         Button(action: { searchText = "" }) {
                             Image(systemName: "xmark.circle.fill")
@@ -101,16 +101,16 @@ struct CoursePositionLinkView: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
                 .padding()
-                
+
                 // Selected count
                 if !selectedPositions.isEmpty {
                     HStack {
                         Text("Выбрано: \(selectedPositions.count)")
                             .font(.subheadline)
                             .foregroundColor(.blue)
-                        
+
                         Spacer()
-                        
+
                         Button("Снять выделение") {
                             selectedPositions.removeAll()
                         }
@@ -118,7 +118,7 @@ struct CoursePositionLinkView: View {
                     }
                     .padding(.horizontal)
                 }
-                
+
                 // Position list
                 List(filteredPositions) { position in
                     CoursePositionSelectionRow(
@@ -134,7 +134,7 @@ struct CoursePositionLinkView: View {
                     )
                 }
                 .listStyle(PlainListStyle())
-                
+
                 // Save button
                 Button(action: savePositions) {
                     HStack {
@@ -164,14 +164,14 @@ struct CoursePositionLinkView: View {
             selectedPositions = Set(course.positionIds)
         }
     }
-    
+
     private func savePositions() {
         // Update course with selected positions
         course.positionIds = Array(selectedPositions)
-        
+
         // In real app, would save to backend
         // await courseService.updatePositions(courseId: course.id, positionIds: selectedPositions)
-        
+
         dismiss()
     }
 }
@@ -181,36 +181,36 @@ struct CoursePositionSelectionRow: View {
     let position: Position
     let isSelected: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         Button(action: onToggle) {
             HStack {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(isSelected ? .blue : .gray)
                     .font(.title3)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(position.name)
                         .font(.body)
                         .foregroundColor(.primary)
-                    
+
                     Text(position.description)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
-                    
+
                     HStack {
                         Text(position.department)
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         Text("•")
                             .foregroundColor(.secondary)
-                        
+
                         PositionLevelBadge(level: position.level)
                     }
                 }
-                
+
                 Spacer()
             }
             .padding(.vertical, 4)
@@ -222,7 +222,7 @@ struct CoursePositionSelectionRow: View {
 // MARK: - Position Level Badge
 struct PositionLevelBadge: View {
     let level: PositionLevel
-    
+
     var body: some View {
         Text(level.rawValue)
             .font(.caption2)
@@ -239,4 +239,4 @@ struct PositionLevelBadge: View {
     CoursePositionLinkView(
         course: .constant(Course.createMockCourses().first!)
     )
-} 
+}

@@ -11,9 +11,9 @@ import Charts
 struct OnboardingReportsView: View {
     @ObservedObject var service = OnboardingMockService.shared
     @State private var selectedPeriod = "Неделя"
-    
+
     let periods = ["Неделя", "Месяц", "Квартал", "Год"]
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -25,10 +25,10 @@ struct OnboardingReportsView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal)
-                
+
                 // Summary cards
                 summaryCards
-                
+
                 // Charts
                 programStatusChart
                 averageCompletionTimeChart
@@ -40,9 +40,9 @@ struct OnboardingReportsView: View {
         .navigationTitle("Отчеты по адаптации")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
+
     // MARK: - Summary Cards
-    
+
     private var summaryCards: some View {
         VStack(spacing: 16) {
             HStack(spacing: 16) {
@@ -54,7 +54,7 @@ struct OnboardingReportsView: View {
                     icon: "person.3.fill",
                     color: .blue
                 )
-                
+
                 ReportCard(
                     title: "Завершено",
                     value: "\(service.programs.filter { $0.status == .completed }.count)",
@@ -64,7 +64,7 @@ struct OnboardingReportsView: View {
                     color: .green
                 )
             }
-            
+
             HStack(spacing: 16) {
                 ReportCard(
                     title: "Ср. время",
@@ -74,7 +74,7 @@ struct OnboardingReportsView: View {
                     icon: "clock.fill",
                     color: .orange
                 )
-                
+
                 ReportCard(
                     title: "Успешность",
                     value: "87%",
@@ -87,15 +87,15 @@ struct OnboardingReportsView: View {
         }
         .padding(.horizontal)
     }
-    
+
     // MARK: - Charts
-    
+
     private var programStatusChart: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Статус программ")
                 .font(.headline)
                 .padding(.horizontal)
-            
+
             Chart {
                 ForEach(statusData, id: \.status) { item in
                     BarMark(
@@ -114,13 +114,13 @@ struct OnboardingReportsView: View {
         .cornerRadius(12)
         .padding(.horizontal)
     }
-    
+
     private var averageCompletionTimeChart: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Среднее время завершения по месяцам")
                 .font(.headline)
                 .padding(.horizontal)
-            
+
             Chart {
                 ForEach(completionTimeData, id: \.month) { item in
                     LineMark(
@@ -129,7 +129,7 @@ struct OnboardingReportsView: View {
                     )
                     .foregroundStyle(.blue)
                     .symbol(Circle())
-                    
+
                     AreaMark(
                         x: .value("Месяц", item.month),
                         y: .value("Дни", item.days)
@@ -151,13 +151,13 @@ struct OnboardingReportsView: View {
         .cornerRadius(12)
         .padding(.horizontal)
     }
-    
+
     private var templateUsageChart: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Использование шаблонов")
                 .font(.headline)
                 .padding(.horizontal)
-            
+
             Chart {
                 ForEach(templateUsageData, id: \.template) { item in
                     SectorMark(
@@ -171,7 +171,7 @@ struct OnboardingReportsView: View {
             }
             .frame(height: 200)
             .padding(.horizontal)
-            
+
             // Legend
             HStack(spacing: 20) {
                 ForEach(templateUsageData, id: \.template) { item in
@@ -192,13 +192,13 @@ struct OnboardingReportsView: View {
         .cornerRadius(12)
         .padding(.horizontal)
     }
-    
+
     private var departmentBreakdownChart: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Распределение по отделам")
                 .font(.headline)
                 .padding(.horizontal)
-            
+
             Chart {
                 ForEach(departmentData, id: \.department) { item in
                     BarMark(
@@ -223,9 +223,9 @@ struct OnboardingReportsView: View {
         .cornerRadius(12)
         .padding(.horizontal)
     }
-    
+
     // MARK: - Data
-    
+
     private var statusData: [(status: String, count: Int, color: Color)] {
         let stats = service.getProgramStatistics()
         return [
@@ -235,7 +235,7 @@ struct OnboardingReportsView: View {
             ("Просрочено", stats.overdue, .red)
         ]
     }
-    
+
     private var completionTimeData: [(month: String, days: Int)] {
         [
             ("Янв", 24),
@@ -246,7 +246,7 @@ struct OnboardingReportsView: View {
             ("Июн", 21)
         ]
     }
-    
+
     private var templateUsageData: [(template: String, usage: Int, color: Color)] {
         [
             ("Продавец", 35, .blue),
@@ -255,7 +255,7 @@ struct OnboardingReportsView: View {
             ("Руководитель", 20, .purple)
         ]
     }
-    
+
     private var departmentData: [(department: String, count: Int)] {
         [
             ("Продажи", 45),
@@ -275,16 +275,16 @@ struct ReportCard: View {
     let isPositive: Bool
     let icon: String
     let color: Color
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: icon)
                     .font(.title3)
                     .foregroundColor(color)
-                
+
                 Spacer()
-                
+
                 HStack(spacing: 4) {
                     Image(systemName: isPositive ? "arrow.up.right" : "arrow.down.right")
                         .font(.caption)
@@ -294,11 +294,11 @@ struct ReportCard: View {
                 }
                 .foregroundColor(isPositive ? .green : .red)
             }
-            
+
             Text(value)
                 .font(.title)
                 .fontWeight(.bold)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -318,4 +318,4 @@ struct OnboardingReportsView_Previews: PreviewProvider {
             OnboardingReportsView()
         }
     }
-} 
+}

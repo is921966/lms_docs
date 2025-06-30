@@ -5,7 +5,7 @@ extension LMSApp {
     func setupFeedback() {
         // Initialize feedback manager
         _ = FeedbackManager.shared
-        
+
         // The feedback system is ready to use
         print("✅ Feedback system initialized")
     }
@@ -21,11 +21,11 @@ extension View {
 // MARK: - Feedback Modifier
 struct FeedbackEnabledModifier: ViewModifier {
     @ObservedObject private var feedbackManager = FeedbackManager.shared
-    
+
     func body(content: Content) -> some View {
         ZStack {
             content
-            
+
             // Floating feedback button
             if feedbackManager.feedbackButtonVisible {
                 VStack {
@@ -53,4 +53,4 @@ struct FeedbackEnabledModifier: ViewModifier {
             FeedbackView()
         }
     }
-} 
+}

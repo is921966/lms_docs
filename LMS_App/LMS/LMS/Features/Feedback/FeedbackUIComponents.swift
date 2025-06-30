@@ -3,7 +3,7 @@ import SwiftUI
 /// Бейдж типа фидбэка
 struct FeedbackTypeBadge: View {
     let type: FeedbackType
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: type.icon)
@@ -20,7 +20,7 @@ struct FeedbackTypeBadge: View {
         )
         .foregroundColor(.white)
     }
-    
+
     private var backgroundColor: Color {
         switch type {
         case .bug: return .red
@@ -34,7 +34,7 @@ struct FeedbackTypeBadge: View {
 /// Бейдж статуса фидбэка
 struct FeedbackStatusBadge: View {
     let status: FeedbackStatus
-    
+
     var body: some View {
         Text(status.title)
             .font(.caption2)
@@ -51,7 +51,7 @@ struct FeedbackStatusBadge: View {
                     .stroke(backgroundColor, lineWidth: 1)
             )
     }
-    
+
     private var backgroundColor: Color {
         switch status {
         case .open: return .blue
@@ -66,7 +66,7 @@ struct FeedbackStatusBadge: View {
 struct FeedbackScreenshotView: View {
     let screenshot: String
     @State private var showingFullScreen = false
-    
+
     var body: some View {
         Button(action: { showingFullScreen = true }) {
             if let imageData = Data(base64Encoded: screenshot),
@@ -95,12 +95,12 @@ struct FeedbackScreenshotView: View {
 struct FeedbackScreenshotFullScreenView: View {
     let screenshot: String
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             ZStack {
                 Color.black.ignoresSafeArea()
-                
+
                 if let imageData = Data(base64Encoded: screenshot),
                    let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
@@ -136,7 +136,7 @@ struct FeedbackDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var feedbackService = FeedbackService.shared
     @State private var newComment = ""
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -147,45 +147,45 @@ struct FeedbackDetailView: View {
                             Text(feedback.title)
                                 .font(.title2)
                                 .fontWeight(.bold)
-                            
+
                             Spacer()
-                            
+
                             FeedbackTypeBadge(type: feedback.type)
                         }
-                        
+
                         HStack {
                             Text(feedback.author)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
-                            
+
                             Text("•")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
-                            
+
                             Text(feedback.createdAt, style: .date)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
-                            
+
                             Spacer()
-                            
+
                             if feedback.status != .open {
                                 FeedbackStatusBadge(status: feedback.status)
                             }
                         }
                     }
-                    
+
                     Divider()
-                    
+
                     // Описание
                     Text(feedback.description)
                         .font(.body)
-                    
+
                     // Скриншот
                     if let screenshot = feedback.screenshot {
                         FeedbackScreenshotView(screenshot: screenshot)
                             .frame(maxHeight: 200)
                     }
-                    
+
                     // Реакции
                     HStack(spacing: 20) {
                         ReactionButton(
@@ -194,43 +194,43 @@ struct FeedbackDetailView: View {
                             isSelected: feedback.userReaction == .like,
                             action: { feedbackService.addReaction(to: feedback.id, reaction: .like) }
                         )
-                        
+
                         ReactionButton(
                             type: .dislike,
                             count: feedback.reactions.dislike,
                             isSelected: feedback.userReaction == .dislike,
                             action: { feedbackService.addReaction(to: feedback.id, reaction: .dislike) }
                         )
-                        
+
                         ReactionButton(
                             type: .heart,
                             count: feedback.reactions.heart,
                             isSelected: feedback.userReaction == .heart,
                             action: { feedbackService.addReaction(to: feedback.id, reaction: .heart) }
                         )
-                        
+
                         ReactionButton(
                             type: .fire,
                             count: feedback.reactions.fire,
                             isSelected: feedback.userReaction == .fire,
                             action: { feedbackService.addReaction(to: feedback.id, reaction: .fire) }
                         )
-                        
+
                         Spacer()
                     }
                     .padding(.vertical)
-                    
+
                     Divider()
-                    
+
                     // Комментарии
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Комментарии (\(feedback.comments.count))")
                             .font(.headline)
-                        
+
                         ForEach(feedback.comments) { comment in
                             CommentDetailView(comment: comment)
                         }
-                        
+
                         if feedback.comments.isEmpty {
                             Text("Пока нет комментариев")
                                 .font(.body)
@@ -238,18 +238,18 @@ struct FeedbackDetailView: View {
                                 .padding(.vertical)
                         }
                     }
-                    
+
                     // Поле для нового комментария
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Добавить комментарий")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        
+
                         HStack {
                             TextField("Ваш комментарий...", text: $newComment, axis: .vertical)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .lineLimit(3...6)
-                            
+
                             Button("Отправить") {
                                 feedbackService.addComment(to: feedback.id, comment: newComment)
                                 newComment = ""
@@ -277,7 +277,7 @@ struct FeedbackDetailView: View {
 /// Детальное отображение комментария
 struct CommentDetailView: View {
     let comment: FeedbackComment
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -287,7 +287,7 @@ struct CommentDetailView: View {
                             .font(.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(.primary)
-                        
+
                         if comment.isAdmin {
                             Text("ADMIN")
                                 .font(.caption2)
@@ -298,16 +298,16 @@ struct CommentDetailView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(4)
                         }
-                        
+
                         Spacer()
-                        
+
                         Text(comment.createdAt, style: .relative)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
             }
-            
+
             Text(comment.text)
                 .font(.body)
                 .foregroundColor(.primary)

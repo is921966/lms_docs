@@ -7,7 +7,7 @@ struct CompetencyLevel: Identifiable, Codable, Hashable {
     var name: String
     var description: String
     var behaviors: [String] // Observable behaviors for this level
-    
+
     init(
         id: UUID = UUID(),
         level: Int,
@@ -21,7 +21,7 @@ struct CompetencyLevel: Identifiable, Codable, Hashable {
         self.description = description
         self.behaviors = behaviors
     }
-    
+
     // Generate default levels 1-5
     static func defaultLevels() -> [CompetencyLevel] {
         [
@@ -77,12 +77,12 @@ struct CompetencyLevel: Identifiable, Codable, Hashable {
             )
         ]
     }
-    
+
     // Get level by number
     static func getLevel(_ number: Int, from levels: [CompetencyLevel]) -> CompetencyLevel? {
         levels.first { $0.level == number }
     }
-    
+
     // Color for level visualization
     var progressColor: String {
         switch level {
@@ -94,9 +94,9 @@ struct CompetencyLevel: Identifiable, Codable, Hashable {
         default: return "#BDBDBD" // Gray
         }
     }
-    
+
     // Progress percentage (for visual representation)
     var progressPercentage: Double {
         Double(level) / 5.0 * 100
     }
-} 
+}

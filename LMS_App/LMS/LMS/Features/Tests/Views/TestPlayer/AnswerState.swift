@@ -14,10 +14,10 @@ struct AnswerState {
     var orderingAnswer: [String] = []
     var fillInBlanksAnswers: [String: String] = [:]
     var essayAnswer = ""
-    
+
     func toUserAnswer(for question: Question) -> UserAnswer {
         var answer = UserAnswer(questionId: question.id)
-        
+
         switch question.type {
         case .singleChoice, .multipleChoice, .trueFalse:
             answer.selectedOptionIds = Array(selectedAnswers)
@@ -32,10 +32,10 @@ struct AnswerState {
         case .essay:
             answer.essayAnswer = essayAnswer
         }
-        
+
         return answer
     }
-    
+
     mutating func loadFrom(_ userAnswer: UserAnswer, question: Question) {
         switch question.type {
         case .singleChoice, .multipleChoice, .trueFalse:
@@ -52,4 +52,4 @@ struct AnswerState {
             essayAnswer = userAnswer.essayAnswer ?? ""
         }
     }
-} 
+}

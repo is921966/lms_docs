@@ -15,30 +15,30 @@ struct TestListView: View {
     @State private var showingEditView = false
     @State private var testToEdit: Test?
     @State private var showingAddTest = false
-    
+
     var isAdmin: Bool {
         if let user = MockAuthService.shared.currentUser {
             return user.roles.contains("admin") || user.permissions.contains("manage_tests")
         }
         return false
     }
-    
+
     var body: some View {
         NavigationView {
             ZStack {
                 Color(UIColor.systemGroupedBackground)
                     .ignoresSafeArea()
-                
+
                 VStack(spacing: 0) {
                     // Search bar
                     searchBar
-                    
+
                     // Filters
                     if showFilters {
                         filtersView
                             .transition(.move(edge: .top).combined(with: .opacity))
                     }
-                    
+
                     // Tests list
                     if viewModel.filteredTests.isEmpty {
                         emptyStateView
@@ -54,7 +54,7 @@ struct TestListView: View {
                         Image(systemName: showFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                             .foregroundColor(.blue)
                     }
-                    
+
                     if isAdmin {
                         Button(action: { showingAddTest = true }) {
                             Image(systemName: "plus.circle.fill")
@@ -80,23 +80,23 @@ struct TestListView: View {
             }
         }
     }
-    
+
     // MARK: - Search Bar
-    
+
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.gray)
-            
+
             TextField("Поиск тестов...", text: $viewModel.searchText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
     }
-    
+
     // MARK: - Filters View
-    
+
     private var filtersView: some View {
         VStack(spacing: 12) {
             // Type filter
@@ -107,7 +107,7 @@ struct TestListView: View {
                         isSelected: viewModel.selectedType == nil,
                         action: { viewModel.selectedType = nil }
                     )
-                    
+
                     ForEach(LMSTestType.allCases, id: \.self) { type in
                         FilterChip(
                             title: type.rawValue,
@@ -120,7 +120,7 @@ struct TestListView: View {
                 }
                 .padding(.horizontal)
             }
-            
+
             // Difficulty filter
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -129,7 +129,7 @@ struct TestListView: View {
                         isSelected: viewModel.selectedDifficulty == nil,
                         action: { viewModel.selectedDifficulty = nil }
                     )
-                    
+
                     ForEach(TestDifficulty.allCases, id: \.self) { difficulty in
                         FilterChip(
                             title: difficulty.rawValue,
@@ -142,7 +142,7 @@ struct TestListView: View {
                 }
                 .padding(.horizontal)
             }
-            
+
             // Toggle for available tests only
             Toggle("Только доступные", isOn: $viewModel.showOnlyAvailable)
                 .padding(.horizontal)
@@ -150,9 +150,9 @@ struct TestListView: View {
         .padding(.vertical, 8)
         .background(Color(UIColor.secondarySystemGroupedBackground))
     }
-    
+
     // MARK: - Tests List
-    
+
     private var testsList: some View {
         ScrollView {
             LazyVStack(spacing: 16) {
@@ -169,19 +169,19 @@ struct TestListView: View {
             .padding()
         }
     }
-    
+
     // MARK: - Empty State
-    
+
     private var emptyStateView: some View {
         VStack(spacing: 20) {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text("Тесты не найдены")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Попробуйте изменить параметры поиска")
                 .foregroundColor(.gray)
         }
@@ -196,14 +196,14 @@ struct TestCardView: View {
     @ObservedObject var viewModel: TestViewModel
     let isAdmin: Bool
     let onEdit: ((Test) -> Void)?
-    
+
     init(test: Test, viewModel: TestViewModel, isAdmin: Bool = false, onEdit: ((Test) -> Void)? = nil) {
         self.test = test
         self.viewModel = viewModel
         self.isAdmin = isAdmin
         self.onEdit = onEdit
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
@@ -212,22 +212,22 @@ struct TestCardView: View {
                 Image(systemName: test.type.icon)
                     .foregroundColor(test.type.color)
                     .font(.title2)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(test.title)
                         .font(.headline)
-                    
+
                     HStack(spacing: 8) {
                         // Difficulty
                         Label(test.difficulty.rawValue, systemImage: test.difficulty.icon)
                             .font(.caption)
                             .foregroundColor(test.difficulty.color)
-                        
+
                         // Questions count
                         Label("\(test.totalQuestions) вопросов", systemImage: "questionmark.circle")
                             .font(.caption)
                             .foregroundColor(.gray)
-                        
+
                         // Time
                         if test.timeLimit != nil {
                             Label(test.estimatedTime, systemImage: "timer")
@@ -236,24 +236,24 @@ struct TestCardView: View {
                         }
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // Status
                 statusBadge
             }
-            
+
             // Description
             Text(test.description)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .lineLimit(2)
-            
+
             // User progress
             if let result = viewModel.getUserTestResult(test) {
                 userProgressView(result: result)
             }
-            
+
             // Actions
             HStack {
                 // Statistics
@@ -264,13 +264,13 @@ struct TestCardView: View {
                             value: "\(test.totalAttempts)",
                             label: "попыток"
                         )
-                        
+
                         StatisticView(
                             icon: "percent",
                             value: String(format: "%.0f%%", test.passRate),
                             label: "успех"
                         )
-                        
+
                         StatisticView(
                             icon: "star",
                             value: String(format: "%.1f", test.averageScore),
@@ -279,9 +279,9 @@ struct TestCardView: View {
                     }
                     .font(.caption)
                 }
-                
+
                 Spacer()
-                
+
                 // Action button
                 actionButton
             }
@@ -303,7 +303,7 @@ struct TestCardView: View {
             }
         }
     }
-    
+
     private var statusBadge: some View {
         Group {
             switch test.status {
@@ -348,25 +348,25 @@ struct TestCardView: View {
             }
         }
     }
-    
+
     private func userProgressView(result: TestResult) -> some View {
         HStack {
             // Result icon
             Image(systemName: result.resultIcon)
                 .foregroundColor(result.resultColor)
-            
+
             // Score
             Text(result.scoreText)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-            
+
             // Percentage
             Text("(\(result.percentageText))")
                 .font(.caption)
                 .foregroundColor(.secondary)
-            
+
             Spacer()
-            
+
             // Completed date
             Text("Пройден \(result.completedAt, formatter: dateFormatter)")
                 .font(.caption)
@@ -377,7 +377,7 @@ struct TestCardView: View {
         .background(result.resultColor.opacity(0.1))
         .cornerRadius(8)
     }
-    
+
     private var actionButton: some View {
         Group {
             if let activeAttempt = TestMockService.shared.getActiveAttempt(userId: viewModel.currentUserId, testId: test.id) {
@@ -409,11 +409,11 @@ struct TestCardView: View {
 
 struct FilterChip: View {
     let title: String
-    var icon: String? = nil
+    var icon: String?
     let isSelected: Bool
     var color: Color = .blue
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
@@ -438,7 +438,7 @@ struct StatisticView: View {
     let icon: String
     let value: String
     let label: String
-    
+
     var body: some View {
         VStack(spacing: 2) {
             Image(systemName: icon)
@@ -466,4 +466,4 @@ struct TestListView_Previews: PreviewProvider {
     static var previews: some View {
         TestListView()
     }
-} 
+}

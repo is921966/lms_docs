@@ -18,26 +18,26 @@ struct TestAddView: View {
     @State private var maxAttempts = 3
     @State private var questions: [Question] = []
     @State private var showingAddQuestion = false
-    
+
     let onAdd: (Test) -> Void
-    
+
     var body: some View {
         NavigationView {
             Form {
                 // Basic info section
                 Section("Основная информация") {
                     TextField("Название теста", text: $title)
-                    
+
                     TextField("Описание", text: $description, axis: .vertical)
                         .lineLimit(3...6)
-                    
+
                     Picker("Тип теста", selection: $selectedType) {
                         ForEach(LMSTestType.allCases, id: \.self) { type in
                             Label(type.rawValue, systemImage: type.icon)
                                 .tag(type)
                         }
                     }
-                    
+
                     Picker("Сложность", selection: $selectedDifficulty) {
                         ForEach(TestDifficulty.allCases, id: \.self) { difficulty in
                             Label(difficulty.rawValue, systemImage: difficulty.icon)
@@ -45,7 +45,7 @@ struct TestAddView: View {
                         }
                     }
                 }
-                
+
                 // Settings section
                 Section("Настройки") {
                     HStack {
@@ -56,7 +56,7 @@ struct TestAddView: View {
                             .frame(width: 80)
                             .multilineTextAlignment(.trailing)
                     }
-                    
+
                     HStack {
                         Text("Проходной балл")
                         Spacer()
@@ -65,7 +65,7 @@ struct TestAddView: View {
                             .frame(width: 60)
                             .multilineTextAlignment(.trailing)
                     }
-                    
+
                     HStack {
                         Text("Макс. попыток")
                         Spacer()
@@ -75,7 +75,7 @@ struct TestAddView: View {
                             .multilineTextAlignment(.trailing)
                     }
                 }
-                
+
                 // Questions section
                 Section("Вопросы (\(questions.count))") {
                     if questions.isEmpty {
@@ -87,7 +87,7 @@ struct TestAddView: View {
                         }
                         .onDelete(perform: deleteQuestion)
                     }
-                    
+
                     Button(action: { showingAddQuestion = true }) {
                         HStack {
                             Image(systemName: "plus.circle.fill")
@@ -96,7 +96,7 @@ struct TestAddView: View {
                         .foregroundColor(.blue)
                     }
                 }
-                
+
                 // Preview section
                 Section("Предпросмотр") {
                     TestPreviewCard(
@@ -117,7 +117,7 @@ struct TestAddView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Создать") {
                         createTest()
@@ -133,11 +133,11 @@ struct TestAddView: View {
             }
         }
     }
-    
+
     private func deleteQuestion(at offsets: IndexSet) {
         questions.remove(atOffsets: offsets)
     }
-    
+
     private func createTest() {
         let newTest = Test(
             title: title,
@@ -154,4 +154,4 @@ struct TestAddView: View {
         onAdd(newTest)
         dismiss()
     }
-} 
+}

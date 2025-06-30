@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ReportFilterSection: View {
     @Binding var filterType: ReportType?
-    
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
@@ -11,7 +11,7 @@ struct ReportFilterSection: View {
                     isSelected: filterType == nil,
                     action: { filterType = nil }
                 )
-                
+
                 ForEach(ReportType.allCases, id: \.self) { type in
                     ReportFilterChip(
                         title: type.rawValue,
@@ -29,7 +29,7 @@ struct ReportFilterChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text(title)

@@ -7,7 +7,7 @@ struct PostActionsView: View {
     let onLike: () -> Void
     let onShare: () -> Void
     @StateObject private var feedService = FeedService.shared
-    
+
     var body: some View {
         HStack(spacing: 0) {
             // Like button
@@ -23,7 +23,7 @@ struct PostActionsView: View {
                 .padding(.vertical, 8)
             }
             .disabled(!feedService.permissions.canLike)
-            
+
             // Comment button
             Button(action: { showingComments = true }) {
                 HStack {
@@ -37,7 +37,7 @@ struct PostActionsView: View {
                 .padding(.vertical, 8)
             }
             .disabled(!feedService.permissions.canComment)
-            
+
             // Share button
             Button(action: onShare) {
                 HStack {

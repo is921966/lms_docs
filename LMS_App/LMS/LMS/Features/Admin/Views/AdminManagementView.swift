@@ -12,7 +12,7 @@ struct AdminManagementView: View {
     @State private var searchText = ""
     @State private var showingAddUser = false
     @State private var selectedUser: UserResponse?
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Tabs
@@ -23,7 +23,7 @@ struct AdminManagementView: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding()
-            
+
             switch selectedTab {
             case 0:
                 UsersListView(searchText: $searchText)
@@ -58,17 +58,17 @@ struct UsersListView: View {
     @StateObject private var viewModel = UserManagementViewModel()
     @State private var selectedFilter: UserFilter = .all
     @State private var selectedUser: UserResponse?
-    
+
     enum UserFilter: String, CaseIterable {
         case all = "Все"
         case active = "Активные"
         case blocked = "Заблокированные"
         case admins = "Администраторы"
     }
-    
+
     var filteredUsers: [UserResponse] {
         var users = viewModel.users
-        
+
         // Apply filter
         switch selectedFilter {
         case .all:
@@ -80,7 +80,7 @@ struct UsersListView: View {
         case .admins:
             users = users.filter { $0.roles.contains("admin") || $0.roles.contains("superAdmin") }
         }
-        
+
         // Apply search
         if !searchText.isEmpty {
             users = users.filter { user in
@@ -89,10 +89,10 @@ struct UsersListView: View {
                 user.department?.localizedCaseInsensitiveContains(searchText) ?? false
             }
         }
-        
+
         return users
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Search bar
@@ -106,7 +106,7 @@ struct UsersListView: View {
             .cornerRadius(10)
             .padding(.horizontal)
             .padding(.bottom)
-            
+
             // Filter chips
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -121,7 +121,7 @@ struct UsersListView: View {
                 .padding(.horizontal)
             }
             .padding(.bottom)
-            
+
             // Users list
             if filteredUsers.isEmpty {
                 VStack(spacing: 16) {
@@ -161,7 +161,7 @@ struct UsersListView: View {
 // MARK: - Pending Users View (Updated)
 struct PendingUsersView: View {
     @StateObject private var viewModel = UserManagementViewModel()
-    
+
     var body: some View {
         if viewModel.pendingUsers.isEmpty {
             VStack(spacing: 16) {
@@ -193,13 +193,13 @@ struct PendingUsersView: View {
 // MARK: - Roles Management View
 struct RolesManagementView: View {
     @StateObject private var viewModel = RoleManagementViewModel()
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 // Role statistics
                 RoleStatisticsSection(roles: viewModel.roleStatistics)
-                
+
                 // Role permissions
                 ForEach(viewModel.roles) { role in
                     RolePermissionsCard(role: role)
@@ -216,30 +216,30 @@ struct RolesManagementView: View {
 // MARK: - Helper Views
 struct UserManagementCard: View {
     let user: UserResponse
-    
+
     var body: some View {
         HStack(spacing: 12) {
             // Avatar
             Image(systemName: "person.circle.fill")
                 .font(.title)
                 .foregroundColor(.gray)
-            
+
             // User info
             VStack(alignment: .leading, spacing: 4) {
                 Text(user.fullName)
                     .font(.headline)
-                
+
                 Text(user.email)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 HStack(spacing: 8) {
                     if let department = user.department {
                         Label(department, systemImage: "building.2")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     if let position = user.position {
                         Label(position, systemImage: "briefcase")
                             .font(.caption)
@@ -247,9 +247,9 @@ struct UserManagementCard: View {
                     }
                 }
             }
-            
+
             Spacer()
-            
+
             // Status and role
             VStack(alignment: .trailing, spacing: 6) {
                 // Role badge
@@ -263,7 +263,7 @@ struct UserManagementCard: View {
                         .background(Color.purple)
                         .cornerRadius(12)
                 }
-                
+
                 // Status
                 HStack(spacing: 4) {
                     Circle()
@@ -286,7 +286,7 @@ struct PendingUserCard: View {
     let user: UserResponse
     let onApprove: () -> Void
     let onReject: () -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -294,20 +294,20 @@ struct PendingUserCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(user.fullName)
                         .font(.headline)
-                    
+
                     Text(user.email)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
+
                     if let registrationDate = user.registrationDate {
                         Text("Зарегистрирован: \(registrationDate.formatted())")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // Department and position
                 VStack(alignment: .trailing, spacing: 4) {
                     if let department = user.department {
@@ -322,7 +322,7 @@ struct PendingUserCard: View {
                     }
                 }
             }
-            
+
             // Action buttons
             HStack(spacing: 12) {
                 Button(action: onReject) {
@@ -338,7 +338,7 @@ struct PendingUserCard: View {
                     .background(Color.red.opacity(0.1))
                     .cornerRadius(10)
                 }
-                
+
                 Button(action: onApprove) {
                     HStack {
                         Image(systemName: "checkmark")
@@ -363,19 +363,19 @@ struct PendingUserCard: View {
 
 struct RoleStatisticsSection: View {
     let roles: [RoleStatistic]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Распределение ролей")
                 .font(.headline)
-            
+
             HStack(spacing: 12) {
                 ForEach(roles) { stat in
                     VStack(spacing: 8) {
                         Text("\(stat.count)")
                             .font(.title2)
                             .fontWeight(.bold)
-                        
+
                         Text(stat.roleName)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -392,20 +392,20 @@ struct RoleStatisticsSection: View {
 
 struct RolePermissionsCard: View {
     let role: Role
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(role.name)
                     .font(.headline)
-                
+
                 Spacer()
-                
+
                 Text("\(role.usersCount) пользователей")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
+
             // Permissions
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
                 ForEach(role.permissions, id: \.self) { permission in
@@ -431,7 +431,7 @@ struct AdminFilterChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text(title)
@@ -451,7 +451,7 @@ struct AdminFilterChip: View {
 // MARK: - Placeholder Views
 struct AddUserView: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             VStack {
@@ -473,7 +473,7 @@ struct AddUserView: View {
 
 struct UserDetailView: View {
     let user: UserResponse
-    
+
     var body: some View {
         VStack {
             Text("Детали пользователя")
@@ -502,4 +502,4 @@ struct Role: Identifiable {
     NavigationView {
         AdminManagementView()
     }
-} 
+}

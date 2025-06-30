@@ -10,7 +10,7 @@ import SwiftUI
 struct SingleChoiceAnswerView: View {
     let options: [AnswerOption]
     @Binding var selectedAnswers: Set<UUID>
-    
+
     var body: some View {
         VStack(spacing: 12) {
             ForEach(options) { option in
@@ -29,13 +29,13 @@ struct SingleChoiceAnswerView: View {
 struct MultipleChoiceAnswerView: View {
     let options: [AnswerOption]
     @Binding var selectedAnswers: Set<UUID>
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Выберите все правильные ответы")
                 .font(.caption)
                 .foregroundColor(.secondary)
-            
+
             ForEach(options) { option in
                 AnswerOptionView(
                     option: option,
@@ -58,7 +58,7 @@ struct AnswerOptionView: View {
     let isSelected: Bool
     let isSingleChoice: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
@@ -67,13 +67,13 @@ struct AnswerOptionView: View {
                       : (isSingleChoice ? "circle" : "square"))
                     .foregroundColor(isSelected ? .blue : .gray)
                     .font(.title3)
-                
+
                 Text(option.text)
                     .font(.body)
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
+
                 if let imageUrl = option.imageUrl {
                     // В реальном приложении загружать изображение
                     Image(systemName: "photo")

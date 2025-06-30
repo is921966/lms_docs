@@ -13,7 +13,7 @@ struct OnboardingTemplateListView: View {
     @State private var selectedTemplate: OnboardingTemplate?
     @State private var showingNewTemplate = false
     @Environment(\.dismiss) private var dismiss
-    
+
     var filteredTemplates: [OnboardingTemplate] {
         if searchText.isEmpty {
             return templates
@@ -24,7 +24,7 @@ struct OnboardingTemplateListView: View {
             (template.targetDepartment?.localizedCaseInsensitiveContains(searchText) ?? false)
         }
     }
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -38,7 +38,7 @@ struct OnboardingTemplateListView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(10)
                 .padding()
-                
+
                 if filteredTemplates.isEmpty {
                     TemplateEmptyStateView()
                 } else {
@@ -62,7 +62,7 @@ struct OnboardingTemplateListView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingNewTemplate = true }) {
                         Image(systemName: "plus")
@@ -81,7 +81,7 @@ struct OnboardingTemplateListView: View {
             }
         }
     }
-    
+
     private func loadTemplates() {
         templates = OnboardingTemplate.mockTemplates
     }
@@ -91,7 +91,7 @@ struct OnboardingTemplateListView: View {
 struct TemplateCardView: View {
     let template: OnboardingTemplate
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 12) {
@@ -102,23 +102,23 @@ struct TemplateCardView: View {
                         Circle()
                             .fill(template.color.opacity(0.2))
                             .frame(width: 50, height: 50)
-                        
+
                         Image(systemName: template.icon)
                             .font(.system(size: 24))
                             .foregroundColor(template.color)
                     }
-                    
+
                     // Title and position
                     VStack(alignment: .leading, spacing: 4) {
                         Text(template.title)
                             .font(.headline)
                             .foregroundColor(.primary)
-                        
+
                         HStack {
                             Text(template.targetPosition)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
-                            
+
                             if let department = template.targetDepartment {
                                 Text("•")
                                     .foregroundColor(.secondary)
@@ -128,9 +128,9 @@ struct TemplateCardView: View {
                             }
                         }
                     }
-                    
+
                     Spacer()
-                    
+
                     // Active status
                     if template.isActive {
                         Text("Активен")
@@ -143,13 +143,13 @@ struct TemplateCardView: View {
                             .cornerRadius(10)
                     }
                 }
-                
+
                 // Description
                 Text(template.description)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
-                
+
                 // Stats
                 HStack(spacing: 20) {
                     // Duration
@@ -161,7 +161,7 @@ struct TemplateCardView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     // Stages
                     HStack(spacing: 4) {
                         Image(systemName: "flag.checkered")
@@ -171,7 +171,7 @@ struct TemplateCardView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     // Tasks
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark.square")
@@ -181,9 +181,9 @@ struct TemplateCardView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Spacer()
-                    
+
                     // Last update
                     Text("Обновлен \(formatDate(template.updatedAt))")
                         .font(.caption)
@@ -197,11 +197,11 @@ struct TemplateCardView: View {
         }
         .buttonStyle(PlainButtonStyle())
     }
-    
+
     private func totalTasks(in template: OnboardingTemplate) -> Int {
         template.stages.reduce(0) { $0 + $1.tasks.count }
     }
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMM"
@@ -217,20 +217,20 @@ struct TemplateDetailView: View {
     @State private var showingCreateProgram = false
     @State private var showingEditTemplate = false
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header
                     TemplateHeaderView(template: template)
-                    
+
                     // Stages
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Этапы программы")
                             .font(.headline)
                             .padding(.horizontal)
-                        
+
                         ForEach(template.stages) { stage in
                             TemplateStageCard(
                                 stage: stage,
@@ -246,7 +246,7 @@ struct TemplateDetailView: View {
                             }
                         }
                     }
-                    
+
                     // Actions
                     VStack(spacing: 12) {
                         Button(action: { showingCreateProgram = true }) {
@@ -260,7 +260,7 @@ struct TemplateDetailView: View {
                             .background(Color.blue)
                             .cornerRadius(12)
                         }
-                        
+
                         Button(action: { showingEditTemplate = true }) {
                             HStack {
                                 Image(systemName: "square.and.pencil")
@@ -298,7 +298,7 @@ struct TemplateDetailView: View {
 // MARK: - Template Header View
 struct TemplateHeaderView: View {
     let template: OnboardingTemplate
-    
+
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
             // Icon
@@ -306,18 +306,18 @@ struct TemplateHeaderView: View {
                 Circle()
                     .fill(template.color.opacity(0.2))
                     .frame(width: 80, height: 80)
-                
+
                 Image(systemName: template.icon)
                     .font(.system(size: 40))
                     .foregroundColor(template.color)
             }
-            
+
             // Title
             Text(template.title)
                 .font(.title2)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
-            
+
             // Target info
             HStack {
                 Label(template.targetPosition, systemImage: "person.fill")
@@ -328,14 +328,14 @@ struct TemplateHeaderView: View {
             }
             .font(.subheadline)
             .foregroundColor(.secondary)
-            
+
             // Description
             Text(template.description)
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            
+
             // Stats
             HStack(spacing: 30) {
                 VStack(spacing: 4) {
@@ -347,7 +347,7 @@ struct TemplateHeaderView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 VStack(spacing: 4) {
                     Text("\(template.stages.count)")
                         .font(.title2)
@@ -357,7 +357,7 @@ struct TemplateHeaderView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 VStack(spacing: 4) {
                     Text("\(totalTasks(in: template))")
                         .font(.title2)
@@ -373,7 +373,7 @@ struct TemplateHeaderView: View {
         .padding()
         .background(Color(.systemGray6))
     }
-    
+
     private func totalTasks(in template: OnboardingTemplate) -> Int {
         template.stages.reduce(0) { $0 + $1.tasks.count }
     }
@@ -384,7 +384,7 @@ struct TemplateStageCard: View {
     let stage: OnboardingTemplateStage
     let isExpanded: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Stage header
@@ -394,27 +394,27 @@ struct TemplateStageCard: View {
                         Text("Этап \(stage.order): \(stage.title)")
                             .font(.caption)
                             .fontWeight(.medium)
-                        
+
                         HStack {
                             Text(stage.description)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                                 .lineLimit(isExpanded ? nil : 1)
                         }
-                        
+
                         HStack(spacing: 16) {
                             Label("\(stage.duration) дн.", systemImage: "calendar")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
+
                             Label("\(stage.tasks.count) задач", systemImage: "checkmark.square")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                     }
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -422,11 +422,11 @@ struct TemplateStageCard: View {
                 .padding()
             }
             .buttonStyle(PlainButtonStyle())
-            
+
             // Tasks (expanded)
             if isExpanded {
                 Divider()
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(stage.tasks) { task in
                         HStack(spacing: 12) {
@@ -434,20 +434,20 @@ struct TemplateStageCard: View {
                                 .font(.system(size: 16))
                                 .foregroundColor(getTaskColor(task.type))
                                 .frame(width: 24)
-                            
+
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(task.title)
                                     .font(.subheadline)
                                     .fontWeight(.medium)
-                                
+
                                 Text(task.description)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                     .lineLimit(2)
                             }
-                            
+
                             Spacer()
-                            
+
                             Text(task.assigneeType.rawValue)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
@@ -464,7 +464,7 @@ struct TemplateStageCard: View {
         .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
         .padding(.horizontal)
     }
-    
+
     private func getTaskIcon(_ type: OnboardingTaskType) -> String {
         switch type {
         case .course: return "book.closed.fill"
@@ -475,7 +475,7 @@ struct TemplateStageCard: View {
         case .checklist: return "checklist"        case .feedback: return "bubble.left.and.bubble.right.fill"
         }
     }
-    
+
     private func getTaskColor(_ type: OnboardingTaskType) -> Color {
         switch type {
         case .course: return .blue
@@ -496,11 +496,11 @@ struct TemplateEmptyStateView: View {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text("Шаблоны не найдены")
                 .font(.headline)
                 .foregroundColor(.secondary)
-            
+
             Text("Попробуйте изменить параметры поиска или создайте новый шаблон")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -514,4 +514,4 @@ struct TemplateEmptyStateView: View {
 
 #Preview {
     OnboardingTemplateListView()
-} 
+}

@@ -1,0 +1,596 @@
+# CI/CD and Code Review Rules for LMS iOS App
+
+## Continuous Integration Pipeline
+
+### CI Requirements
+Every push to any branch must trigger:
+1. **Code Quality Checks** - SwiftLint, SonarCloud
+2. **Unit Tests** - All domain and application tests
+3. **Integration Tests** - API and database tests
+4. **UI Tests** - Critical user journeys
+5. **Build Verification** - Debug and Release builds
+6. **Security Scanning** - Dependency and code analysis
+
+### GitHub Actions Workflow
+```yaml
+# .github/workflows/ios-ci.yml
+name: iOS CI
+
+on:
+  push:
+    branches: [ main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  XCODE_VERSION: '15.0'
+  IOS_DESTINATION: 'platform=iOS Simulator,name=iPhone 15,OS=17.0'
+
+jobs:
+  lint:
+    name: SwiftLint
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install SwiftLint
+        run: brew install swiftlint
+      
+      - name: Run SwiftLint
+        run: swiftlint lint --reporter junit > swiftlint.xml
+      
+      - name: Upload SwiftLint Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: swiftlint-report
+          path: swiftlint.xml
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode_${{ env.XCODE_VERSION }}.app
+      
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+            -scheme LMS \
+            -destination "${{ env.IOS_DESTINATION }}" \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult \
+            -only-testing:LMSTests
+      
+      - name: Generate Coverage Report
+        run: |
+          xcrun xccov view --report --json TestResults.xcresult > coverage.json
+          
+      - name: Check Coverage Threshold
+        run: |
+          coverage=$(cat coverage.json | jq '.targets[0].coveredLines / .targets[0].executableLines * 100')
+          echo "Coverage: $coverage%"
+          if (( $(echo "$coverage < 85" | bc -l) )); then
+            echo "Coverage is below 85% threshold"
+            exit 1
+          fi
+
+  ui-tests:
+    name: UI Tests
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Simulator
+        run: |
+          xcrun simctl boot "${{ env.IOS_DESTINATION }}" || true
+          
+      - name: Run UI Tests
+        run: |
+          xcodebuild test \
+            -scheme LMS \
+            -destination "${{ env.IOS_DESTINATION }}" \
+            -resultBundlePath UITestResults.xcresult \
+            -only-testing:LMSUITests/CriticalPathTests
+      
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: ui-test-failures
+          path: UITestResults.xcresult
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'LMS'
+          path: '.'
+          format: 'JSON'
+      
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-check-report
+          path: reports/
+```
+
+## SwiftLint Configuration
+
+### .swiftlint.yml
+```yaml
+# Project-specific SwiftLint configuration
+
+included:
+  - LMS
+  
+excluded:
+  - Carthage
+  - Pods
+  - .build
+  - DerivedData
+  - vendor
+  - "*/Generated"
+
+# Rule configuration
+opt_in_rules:
+  - array_init
+  - attributes
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - contains_over_range_nil_comparison
+  - convenience_type
+  - discouraged_object_literal
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - enum_case_associated_values_count
+  - explicit_init
+  - extension_access_modifier
+  - fallthrough
+  - fatal_error_message
+  - file_header
+  - file_name
+  - first_where
+  - flatmap_over_map_reduce
+  - identical_operands
+  - joined_default_parameter
+  - last_where
+  - legacy_multiple
+  - legacy_random
+  - literal_expression_end_indentation
+  - lower_acl_than_parent
+  - modifier_order
+  - nimble_operator
+  - nslocalizedstring_key
+  - number_separator
+  - object_literal
+  - operator_usage_whitespace
+  - overridden_super_call
+  - pattern_matching_keywords
+  - prefer_self_type_over_type_of_self
+  - private_action
+  - private_outlet
+  - prohibited_interface_builder
+  - prohibited_super_call
+  - quick_discouraged_call
+  - quick_discouraged_focused_test
+  - quick_discouraged_pending_test
+  - raw_value_for_camel_cased_codable_enum
+  - reduce_into
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - single_test_class
+  - sorted_first_last
+  - static_operator
+  - strong_iboutlet
+  - test_case_accessibility
+  - toggle_bool
+  - unavailable_function
+  - unneeded_parentheses_in_closure_argument
+  - unowned_variable_capture
+  - untyped_error_in_catch
+  - vertical_parameter_alignment_on_call
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+  - xct_specific_matcher
+  - yoda_condition
+
+disabled_rules:
+  - todo
+  - fixme
+
+analyzer_rules:
+  - unused_declaration
+  - unused_import
+
+# Rule parameters
+line_length:
+  warning: 120
+  error: 150
+  ignores_urls: true
+  ignores_comments: true
+
+file_length:
+  warning: 500
+  error: 1000
+
+type_body_length:
+  warning: 300
+  error: 500
+
+function_body_length:
+  warning: 50
+  error: 100
+
+cyclomatic_complexity:
+  warning: 10
+  error: 20
+
+type_name:
+  min_length: 3
+  max_length: 50
+
+identifier_name:
+  min_length: 2
+  max_length: 50
+  allowed_symbols: ["_"]
+  validates_start_with_lowercase: true
+
+file_header:
+  required_pattern: |
+    //
+    //  .*\.swift
+    //  LMS
+    //
+    //  Created by .* on \d{1,2}/\d{1,2}/\d{2}\.
+    //
+
+custom_rules:
+  no_print_statements:
+    name: "No print statements"
+    regex: '(^|\s)print\('
+    message: "Use proper logging instead of print statements"
+    severity: warning
+
+  no_force_unwrapping:
+    name: "Avoid Force Unwrapping"
+    regex: '(\w+)!'
+    message: "Force unwrapping is dangerous. Use if let or guard let instead."
+    severity: error
+    
+  no_force_cast:
+    name: "Avoid Force Cast"
+    regex: 'as! '
+    message: "Force casting is dangerous. Use as? instead."
+    severity: error
+    
+  mark_spacing:
+    name: "MARK comment spacing"
+    regex: '//\s*MARK:[^\s]'
+    message: "Add a space after MARK:"
+    severity: warning
+```
+
+## Code Review Process
+
+### Pull Request Requirements
+Every PR must:
+1. **Pass all CI checks** - No exceptions
+2. **Have descriptive title** - Following conventional commits
+3. **Include description** - What, why, and how
+4. **Link to issue** - Reference the tracking issue
+5. **Update tests** - New tests for new code
+6. **Update documentation** - If behavior changes
+
+### PR Template
+```markdown
+<!-- .github/pull_request_template.md -->
+## Description
+Brief description of what this PR does.
+
+## Type of Change
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+
+## Related Issue
+Fixes #(issue number)
+
+## How Has This Been Tested?
+- [ ] Unit tests pass
+- [ ] UI tests pass
+- [ ] Manual testing completed
+- [ ] Tested on physical device
+
+## Checklist
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
+- [ ] Any dependent changes have been merged and published
+
+## Screenshots (if applicable)
+Add screenshots here to help reviewers understand UI changes.
+```
+
+### Code Review Checklist
+Reviewers must verify:
+
+#### Architecture
+- [ ] Follows Clean Architecture principles
+- [ ] Dependencies flow inward
+- [ ] No business logic in UI layer
+- [ ] Proper use of protocols
+
+#### Code Quality
+- [ ] Clear naming conventions
+- [ ] No code duplication
+- [ ] SOLID principles followed
+- [ ] Appropriate error handling
+
+#### Testing
+- [ ] Tests exist for new code
+- [ ] Tests are meaningful
+- [ ] Edge cases covered
+- [ ] Mocks used appropriately
+
+#### Performance
+- [ ] No unnecessary computations
+- [ ] Efficient data structures
+- [ ] Memory leaks checked
+- [ ] Async operations handled properly
+
+#### Security
+- [ ] No hardcoded secrets
+- [ ] Input validation present
+- [ ] Secure data storage
+- [ ] API keys in environment
+
+## Conventional Commits
+
+### Commit Message Format
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### Types
+- **feat**: New feature
+- **fix**: Bug fix
+- **docs**: Documentation changes
+- **style**: Code style changes (formatting, missing semi-colons, etc)
+- **refactor**: Code refactoring
+- **perf**: Performance improvements
+- **test**: Adding or updating tests
+- **build**: Build system or dependency updates
+- **ci**: CI configuration changes
+- **chore**: Other changes that don't modify src or test files
+- **revert**: Reverts a previous commit
+
+### Examples
+```bash
+# Feature
+feat(auth): add biometric authentication support
+
+Implement Face ID and Touch ID authentication as an alternative
+to password login. Users can enable this in settings.
+
+Closes #123
+
+# Bug fix
+fix(courses): prevent crash when course image is missing
+
+Add nil check for course thumbnail URL before attempting to load.
+Provide placeholder image when URL is nil.
+
+Fixes #456
+
+# Breaking change
+feat(api)!: update user profile endpoint response format
+
+BREAKING CHANGE: The user profile endpoint now returns a nested
+structure with separate personal and professional sections.
+
+Migration guide:
+- Update UserProfileDTO to match new structure
+- Update mappers to handle nested data
+```
+
+## Branch Strategy
+
+### GitFlow
+```
+main (production)
+  |
+  └── develop (staging)
+        |
+        ├── feature/JIRA-123-add-login
+        ├── feature/JIRA-456-course-list
+        └── bugfix/JIRA-789-fix-crash
+        
+hotfix branches from main:
+  └── hotfix/JIRA-999-critical-fix
+```
+
+### Branch Naming
+- **Feature**: `feature/JIRA-XXX-brief-description`
+- **Bugfix**: `bugfix/JIRA-XXX-brief-description`
+- **Hotfix**: `hotfix/JIRA-XXX-brief-description`
+- **Release**: `release/X.Y.Z`
+
+## Continuous Deployment
+
+### Deployment Pipeline
+```yaml
+# .github/workflows/ios-cd.yml
+name: iOS CD
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+jobs:
+  deploy-testflight:
+    name: Deploy to TestFlight
+    runs-on: macos-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup certificates
+        env:
+          CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
+          CERTIFICATES_PASSWORD: ${{ secrets.CERTIFICATES_PASSWORD }}
+          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+        run: |
+          # Setup keychain
+          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          
+          # Import certificates
+          echo "$CERTIFICATES_P12" | base64 --decode > certificate.p12
+          security import certificate.p12 -k build.keychain -P "$CERTIFICATES_PASSWORD" -T /usr/bin/codesign
+          
+          # Install provisioning profile
+          echo "$PROVISIONING_PROFILE" | base64 --decode > profile.mobileprovision
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          mv profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+      
+      - name: Build and upload to TestFlight
+        env:
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        run: |
+          xcodebuild archive \
+            -scheme LMS \
+            -archivePath LMS.xcarchive \
+            -configuration Release \
+            CODE_SIGNING_REQUIRED=YES
+          
+          xcodebuild -exportArchive \
+            -archivePath LMS.xcarchive \
+            -exportPath export \
+            -exportOptionsPlist ExportOptions.plist
+          
+          xcrun altool --upload-app \
+            --type ios \
+            --file export/LMS.ipa \
+            --apiKey "$APP_STORE_CONNECT_API_KEY"
+```
+
+## Quality Gates
+
+### Mandatory Gates
+No merge without:
+1. **Code Coverage >= 85%**
+2. **Zero critical issues** in SonarCloud
+3. **All tests passing**
+4. **SwiftLint violations = 0**
+5. **Two approving reviews**
+6. **No security vulnerabilities**
+
+### SonarCloud Configuration
+```yaml
+# sonar-project.properties
+sonar.projectKey=company_lms-ios
+sonar.organization=company
+sonar.sources=LMS
+sonar.tests=LMSTests,LMSUITests
+sonar.swift.coverage.reportPaths=coverage.xml
+sonar.swift.swiftlint.reportPaths=swiftlint.xml
+
+# Quality gate conditions
+sonar.qualitygate.wait=true
+```
+
+## Performance Monitoring
+
+### Build Time Tracking
+```yaml
+- name: Track Build Time
+  run: |
+    START_TIME=$(date +%s)
+    xcodebuild build -scheme LMS
+    END_TIME=$(date +%s)
+    BUILD_TIME=$((END_TIME - START_TIME))
+    echo "Build time: ${BUILD_TIME}s"
+    
+    # Alert if build takes too long
+    if [ $BUILD_TIME -gt 300 ]; then
+      echo "::warning::Build time exceeded 5 minutes"
+    fi
+```
+
+### Test Execution Monitoring
+```swift
+// Measure test performance
+class PerformanceTests: XCTestCase {
+    func testCourseListLoadPerformance() {
+        measure(
+            metrics: [
+                XCTClockMetric(),
+                XCTCPUMetric(),
+                XCTMemoryMetric()
+            ]
+        ) {
+            // Test code
+        }
+    }
+}
+```
+
+## Release Process
+
+### Semantic Versioning
+- **Major (X.0.0)**: Breaking changes
+- **Minor (0.X.0)**: New features, backward compatible
+- **Patch (0.0.X)**: Bug fixes
+
+### Release Checklist
+1. [ ] Update version in Info.plist
+2. [ ] Update CHANGELOG.md
+3. [ ] Create release branch
+4. [ ] Run full regression tests
+5. [ ] Generate release notes
+6. [ ] Tag release
+7. [ ] Deploy to TestFlight
+8. [ ] Submit to App Store
+9. [ ] Monitor crash reports
+
+## AI Code Review Guidelines
+
+When AI reviews code:
+
+1. **Check architecture compliance** - Clean Architecture rules
+2. **Verify test coverage** - Tests for all new code
+3. **Validate naming** - Swift conventions followed
+4. **Security scan** - No hardcoded secrets or vulnerabilities
+5. **Performance check** - No obvious bottlenecks
+6. **Documentation** - Public APIs documented
+7. **Error handling** - All errors handled appropriately
+8. **Memory management** - No retain cycles
+9. **Accessibility** - UI is accessible
+10. **Localization** - Strings are localizable
+
+Remember: The CI/CD pipeline is the guardian of code quality. Make it strict but fast. 

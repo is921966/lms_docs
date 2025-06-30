@@ -14,37 +14,37 @@ struct TestDetailView: View {
     @State private var showTestPlayer = false
     @State private var showResults = false
     @State private var selectedResult: TestResult?
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Header
                 headerSection
-                
+
                 // Description
                 descriptionSection
-                
+
                 // Test info
                 infoSection
-                
+
                 // Requirements
                 if !test.competencyIds.isEmpty || !test.positionIds.isEmpty {
                     requirementsSection
                 }
-                
+
                 // User progress
                 if let result = viewModel.getUserTestResult(test) {
                     userProgressSection(result: result)
                 }
-                
+
                 // Attempts history
                 attemptHistorySection
-                
+
                 // Questions preview
                 if test.showCorrectAnswers {
                     questionsPreviewSection
                 }
-                
+
                 // Action button
                 actionSection
             }
@@ -62,44 +62,44 @@ struct TestDetailView: View {
         .fullScreenCover(isPresented: $showTestPlayer) {
             TestPlayerView(test: test, viewModel: viewModel)
         }
-        .sheet(item: $selectedResult) { result in
+        .sheet(item: $selectedResult) { _ in
             NavigationView {
                 TestResultView(test: test)
             }
         }
     }
-    
+
     // MARK: - Header Section
-    
+
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: test.type.icon)
                     .font(.largeTitle)
                     .foregroundColor(test.type.color)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(test.title)
                         .font(.title2)
                         .fontWeight(.bold)
-                    
+
                     HStack(spacing: 12) {
                         Label(test.type.rawValue, systemImage: test.type.icon)
                             .foregroundColor(test.type.color)
-                        
+
                         Label(test.difficulty.rawValue, systemImage: test.difficulty.icon)
                             .foregroundColor(test.difficulty.color)
                     }
                     .font(.subheadline)
                 }
-                
+
                 Spacer()
-                
+
                 statusBadge
             }
         }
     }
-    
+
     private var statusBadge: some View {
         Text(test.status.rawValue)
             .font(.caption)
@@ -110,58 +110,58 @@ struct TestDetailView: View {
             .background(test.status.color)
             .cornerRadius(10)
     }
-    
+
     // MARK: - Description Section
-    
+
     private var descriptionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Описание")
                 .font(.headline)
-            
+
             Text(test.description)
                 .font(.body)
                 .foregroundColor(.secondary)
         }
     }
-    
+
     // MARK: - Info Section
-    
+
     private var infoSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Информация о тесте")
                 .font(.headline)
-            
+
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                 TestInfoCard(
                     icon: "questionmark.circle",
                     title: "Вопросов",
                     value: "\(test.totalQuestions)"
                 )
-                
+
                 TestInfoCard(
                     icon: "sum",
                     title: "Баллов",
                     value: String(format: "%.0f", test.totalPoints)
                 )
-                
+
                 TestInfoCard(
                     icon: "timer",
                     title: "Время",
                     value: test.timeLimit != nil ? "\(test.timeLimit!) мин" : "Без ограничений"
                 )
-                
+
                 TestInfoCard(
                     icon: "arrow.clockwise",
                     title: "Попыток",
                     value: test.attemptsAllowed != nil ? "\(test.attemptsAllowed!)" : "Неограниченно"
                 )
-                
+
                 TestInfoCard(
                     icon: "percent",
                     title: "Проходной балл",
                     value: String(format: "%.0f%%", test.passingScore)
                 )
-                
+
                 TestInfoCard(
                     icon: "eye",
                     title: "Ответы",
@@ -170,20 +170,20 @@ struct TestDetailView: View {
             }
         }
     }
-    
+
     // MARK: - Requirements Section
-    
+
     private var requirementsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Требования")
                 .font(.headline)
-            
+
             if !test.competencyIds.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Связанные компетенции:")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
+
                     FlowLayout(spacing: 8) {
                         ForEach(test.competencyIds, id: \.self) { competencyId in
                             CompetencyChip(competencyId: competencyId)
@@ -191,13 +191,13 @@ struct TestDetailView: View {
                     }
                 }
             }
-            
+
             if !test.positionIds.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Для должностей:")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
+
                     FlowLayout(spacing: 8) {
                         ForEach(test.positionIds, id: \.self) { positionId in
                             PositionChip(positionId: positionId)
@@ -207,28 +207,28 @@ struct TestDetailView: View {
             }
         }
     }
-    
+
     // MARK: - User Progress Section
-    
+
     private func userProgressSection(result: TestResult) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Ваш результат")
                 .font(.headline)
-            
+
             VStack(spacing: 16) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Последняя попытка")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        
+
                         Text(result.completedAt, formatter: dateTimeFormatter)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Spacer()
-                    
+
                     VStack(alignment: .trailing, spacing: 4) {
                         HStack(spacing: 4) {
                             Image(systemName: result.resultIcon)
@@ -237,24 +237,24 @@ struct TestDetailView: View {
                                 .fontWeight(.semibold)
                                 .foregroundColor(result.resultColor)
                         }
-                        
+
                         Text(result.percentageText)
                             .font(.title3)
                             .fontWeight(.bold)
                     }
                 }
-                
+
                 // Progress bar
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.gray.opacity(0.2))
                             .frame(height: 20)
-                        
+
                         RoundedRectangle(cornerRadius: 8)
                             .fill(result.resultColor)
                             .frame(width: geometry.size.width * (result.percentage / 100), height: 20)
-                        
+
                         Text(result.scoreText)
                             .font(.caption)
                             .fontWeight(.semibold)
@@ -263,7 +263,7 @@ struct TestDetailView: View {
                     }
                 }
                 .frame(height: 20)
-                
+
                 // Details button
                 Button(action: { selectedResult = result }) {
                     Label("Подробные результаты", systemImage: "doc.text.magnifyingglass")
@@ -275,16 +275,16 @@ struct TestDetailView: View {
             .cornerRadius(12)
         }
     }
-    
+
     // MARK: - Attempt History Section
-    
+
     private var attemptHistorySection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("История попыток")
                 .font(.headline)
-            
+
             let attempts = viewModel.getUserAttempts(userId: viewModel.currentUserId, testId: test.id)
-            
+
             if attempts.isEmpty {
                 Text("Вы еще не проходили этот тест")
                     .font(.subheadline)
@@ -300,26 +300,26 @@ struct TestDetailView: View {
             }
         }
     }
-    
+
     // MARK: - Questions Preview Section
-    
+
     private var questionsPreviewSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Типы вопросов")
                 .font(.headline)
-            
+
             let questionsByType = Dictionary(grouping: test.questions, by: { $0.type })
-            
+
             ForEach(Array(questionsByType.keys), id: \.self) { type in
                 HStack {
                     Image(systemName: type.icon)
                         .foregroundColor(.blue)
-                    
+
                     Text(type.rawValue)
                         .font(.subheadline)
-                    
+
                     Spacer()
-                    
+
                     Text("\(questionsByType[type]?.count ?? 0) вопросов")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -327,9 +327,9 @@ struct TestDetailView: View {
             }
         }
     }
-    
+
     // MARK: - Action Section
-    
+
     private var actionSection: some View {
         VStack(spacing: 12) {
             if let activeAttempt = viewModel.getActiveAttempt(userId: viewModel.currentUserId, testId: test.id) {
@@ -339,12 +339,12 @@ struct TestDetailView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
-                
+
                 Text("У вас есть незавершенная попытка")
                     .font(.caption)
                     .foregroundColor(.secondary)
             } else if viewModel.canRetakeTest(test) && test.canBeTaken {
-                Button(action: { 
+                Button(action: {
                     viewModel.startTest(test)
                     showTestPlayer = true
                 }) {
@@ -353,7 +353,7 @@ struct TestDetailView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
-                
+
                 if let maxAttempts = test.attemptsAllowed {
                     let usedAttempts = TestMockService.shared.getUserAttempts(userId: viewModel.currentUserId, testId: test.id).count
                     Text("Использовано попыток: \(usedAttempts) из \(maxAttempts)")
@@ -380,16 +380,16 @@ struct TestInfoCard: View {
     let icon: String
     let title: String
     let value: String
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(.blue)
-            
+
             Text(value)
                 .font(.headline)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -403,7 +403,7 @@ struct TestInfoCard: View {
 
 struct CompetencyChip: View {
     let competencyId: String
-    
+
     var body: some View {
         Text(competencyId) // В реальном приложении получать название из сервиса
             .font(.caption)
@@ -417,7 +417,7 @@ struct CompetencyChip: View {
 
 struct PositionChip: View {
     let positionId: String
-    
+
     var body: some View {
         Text(positionId) // В реальном приложении получать название из сервиса
             .font(.caption)
@@ -432,7 +432,7 @@ struct PositionChip: View {
 struct AttemptRow: View {
     let attempt: TestAttempt
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack {
@@ -440,16 +440,16 @@ struct AttemptRow: View {
                     Text("Попытка #\(attempt.attemptNumber)")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    
+
                     if let startedAt = attempt.startedAt {
                         Text(startedAt, formatter: dateTimeFormatter)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 VStack(alignment: .trailing, spacing: 4) {
                     HStack(spacing: 4) {
                         Image(systemName: attempt.status.icon)
@@ -457,14 +457,14 @@ struct AttemptRow: View {
                     }
                     .font(.caption)
                     .foregroundColor(attempt.status.color)
-                    
+
                     if let percentage = attempt.percentage {
                         Text(String(format: "%.1f%%", percentage))
                             .font(.caption)
                             .fontWeight(.semibold)
                     }
                 }
-                
+
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundColor(.gray)
@@ -481,12 +481,12 @@ struct AttemptRow: View {
 
 struct FlowLayout: Layout {
     var spacing: CGFloat = 8
-    
+
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let result = FlowResult(in: proposal.replacingUnspecifiedDimensions().width, subviews: subviews, spacing: spacing)
         return result.size
     }
-    
+
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         let result = FlowResult(in: bounds.width, subviews: subviews, spacing: spacing)
         for (index, subview) in subviews.enumerated() {
@@ -495,30 +495,30 @@ struct FlowLayout: Layout {
                          proposal: .unspecified)
         }
     }
-    
+
     struct FlowResult {
         var size: CGSize = .zero
         var positions: [CGPoint] = []
-        
+
         init(in maxWidth: CGFloat, subviews: Subviews, spacing: CGFloat) {
             var x: CGFloat = 0
             var y: CGFloat = 0
             var maxHeight: CGFloat = 0
-            
+
             for subview in subviews {
                 let size = subview.sizeThatFits(.unspecified)
-                
+
                 if x + size.width > maxWidth, x > 0 {
                     x = 0
                     y += maxHeight + spacing
                     maxHeight = 0
                 }
-                
+
                 positions.append(CGPoint(x: x, y: y))
                 x += size.width + spacing
                 maxHeight = max(maxHeight, size.height)
             }
-            
+
             self.size = CGSize(width: maxWidth, height: y + maxHeight)
         }
     }
@@ -541,4 +541,4 @@ struct TestDetailView_Previews: PreviewProvider {
             TestDetailView(test: TestMockService().tests.first!, viewModel: TestViewModel())
         }
     }
-} 
+}

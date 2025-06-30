@@ -1,0 +1,172 @@
+# LMS SwiftLint Configuration
+# Based on project's CI/CD and code review rules
+
+included:
+  - LMS
+  - LMSTests
+  - LMSUITests
+  
+excluded:
+  - Carthage
+  - Pods
+  - .build
+  - DerivedData
+  - vendor
+  - "*/Generated"
+  - fastlane
+
+# Rule configuration
+opt_in_rules:
+  - array_init
+  - attributes
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - contains_over_range_nil_comparison
+  - convenience_type
+  - discouraged_object_literal
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - enum_case_associated_values_count
+  - explicit_init
+  - extension_access_modifier
+  - fallthrough
+  - fatal_error_message
+  - file_header
+  - file_name
+  - first_where
+  - flatmap_over_map_reduce
+  - identical_operands
+  - joined_default_parameter
+  - last_where
+  - legacy_multiple
+  - legacy_random
+  - literal_expression_end_indentation
+  - lower_acl_than_parent
+  - modifier_order
+  - nimble_operator
+  - nslocalizedstring_key
+  - number_separator
+  - object_literal
+  - operator_usage_whitespace
+  - overridden_super_call
+  - pattern_matching_keywords
+  - prefer_self_type_over_type_of_self
+  - private_action
+  - private_outlet
+  - prohibited_interface_builder
+  - prohibited_super_call
+  - quick_discouraged_call
+  - quick_discouraged_focused_test
+  - quick_discouraged_pending_test
+  - raw_value_for_camel_cased_codable_enum
+  - reduce_into
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - single_test_class
+  - sorted_first_last
+  - static_operator
+  - strong_iboutlet
+  - test_case_accessibility
+  - toggle_bool
+  - unavailable_function
+  - unneeded_parentheses_in_closure_argument
+  - unowned_variable_capture
+  - untyped_error_in_catch
+  - vertical_parameter_alignment_on_call
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+  - xct_specific_matcher
+  - yoda_condition
+
+disabled_rules:
+  - todo
+  - fixme
+
+analyzer_rules:
+  - unused_declaration
+  - unused_import
+
+# Rule parameters
+line_length:
+  warning: 120
+  error: 150
+  ignores_urls: true
+  ignores_comments: true
+
+file_length:
+  warning: 500
+  error: 1000
+
+type_body_length:
+  warning: 300
+  error: 500
+
+function_body_length:
+  warning: 50
+  error: 100
+
+cyclomatic_complexity:
+  warning: 10
+  error: 20
+
+type_name:
+  min_length: 3
+  max_length: 50
+
+identifier_name:
+  min_length: 2
+  max_length: 50
+  allowed_symbols: ["_"]
+  validates_start_with_lowercase: true
+
+# LMS-specific file header
+file_header:
+  required_pattern: |
+    //
+    //  .*\.swift
+    //  LMS
+    //
+    //  Created by .* on \d{1,2}/\d{1,2}/\d{2}\.
+    //
+
+# Custom rules for LMS project
+custom_rules:
+  no_print_statements:
+    name: "No print statements"
+    regex: '(^|\s)print\('
+    message: "Use proper logging instead of print statements"
+    severity: warning
+
+  no_force_unwrapping:
+    name: "Avoid Force Unwrapping"
+    regex: '(\w+)!'
+    message: "Force unwrapping is dangerous. Use if let or guard let instead."
+    severity: error
+    match_kinds:
+      - identifier
+      - keyword
+    
+  no_force_cast:
+    name: "Avoid Force Cast"
+    regex: 'as! '
+    message: "Force casting is dangerous. Use as? instead."
+    severity: error
+    
+  mark_spacing:
+    name: "MARK comment spacing"
+    regex: '//\s*MARK:[^\s]'
+    message: "Add a space after MARK:"
+    severity: warning
+    
+  mock_naming:
+    name: "Mock classes naming"
+    regex: 'class\s+[A-Z]\w*(?<!Mock)\s*:\s*\w*Protocol'
+    message: "Mock classes should end with 'Mock'"
+    severity: warning
+    match_kinds:
+      - typeidentifier 

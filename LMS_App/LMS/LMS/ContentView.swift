@@ -12,12 +12,12 @@ struct ContentView: View {
     @StateObject private var featureRegistry = FeatureRegistryManager.shared
     @State private var selectedTab = 0
     @AppStorage("isAdminMode") private var isAdminMode = false
-    
+
     // Проверяем запущены ли мы в режиме UI тестирования
     private var isUITesting: Bool {
         ProcessInfo.processInfo.arguments.contains("UI-Testing")
     }
-    
+
     var body: some View {
         if authService.isAuthenticated {
             authenticatedView
@@ -25,7 +25,7 @@ struct ContentView: View {
             LoginView()
         }
     }
-    
+
     var authenticatedView: some View {
         TabView(selection: $selectedTab) {
             // Автоматическая генерация табов из FeatureRegistry
@@ -40,7 +40,7 @@ struct ContentView: View {
                 .tag(index)
             }
             .id(featureRegistry.lastUpdate) // КРИТИЧЕСКОЕ для обновления UI!
-            
+
             // Profile + Settings combined tab
             NavigationStack {
                 ProfileView()
@@ -49,7 +49,7 @@ struct ContentView: View {
                 Label("Профиль", systemImage: "person.fill")
             }
             .tag(Feature.enabledTabFeatures.count)
-            
+
             // Debug menu для разработки и тестирования
             // Всегда показываем в симуляторе (для разработки и UI тестов)
             #if targetEnvironment(simulator)
@@ -98,49 +98,49 @@ struct AdminModeIndicator: View {
 // Debug меню теперь не обернуто в #if DEBUG
 struct DebugMenuView: View {
     @AppStorage("isAdminMode") private var isAdminMode = false
-    
+
     var body: some View {
         List {
             Section("Admin Tools") {
                 Toggle("Admin Mode", isOn: $isAdminMode)
                     .tint(.red)
-                
+
                 NavigationLink(destination: FeatureToggleSettings()) {
                     Label("Feature Flags", systemImage: "flag.2.crossed")
                 }
             }
-            
+
             Section("Feedback System") {
                 NavigationLink(destination: FeedbackDebugMenu()) {
                     Label("Feedback Debug", systemImage: "exclamationmark.bubble")
                 }
             }
-            
+
             Section("Quick Actions") {
                 // Быстрое включение всех готовых модулей
                 Button("Enable All Ready Modules") {
                     enableReadyModules()
                 }
                 .foregroundColor(.blue)
-                
+
                 Button("Disable Extra Modules") {
                     disableExtraModules()
                 }
                 .foregroundColor(.orange)
             }
-            
+
             Section("Data") {
                 Button("Clear All Cache") {
                     clearCache()
                 }
                 .foregroundColor(.red)
-                
+
                 Button("Reset User Data") {
                     resetUserData()
                 }
                 .foregroundColor(.red)
             }
-            
+
             Section("Module Status") {
                 ForEach(Feature.allCases, id: \.self) { feature in
                     HStack {
@@ -159,14 +159,14 @@ struct DebugMenuView: View {
         }
         .navigationTitle("Debug Menu")
     }
-    
+
     private func enableReadyModules() {
         // Включаем готовые модули
         Feature.enable(.competencies)
         Feature.enable(.positions)
         Feature.enable(.feed)
     }
-    
+
     private func disableExtraModules() {
         // Выключаем дополнительные модули
         Feature.disable(.competencies)
@@ -176,12 +176,12 @@ struct DebugMenuView: View {
         Feature.disable(.gamification)
         Feature.disable(.notifications)
     }
-    
+
     private func clearCache() {
         // Clear cache implementation
         print("Cache cleared")
     }
-    
+
     private func resetUserData() {
         // Reset user data implementation
         print("User data reset")

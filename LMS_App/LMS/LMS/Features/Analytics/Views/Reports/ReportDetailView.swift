@@ -5,26 +5,26 @@ struct ReportDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isGenerating = false
     @State private var showExportOptions = false
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Header
                 ReportDetailHeader(report: report)
-                
+
                 // Description
                 if !report.description.isEmpty {
                     ReportDescriptionSection(description: report.description)
                 }
-                
+
                 // Info
                 ReportInfoGrid(report: report)
-                
+
                 // Sections
                 if !report.sections.isEmpty {
                     ReportSectionsView(sections: report.sections)
                 }
-                
+
                 // Actions
                 ReportActionsSection(
                     report: report,
@@ -54,14 +54,14 @@ struct ReportDetailView: View {
             Button("Отмена", role: .cancel) {}
         }
     }
-    
+
     private func generateReport() {
         isGenerating = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             isGenerating = false
         }
     }
-    
+
     private func exportReport(in format: ReportFormat) {
         print("Exporting report in \(format.rawValue) format")
     }
@@ -69,7 +69,7 @@ struct ReportDetailView: View {
 
 struct ReportDetailHeader: View {
     let report: Report
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
@@ -80,7 +80,7 @@ struct ReportDetailHeader: View {
                         .foregroundColor(report.type.color)
                 }
                 .font(.subheadline)
-                
+
                 HStack {
                     Image(systemName: report.status.icon)
                     Text(report.status.rawValue)
@@ -88,9 +88,9 @@ struct ReportDetailHeader: View {
                 .font(.caption)
                 .foregroundColor(report.status.color)
             }
-            
+
             Spacer()
-            
+
             VStack(alignment: .trailing, spacing: 4) {
                 Text("Создан")
                     .font(.caption)
@@ -105,7 +105,7 @@ struct ReportDetailHeader: View {
 
 struct ReportDescriptionSection: View {
     let description: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Описание")
@@ -119,7 +119,7 @@ struct ReportDescriptionSection: View {
 
 struct ReportInfoGrid: View {
     let report: Report
-    
+
     var body: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
             ReportInfoCard(
@@ -127,13 +127,13 @@ struct ReportInfoGrid: View {
                 title: "Период",
                 value: report.period.rawValue
             )
-            
+
             ReportInfoCard(
                 icon: "doc.text",
                 title: "Формат",
                 value: report.format.rawValue
             )
-            
+
             if let schedule = report.schedule {
                 ReportInfoCard(
                     icon: "clock.arrow.circlepath",
@@ -141,7 +141,7 @@ struct ReportInfoGrid: View {
                     value: schedule.frequency.rawValue
                 )
             }
-            
+
             ReportInfoCard(
                 icon: "person.2",
                 title: "Получатели",
@@ -153,12 +153,12 @@ struct ReportInfoGrid: View {
 
 struct ReportSectionsView: View {
     let sections: [ReportSection]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Разделы отчета")
                 .font(.headline)
-            
+
             ForEach(sections.sorted(by: { $0.order < $1.order })) { section in
                 ReportSectionView(section: section)
             }
@@ -172,7 +172,7 @@ struct ReportActionsSection: View {
     @Binding var showExportOptions: Bool
     let onGenerate: () -> Void
     let onExport: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 12) {
             if report.status == .draft {
@@ -183,7 +183,7 @@ struct ReportActionsSection: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(isGenerating)
             }
-            
+
             if report.status == .ready {
                 Button(action: onExport) {
                     Label("Экспортировать", systemImage: "square.and.arrow.up")

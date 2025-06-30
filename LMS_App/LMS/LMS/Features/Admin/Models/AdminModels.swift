@@ -9,7 +9,7 @@ struct PendingUser: Identifiable {
     let avatar: String?
     let registeredAt: String
     var isSelected: Bool = false
-    
+
     var fullName: String {
         "\(firstName) \(lastName)"
     }

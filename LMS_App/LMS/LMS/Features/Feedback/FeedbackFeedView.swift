@@ -7,9 +7,9 @@ struct FeedbackFeedView: View {
     @State private var selectedFilter: FeedbackFilter = .all
     @State private var showingNewFeedback = false
     @State private var searchText = ""
-    @State private var selectedFeedback: FeedbackItem? = nil
+    @State private var selectedFeedback: FeedbackItem?
     @State private var isRefreshing = false
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -20,7 +20,7 @@ struct FeedbackFeedView: View {
                 )
                 .padding(.horizontal)
                 .padding(.top, 8)
-                
+
                 // Лента фидбэков
                 ScrollView {
                     LazyVStack(spacing: 12) {
@@ -37,7 +37,7 @@ struct FeedbackFeedView: View {
                             )
                             .padding(.horizontal)
                         }
-                        
+
                         if filteredFeedbacks.isEmpty {
                             FeedbackEmptyStateView(filter: selectedFilter)
                                 .padding(.top, 60)
@@ -73,12 +73,12 @@ struct FeedbackFeedView: View {
             }
         }
     }
-    
+
     // MARK: - Computed Properties
-    
+
     private var filteredFeedbacks: [FeedbackItem] {
         let feedbacks = feedbackService.feedbacks
-        
+
         // Фильтрация по типу
         let typeFiltered = switch selectedFilter {
         case .all: feedbacks
@@ -88,7 +88,7 @@ struct FeedbackFeedView: View {
         case .questions: feedbacks.filter { $0.type == .question }
         case .myFeedbacks: feedbacks.filter { $0.isOwnFeedback }
         }
-        
+
         // Поиск по тексту
         if searchText.isEmpty {
             return typeFiltered
@@ -99,9 +99,9 @@ struct FeedbackFeedView: View {
             }
         }
     }
-    
+
     // MARK: - Methods
-    
+
     @MainActor
     private func refreshFeedbacks() async {
         isRefreshing = true
@@ -116,7 +116,7 @@ struct FeedbackFeedView: View {
 struct FeedbackFilterView: View {
     @Binding var selectedFilter: FeedbackFilter
     @Binding var searchText: String
-    
+
     var body: some View {
         VStack(spacing: 12) {
             // Поиск
@@ -126,7 +126,7 @@ struct FeedbackFilterView: View {
                 TextField("Поиск отзывов...", text: $searchText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
             }
-            
+
             // Фильтры
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
@@ -149,7 +149,7 @@ struct FeedbackFilterButton: View {
     let filter: FeedbackFilter
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 6) {
@@ -176,10 +176,10 @@ struct FeedbackCardView: View {
     let onTap: () -> Void
     let onReaction: (ReactionType) -> Void
     let onComment: (String) -> Void
-    
+
     @State private var showingCommentField = false
     @State private var newComment = ""
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
@@ -188,39 +188,39 @@ struct FeedbackCardView: View {
                     Text(feedback.title)
                         .font(.headline)
                         .lineLimit(2)
-                    
+
                     Spacer()
-                    
+
                     FeedbackTypeBadge(type: feedback.type)
                 }
-                
+
                 HStack {
                     Text(feedback.author)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Text("•")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Text(feedback.createdAt, style: .relative)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     if feedback.status != .open {
                         FeedbackStatusBadge(status: feedback.status)
                     }
                 }
             }
-            
+
             // Описание
             Text(feedback.description)
                 .font(.body)
                 .lineLimit(3)
                 .foregroundColor(.primary)
-            
+
             // Скриншот (если есть)
             if let screenshot = feedback.screenshot {
                 if let imageData = Data(base64Encoded: screenshot),
@@ -237,7 +237,7 @@ struct FeedbackCardView: View {
                         )
                 }
             }
-            
+
             // Реакции и комментарии
             HStack {
                 // Реакции
@@ -248,21 +248,21 @@ struct FeedbackCardView: View {
                         isSelected: feedback.userReaction == .like,
                         action: { onReaction(.like) }
                     )
-                    
+
                     ReactionButton(
                         type: .dislike,
                         count: feedback.reactions.dislike,
                         isSelected: feedback.userReaction == .dislike,
                         action: { onReaction(.dislike) }
                     )
-                    
+
                     ReactionButton(
                         type: .heart,
                         count: feedback.reactions.heart,
                         isSelected: feedback.userReaction == .heart,
                         action: { onReaction(.heart) }
                     )
-                    
+
                     ReactionButton(
                         type: .fire,
                         count: feedback.reactions.fire,
@@ -270,9 +270,9 @@ struct FeedbackCardView: View {
                         action: { onReaction(.fire) }
                     )
                 }
-                
+
                 Spacer()
-                
+
                 // Комментарии
                 Button(action: { showingCommentField.toggle() }) {
                     HStack(spacing: 4) {
@@ -283,13 +283,13 @@ struct FeedbackCardView: View {
                     .foregroundColor(.secondary)
                 }
             }
-            
+
             // Поле для нового комментария
             if showingCommentField {
                 HStack {
                     TextField("Добавить комментарий...", text: $newComment)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
+
                     Button("Отправить") {
                         onComment(newComment)
                         newComment = ""
@@ -299,14 +299,14 @@ struct FeedbackCardView: View {
                 }
                 .transition(.slide)
             }
-            
+
             // Последние комментарии (максимум 2)
             if !feedback.comments.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
                     ForEach(feedback.comments.prefix(2)) { comment in
                         FeedbackCommentView(comment: comment)
                     }
-                    
+
                     if feedback.comments.count > 2 {
                         Button("Показать все комментарии (\(feedback.comments.count))") {
                             onTap()
@@ -333,13 +333,13 @@ struct ReactionButton: View {
     let count: Int
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Text(type.emoji)
                     .font(.system(size: 16))
-                if count > 0 {
+                if !isEmpty {
                     Text("\(count)")
                         .font(.caption2)
                         .fontWeight(.medium)
@@ -363,7 +363,7 @@ struct ReactionButton: View {
 /// Отображение комментария
 struct FeedbackCommentView: View {
     let comment: FeedbackComment
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack {
@@ -371,14 +371,14 @@ struct FeedbackCommentView: View {
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
-                
+
                 Text(comment.createdAt, style: .relative)
                     .font(.caption2)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
             }
-            
+
             Text(comment.text)
                 .font(.caption)
                 .foregroundColor(.primary)
@@ -393,17 +393,17 @@ struct FeedbackCommentView: View {
 /// Пустое состояние ленты
 struct FeedbackEmptyStateView: View {
     let filter: FeedbackFilter
-    
+
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "tray")
                 .font(.system(size: 48))
                 .foregroundColor(.gray)
-            
+
             Text(emptyStateTitle)
                 .font(.headline)
                 .foregroundColor(.primary)
-            
+
             Text(emptyStateDescription)
                 .font(.body)
                 .foregroundColor(.secondary)
@@ -411,7 +411,7 @@ struct FeedbackEmptyStateView: View {
                 .padding(.horizontal, 32)
         }
     }
-    
+
     private var emptyStateTitle: String {
         switch filter {
         case .all: return "Пока нет отзывов"
@@ -422,7 +422,7 @@ struct FeedbackEmptyStateView: View {
         case .myFeedbacks: return "У вас нет отзывов"
         }
     }
-    
+
     private var emptyStateDescription: String {
         switch filter {
         case .all: return "Станьте первым, кто оставит отзыв!"
@@ -437,7 +437,7 @@ struct FeedbackEmptyStateView: View {
 
 enum FeedbackFilter: CaseIterable {
     case all, bugs, features, improvements, questions, myFeedbacks
-    
+
     var title: String {
         switch self {
         case .all: return "Все"
@@ -448,7 +448,7 @@ enum FeedbackFilter: CaseIterable {
         case .myFeedbacks: return "Мои"
         }
     }
-    
+
     var icon: String {
         switch self {
         case .all: return "list.bullet"

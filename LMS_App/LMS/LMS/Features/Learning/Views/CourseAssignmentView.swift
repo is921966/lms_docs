@@ -16,81 +16,81 @@ struct CourseAssignmentView: View {
     @State private var isMandatory = true
     @State private var showingConfirmation = false
     @State private var assignments: [CourseAssignment] = []
-    
+
     // Mock users for demo
     let users = [
         UserResponse(
-            id: "1", 
-            email: "ivan@company.com", 
-            firstName: "Иван", 
-            lastName: "Петров", 
+            id: "1",
+            email: "ivan@company.com",
+            firstName: "Иван",
+            lastName: "Петров",
             middleName: nil,
-            position: "Менеджер по продажам", 
-            department: "Продажи", 
+            position: "Менеджер по продажам",
+            department: "Продажи",
             avatar: nil,
-            roles: ["employee"], 
+            roles: ["employee"],
             permissions: [],
             isApproved: true,
             registrationDate: Date().addingTimeInterval(-365 * 24 * 60 * 60)
         ),
         UserResponse(
-            id: "2", 
-            email: "maria@company.com", 
-            firstName: "Мария", 
-            lastName: "Сидорова", 
+            id: "2",
+            email: "maria@company.com",
+            firstName: "Мария",
+            lastName: "Сидорова",
             middleName: nil,
-            position: "Старший продавец", 
-            department: "Продажи", 
+            position: "Старший продавец",
+            department: "Продажи",
             avatar: nil,
-            roles: ["employee"], 
+            roles: ["employee"],
             permissions: [],
             isApproved: true,
             registrationDate: Date().addingTimeInterval(-180 * 24 * 60 * 60)
         ),
         UserResponse(
-            id: "3", 
-            email: "alexey@company.com", 
-            firstName: "Алексей", 
-            lastName: "Козлов", 
+            id: "3",
+            email: "alexey@company.com",
+            firstName: "Алексей",
+            lastName: "Козлов",
             middleName: nil,
-            position: "Продавец-консультант", 
-            department: "Продажи", 
+            position: "Продавец-консультант",
+            department: "Продажи",
             avatar: nil,
-            roles: ["employee"], 
+            roles: ["employee"],
             permissions: [],
             isApproved: true,
             registrationDate: Date().addingTimeInterval(-90 * 24 * 60 * 60)
         ),
         UserResponse(
-            id: "4", 
-            email: "elena@company.com", 
-            firstName: "Елена", 
-            lastName: "Васильева", 
+            id: "4",
+            email: "elena@company.com",
+            firstName: "Елена",
+            lastName: "Васильева",
             middleName: nil,
-            position: "Менеджер отдела", 
-            department: "Товароведение", 
+            position: "Менеджер отдела",
+            department: "Товароведение",
             avatar: nil,
-            roles: ["manager"], 
+            roles: ["manager"],
             permissions: [],
             isApproved: true,
             registrationDate: Date().addingTimeInterval(-720 * 24 * 60 * 60)
         ),
         UserResponse(
-            id: "5", 
-            email: "dmitry@company.com", 
-            firstName: "Дмитрий", 
-            lastName: "Новиков", 
+            id: "5",
+            email: "dmitry@company.com",
+            firstName: "Дмитрий",
+            lastName: "Новиков",
             middleName: nil,
-            position: "Товаровед", 
-            department: "Товароведение", 
+            position: "Товаровед",
+            department: "Товароведение",
             avatar: nil,
-            roles: ["employee"], 
+            roles: ["employee"],
             permissions: [],
             isApproved: true,
             registrationDate: Date().addingTimeInterval(-30 * 24 * 60 * 60)
         )
     ]
-    
+
     var filteredUsers: [UserResponse] {
         if searchText.isEmpty {
             return users
@@ -103,7 +103,7 @@ struct CourseAssignmentView: View {
             (user.department?.localizedCaseInsensitiveContains(searchText) ?? false)
         }
     }
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -113,7 +113,7 @@ struct CourseAssignmentView: View {
                         Image(systemName: course.icon)
                             .font(.title2)
                             .foregroundColor(course.color)
-                        
+
                         VStack(alignment: .leading) {
                             Text(course.title)
                                 .font(.headline)
@@ -121,15 +121,15 @@ struct CourseAssignmentView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         Spacer()
                     }
                     .padding()
-                    
+
                     // Assignment settings
                     VStack(spacing: 12) {
                         Toggle("Обязательный курс", isOn: $isMandatory)
-                        
+
                         DatePicker("Срок выполнения", selection: $dueDate, displayedComponents: .date)
                             .datePickerStyle(CompactDatePickerStyle())
                     }
@@ -137,15 +137,15 @@ struct CourseAssignmentView: View {
                     .padding(.bottom)
                 }
                 .background(Color(.systemGroupedBackground))
-                
+
                 // Search bar
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
-                    
+
                     TextField("Поиск сотрудников", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
-                    
+
                     if !searchText.isEmpty {
                         Button(action: { searchText = "" }) {
                             Image(systemName: "xmark.circle.fill")
@@ -157,16 +157,16 @@ struct CourseAssignmentView: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
                 .padding()
-                
+
                 // Selected count
                 if !selectedUsers.isEmpty {
                     HStack {
                         Text("Выбрано: \(selectedUsers.count)")
                             .font(.subheadline)
                             .foregroundColor(.blue)
-                        
+
                         Spacer()
-                        
+
                         Button("Снять выделение") {
                             selectedUsers.removeAll()
                         }
@@ -174,7 +174,7 @@ struct CourseAssignmentView: View {
                     }
                     .padding(.horizontal)
                 }
-                
+
                 // User list
                 List(filteredUsers) { user in
                     UserSelectionRow(
@@ -190,7 +190,7 @@ struct CourseAssignmentView: View {
                     )
                 }
                 .listStyle(PlainListStyle())
-                
+
                 // Assign button
                 Button(action: assignCourse) {
                     HStack {
@@ -224,11 +224,11 @@ struct CourseAssignmentView: View {
             }
         }
     }
-    
+
     private func assignCourse() {
         // Create assignments
         let currentUserId = MockAuthService.shared.currentUser?.id ?? "admin"
-        
+
         for userId in selectedUsers {
             let assignment = CourseAssignment(
                 courseId: course.id,
@@ -241,10 +241,10 @@ struct CourseAssignmentView: View {
             )
             assignments.append(assignment)
         }
-        
+
         // In real app, would save to backend
         // await courseService.assignCourse(assignments)
-        
+
         showingConfirmation = true
     }
 }
@@ -254,31 +254,31 @@ struct UserSelectionRow: View {
     let user: UserResponse
     let isSelected: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         Button(action: onToggle) {
             HStack {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(isSelected ? .blue : .gray)
                     .font(.title3)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("\(user.firstName) \(user.lastName)")
                         .font(.body)
                         .foregroundColor(.primary)
-                    
+
                     HStack {
                         if let position = user.position {
                             Text(position)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
+
                             if user.department != nil {
                                 Text("•")
                                     .foregroundColor(.secondary)
                             }
                         }
-                        
+
                         if let department = user.department {
                             Text(department)
                                 .font(.caption)
@@ -286,7 +286,7 @@ struct UserSelectionRow: View {
                         }
                     }
                 }
-                
+
                 Spacer()
             }
             .padding(.vertical, 4)
@@ -299,4 +299,4 @@ struct UserSelectionRow: View {
     CourseAssignmentView(
         course: Course.createMockCourses().first!
     )
-} 
+}

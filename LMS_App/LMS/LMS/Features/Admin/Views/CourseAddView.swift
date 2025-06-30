@@ -17,26 +17,26 @@ struct CourseAddView: View {
     @State private var selectedStatus = CourseStatus.draft
     @State private var modules: [Module] = []
     @State private var showingAddModule = false
-    
+
     let onAdd: (Course) -> Void
-    
+
     var selectedCategory: CourseCategory? {
         CourseCategory.categories.first { $0.id == selectedCategoryId }
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
                 // Basic info section
                 Section("Основная информация") {
                     TextField("Название курса", text: $title)
-                    
+
                     TextField("Описание", text: $description, axis: .vertical)
                         .lineLimit(3...6)
-                    
+
                     TextField("Длительность", text: $duration)
                 }
-                
+
                 // Category and type section
                 Section("Категория и тип") {
                     Picker("Категория", selection: $selectedCategoryId) {
@@ -46,14 +46,14 @@ struct CourseAddView: View {
                                 .tag(category.id as UUID?)
                         }
                     }
-                    
+
                     Picker("Тип курса", selection: $selectedType) {
                         ForEach(CourseType.allCases, id: \.self) { type in
                             Label(type.rawValue, systemImage: type.icon)
                                 .tag(type)
                         }
                     }
-                    
+
                     Picker("Статус", selection: $selectedStatus) {
                         ForEach(CourseStatus.allCases, id: \.self) { status in
                             HStack {
@@ -66,7 +66,7 @@ struct CourseAddView: View {
                         }
                     }
                 }
-                
+
                 // Modules section
                 Section("Модули курса") {
                     if modules.isEmpty {
@@ -93,7 +93,7 @@ struct CourseAddView: View {
                         }
                         .onDelete(perform: deleteModule)
                     }
-                    
+
                     Button(action: { showingAddModule = true }) {
                         HStack {
                             Image(systemName: "plus.circle.fill")
@@ -102,7 +102,7 @@ struct CourseAddView: View {
                         .foregroundColor(.blue)
                     }
                 }
-                
+
                 // Preview section
                 Section("Предпросмотр") {
                     CoursePreviewCard(
@@ -124,7 +124,7 @@ struct CourseAddView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Создать") {
                         createCourse()
@@ -142,7 +142,7 @@ struct CourseAddView: View {
             }
         }
     }
-    
+
     private func deleteModule(at offsets: IndexSet) {
         modules.remove(atOffsets: offsets)
         // Update order indices
@@ -150,7 +150,7 @@ struct CourseAddView: View {
             modules[i].orderIndex = i + 1
         }
     }
-    
+
     private func createCourse() {
         let newCourse = Course(
             title: title,
@@ -166,4 +166,4 @@ struct CourseAddView: View {
         onAdd(newCourse)
         dismiss()
     }
-} 
+}

@@ -23,19 +23,19 @@ struct CertificateTemplate: Identifiable, Codable {
     var signerTitle: String
     var organizationName: String
     var isActive: Bool = true
-    var createdAt: Date = Date()
-    var updatedAt: Date = Date()
-    
+    var createdAt = Date()
+    var updatedAt = Date()
+
     // Text templates with placeholders
     var titleTemplate: String = "Сертификат о прохождении курса"
     var bodyTemplate: String = "Настоящим подтверждается, что {userName} успешно прошел(а) курс \"{courseName}\" с результатом {score}%"
     var footerTemplate: String = "Дата выдачи: {date}"
-    
+
     // Computed properties
     var primarySwiftUIColor: Color {
         Color(hex: primaryColor) ?? .blue
     }
-    
+
     var secondarySwiftUIColor: Color {
         Color(hex: secondaryColor) ?? .gray
     }
@@ -48,61 +48,61 @@ struct Certificate: Identifiable, Codable {
     let courseId: UUID
     let templateId: UUID
     let certificateNumber: String
-    
+
     // Course data (denormalized for display)
     let courseName: String
     let courseDescription: String
     let courseDuration: String
-    
+
     // User data (denormalized for display)
     let userName: String
     let userEmail: String
-    
+
     // Achievement data
     let completedAt: Date
     let score: Double
     let totalScore: Double
     let percentage: Double
     let isPassed: Bool
-    
+
     // Certificate data
     let issuedAt: Date
     let expiresAt: Date?
     let verificationCode: String
     let pdfUrl: String?
-    
+
     // Metadata
     var isRevoked: Bool = false
     var revokedAt: Date?
     var revokedReason: String?
-    
+
     // Computed properties
     var isValid: Bool {
         if isRevoked { return false }
         if let expires = expiresAt, Date() > expires { return false }
         return true
     }
-    
+
     var formattedCertificateNumber: String {
         "CERT-\(certificateNumber)"
     }
-    
+
     var shareText: String {
         "Я успешно прошел курс \"\(courseName)\" в ЦУМ с результатом \(Int(percentage))%! 🎉"
     }
-    
+
     // Generate verification code
     static func generateVerificationCode() -> String {
         let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         return String((0..<8).map { _ in letters.randomElement()! })
     }
-    
+
     // Generate certificate number
     static func generateCertificateNumber() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd"
         let dateString = formatter.string(from: Date())
-        let randomNum = String(format: "%04d", Int.random(in: 0...9999))
+        let randomNum = String(format: "%04d", Int.random(in: 0...9_999))
         return "\(dateString)-\(randomNum)"
     }
 }
@@ -157,4 +157,4 @@ extension CertificateTemplate {
             organizationName: "ЦУМ"
         )
     ]
-} 
+}

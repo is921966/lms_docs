@@ -11,9 +11,9 @@ struct QuizQuestionView: View {
     let questionNumber: Int
     let totalQuestions: Int
     let onAnswer: (Int) -> Void
-    
+
     @State private var selectedOption: Int?
-    
+
     var body: some View {
         VStack(spacing: 20) {
             // Progress
@@ -21,13 +21,13 @@ struct QuizQuestionView: View {
                 questionNumber: questionNumber,
                 totalQuestions: totalQuestions
             )
-            
+
             // Question
             Text(question.question)
                 .font(.title3)
                 .fontWeight(.medium)
                 .padding()
-            
+
             // Options
             QuizOptionsSection(
                 options: question.options,
@@ -39,7 +39,7 @@ struct QuizQuestionView: View {
                     }
                 }
             )
-            
+
             Spacer()
         }
         .navigationTitle("Тест")
@@ -50,7 +50,7 @@ struct QuizQuestionView: View {
 struct QuizProgressHeader: View {
     let questionNumber: Int
     let totalQuestions: Int
-    
+
     var body: some View {
         HStack {
             Text("Вопрос \(questionNumber) из \(totalQuestions)")
@@ -65,7 +65,7 @@ struct QuizOptionsSection: View {
     let options: [String]
     let selectedOption: Int?
     let onSelect: (Int) -> Void
-    
+
     var body: some View {
         VStack(spacing: 15) {
             ForEach(0..<options.count, id: \.self) { index in
@@ -86,7 +86,7 @@ struct QuizOptionButton: View {
     let isSelected: Bool
     let isDisabled: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack {

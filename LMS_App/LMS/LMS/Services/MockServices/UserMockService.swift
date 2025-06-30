@@ -4,20 +4,20 @@ import Combine
 // MARK: - Employee Role
 enum EmployeeRole: String, Codable, CaseIterable {
     case employee = "Сотрудник"
-    case manager = "Менеджер" 
+    case manager = "Менеджер"
     case hr = "HR"
     case admin = "Администратор"
 }
 
 class UserMockService: ObservableObject {
     static let shared = UserMockService()
-    
+
     @Published var users: [Employee] = []
-    
+
     init() {
         loadMockUsers()
     }
-    
+
     private func loadMockUsers() {
         users = [
             Employee(
@@ -94,26 +94,26 @@ class UserMockService: ObservableObject {
             )
         ]
     }
-    
+
     func getUsers() -> [Employee] {
         return users
     }
-    
+
     func getEmployee(by id: String) -> Employee? {
         return users.first { $0.id == id }
     }
-    
+
     func getUsersByRole(_ role: EmployeeRole) -> [Employee] {
         return users.filter { $0.role == role }
     }
-    
+
     func getUsersByDepartment(_ department: String) -> [Employee] {
         return users.filter { $0.department == department }
     }
-    
+
     func searchUsers(_ query: String) -> [Employee] {
         guard !query.isEmpty else { return users }
-        
+
         let lowercasedQuery = query.lowercased()
         return users.filter { user in
             user.fullName.lowercased().contains(lowercasedQuery) ||
@@ -122,17 +122,17 @@ class UserMockService: ObservableObject {
             user.department.lowercased().contains(lowercasedQuery)
         }
     }
-    
+
     func addEmployee(_ user: Employee) {
         users.append(user)
     }
-    
+
     func updateEmployee(_ user: Employee) {
         if let index = users.firstIndex(where: { $0.id == user.id }) {
             users[index] = user
         }
     }
-    
+
     func deleteEmployee(by id: String) {
         users.removeAll { $0.id == id }
     }
@@ -150,7 +150,7 @@ struct Employee: Identifiable, Codable {
     var avatarUrl: String?
     var phoneNumber: String?
     var hireDate: Date?
-    
+
     init(
         id: String = UUID().uuidString,
         fullName: String,
@@ -176,4 +176,3 @@ struct Employee: Identifiable, Codable {
     }
 }
 
- 

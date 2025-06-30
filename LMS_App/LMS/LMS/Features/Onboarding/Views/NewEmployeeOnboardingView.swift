@@ -4,7 +4,7 @@ struct NewEmployeeOnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var onboardingService = OnboardingMockService.shared
     @ObservedObject var userService = UserMockService.shared
-    
+
     @State private var selectedEmployee: Employee?
     @State private var selectedTemplate: OnboardingTemplate?
     @State private var startDate = Date()
@@ -14,11 +14,11 @@ struct NewEmployeeOnboardingView: View {
     @State private var customStages: [OnboardingTemplateStage] = []
     @State private var showingSuccessAlert = false
     @State private var isCreating = false
-    
+
     // Search states
     @State private var employeeSearchText = ""
     @State private var templateSearchText = ""
-    
+
     var filteredEmployees: [Employee] {
         let employees = userService.getUsers()
         if employeeSearchText.isEmpty {
@@ -29,7 +29,7 @@ struct NewEmployeeOnboardingView: View {
             user.email.localizedCaseInsensitiveContains(employeeSearchText)
         }
     }
-    
+
     var filteredTemplates: [OnboardingTemplate] {
         let templates = onboardingService.getTemplates()
         if templateSearchText.isEmpty {
@@ -40,7 +40,7 @@ struct NewEmployeeOnboardingView: View {
             template.targetPosition.localizedCaseInsensitiveContains(templateSearchText)
         }
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -59,7 +59,7 @@ struct NewEmployeeOnboardingView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Создать") {
                         createProgram()
@@ -87,7 +87,7 @@ struct NewEmployeeOnboardingView: View {
                     ZStack {
                         Color.black.opacity(0.3)
                             .ignoresSafeArea()
-                        
+
                         ProgressView("Создание программы...")
                             .padding()
                             .background(Color(.systemBackground))
@@ -98,9 +98,9 @@ struct NewEmployeeOnboardingView: View {
             }
         }
     }
-    
+
     // MARK: - Sections
-    
+
     private var employeeSection: some View {
         Section {
             if let employee = selectedEmployee {
@@ -108,7 +108,7 @@ struct NewEmployeeOnboardingView: View {
                     Image(systemName: "person.circle.fill")
                         .font(.largeTitle)
                         .foregroundColor(.blue)
-                    
+
                     VStack(alignment: .leading) {
                         Text(employee.fullName)
                             .font(.headline)
@@ -119,9 +119,9 @@ struct NewEmployeeOnboardingView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Spacer()
-                    
+
                     Button("Изменить") {
                         showingEmployeePicker = true
                     }
@@ -146,7 +146,7 @@ struct NewEmployeeOnboardingView: View {
             Text("Сотрудник")
         }
     }
-    
+
     private var templateSection: some View {
         Section {
             if let template = selectedTemplate {
@@ -162,11 +162,11 @@ struct NewEmployeeOnboardingView: View {
                         }
                         .font(.caption)
                     }
-                    
+
                     Text("Позиция: \(template.targetPosition)")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Text("\(template.stages.count) этапов, ~\(template.duration) дней")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -190,11 +190,11 @@ struct NewEmployeeOnboardingView: View {
             Text("Шаблон программы")
         }
     }
-    
+
     private var programDetailsSection: some View {
         Section {
             DatePicker("Дата начала", selection: $startDate, displayedComponents: .date)
-            
+
             HStack {
                 Image(systemName: "person.2.fill")
                     .foregroundColor(.orange)
@@ -208,7 +208,7 @@ struct NewEmployeeOnboardingView: View {
                 .font(.caption)
         }
     }
-    
+
     private var stagesSection: some View {
         Section {
             ForEach(customStages.indices, id: \.self) { index in
@@ -221,10 +221,10 @@ struct NewEmployeeOnboardingView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     TextField("Название этапа", text: $customStages[index].title)
                         .textFieldStyle(.roundedBorder)
-                    
+
                     Text("\(customStages[index].tasks.count) задач")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -247,9 +247,9 @@ struct NewEmployeeOnboardingView: View {
                 .font(.caption)
         }
     }
-    
+
     // MARK: - Sheets
-    
+
     private var employeePickerSheet: some View {
         NavigationView {
             List {
@@ -262,7 +262,7 @@ struct NewEmployeeOnboardingView: View {
                             Image(systemName: "person.circle.fill")
                                 .font(.largeTitle)
                                 .foregroundColor(.blue)
-                            
+
                             VStack(alignment: .leading) {
                                 Text(employee.fullName)
                                     .font(.headline)
@@ -274,9 +274,9 @@ struct NewEmployeeOnboardingView: View {
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
-                            
+
                             Spacer()
-                            
+
                             if selectedEmployee?.id == employee.id {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.blue)
@@ -298,7 +298,7 @@ struct NewEmployeeOnboardingView: View {
             }
         }
     }
-    
+
     private var templatePickerSheet: some View {
         NavigationView {
             List {
@@ -321,11 +321,11 @@ struct NewEmployeeOnboardingView: View {
                                         .foregroundColor(.blue)
                                 }
                             }
-                            
+
                             Text("Позиция: \(template.targetPosition)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
+
                             HStack {
                                 Label("\(template.stages.count) этапов", systemImage: "list.bullet")
                                 Label("~\(template.duration) дней", systemImage: "calendar")
@@ -349,28 +349,28 @@ struct NewEmployeeOnboardingView: View {
             }
         }
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private var isFormValid: Bool {
         selectedEmployee != nil && selectedTemplate != nil && !mentorId.isEmpty
     }
-    
+
     private func createProgram() {
         guard let employee = selectedEmployee,
               let template = selectedTemplate else { return }
-        
+
         isCreating = true
-        
+
         // Simulate API call
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             // Create stages from template
             var currentDate = startDate
-            let stages = customStages.enumerated().map { index, templateStage in
+            let stages = customStages.enumerated().map { _, templateStage in
                 let stageStartDate = currentDate
                 let stageEndDate = Calendar.current.date(byAdding: .day, value: templateStage.duration, to: stageStartDate)
                 currentDate = stageEndDate ?? currentDate
-                
+
                 return OnboardingStage(
                     id: UUID(),
                     templateStageId: templateStage.id,
@@ -404,7 +404,7 @@ struct NewEmployeeOnboardingView: View {
                     }
                 )
             }
-            
+
             // Create new program
             let newProgram = OnboardingProgram(
                 templateId: template.id,
@@ -427,10 +427,10 @@ struct NewEmployeeOnboardingView: View {
                 totalDuration: template.duration,
                 status: .notStarted
             )
-            
+
             // Add to service
             onboardingService.addProgram(newProgram)
-            
+
             isCreating = false
             showingSuccessAlert = true
         }
@@ -443,4 +443,4 @@ struct NewEmployeeOnboardingView_Previews: PreviewProvider {
     static var previews: some View {
         NewEmployeeOnboardingView()
     }
-} 
+}

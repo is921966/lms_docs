@@ -3,10 +3,10 @@ import SwiftUI
 struct MoreView: View {
     // TEMPORARY: Use mock service for TestFlight testing
     @StateObject private var authService = MockAuthService.shared
-    
+
     @State private var showingPendingUsers = false
     @State private var isAdmin = false
-    
+
     var body: some View {
         List {
             // Admin section
@@ -17,11 +17,11 @@ struct MoreView: View {
                             Image(systemName: "person.badge.plus")
                                 .foregroundColor(.blue)
                                 .frame(width: 30)
-                            
+
                             Text("Новые студенты")
-                            
+
                             Spacer()
-                            
+
                             // Badge with pending count
                             Text("3")
                                 .font(.caption)
@@ -32,19 +32,19 @@ struct MoreView: View {
                                 .cornerRadius(10)
                         }
                     }
-                    
+
                     NavigationLink(destination: Text("Управление курсами")) {
                         HStack {
                             Image(systemName: "book.closed")
                                 .foregroundColor(.green)
                                 .frame(width: 30)
-                            
+
                             Text("Управление курсами")
                         }
                     }
                 }
             }
-            
+
             // General section
             Section("Общее") {
                 NavigationLink(destination: Text("Настройки")) {
@@ -52,32 +52,32 @@ struct MoreView: View {
                         Image(systemName: "gearshape")
                             .foregroundColor(.gray)
                             .frame(width: 30)
-                        
+
                         Text("Настройки")
                     }
                 }
-                
+
                 NavigationLink(destination: Text("О приложении")) {
                     HStack {
                         Image(systemName: "info.circle")
                             .foregroundColor(.blue)
                             .frame(width: 30)
-                        
+
                         Text("О приложении")
                     }
                 }
-                
+
                 NavigationLink(destination: Text("Помощь")) {
                     HStack {
                         Image(systemName: "questionmark.circle")
                             .foregroundColor(.orange)
                             .frame(width: 30)
-                        
+
                         Text("Помощь")
                     }
                 }
             }
-            
+
             #if DEBUG
             // Development section
             Section("Разработка") {
@@ -85,18 +85,18 @@ struct MoreView: View {
                     Image(systemName: "hammer.fill")
                         .foregroundColor(.purple)
                         .frame(width: 30)
-                    
+
                     Text("Режим разработки")
-                    
+
                     Spacer()
-                    
+
                     Text("Включен")
                         .font(.caption)
                         .foregroundColor(.green)
                 }
             }
             #endif
-            
+
             // Logout
             Section {
                 Button(action: logout) {
@@ -104,7 +104,7 @@ struct MoreView: View {
                         Image(systemName: "arrow.backward.square")
                             .foregroundColor(.red)
                             .frame(width: 30)
-                        
+
                         Text("Выйти")
                             .foregroundColor(.red)
                     }
@@ -118,13 +118,13 @@ struct MoreView: View {
             checkAdminStatus()
         }
     }
-    
+
     private func checkAdminStatus() {
         if let user = authService.currentUser {
             isAdmin = user.roles.contains("admin") || user.permissions.contains("manage_users")
         }
     }
-    
+
     private func logout() {
         authService.logout()
     }
@@ -136,7 +136,7 @@ struct MockPendingUsersView: View {
     @State private var selectedUsers = Set<String>()
     @State private var showingSuccessAlert = false
     @State private var successMessage = ""
-    
+
     var body: some View {
         VStack {
             if adminService.isLoading {
@@ -147,15 +147,15 @@ struct MockPendingUsersView: View {
                     Image(systemName: "person.crop.circle.badge.checkmark")
                         .font(.system(size: 60))
                         .foregroundColor(.green)
-                    
+
                     Text("Нет новых студентов")
                         .font(.title2)
                         .fontWeight(.semibold)
-                    
+
                     Text("Все студенты уже одобрены")
                         .font(.body)
                         .foregroundColor(.secondary)
-                    
+
                     Button("Обновить") {
                         adminService.fetchPendingUsers()
                     }
@@ -181,7 +181,7 @@ struct MockPendingUsersView: View {
                                 .foregroundColor(selectedUsers.contains(user.id) ? .blue : .gray)
                         }
                         .buttonStyle(PlainButtonStyle())
-                        
+
                         // User info
                         VStack(alignment: .leading) {
                             Text(user.fullName)
@@ -190,7 +190,7 @@ struct MockPendingUsersView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         Spacer()
                     }
                     .padding(.vertical, 8)
@@ -217,7 +217,7 @@ struct MockPendingUsersView: View {
             Text(successMessage)
         }
     }
-    
+
     private func approveSelectedUsers() {
         adminService.approveSelectedUsers(userIds: Array(selectedUsers)) { success in
             if success {

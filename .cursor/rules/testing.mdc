@@ -1,0 +1,649 @@
+# Testing Rules for LMS Project
+
+## Test-Driven Development (TDD) Mandate
+
+**CRITICAL**: Code without tests does NOT exist. This is non-negotiable.
+
+### TDD Cycle
+```
+1. RED: Write a failing test first
+2. GREEN: Write minimal code to make test pass
+3. REFACTOR: Improve code while keeping tests green
+4. REPEAT: Never skip steps
+```
+
+### Example TDD Flow:
+```swift
+// 1. RED - Write test first
+func testUserCanEnrollInCourse() {
+    // Arrange
+    let user = User(id: "1", name: "Test User")
+    let course = Course(id: "101", title: "iOS Development")
+    let enrollmentService = EnrollmentService()
+    
+    // Act
+    let result = enrollmentService.enroll(user: user, in: course)
+    
+    // Assert
+    XCTAssertTrue(result.isSuccess)
+    XCTAssertEqual(result.enrollment?.userId, user.id)
+    XCTAssertEqual(result.enrollment?.courseId, course.id)
+}
+
+// 2. GREEN - Minimal implementation
+struct EnrollmentService {
+    func enroll(user: User, in course: Course) -> Result<Enrollment, Error> {
+        let enrollment = Enrollment(userId: user.id, courseId: course.id)
+        return .success(enrollment)
+    }
+}
+
+// 3. REFACTOR - Add validation, error handling, etc.
+```
+
+## Behavior-Driven Development (BDD) with Gherkin
+
+### Feature Files Structure
+```gherkin
+# Features/Authentication.feature
+Feature: User Authentication
+  As a corporate employee
+  I want to securely log into the LMS
+  So that I can access my learning materials
+
+  Background:
+    Given the LMS application is launched
+    And I am on the login screen
+    And the system is connected to the network
+
+  Scenario: Successful login with valid credentials
+    Given I have a valid corporate account
+    When I enter email "john.doe@company.com"
+    And I enter password "SecurePass123!"
+    And I tap the "Login" button
+    Then I should see the main dashboard
+    And I should see welcome message "Welcome back, John!"
+    And my session should be active for 24 hours
+
+  Scenario: Failed login with invalid password
+    Given I have a valid corporate account
+    When I enter email "john.doe@company.com"
+    And I enter password "WrongPassword"
+    And I tap the "Login" button
+    Then I should see error message "Invalid email or password"
+    And the password field should be cleared
+    And I should remain on the login screen
+
+  Scenario Outline: Input validation
+    When I enter email "<email>"
+    And I enter password "<password>"
+    Then the login button should be "<state>"
+    And I should see validation message "<message>"
+
+    Examples:
+      | email                | password  | state    | message                        |
+      |                     | Pass123!  | disabled | Email is required              |
+      | invalid.email       | Pass123!  | disabled | Please enter a valid email     |
+      | john@company.com    |           | disabled | Password is required           |
+      | john@company.com    | 123       | disabled | Password must be 8+ characters |
+```
+
+### BDD Test Implementation with Quick/Nimble
+```swift
+// Tests/Features/AuthenticationSpec.swift
+import Quick
+import Nimble
+@testable import LMS
+
+class AuthenticationSpec: QuickSpec {
+    override func spec() {
+        describe("User Authentication") {
+            var loginViewModel: LoginViewModel!
+            var mockAuthService: MockAuthService!
+            
+            beforeEach {
+                mockAuthService = MockAuthService()
+                loginViewModel = LoginViewModel(authService: mockAuthService)
+            }
+            
+            context("when user enters valid credentials") {
+                beforeEach {
+                    loginViewModel.email = "john.doe@company.com"
+                    loginViewModel.password = "SecurePass123!"
+                }
+                
+                it("should successfully authenticate") {
+                    mockAuthService.shouldSucceed = true
+                    
+                    waitUntil { done in
+                        loginViewModel.login {
+                            expect(loginViewModel.isAuthenticated).to(beTrue())
+                            expect(loginViewModel.error).to(beNil())
+                            done()
+                        }
+                    }
+                }
+                
+                it("should navigate to dashboard") {
+                    expect(loginViewModel.navigationDestination)
+                        .toEventually(equal(.dashboard))
+                }
+            }
+            
+            context("when user enters invalid password") {
+                beforeEach {
+                    loginViewModel.email = "john.doe@company.com"
+                    loginViewModel.password = "WrongPassword"
+                }
+                
+                it("should show error message") {
+                    mockAuthService.shouldSucceed = false
+                    
+                    loginViewModel.login()
+                    
+                    expect(loginViewModel.error).toEventually(equal("Invalid email or password"))
+                    expect(loginViewModel.password).to(beEmpty())
+                }
+            }
+        }
+    }
+}
+```
+
+## Test Structure and Organization
+
+### Arrange-Act-Assert (AAA) Pattern
+```swift
+func testCourseProgressCalculation() {
+    // Arrange
+    let course = Course(
+        id: "101",
+        title: "Swift Basics",
+        modules: [
+            Module(id: "1", isCompleted: true),
+            Module(id: "2", isCompleted: true),
+            Module(id: "3", isCompleted: false),
+            Module(id: "4", isCompleted: false)
+        ]
+    )
+    
+    // Act
+    let progress = course.calculateProgress()
+    
+    // Assert
+    XCTAssertEqual(progress, 0.5, accuracy: 0.01)
+}
+```
+
+### Given-When-Then Pattern (BDD Style)
+```swift
+func testUserCannotEnrollInFullCourse() {
+    // Given
+    let course = givenFullCourse()
+    let user = givenNewUser()
+    let enrollmentService = EnrollmentService()
+    
+    // When
+    let result = enrollmentService.enroll(user: user, in: course)
+    
+    // Then
+    XCTAssertFalse(result.isSuccess)
+    XCTAssertEqual(result.error, .courseFull)
+}
+```
+
+## Test Coverage Requirements
+
+### Mandatory Coverage Levels
+```yaml
+coverage_requirements:
+  domain_layer: 95%       # Core business logic
+  application_layer: 90%  # Use cases
+  presentation_layer: 80% # ViewModels
+  infrastructure_layer: 70% # External integrations
+  overall_minimum: 85%
+```
+
+### Coverage Measurement
+```bash
+# Run tests with coverage
+xcodebuild test \
+  -scheme LMS \
+  -enableCodeCoverage YES \
+  -resultBundlePath TestResults.xcresult
+
+# Generate coverage report
+xcrun xccov view --report TestResults.xcresult
+```
+
+## Unit Testing Best Practices
+
+### Fast, Isolated, Repeatable, Self-Validating, Timely (FIRST)
+```swift
+// FAST - Tests run in milliseconds
+class UserValidationTests: XCTestCase {
+    func testEmailValidation() {
+        // No network calls, no database
+        XCTAssertTrue(EmailValidator.isValid("test@example.com"))
+        XCTAssertFalse(EmailValidator.isValid("invalid.email"))
+    }
+}
+
+// ISOLATED - No dependencies between tests
+class CourseServiceTests: XCTestCase {
+    var sut: CourseService!
+    
+    override func setUp() {
+        super.setUp()
+        sut = CourseService(repository: MockCourseRepository())
+    }
+    
+    override func tearDown() {
+        sut = nil
+        super.tearDown()
+    }
+}
+
+// REPEATABLE - Same result every time
+func testDateFormatting() {
+    // Use fixed date, not Date()
+    let date = Date(timeIntervalSince1970: 1640995200) // 2022-01-01
+    let formatted = DateFormatter.courseDate.string(from: date)
+    XCTAssertEqual(formatted, "January 1, 2022")
+}
+```
+
+### Mocking Strategies
+```swift
+// Protocol-based mocking
+protocol UserRepositoryProtocol {
+    func getUser(id: String) async throws -> User
+}
+
+class MockUserRepository: UserRepositoryProtocol {
+    var users: [String: User] = [:]
+    var shouldThrowError = false
+    
+    func getUser(id: String) async throws -> User {
+        if shouldThrowError {
+            throw RepositoryError.notFound
+        }
+        guard let user = users[id] else {
+            throw RepositoryError.notFound
+        }
+        return user
+    }
+}
+
+// Usage in tests
+func testGetUserSuccess() async throws {
+    // Arrange
+    let mockRepo = MockUserRepository()
+    let expectedUser = User(id: "1", name: "Test")
+    mockRepo.users["1"] = expectedUser
+    let service = UserService(repository: mockRepo)
+    
+    // Act
+    let user = try await service.getUser(id: "1")
+    
+    // Assert
+    XCTAssertEqual(user, expectedUser)
+}
+```
+
+## Integration Testing
+
+### API Integration Tests
+```swift
+class APIIntegrationTests: XCTestCase {
+    var sut: APIClient!
+    var mockServer: MockServer!
+    
+    override func setUp() {
+        super.setUp()
+        mockServer = MockServer()
+        mockServer.start()
+        sut = APIClient(baseURL: mockServer.url)
+    }
+    
+    override func tearDown() {
+        mockServer.stop()
+        super.tearDown()
+    }
+    
+    func testFetchCoursesIntegration() async throws {
+        // Given
+        mockServer.stub(
+            path: "/api/courses",
+            response: MockResponses.courseList
+        )
+        
+        // When
+        let courses = try await sut.fetchCourses()
+        
+        // Then
+        XCTAssertEqual(courses.count, 3)
+        XCTAssertEqual(mockServer.receivedRequests.count, 1)
+        XCTAssertEqual(mockServer.lastRequest?.path, "/api/courses")
+    }
+}
+```
+
+### Database Integration Tests
+```swift
+class CoreDataIntegrationTests: XCTestCase {
+    var coreDataStack: TestCoreDataStack!
+    
+    override func setUp() {
+        super.setUp()
+        coreDataStack = TestCoreDataStack()
+    }
+    
+    func testSaveAndFetchUser() {
+        // Given
+        let context = coreDataStack.mainContext
+        let user = UserEntity(context: context)
+        user.id = "123"
+        user.name = "Test User"
+        
+        // When
+        try? context.save()
+        
+        // Then
+        let request = UserEntity.fetchRequest()
+        let users = try? context.fetch(request)
+        XCTAssertEqual(users?.count, 1)
+        XCTAssertEqual(users?.first?.name, "Test User")
+    }
+}
+```
+
+## UI Testing
+
+### Page Object Pattern
+```swift
+// Page Objects
+class LoginPage {
+    let app: XCUIApplication
+    
+    init(app: XCUIApplication) {
+        self.app = app
+    }
+    
+    var emailTextField: XCUIElement {
+        app.textFields["emailTextField"]
+    }
+    
+    var passwordSecureField: XCUIElement {
+        app.secureTextFields["passwordSecureField"]
+    }
+    
+    var loginButton: XCUIElement {
+        app.buttons["loginButton"]
+    }
+    
+    var errorLabel: XCUIElement {
+        app.staticTexts["errorLabel"]
+    }
+    
+    func login(email: String, password: String) {
+        emailTextField.tap()
+        emailTextField.typeText(email)
+        
+        passwordSecureField.tap()
+        passwordSecureField.typeText(password)
+        
+        loginButton.tap()
+    }
+}
+
+// UI Test using Page Object
+class LoginUITests: XCTestCase {
+    var app: XCUIApplication!
+    var loginPage: LoginPage!
+    
+    override func setUp() {
+        super.setUp()
+        app = XCUIApplication()
+        app.launchArguments = ["--uitesting"]
+        app.launch()
+        loginPage = LoginPage(app: app)
+    }
+    
+    func testSuccessfulLogin() {
+        // When
+        loginPage.login(
+            email: "test@example.com",
+            password: "Password123!"
+        )
+        
+        // Then
+        XCTAssertTrue(app.tabBars["mainTabBar"].waitForExistence(timeout: 5))
+    }
+}
+```
+
+### Accessibility Testing in UI Tests
+```swift
+func testLoginScreenAccessibility() {
+    // Check VoiceOver labels
+    XCTAssertEqual(
+        loginPage.emailTextField.label,
+        "Email address"
+    )
+    
+    XCTAssertEqual(
+        loginPage.passwordSecureField.label,
+        "Password"
+    )
+    
+    // Check hints
+    XCTAssertEqual(
+        loginPage.loginButton.accessibilityHint,
+        "Double tap to sign in to your account"
+    )
+    
+    // Check traits
+    XCTAssertTrue(
+        loginPage.loginButton.isHittable
+    )
+}
+```
+
+## Performance Testing
+
+### Measure Block Usage
+```swift
+func testCourseListLoadingPerformance() {
+    let courses = generateLargeCourseList(count: 10000)
+    
+    measure {
+        let viewModel = CourseListViewModel()
+        viewModel.processCourses(courses)
+        XCTAssertEqual(viewModel.displayedCourses.count, 10000)
+    }
+}
+
+func testDatabaseQueryPerformance() {
+    // Populate database with test data
+    populateDatabase(with: 1000)
+    
+    let options = XCTMeasureOptions()
+    options.iterationCount = 10
+    
+    measure(options: options) {
+        let results = repository.fetchCourses(
+            matching: "Swift",
+            limit: 100
+        )
+        XCTAssertLessThanOrEqual(results.count, 100)
+    }
+}
+```
+
+## Snapshot Testing
+
+### View Snapshot Tests
+```swift
+import SnapshotTesting
+
+class ViewSnapshotTests: XCTestCase {
+    func testCourseCardAppearance() {
+        let course = Course.mock()
+        let card = CourseCard(course: course)
+            .frame(width: 350, height: 200)
+            .environmentObject(ThemeEnvironment())
+        
+        assertSnapshot(matching: card, as: .image)
+    }
+    
+    func testLoginScreenDarkMode() {
+        let loginView = LoginView()
+            .preferredColorScheme(.dark)
+        
+        assertSnapshot(
+            matching: loginView,
+            as: .image(on: .iPhoneX)
+        )
+    }
+}
+```
+
+## Quick Test Execution
+
+### test-quick.sh Usage
+```bash
+#!/bin/bash
+# Run specific test file quickly
+./test-quick.sh UserTests.swift
+
+# Run specific test method
+./test-quick.sh UserTests/testEmailValidation
+
+# Run with coverage
+./test-quick.sh --coverage UserTests.swift
+```
+
+### Xcode Test Shortcuts
+```swift
+// Run single test: Cmd+U (with cursor in test method)
+// Run test file: Cmd+Opt+Ctrl+U
+// Run last test: Cmd+Ctrl+Opt+G
+
+// Test navigator shortcuts
+// Filter failed tests: Cmd+F, type "failed"
+// Show only executable tests: Bottom bar filter
+```
+
+## Test Data Builders
+
+### Builder Pattern for Test Data
+```swift
+class UserBuilder {
+    private var id = UUID().uuidString
+    private var name = "Test User"
+    private var email = "test@example.com"
+    private var role = UserRole.student
+    
+    func withId(_ id: String) -> UserBuilder {
+        self.id = id
+        return self
+    }
+    
+    func withName(_ name: String) -> UserBuilder {
+        self.name = name
+        return self
+    }
+    
+    func withEmail(_ email: String) -> UserBuilder {
+        self.email = email
+        return self
+    }
+    
+    func asInstructor() -> UserBuilder {
+        self.role = .instructor
+        return self
+    }
+    
+    func build() -> User {
+        User(id: id, name: name, email: email, role: role)
+    }
+}
+
+// Usage
+let instructor = UserBuilder()
+    .withName("John Doe")
+    .withEmail("john@university.com")
+    .asInstructor()
+    .build()
+```
+
+## Continuous Testing
+
+### Pre-commit Hook
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+
+# Run quick tests before commit
+echo "Running tests..."
+if ! ./test-quick.sh; then
+    echo "Tests failed. Commit aborted."
+    exit 1
+fi
+
+# Check test coverage
+coverage=$(xcrun xccov view --report TestResults.xcresult | grep "Overall" | awk '{print $2}')
+if (( $(echo "$coverage < 85" | bc -l) )); then
+    echo "Test coverage is below 85%. Commit aborted."
+    exit 1
+fi
+```
+
+### CI/CD Test Configuration
+```yaml
+# .github/workflows/tests.yml
+name: Test Suite
+
+on: [push, pull_request]
+
+jobs:
+  unit-tests:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+            -scheme LMS \
+            -destination 'platform=iOS Simulator,name=iPhone 14' \
+            -only-testing:LMSTests \
+            -enableCodeCoverage YES
+      
+      - name: Check Coverage
+        run: |
+          xcrun xccov view --report TestResults.xcresult > coverage.txt
+          coverage=$(grep "Overall" coverage.txt | awk '{print $2}' | sed 's/%//')
+          if (( $(echo "$coverage < 85" | bc -l) )); then
+            echo "Coverage is ${coverage}%, minimum is 85%"
+            exit 1
+          fi
+```
+
+## AI Testing Guidelines
+
+When generating tests:
+
+1. **Write test FIRST** - Never generate implementation before test
+2. **Test behavior, not implementation** - Focus on what, not how
+3. **One assertion per test** - Keep tests focused
+4. **Use descriptive names** - Test names should document behavior
+5. **Include edge cases** - Empty, nil, boundary conditions
+6. **Mock external dependencies** - Keep tests fast and isolated
+7. **Follow AAA pattern** - Arrange, Act, Assert
+8. **Generate BDD scenarios** - For feature-level testing
+9. **Include negative tests** - Test error cases
+10. **Maintain test hygiene** - No commented tests, no skipped tests
+
+Remember: Tests are documentation. They should clearly express the intended behavior of the system. 

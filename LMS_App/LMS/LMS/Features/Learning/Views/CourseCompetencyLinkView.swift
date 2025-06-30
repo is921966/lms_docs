@@ -12,7 +12,7 @@ struct CourseCompetencyLinkView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedCompetencies: Set<UUID> = []
     @State private var searchText = ""
-    
+
     // Mock competencies
     let competencies = [
         Competency(
@@ -41,7 +41,7 @@ struct CourseCompetencyLinkView: View {
             category: .innovation
         )
     ]
-    
+
     var filteredCompetencies: [Competency] {
         if searchText.isEmpty {
             return competencies
@@ -52,7 +52,7 @@ struct CourseCompetencyLinkView: View {
             competency.category.rawValue.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -62,7 +62,7 @@ struct CourseCompetencyLinkView: View {
                         Image(systemName: course.icon)
                             .font(.title2)
                             .foregroundColor(course.color)
-                        
+
                         VStack(alignment: .leading) {
                             Text(course.title)
                                 .font(.headline)
@@ -70,21 +70,21 @@ struct CourseCompetencyLinkView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         Spacer()
                     }
                     .padding()
                 }
                 .background(Color(.systemGroupedBackground))
-                
+
                 // Search bar
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
-                    
+
                     TextField("Поиск компетенций", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
-                    
+
                     if !searchText.isEmpty {
                         Button(action: { searchText = "" }) {
                             Image(systemName: "xmark.circle.fill")
@@ -96,16 +96,16 @@ struct CourseCompetencyLinkView: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
                 .padding()
-                
+
                 // Selected count
                 if !selectedCompetencies.isEmpty {
                     HStack {
                         Text("Выбрано: \(selectedCompetencies.count)")
                             .font(.subheadline)
                             .foregroundColor(.blue)
-                        
+
                         Spacer()
-                        
+
                         Button("Снять выделение") {
                             selectedCompetencies.removeAll()
                         }
@@ -113,7 +113,7 @@ struct CourseCompetencyLinkView: View {
                     }
                     .padding(.horizontal)
                 }
-                
+
                 // Competency list
                 List(filteredCompetencies) { competency in
                     CourseCompetencySelectionRow(
@@ -129,7 +129,7 @@ struct CourseCompetencyLinkView: View {
                     )
                 }
                 .listStyle(PlainListStyle())
-                
+
                 // Save button
                 Button(action: saveCompetencies) {
                     HStack {
@@ -159,14 +159,14 @@ struct CourseCompetencyLinkView: View {
             selectedCompetencies = Set(course.competencyIds)
         }
     }
-    
+
     private func saveCompetencies() {
         // Update course with selected competencies
         course.competencyIds = Array(selectedCompetencies)
-        
+
         // In real app, would save to backend
         // await courseService.updateCompetencies(courseId: course.id, competencyIds: selectedCompetencies)
-        
+
         dismiss()
     }
 }
@@ -176,33 +176,33 @@ struct CourseCompetencySelectionRow: View {
     let competency: Competency
     let isSelected: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         Button(action: onToggle) {
             HStack {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(isSelected ? .blue : .gray)
                     .font(.title3)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(competency.name)
                             .font(.body)
                             .foregroundColor(.primary)
                     }
-                    
+
                     Text(competency.description)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
-                    
+
                     HStack {
                         Label(competency.category.rawValue, systemImage: competency.category.icon)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
             }
             .padding(.vertical, 4)
@@ -215,4 +215,4 @@ struct CourseCompetencySelectionRow: View {
     CourseCompetencyLinkView(
         course: .constant(Course.createMockCourses().first!)
     )
-} 
+}

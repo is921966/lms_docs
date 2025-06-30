@@ -12,7 +12,7 @@ struct CertificateListView: View {
     @State private var searchText = ""
     @State private var selectedCertificate: Certificate?
     @State private var showingCertificate = false
-    
+
     var filteredCertificates: [Certificate] {
         if searchText.isEmpty {
             return certificates
@@ -23,7 +23,7 @@ struct CertificateListView: View {
             certificate.verificationCode.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     var body: some View {
         NavigationView {
             VStack {
@@ -35,7 +35,7 @@ struct CertificateListView: View {
                         CertificateStatsView(certificates: certificates)
                             .listRowInsets(EdgeInsets())
                             .listRowBackground(Color.clear)
-                        
+
                         // Search bar
                         HStack {
                             Image(systemName: "magnifyingglass")
@@ -47,7 +47,7 @@ struct CertificateListView: View {
                         .cornerRadius(10)
                         .listRowInsets(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
                         .listRowSeparator(.hidden)
-                        
+
                         // Certificates
                         ForEach(filteredCertificates) { certificate in
                             CertificateRowView(certificate: certificate)
@@ -72,7 +72,7 @@ struct CertificateListView: View {
             }
         }
     }
-    
+
     private func loadCertificates() {
         // Mock certificates
         certificates = [
@@ -86,12 +86,12 @@ struct CertificateListView: View {
                 courseDuration: "8 часов",
                 userName: "Иван Иванов",
                 userEmail: "ivan@company.com",
-                completedAt: Date().addingTimeInterval(-30*24*60*60),
+                completedAt: Date().addingTimeInterval(-30 * 24 * 60 * 60),
                 score: 92,
                 totalScore: 100,
                 percentage: 92,
                 isPassed: true,
-                issuedAt: Date().addingTimeInterval(-30*24*60*60),
+                issuedAt: Date().addingTimeInterval(-30 * 24 * 60 * 60),
                 expiresAt: nil,
                 verificationCode: Certificate.generateVerificationCode(),
                 pdfUrl: nil
@@ -106,13 +106,13 @@ struct CertificateListView: View {
                 courseDuration: "12 часов",
                 userName: "Иван Иванов",
                 userEmail: "ivan@company.com",
-                completedAt: Date().addingTimeInterval(-7*24*60*60),
+                completedAt: Date().addingTimeInterval(-7 * 24 * 60 * 60),
                 score: 88,
                 totalScore: 100,
                 percentage: 88,
                 isPassed: true,
-                issuedAt: Date().addingTimeInterval(-7*24*60*60),
-                expiresAt: Date().addingTimeInterval(365*24*60*60),
+                issuedAt: Date().addingTimeInterval(-7 * 24 * 60 * 60),
+                expiresAt: Date().addingTimeInterval(365 * 24 * 60 * 60),
                 verificationCode: Certificate.generateVerificationCode(),
                 pdfUrl: nil
             ),
@@ -126,12 +126,12 @@ struct CertificateListView: View {
                 courseDuration: "16 часов",
                 userName: "Иван Иванов",
                 userEmail: "ivan@company.com",
-                completedAt: Date().addingTimeInterval(-60*24*60*60),
+                completedAt: Date().addingTimeInterval(-60 * 24 * 60 * 60),
                 score: 95,
                 totalScore: 100,
                 percentage: 95,
                 isPassed: true,
-                issuedAt: Date().addingTimeInterval(-60*24*60*60),
+                issuedAt: Date().addingTimeInterval(-60 * 24 * 60 * 60),
                 expiresAt: nil,
                 verificationCode: Certificate.generateVerificationCode(),
                 pdfUrl: nil
@@ -143,17 +143,17 @@ struct CertificateListView: View {
 // MARK: - Certificate Stats View
 struct CertificateStatsView: View {
     let certificates: [Certificate]
-    
+
     var activeCertificates: Int {
         certificates.filter { $0.isValid }.count
     }
-    
+
     var averageScore: Double {
         guard !certificates.isEmpty else { return 0 }
         let totalScore = certificates.reduce(0) { $0 + $1.percentage }
         return totalScore / Double(certificates.count)
     }
-    
+
     var body: some View {
         HStack(spacing: 20) {
             CertificateStatCard(
@@ -162,14 +162,14 @@ struct CertificateStatsView: View {
                 icon: "doc.text.fill",
                 color: .blue
             )
-            
+
             CertificateStatCard(
                 title: "Активных",
                 value: "\(activeCertificates)",
                 icon: "checkmark.seal.fill",
                 color: .green
             )
-            
+
             CertificateStatCard(
                 title: "Средний балл",
                 value: String(format: "%.0f%%", averageScore),
@@ -187,17 +187,17 @@ struct CertificateStatCard: View {
     let value: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
-            
+
             Text(value)
                 .font(.title3)
                 .fontWeight(.bold)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -213,7 +213,7 @@ struct CertificateStatCard: View {
 // MARK: - Certificate Row View
 struct CertificateRowView: View {
     let certificate: Certificate
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -222,25 +222,25 @@ struct CertificateRowView: View {
                     Circle()
                         .fill(certificate.isValid ? Color.green : Color.orange)
                         .frame(width: 50, height: 50)
-                    
+
                     Image(systemName: certificate.isValid ? "seal.fill" : "seal")
                         .font(.title2)
                         .foregroundColor(.white)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(certificate.courseName)
                         .font(.headline)
-                    
+
                     Text(certificate.formattedCertificateNumber)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     HStack {
                         Label("\(Int(certificate.percentage))%", systemImage: "percent")
                             .font(.caption)
                             .foregroundColor(.green)
-                        
+
                         if let expiresAt = certificate.expiresAt {
                             Label(formatExpiryDate(expiresAt), systemImage: "clock")
                                 .font(.caption)
@@ -248,14 +248,14 @@ struct CertificateRowView: View {
                         }
                     }
                 }
-                
+
                 Spacer()
-                
+
                 VStack {
                     Image(systemName: "chevron.right")
                         .font(.caption)
                         .foregroundColor(.gray)
-                    
+
                     if certificate.isValid {
                         Text("Действителен")
                             .font(.caption2)
@@ -270,7 +270,7 @@ struct CertificateRowView: View {
             .padding(.vertical, 8)
         }
     }
-    
+
     private func formatExpiryDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy"
@@ -285,16 +285,16 @@ private struct CertificateEmptyStateView: View {
             Image(systemName: "doc.text")
                 .font(.system(size: 80))
                 .foregroundColor(.gray)
-            
+
             Text("Нет сертификатов")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             Text("Завершите курсы с проходным баллом,\nчтобы получить сертификаты")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
+
             NavigationLink(destination: LearningListView()) {
                 Text("Перейти к курсам")
                     .padding()
@@ -309,4 +309,4 @@ private struct CertificateEmptyStateView: View {
 
 #Preview {
     CertificateListView()
-} 
+}

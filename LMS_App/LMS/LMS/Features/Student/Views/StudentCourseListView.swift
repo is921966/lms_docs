@@ -11,20 +11,20 @@ struct StudentCourseListView: View {
     @StateObject private var viewModel = CourseViewModel()
     @State private var selectedTab = 0
     @State private var searchText = ""
-    
+
     var filteredCourses: [Course] {
         let courses = selectedTab == 0 ? viewModel.enrolledCourses : viewModel.availableCourses
-        
+
         if searchText.isEmpty {
             return courses
         }
-        
+
         return courses.filter { course in
             course.title.localizedCaseInsensitiveContains(searchText) ||
             course.description.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Tabs
@@ -34,7 +34,7 @@ struct StudentCourseListView: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding()
-            
+
             // Search bar
             HStack {
                 Image(systemName: "magnifyingglass")
@@ -46,13 +46,13 @@ struct StudentCourseListView: View {
             .cornerRadius(10)
             .padding(.horizontal)
             .padding(.bottom)
-            
+
             // Course list
             if filteredCourses.isEmpty {
                 EmptyStateView(
                     icon: "book.closed",
                     title: selectedTab == 0 ? "Нет активных курсов" : "Нет доступных курсов",
-                    subtitle: selectedTab == 0 
+                    subtitle: selectedTab == 0
                         ? "Запишитесь на курсы из вкладки \"Доступные\""
                         : "Все доступные курсы уже пройдены или недоступны"
                 )
@@ -83,7 +83,7 @@ struct StudentCourseCard: View {
     let course: Course
     let isEnrolled: Bool
     @State private var showingCourseDetail = false
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
@@ -95,32 +95,32 @@ struct StudentCourseCard: View {
                     .frame(width: 50, height: 50)
                     .background(Color.blue)
                     .cornerRadius(10)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(course.title)
                         .font(.headline)
                         .lineLimit(2)
-                    
+
                     Text(CourseCategory.categories.first(where: { $0.id == course.categoryId })?.name ?? "Общее")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 if isEnrolled {
                     // Progress indicator
                     CircularProgressView(progress: course.progress)
                         .frame(width: 40, height: 40)
                 }
             }
-            
+
             // Description
             Text(course.description)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .lineLimit(2)
-            
+
             // Info chips
             HStack(spacing: 12) {
                 InfoChip(
@@ -128,13 +128,13 @@ struct StudentCourseCard: View {
                     text: "\(course.duration) ч",
                     color: .orange
                 )
-                
+
                 InfoChip(
                     icon: "chart.bar",
                     text: course.estimatedHours > 0 ? "\(course.estimatedHours) ч" : course.duration,
                     color: .purple
                 )
-                
+
                 if !course.modules.isEmpty {
                     InfoChip(
                         icon: "square.grid.2x2",
@@ -142,7 +142,7 @@ struct StudentCourseCard: View {
                         color: .green
                     )
                 }
-                
+
                 if course.hasCertificate {
                     InfoChip(
                         icon: "seal",
@@ -151,7 +151,7 @@ struct StudentCourseCard: View {
                     )
                 }
             }
-            
+
             // Action button
             if isEnrolled {
                 NavigationLink(destination: CourseDetailView(course: course)) {
@@ -159,9 +159,9 @@ struct StudentCourseCard: View {
                         Text("Продолжить обучение")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        
+
                         Spacer()
-                        
+
                         Image(systemName: "arrow.right.circle.fill")
                     }
                     .foregroundColor(.white)
@@ -177,9 +177,9 @@ struct StudentCourseCard: View {
                         Text("Записаться на курс")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        
+
                         Spacer()
-                        
+
                         Image(systemName: "plus.circle.fill")
                     }
                     .foregroundColor(.blue)
@@ -201,7 +201,7 @@ struct InfoChip: View {
     let icon: String
     let text: String
     let color: Color
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
@@ -221,12 +221,12 @@ struct InfoChip: View {
 // MARK: - Circular Progress View
 struct CircularProgressView: View {
     let progress: Double
-    
+
     var body: some View {
         ZStack {
             Circle()
                 .stroke(Color.gray.opacity(0.2), lineWidth: 4)
-            
+
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
@@ -235,7 +235,7 @@ struct CircularProgressView: View {
                 )
                 .rotationEffect(.degrees(-90))
                 .animation(.easeInOut, value: progress)
-            
+
             Text("\(Int(progress * 100))%")
                 .font(.caption2)
                 .fontWeight(.bold)
@@ -248,25 +248,25 @@ struct EmptyStateView: View {
     let icon: String
     let title: String
     let subtitle: String
-    
+
     var body: some View {
         VStack(spacing: 16) {
             Spacer()
-            
+
             Image(systemName: icon)
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text(title)
                 .font(.headline)
                 .foregroundColor(.primary)
-            
+
             Text(subtitle)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
+
             Spacer()
         }
     }
@@ -276,4 +276,4 @@ struct EmptyStateView: View {
     NavigationView {
         StudentCourseListView()
     }
-} 
+}

@@ -5,12 +5,12 @@ struct PositionListView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showingFilters = false
     @State private var selectedPosition: Position?
-    
+
     var isAdmin: Bool {
-        authViewModel.currentUser?.role == .admin || 
+        authViewModel.currentUser?.role == .admin ||
         authViewModel.currentUser?.role == .superAdmin
     }
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -58,9 +58,9 @@ struct PositionListView: View {
             }
         }
     }
-    
+
     // MARK: - Components
-    
+
     private var positionList: some View {
         Group {
             if viewModel.filteredPositions.isEmpty {
@@ -72,7 +72,7 @@ struct PositionListView: View {
                         if viewModel.searchText.isEmpty && viewModel.selectedLevel == nil && viewModel.selectedDepartment == nil {
                             statisticsCard
                         }
-                        
+
                         // Department sections
                         ForEach(groupedPositions.keys.sorted(), id: \.self) { department in
                             VStack(alignment: .leading, spacing: 12) {
@@ -81,9 +81,9 @@ struct PositionListView: View {
                                     Image(systemName: "building.2")
                                     Text(department)
                                         .font(.headline)
-                                    
+
                                     Spacer()
-                                    
+
                                     Text("\(groupedPositions[department]?.count ?? 0)")
                                         .font(.caption)
                                         .padding(.horizontal, 8)
@@ -92,7 +92,7 @@ struct PositionListView: View {
                                         .cornerRadius(10)
                                 }
                                 .padding(.horizontal)
-                                
+
                                 // Position cards
                                 ForEach(groupedPositions[department] ?? []) { position in
                                     PositionCard(position: position)
@@ -116,16 +116,16 @@ struct PositionListView: View {
             }
         }
     }
-    
+
     private var groupedPositions: [String: [Position]] {
         Dictionary(grouping: viewModel.filteredPositions, by: { $0.department })
     }
-    
+
     private var statisticsCard: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Статистика")
                 .font(.headline)
-            
+
             // Main stats
             HStack(spacing: 0) {
                 StatBox(
@@ -134,20 +134,20 @@ struct PositionListView: View {
                     icon: "briefcase.fill",
                     color: .blue
                 )
-                
+
                 Divider()
                     .frame(height: 50)
-                
+
                 StatBox(
                     title: "Сотрудников",
                     value: "\(viewModel.statistics.totalEmployees)",
                     icon: "person.3.fill",
                     color: .green
                 )
-                
+
                 Divider()
                     .frame(height: 50)
-                
+
                 StatBox(
                     title: "Отделов",
                     value: "\(viewModel.statistics.departments.count)",
@@ -157,13 +157,13 @@ struct PositionListView: View {
             }
             .background(Color(.systemGray6))
             .cornerRadius(12)
-            
+
             // Level breakdown
             VStack(alignment: .leading, spacing: 12) {
                 Text("По уровням")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                
+
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(PositionLevel.allCases, id: \.self) { level in
@@ -189,21 +189,21 @@ struct PositionListView: View {
         .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
         .padding(.horizontal)
     }
-    
+
     private var emptyState: some View {
         VStack(spacing: 20) {
             Image(systemName: "briefcase.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text("Должности не найдены")
                 .font(.headline)
-            
+
             Text("Попробуйте изменить параметры поиска или фильтры")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
+
             if isAdmin {
                 Button(action: { viewModel.showingCreateSheet = true }) {
                     Label("Создать должность", systemImage: "plus.circle.fill")
@@ -213,7 +213,7 @@ struct PositionListView: View {
         }
         .padding()
     }
-    
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -221,7 +221,7 @@ struct PositionListView: View {
                 Image(systemName: "line.3.horizontal.decrease.circle")
                     .symbolVariant(hasActiveFilters ? .fill : .none)
             }
-            
+
             if isAdmin {
                 Button(action: { viewModel.showingCreateSheet = true }) {
                     Image(systemName: "plus")
@@ -229,7 +229,7 @@ struct PositionListView: View {
             }
         }
     }
-    
+
     private var filterSheet: some View {
         NavigationStack {
             Form {
@@ -246,7 +246,7 @@ struct PositionListView: View {
                         }
                     }
                 }
-                
+
                 Section("Отдел") {
                     Picker("Отдел", selection: $viewModel.selectedDepartment) {
                         Text("Все отделы").tag(nil as String?)
@@ -255,11 +255,11 @@ struct PositionListView: View {
                         }
                     }
                 }
-                
+
                 Section("Статус") {
                     Toggle("Показывать неактивные", isOn: $viewModel.showInactivePositions)
                 }
-                
+
                 Section {
                     Button("Сбросить фильтры") {
                         viewModel.clearFilters()
@@ -279,38 +279,38 @@ struct PositionListView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func positionContextMenu(_ position: Position) -> some View {
         Button(action: { viewModel.selectPositionForCareerPaths(position) }) {
             Label("Карьерные пути", systemImage: "arrow.up.right.circle")
         }
-        
+
         if isAdmin {
             Divider()
-            
+
             Button(action: { viewModel.selectPositionForEdit(position) }) {
                 Label("Редактировать", systemImage: "pencil")
             }
-            
+
             Button(action: { viewModel.togglePositionStatus(position) }) {
                 Label(
                     position.isActive ? "Деактивировать" : "Активировать",
                     systemImage: position.isActive ? "xmark.circle" : "checkmark.circle"
                 )
             }
-            
+
             Divider()
-            
+
             Button(role: .destructive, action: { viewModel.deletePosition(position) }) {
                 Label("Удалить", systemImage: "trash")
             }
         }
     }
-    
+
     private var hasActiveFilters: Bool {
-        viewModel.selectedLevel != nil || 
-        viewModel.selectedDepartment != nil || 
+        viewModel.selectedLevel != nil ||
+        viewModel.selectedDepartment != nil ||
         viewModel.showInactivePositions
     }
 }
@@ -319,7 +319,7 @@ struct PositionListView: View {
 
 struct PositionCard: View {
     let position: Position
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header with level indicator
@@ -337,9 +337,9 @@ struct PositionCard: View {
                 .background(position.level.color.opacity(0.2))
                 .foregroundColor(position.level.color)
                 .cornerRadius(12)
-                
+
                 Spacer()
-                
+
                 // Employee count
                 HStack(spacing: 4) {
                     Image(systemName: "person.2.fill")
@@ -348,7 +348,7 @@ struct PositionCard: View {
                         .font(.caption)
                 }
                 .foregroundColor(.secondary)
-                
+
                 if !position.isActive {
                     Text("Неактивна")
                         .font(.caption)
@@ -358,37 +358,37 @@ struct PositionCard: View {
                         .cornerRadius(4)
                 }
             }
-            
+
             // Title and description
             VStack(alignment: .leading, spacing: 4) {
                 Text(position.name)
                     .font(.headline)
-                
+
                 Text(position.description)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
             }
-            
+
             // Competency requirements summary
             if !position.competencyRequirements.isEmpty {
                 HStack {
                     Image(systemName: "star.fill")
                         .font(.caption)
                         .foregroundColor(.orange)
-                    
+
                     Text("\(position.requiredCompetenciesCount) компетенций")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     Text("Ср. уровень: \(String(format: "%.1f", position.averageRequiredLevel))")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             // Action indicator
             HStack {
                 Spacer()
@@ -408,17 +408,17 @@ struct StatBox: View {
     let value: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
-            
+
             Text(value)
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -434,17 +434,17 @@ struct LevelChip: View {
     let count: Int
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: level.icon)
                     .font(.title3)
                     .foregroundColor(isSelected ? .white : level.color)
-                
+
                 Text(level.rawValue)
                     .font(.caption)
-                
+
                 Text("\(count)")
                     .font(.caption2)
                     .fontWeight(.semibold)
@@ -463,4 +463,4 @@ struct PositionListView_Previews: PreviewProvider {
         PositionListView()
             .environmentObject(AuthViewModel())
     }
-} 
+}

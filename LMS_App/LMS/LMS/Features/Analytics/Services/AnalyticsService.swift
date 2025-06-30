@@ -24,23 +24,23 @@ protocol AnalyticsServiceProtocol {
 class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
     @Published var analyticsData: [AnalyticsData] = []
     @Published var reports: [Report] = []
-    
+
     private let currentUserId = "user-1" // Mock user
-    
+
     init() {
         loadMockData()
     }
-    
+
     // MARK: - Track Event
     func trackEvent(_ event: AnalyticsData) {
         analyticsData.append(event)
     }
-    
+
     // MARK: - Get Analytics Summary
     func getAnalyticsSummary(for period: AnalyticsPeriod) -> AnalyticsSummary {
         let endDate = Date()
         let startDate = Calendar.current.date(byAdding: .day, value: -period.days, to: endDate)!
-        
+
         // Mock data
         let topPerformers = [
             UserPerformance(
@@ -80,7 +80,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
                 trend: .improving
             )
         ]
-        
+
         let popularCourses = [
             CourseStatistics(
                 courseId: "course-1",
@@ -113,7 +113,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
                 satisfactionRating: 4.3
             )
         ]
-        
+
         let competencyProgress = [
             CompetencyProgress(
                 competencyId: "comp-1",
@@ -140,7 +140,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
                 progressPercentage: 71.1
             )
         ]
-        
+
         return AnalyticsSummary(
             period: period,
             startDate: startDate,
@@ -149,13 +149,13 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
             activeUsers: 280,
             completedCourses: 420,
             averageScore: 86.5,
-            totalLearningHours: 5250.0,
+            totalLearningHours: 5_250.0,
             topPerformers: topPerformers,
             popularCourses: popularCourses,
             competencyProgress: competencyProgress
         )
     }
-    
+
     // MARK: - Get User Performance
     func getUserPerformance(userId: String, period: AnalyticsPeriod) -> UserPerformance? {
         return UserPerformance(
@@ -171,7 +171,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
             trend: .improving
         )
     }
-    
+
     // MARK: - Get Course Statistics
     func getCourseStatistics(period: AnalyticsPeriod) -> [CourseStatistics] {
         return [
@@ -217,7 +217,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
             )
         ]
     }
-    
+
     // MARK: - Get Competency Progress
     func getCompetencyProgress(period: AnalyticsPeriod) -> [CompetencyProgress] {
         return [
@@ -255,7 +255,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
             )
         ]
     }
-    
+
     // MARK: - Generate Report
     func generateReport(_ report: Report) -> AnyPublisher<Report, Error> {
         return Future<Report, Error> { promise in
@@ -264,74 +264,74 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
                 var updatedReport = report
                 updatedReport.status = .ready
                 updatedReport.updatedAt = Date()
-                
+
                 // Add sections based on report type
                 updatedReport.sections = self.generateReportSections(for: report.type)
-                
+
                 self.reports.append(updatedReport)
                 promise(.success(updatedReport))
             }
         }
         .eraseToAnyPublisher()
     }
-    
+
     // MARK: - Get Reports
     func getReports(for userId: String) -> [Report] {
         return reports.filter { $0.createdBy == userId || $0.recipients.contains(userId) }
     }
-    
+
     // MARK: - Export Report
     func exportReport(_ report: Report, format: ReportFormat) -> URL? {
         // Mock export - in real app would generate actual file
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let fileName = "\(report.title)_\(Date().timeIntervalSince1970).\(format.rawValue.lowercased())"
         let fileURL = documentsPath.appendingPathComponent(fileName)
-        
+
         // Create mock file
         let content = "Mock report content for \(report.title)"
         try? content.write(to: fileURL, atomically: true, encoding: .utf8)
-        
+
         return fileURL
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func loadMockData() {
         // Load mock analytics events
         analyticsData = generateMockAnalyticsData()
-        
+
         // Load mock reports
         reports = generateMockReports()
     }
-    
+
     private func generateMockAnalyticsData() -> [AnalyticsData] {
         var data: [AnalyticsData] = []
-        
+
         // Course progress events
         for i in 1...10 {
             data.append(AnalyticsData(
                 userId: "user-\(i % 3 + 1)",
-                timestamp: Date().addingTimeInterval(-Double(i * 3600)),
+                timestamp: Date().addingTimeInterval(-Double(i * 3_600)),
                 type: .courseProgress,
                 metrics: ["progress": Double.random(in: 0.5...1.0), "score": Double.random(in: 70...100)],
                 metadata: ["courseId": "course-\(i % 4 + 1)"]
             ))
         }
-        
+
         // Test results
         for i in 1...8 {
             data.append(AnalyticsData(
                 userId: "user-\(i % 3 + 1)",
-                timestamp: Date().addingTimeInterval(-Double(i * 7200)),
+                timestamp: Date().addingTimeInterval(-Double(i * 7_200)),
                 type: .testResult,
-                metrics: ["score": Double.random(in: 60...100), "time": Double.random(in: 300...1800)],
+                metrics: ["score": Double.random(in: 60...100), "time": Double.random(in: 300...1_800)],
                 metadata: ["testId": "test-\(i % 3 + 1)"]
             ))
         }
-        
+
         return data
     }
-    
+
     private func generateMockReports() -> [Report] {
         return [
             Report(
@@ -362,7 +362,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
             )
         ]
     }
-    
+
     private func generateReportSections(for type: ReportType) -> [ReportSection] {
         switch type {
         case .learningProgress:
@@ -396,7 +396,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
                     ))
                 )
             ]
-            
+
         case .competencyMatrix:
             return [
                 ReportSection(
@@ -436,9 +436,9 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
                     ))
                 )
             ]
-            
+
         default:
             return []
         }
     }
-} 
+}

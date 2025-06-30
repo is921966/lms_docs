@@ -13,7 +13,7 @@ enum CourseStatus: String, CaseIterable, Codable {
     case draft = "Черновик"
     case published = "Опубликован"
     case archived = "В архиве"
-    
+
     var color: Color {
         switch self {
         case .draft: return .gray
@@ -28,7 +28,7 @@ enum CourseType: String, CaseIterable, Codable {
     case mandatory = "Обязательный"
     case optional = "Дополнительный"
     case onboarding = "Онбординг"
-    
+
     var icon: String {
         switch self {
         case .mandatory: return "exclamationmark.circle.fill"
@@ -44,7 +44,7 @@ struct CourseCategory: Identifiable, Codable {
     let name: String
     let colorName: String
     let icon: String
-    
+
     var color: Color {
         switch colorName {
         case "blue": return .blue
@@ -56,7 +56,7 @@ struct CourseCategory: Identifiable, Codable {
         default: return .gray
         }
     }
-    
+
     static let categories = [
         CourseCategory(name: "Продажи", colorName: "blue", icon: "cart.fill"),
         CourseCategory(name: "Товароведение", colorName: "green", icon: "shippingbox.fill"),
@@ -76,14 +76,14 @@ struct CourseMaterial: Identifiable, Codable {
     let fileSize: Int64? // in bytes
     let duration: Int? // in minutes for video
     let uploadedAt: Date
-    
+
     enum MaterialType: String, CaseIterable, Codable {
         case video = "Видео"
         case presentation = "Презентация"
         case document = "Документ"
         case link = "Ссылка"
         case archive = "Архив"
-        
+
         var icon: String {
             switch self {
             case .video: return "play.circle.fill"
@@ -93,7 +93,7 @@ struct CourseMaterial: Identifiable, Codable {
             case .archive: return "archivebox.fill"
             }
         }
-        
+
         var acceptedExtensions: [String] {
             switch self {
             case .video: return ["mp4", "mov", "avi"]
@@ -116,12 +116,12 @@ struct CourseAssignment: Identifiable, Codable {
     let dueDate: Date?
     let completedAt: Date?
     let isMandatory: Bool
-    
+
     var isOverdue: Bool {
         guard let due = dueDate, completedAt == nil else { return false }
         return Date() > due
     }
-    
+
     var daysUntilDue: Int? {
         guard let due = dueDate else { return nil }
         return Calendar.current.dateComponents([.day], from: Date(), to: due).day
@@ -136,56 +136,56 @@ struct Course: Identifiable, Codable {
     var categoryId: UUID?
     var status: CourseStatus = .draft
     var type: CourseType = .optional
-    
+
     // Content
     var modules: [Module] = []
     var materials: [CourseMaterial] = []
     var testId: UUID?
-    
+
     // Requirements
     var competencyIds: [UUID] = []
     var positionIds: [UUID] = []
     var prerequisiteCourseIds: [UUID] = []
-    
+
     // Settings
     var duration: String // e.g., "8 часов"
     var estimatedHours: Int = 0
     var passingScore: Int = 80
     var certificateTemplateId: UUID?
     var maxAttempts: Int?
-    
+
     // Tracking
     var createdBy: UUID
-    var createdAt: Date = Date()
-    var updatedAt: Date = Date()
+    var createdAt = Date()
+    var updatedAt = Date()
     var publishedAt: Date?
-    
+
     // Calculated properties
     var totalLessons: Int {
         modules.reduce(0) { $0 + $1.lessons.count }
     }
-    
+
     var totalDuration: Int {
         modules.reduce(0) { $0 + $1.lessons.reduce(0) { $0 + $1.duration } }
     }
-    
+
     var isPublished: Bool {
         status == .published
     }
-    
+
     var canBeTaken: Bool {
         isPublished && !modules.isEmpty
     }
-    
+
     // UI properties (remove when real data available)
     var color: Color {
         CourseCategory.categories.first(where: { $0.id == categoryId })?.color ?? .blue
     }
-    
+
     var icon: String {
         CourseCategory.categories.first(where: { $0.id == categoryId })?.icon ?? "book.fill"
     }
-    
+
     var progress: Double {
         // This would be calculated based on user progress
         Double.random(in: 0...1)
@@ -200,21 +200,21 @@ struct Module: Identifiable, Codable {
     var orderIndex: Int
     var lessons: [Lesson] = []
     var materials: [CourseMaterial] = []
-    
+
     var duration: Int {
         lessons.reduce(0) { $0 + $1.duration }
     }
-    
+
     var isCompleted: Bool {
         // This would be based on user progress
         false
     }
-    
+
     var isLocked: Bool {
         // This would be based on prerequisites
         false
     }
-    
+
     var progress: Double {
         // This would be calculated based on lesson completion
         0.0
@@ -231,14 +231,14 @@ struct Lesson: Identifiable, Codable {
     var duration: Int // in minutes
     var content: LessonContent
     var materials: [CourseMaterial] = []
-    
+
     enum LessonType: String, CaseIterable, Codable {
         case video = "Видео"
         case text = "Текст"
         case interactive = "Интерактив"
         case quiz = "Тест"
         case assignment = "Задание"
-        
+
         var icon: String {
             switch self {
             case .video: return "play.circle.fill"
@@ -249,7 +249,7 @@ struct Lesson: Identifiable, Codable {
             }
         }
     }
-    
+
     enum LessonContent: Codable {
         case video(url: String, subtitlesUrl: String?)
         case text(html: String)
@@ -257,7 +257,7 @@ struct Lesson: Identifiable, Codable {
         case quiz(questions: [CourseQuizQuestion])
         case assignment(instructions: String, dueDate: Date?)
     }
-    
+
     var isCompleted: Bool {
         // This would be based on user progress
         false
@@ -276,11 +276,11 @@ struct CourseQuizQuestion: Identifiable, Codable {
 // MARK: - Mock Data Extension
 extension Course {
     static var mockCourses: [Course] = []
-    
+
     static func createMockCourses() -> [Course] {
         let salesCategory = CourseCategory.categories[0]
         let serviceCategory = CourseCategory.categories[2]
-        
+
         return [
             Course(
                 title: "Основы продаж в ЦУМ",
@@ -318,7 +318,7 @@ extension Course {
             )
         ]
     }
-    
+
     private static func createSalesModules() -> [Module] {
         [
             Module(
@@ -372,7 +372,7 @@ extension Course {
             )
         ]
     }
-    
+
     private static func createVIPModules() -> [Module] {
         [
             Module(
@@ -387,4 +387,4 @@ extension Course {
             )
         ]
     }
-} 
+}

@@ -4,52 +4,52 @@ import UIKit
 /// Сервис для автоматического создания GitHub Issues из фидбэков пользователей
 class GitHubFeedbackService {
     static let shared = GitHubFeedbackService()
-    
+
     // MARK: - Configuration
     private let githubToken: String
     private let repositoryOwner: String
     private let repositoryName: String
     private let baseURL = "https://api.github.com"
-    
+
     // ⚡ НОВОЕ: Конфигурация производительности
     private let requestTimeout: TimeInterval = 10.0 // 10 секунд timeout
     private let maxRetries: Int = 3
     private let retryDelay: TimeInterval = 2.0
-    
+
     init() {
         // TODO: Получить из конфигурации или Keychain
         self.githubToken = ProcessInfo.processInfo.environment["GITHUB_TOKEN"] ?? ""
         self.repositoryOwner = "ishirokov" // Обновлено на реальный username
         self.repositoryName = "lms_docs" // Репозиторий проекта
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Создает GitHub Issue из фидбэка пользователя с retry механизмом
     func createIssueFromFeedback(_ feedback: FeedbackItem) async -> Bool {
         guard !githubToken.isEmpty else {
             print("❌ GitHub token не настроен")
             return false
         }
-        
+
         let issueData = createIssueData(from: feedback)
-        
+
         // ⚡ НОВОЕ: Retry механизм для надежности
         for attempt in 1...maxRetries {
             let startTime = Date()
             let success = await createGitHubIssue(issueData)
             let duration = Date().timeIntervalSince(startTime)
-            
+
             if success {
                 print("✅ GitHub Issue создан за \(String(format: "%.2f", duration))с (попытка \(attempt))")
                 await notifyFeedbackCreated(feedback)
-                
+
                 // 📊 Логируем производительность
                 await logPerformanceMetrics(duration: duration, attempt: attempt, success: true)
                 return true
             } else {
                 print("⚠️ Попытка \(attempt)/\(maxRetries) не удалась (время: \(String(format: "%.2f", duration))с)")
-                
+
                 if attempt < maxRetries {
                     // Exponential backoff
                     let delay = retryDelay * pow(2.0, Double(attempt - 1))
@@ -60,11 +60,11 @@ class GitHubFeedbackService {
                 }
             }
         }
-        
+
         print("❌ Не удалось создать GitHub Issue после \(maxRetries) попыток")
         return false
     }
-    
+
     /// Метод для совместимости с FeedbackManager
     func submitFeedback(type: String, title: String, body: String, screenshot: UIImage?) async throws -> String {
         // Создаем FeedbackItem из параметров
@@ -76,64 +76,64 @@ class GitHubFeedbackService {
             authorId: MockAuthService.shared.currentUser?.id ?? "unknown",
             isOwnFeedback: true
         )
-        
+
         // Пытаемся создать issue
         let success = await createIssueFromFeedback(feedback)
-        
+
         if success {
             return "GitHub Issue created successfully"
         } else {
             throw FeedbackError.githubError("Failed to create GitHub issue")
         }
     }
-    
+
     /// Обновляет статус GitHub Issue
     func updateIssueStatus(_ feedback: FeedbackItem) async -> Bool {
         // TODO: Реализовать обновление статуса существующего Issue
         return true
     }
-    
+
     /// Добавляет комментарий к GitHub Issue
     func addCommentToIssue(_ feedback: FeedbackItem, comment: FeedbackComment) async -> Bool {
         // TODO: Реализовать добавление комментария к Issue
         return true
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func createIssueData(from feedback: FeedbackItem) -> GitHubIssueData {
         let title = "[\(feedback.type.title)] \(feedback.title)"
-        
+
         let body = """
         ## 📝 Описание
         \(feedback.description)
-        
+
         ## 👤 Автор
         **\(feedback.author)** (ID: \(feedback.authorId))
-        
+
         ## 🕒 Дата создания
         \(DateFormatter.iso8601.string(from: feedback.createdAt))
-        
+
         ## 📱 Информация об устройстве
         - **Модель**: \(getDeviceInfo().model)
         - **iOS**: \(getDeviceInfo().osVersion)
         - **Версия приложения**: \(getDeviceInfo().appVersion)
         - **Сборка**: \(getDeviceInfo().buildNumber)
-        
+
         ## 🔄 Статус
         **\(feedback.status.title)**
-        
+
         ## 💭 Реакции пользователей
         👍 \(feedback.reactions.like) | 👎 \(feedback.reactions.dislike) | ❤️ \(feedback.reactions.heart) | 🔥 \(feedback.reactions.fire)
-        
+
         \(feedback.comments.isEmpty ? "" : generateCommentsSection(feedback.comments))
-        
+
         ---
         *Автоматически создано из мобильного приложения LMS*
         """
-        
+
         let labels = generateLabels(for: feedback)
-        
+
         return GitHubIssueData(
             title: title,
             body: body,
@@ -141,10 +141,10 @@ class GitHubFeedbackService {
             assignees: getAssignees(for: feedback.type)
         )
     }
-    
+
     private func generateLabels(for feedback: FeedbackItem) -> [String] {
         var labels = ["feedback", "mobile-app"]
-        
+
         // Лейбл по типу
         switch feedback.type {
         case .bug:
@@ -156,7 +156,7 @@ class GitHubFeedbackService {
         case .question:
             labels.append("question")
         }
-        
+
         // Лейбл по статусу
         switch feedback.status {
         case .open:
@@ -168,7 +168,7 @@ class GitHubFeedbackService {
         case .closed:
             labels.append("status:closed")
         }
-        
+
         // Приоритет на основе реакций
         let totalReactions = feedback.reactions.like + feedback.reactions.heart + feedback.reactions.fire
         if totalReactions > 10 {
@@ -178,10 +178,10 @@ class GitHubFeedbackService {
         } else {
             labels.append("priority:low")
         }
-        
+
         return labels
     }
-    
+
     private func getAssignees(for type: FeedbackType) -> [String] {
         // Настроено автоматическое назначение ответственных
         switch type {
@@ -193,44 +193,44 @@ class GitHubFeedbackService {
             return ["ishirokov"] // Саппорт для вопросов
         }
     }
-    
+
     private func generateCommentsSection(_ comments: [FeedbackComment]) -> String {
         guard !comments.isEmpty else { return "" }
-        
+
         var section = "\n## 💬 Комментарии пользователей\n\n"
-        
+
         for comment in comments {
             let authorBadge = comment.isAdmin ? " 👤 **ADMIN**" : ""
             section += """
             **\(comment.author)**\(authorBadge) - *\(DateFormatter.relative.string(from: comment.createdAt))*
             > \(comment.text)
-            
+
             """
         }
-        
+
         return section
     }
-    
+
     private func createGitHubIssue(_ issueData: GitHubIssueData) async -> Bool {
         guard let url = URL(string: "\(baseURL)/repos/\(repositoryOwner)/\(repositoryName)/issues") else {
             return false
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("token \(githubToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("LMS-Mobile-App/1.0", forHTTPHeaderField: "User-Agent")
-        
+
         // ⚡ НОВОЕ: Timeout для быстрого отказа
         request.timeoutInterval = requestTimeout
-        
+
         do {
             let jsonData = try JSONEncoder().encode(issueData)
             request.httpBody = jsonData
-            
+
             let (data, response) = try await URLSession.shared.data(for: request)
-            
+
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode == 201 {
                     print("✅ GitHub Issue успешно создан")
@@ -249,10 +249,10 @@ class GitHubFeedbackService {
         } catch {
             print("❌ Ошибка при отправке запроса: \(error)")
         }
-        
+
         return false
     }
-    
+
     // ⚡ НОВОЕ: Логирование производительности
     private func logPerformanceMetrics(duration: TimeInterval, attempt: Int, success: Bool) async {
         let metrics = """
@@ -263,15 +263,15 @@ class GitHubFeedbackService {
         - Timestamp: \(Date())
         """
         print(metrics)
-        
+
         // TODO: Отправить метрики в аналитику
     }
-    
+
     private func notifyFeedbackCreated(_ feedback: FeedbackItem) async {
         // TODO: Отправить уведомление команде через Slack/Discord
         print("📢 Уведомление: Новый фидбэк от \(feedback.author): \(feedback.title)")
     }
-    
+
     private func getDeviceInfo() -> (model: String, osVersion: String, appVersion: String, buildNumber: String) {
         return (
             model: UIDevice.current.model,
@@ -300,11 +300,11 @@ extension DateFormatter {
         formatter.timeZone = TimeZone(abbreviation: "UTC")
         return formatter
     }()
-    
+
     static let relative: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
         return formatter
     }()
-} 
+}

@@ -3,19 +3,19 @@ import Combine
 
 class FeedService: ObservableObject {
     static let shared = FeedService()
-    
+
     @Published var posts: [FeedPost] = []
     @Published var permissions: FeedPermissions = .studentDefault
     @Published var isLoading = false
     @Published var error: String?
-    
+
     private var cancellables = Set<AnyCancellable>()
-    
+
     private init() {
         setupPermissions()
         loadMockData()
     }
-    
+
     private func setupPermissions() {
         // Listen to auth changes and update permissions
         MockAuthService.shared.$currentUser
@@ -25,7 +25,7 @@ class FeedService: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     private func updatePermissions(for user: UserResponse) {
         // Check user roles
         if user.roles.contains("admin") || user.roles.contains("superAdmin") {
@@ -34,25 +34,25 @@ class FeedService: ObservableObject {
             permissions = .studentDefault
         }
     }
-    
+
     // MARK: - Feed Operations
-    
+
     func refresh() {
         loadMockData()
     }
-    
+
     func createPost(content: String, images: [String] = [], attachments: [FeedAttachment] = [], visibility: FeedVisibility = .everyone) async throws {
         guard permissions.canPost else {
             throw FeedError.noPermission
         }
-        
+
         guard let currentUser = MockAuthService.shared.currentUser else {
             throw FeedError.notAuthenticated
         }
-        
+
         // Determine role from user roles array
         let userRole: UserRole = currentUser.roles.contains("admin") ? .admin : .student
-        
+
         let newPost = FeedPost(
             id: UUID().uuidString,
             authorId: currentUser.id,
@@ -70,51 +70,51 @@ class FeedService: ObservableObject {
             tags: extractTags(from: content),
             mentions: extractMentions(from: content)
         )
-        
+
         await MainActor.run {
             self.posts.insert(newPost, at: 0)
         }
-        
+
         // Send notifications for mentions
         for userId in newPost.mentions {
             await sendMentionNotification(to: userId, post: newPost)
         }
     }
-    
+
     func deletePost(_ postId: String) async throws {
         guard let currentUser = MockAuthService.shared.currentUser else {
             throw FeedError.notAuthenticated
         }
-        
+
         guard let postIndex = posts.firstIndex(where: { $0.id == postId }) else {
             throw FeedError.postNotFound
         }
-        
+
         let post = posts[postIndex]
-        
+
         // Check permissions
         guard permissions.canDelete || post.authorId == currentUser.id else {
             throw FeedError.noPermission
         }
-        
+
         await MainActor.run {
             self.posts.remove(at: postIndex)
         }
     }
-    
+
     func toggleLike(postId: String) async throws {
         guard permissions.canLike else {
             throw FeedError.noPermission
         }
-        
+
         guard let currentUser = MockAuthService.shared.currentUser else {
             throw FeedError.notAuthenticated
         }
-        
+
         guard let postIndex = posts.firstIndex(where: { $0.id == postId }) else {
             throw FeedError.postNotFound
         }
-        
+
         await MainActor.run {
             if self.posts[postIndex].likes.contains(currentUser.id) {
                 self.posts[postIndex].likes.removeAll { $0 == currentUser.id }
@@ -127,20 +127,20 @@ class FeedService: ObservableObject {
             }
         }
     }
-    
+
     func addComment(to postId: String, content: String) async throws {
         guard permissions.canComment else {
             throw FeedError.noPermission
         }
-        
+
         guard let currentUser = MockAuthService.shared.currentUser else {
             throw FeedError.notAuthenticated
         }
-        
+
         guard let postIndex = posts.firstIndex(where: { $0.id == postId }) else {
             throw FeedError.postNotFound
         }
-        
+
         let newComment = FeedComment(
             id: UUID().uuidString,
             postId: postId,
@@ -151,33 +151,33 @@ class FeedService: ObservableObject {
             createdAt: Date(),
             likes: []
         )
-        
+
         await MainActor.run {
             self.posts[postIndex].comments.append(newComment)
         }
-        
+
         // Send notification
         await sendCommentNotification(post: posts[postIndex], comment: newComment)
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func extractTags(from content: String) -> [String] {
         let pattern = "#\\w+"
         let regex = try? NSRegularExpression(pattern: pattern)
         let matches = regex?.matches(in: content, range: NSRange(content.startIndex..., in: content)) ?? []
-        
+
         return matches.compactMap { match in
             guard let range = Range(match.range, in: content) else { return nil }
             return String(content[range])
         }
     }
-    
+
     private func extractMentions(from content: String) -> [String] {
         // In real app, would parse @mentions and convert to user IDs
         []
     }
-    
+
     private func sendMentionNotification(to userId: String, post: FeedPost) async {
         let notification = Notification(
             id: UUID().uuidString,
@@ -190,15 +190,15 @@ class FeedService: ObservableObject {
             actionUrl: "feed://post/\(post.id)",
             metadata: ["postId": post.id]
         )
-        
+
         // Add notification to the service
         await NotificationService.shared.add(notification)
     }
-    
+
     private func sendLikeNotification(post: FeedPost) async {
         guard let currentUser = MockAuthService.shared.currentUser,
               currentUser.id != post.authorId else { return }
-        
+
         let userName = "\(currentUser.firstName) \(currentUser.lastName)"
         let notification = Notification(
             id: UUID().uuidString,
@@ -211,13 +211,13 @@ class FeedService: ObservableObject {
             actionUrl: "feed://post/\(post.id)",
             metadata: ["postId": post.id]
         )
-        
+
         await NotificationService.shared.add(notification)
     }
-    
+
     private func sendCommentNotification(post: FeedPost, comment: FeedComment) async {
         guard comment.authorId != post.authorId else { return }
-        
+
         let notification = Notification(
             id: UUID().uuidString,
             type: .feedActivity,
@@ -229,12 +229,12 @@ class FeedService: ObservableObject {
             actionUrl: "feed://post/\(post.id)",
             metadata: ["postId": post.id, "commentId": comment.id]
         )
-        
+
         await NotificationService.shared.add(notification)
     }
-    
+
     // MARK: - Mock Data
-    
+
     private func loadMockData() {
         posts = [
             FeedPost(
@@ -246,8 +246,8 @@ class FeedService: ObservableObject {
                 content: "🎉 Добро пожаловать в корпоративный университет ЦУМ! Здесь вы найдете все необходимые курсы для вашего профессионального развития. #обучение #развитие",
                 images: [],
                 attachments: [],
-                createdAt: Date().addingTimeInterval(-86400),
-                updatedAt: Date().addingTimeInterval(-86400),
+                createdAt: Date().addingTimeInterval(-86_400),
+                updatedAt: Date().addingTimeInterval(-86_400),
                 likes: ["user1", "user2", "user3"],
                 comments: [
                     FeedComment(
@@ -257,7 +257,7 @@ class FeedService: ObservableObject {
                         authorName: "Иван Иванов",
                         authorAvatar: nil,
                         content: "Отличная платформа! Уже начал проходить курсы.",
-                        createdAt: Date().addingTimeInterval(-3600),
+                        createdAt: Date().addingTimeInterval(-3_600),
                         likes: ["admin1"]
                     )
                 ],
@@ -283,8 +283,8 @@ class FeedService: ObservableObject {
                         thumbnailUrl: nil
                     )
                 ],
-                createdAt: Date().addingTimeInterval(-7200),
-                updatedAt: Date().addingTimeInterval(-7200),
+                createdAt: Date().addingTimeInterval(-7_200),
+                updatedAt: Date().addingTimeInterval(-7_200),
                 likes: ["user1", "user2", "user3", "user4", "user5"],
                 comments: [],
                 visibility: .everyone,
@@ -300,8 +300,8 @@ class FeedService: ObservableObject {
                 content: "Только что завершила курс по работе с клиентами! Получила сертификат с отличием 🏆 Спасибо преподавателям за отличный материал!",
                 images: [],
                 attachments: [],
-                createdAt: Date().addingTimeInterval(-10800),
-                updatedAt: Date().addingTimeInterval(-10800),
+                createdAt: Date().addingTimeInterval(-10_800),
+                updatedAt: Date().addingTimeInterval(-10_800),
                 likes: ["admin1", "hr1", "user1", "user3"],
                 comments: [
                     FeedComment(
@@ -311,7 +311,7 @@ class FeedService: ObservableObject {
                         authorName: "HR отдел",
                         authorAvatar: nil,
                         content: "Поздравляем! Так держать! 👏",
-                        createdAt: Date().addingTimeInterval(-9000),
+                        createdAt: Date().addingTimeInterval(-9_000),
                         likes: ["user2"]
                     )
                 ],
@@ -329,7 +329,7 @@ enum FeedError: LocalizedError {
     case notAuthenticated
     case postNotFound
     case invalidContent
-    
+
     var errorDescription: String? {
         switch self {
         case .noPermission:
@@ -342,4 +342,4 @@ enum FeedError: LocalizedError {
             return "Недопустимое содержимое"
         }
     }
-} 
+}

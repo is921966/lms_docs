@@ -12,7 +12,7 @@ struct CareerPath: Identifiable, Codable, Hashable {
     var requirements: [CareerPathRequirement]
     var description: String
     var successRate: Double // 0.0 - 1.0
-    
+
     init(
         id: UUID = UUID(),
         fromPositionId: UUID,
@@ -34,7 +34,7 @@ struct CareerPath: Identifiable, Codable, Hashable {
         self.description = description
         self.successRate = max(0, min(1, successRate))
     }
-    
+
     var difficulty: CareerPathDifficulty {
         switch successRate {
         case 0.8...1.0: return .easy
@@ -53,7 +53,7 @@ enum CareerPathDuration: String, CaseIterable, Codable {
     case years3 = "3 года"
     case years5 = "5 лет"
     case yearsMore = "Более 5 лет"
-    
+
     var months: Int {
         switch self {
         case .months6: return 6
@@ -71,7 +71,7 @@ enum CareerPathDifficulty: String {
     case easy = "Легкий"
     case moderate = "Средний"
     case hard = "Сложный"
-    
+
     var color: Color {
         switch self {
         case .easy: return .green
@@ -79,7 +79,7 @@ enum CareerPathDifficulty: String {
         case .hard: return .red
         }
     }
-    
+
     var icon: String {
         switch self {
         case .easy: return "checkmark.circle.fill"
@@ -96,7 +96,7 @@ struct CareerPathRequirement: Identifiable, Codable, Hashable {
     var description: String
     var type: RequirementType
     var isCompleted: Bool
-    
+
     init(
         id: UUID = UUID(),
         title: String,
@@ -120,7 +120,7 @@ enum RequirementType: String, CaseIterable, Codable {
     case education = "Образование"
     case project = "Проект"
     case other = "Другое"
-    
+
     var icon: String {
         switch self {
         case .competency: return "star.fill"
@@ -143,16 +143,16 @@ struct CareerProgress: Identifiable {
     var startDate: Date
     var completedRequirements: Set<UUID>
     var notes: String
-    
+
     var progressPercentage: Double {
         guard let careerPath = getCareerPath() else { return 0 }
         let total = careerPath.requirements.count
         guard total > 0 else { return 0 }
         return Double(completedRequirements.count) / Double(total) * 100
     }
-    
+
     private func getCareerPath() -> CareerPath? {
         // This would normally fetch from service
         return nil
     }
-} 
+}

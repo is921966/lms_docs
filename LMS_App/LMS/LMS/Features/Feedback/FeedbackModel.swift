@@ -11,7 +11,7 @@ struct FeedbackModel: Codable {
     let userId: String?
     let userEmail: String?
     let appContext: AppContext?
-    
+
     init(
         id: UUID = UUID(),
         type: String,
@@ -41,11 +41,11 @@ struct AppContext: Codable {
     let sessionDuration: TimeInterval?
     let memoryUsage: Int64?
     let batteryLevel: Float?
-    
+
     static func current() -> AppContext {
         let memoryUsage = getMemoryUsage()
         let batteryLevel = UIDevice.current.isBatteryMonitoringEnabled ? UIDevice.current.batteryLevel : nil
-        
+
         return AppContext(
             currentScreen: nil, // Should be set by the calling view
             previousScreen: nil,
@@ -54,11 +54,11 @@ struct AppContext: Codable {
             batteryLevel: batteryLevel
         )
     }
-    
+
     private static func getMemoryUsage() -> Int64? {
         var info = mach_task_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size) / 4
-        
+
         let result = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                 task_info(mach_task_self_,
@@ -67,7 +67,7 @@ struct AppContext: Codable {
                          &count)
             }
         }
-        
+
         return result == KERN_SUCCESS ? Int64(info.resident_size) : nil
     }
-} 
+}

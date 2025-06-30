@@ -13,7 +13,7 @@ struct CertificateView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingShareSheet = false
     @State private var renderedImage: UIImage?
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -29,7 +29,7 @@ struct CertificateView: View {
                         .onAppear {
                             generateImage()
                         }
-                    
+
                     // Certificate info
                     VStack(alignment: .leading, spacing: 16) {
                         CertificateInfoRow(
@@ -37,19 +37,19 @@ struct CertificateView: View {
                             title: "Номер сертификата",
                             value: certificate.formattedCertificateNumber
                         )
-                        
+
                         CertificateInfoRow(
                             icon: "checkmark.shield",
                             title: "Код верификации",
                             value: certificate.verificationCode
                         )
-                        
+
                         CertificateInfoRow(
                             icon: "calendar",
                             title: "Дата выдачи",
                             value: formatDate(certificate.issuedAt)
                         )
-                        
+
                         if let expiresAt = certificate.expiresAt {
                             CertificateInfoRow(
                                 icon: "clock.badge.exclamationmark",
@@ -57,7 +57,7 @@ struct CertificateView: View {
                                 value: formatDate(expiresAt)
                             )
                         }
-                        
+
                         CertificateInfoRow(
                             icon: "percent",
                             title: "Результат",
@@ -68,7 +68,7 @@ struct CertificateView: View {
                     .background(Color(.systemBackground))
                     .cornerRadius(15)
                     .padding(.horizontal)
-                    
+
                     // Action buttons
                     VStack(spacing: 12) {
                         Button(action: { showingShareSheet = true }) {
@@ -79,7 +79,7 @@ struct CertificateView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(12)
                         }
-                        
+
                         Button(action: downloadPDF) {
                             Label("Скачать PDF", systemImage: "arrow.down.doc")
                                 .frame(maxWidth: .infinity)
@@ -88,7 +88,7 @@ struct CertificateView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(12)
                         }
-                        
+
                         Button(action: printCertificate) {
                             Label("Печать", systemImage: "printer")
                                 .frame(maxWidth: .infinity)
@@ -119,25 +119,25 @@ struct CertificateView: View {
             }
         }
     }
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter.string(from: date)
     }
-    
+
     private func generateImage() {
         let renderer = ImageRenderer(content: CertificatePreview(certificate: certificate, template: template))
         renderer.scale = 3.0
         renderedImage = renderer.uiImage
     }
-    
+
     private func downloadPDF() {
         // In real app, would generate and download PDF
         print("Downloading PDF...")
     }
-    
+
     private func printCertificate() {
         // In real app, would print certificate
         print("Printing certificate...")
@@ -148,7 +148,7 @@ struct CertificateView: View {
 struct CertificatePreview: View {
     let certificate: Certificate
     let template: CertificateTemplate
-    
+
     var body: some View {
         ZStack {
             // Background
@@ -167,46 +167,46 @@ struct CertificatePreview: View {
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(template.primarySwiftUIColor, lineWidth: 3)
                 )
-            
+
             VStack(spacing: 30) {
                 // Header
                 VStack(spacing: 10) {
                     Image(systemName: "seal.fill")
                         .font(.system(size: 60))
                         .foregroundColor(template.primarySwiftUIColor)
-                    
+
                     Text(template.titleTemplate)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(template.primarySwiftUIColor)
                 }
-                
+
                 // Body
                 Text(formatBodyText())
                     .font(.title3)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
                     .foregroundColor(.primary)
-                
+
                 // Course details
                 VStack(spacing: 8) {
                     Text(certificate.courseName)
                         .font(.title2)
                         .fontWeight(.semibold)
                         .foregroundColor(template.primarySwiftUIColor)
-                    
+
                     Text("Продолжительность: \(certificate.courseDuration)")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 // Signature
                 VStack(spacing: 20) {
                     Divider()
                         .frame(width: 200)
-                    
+
                     VStack(spacing: 4) {
                         Text(template.signerName)
                             .font(.headline)
@@ -218,7 +218,7 @@ struct CertificatePreview: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 // Footer
                 Text(formatFooterText())
                     .font(.caption)
@@ -229,20 +229,20 @@ struct CertificatePreview: View {
         }
         .aspectRatio(0.7, contentMode: .fit)
     }
-    
+
     private func formatBodyText() -> String {
         template.bodyTemplate
             .replacingOccurrences(of: "{userName}", with: certificate.userName)
             .replacingOccurrences(of: "{courseName}", with: certificate.courseName)
             .replacingOccurrences(of: "{score}", with: String(Int(certificate.percentage)))
     }
-    
+
     private func formatFooterText() -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         formatter.locale = Locale(identifier: "ru_RU")
         let dateString = formatter.string(from: certificate.issuedAt)
-        
+
         return template.footerTemplate
             .replacingOccurrences(of: "{date}", with: dateString)
     }
@@ -253,14 +253,14 @@ struct CertificateInfoRow: View {
     let icon: String
     let title: String
     let value: String
-    
+
     var body: some View {
         HStack {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundColor(.blue)
                 .frame(width: 30)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.caption)
@@ -269,7 +269,7 @@ struct CertificateInfoRow: View {
                     .font(.body)
                     .fontWeight(.medium)
             }
-            
+
             Spacer()
         }
         .padding(.vertical, 4)
@@ -279,11 +279,11 @@ struct CertificateInfoRow: View {
 // MARK: - Share Sheet
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
-    
+
     func makeUIViewController(context: Context) -> UIActivityViewController {
         UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
-    
+
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
@@ -311,4 +311,4 @@ struct ShareSheet: UIViewControllerRepresentable {
         ),
         template: CertificateTemplate.mockTemplates[0]
     )
-} 
+}

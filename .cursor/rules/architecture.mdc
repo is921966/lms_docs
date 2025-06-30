@@ -1,0 +1,369 @@
+# Architecture Rules for LMS iOS App
+
+## Clean Architecture Principles
+
+This project follows Clean Architecture with clear separation of concerns. Each layer has specific responsibilities and dependencies flow inward.
+
+### Layer Structure
+
+```
+Domain (Core Business Logic)
+  ↑
+Application (Use Cases)
+  ↑
+Presentation (UI/ViewModels)
+  ↑
+Infrastructure (External Services)
+```
+
+### Dependency Rule
+- **Dependencies направлены внутрь**: внешние слои (UI, инфраструктура) используют внутренние (домен), но не наоборот
+- **Инверсия зависимостей**: инфраструктурные детали абстрагированы интерфейсами верхних слоев
+- **Слабая связанность**: реализации подключаются на уровне внешнего слоя через протоколы
+
+## SOLID Principles
+
+### Single Responsibility
+Каждый модуль/класс должен иметь единственную ответственность. Изменение класса должно быть вызвано только одной причиной.
+
+### Open/Closed
+Код должен быть открыт для расширения, но закрыт для модификации существующей логики. Новая функциональность добавляется через расширения, а не изменение существующего кода.
+
+### Liskov Substitution
+Наследуемые классы должны корректно замещать базовые. Подклассы не должны нарушать контракт базового класса.
+
+### Interface Segregation
+Интерфейсы разделяйте по специфическим потребностям клиентов. Лучше иметь несколько специализированных протоколов, чем один большой.
+
+### Dependency Inversion
+Зависимости между компонентами реализуйте через абстракции вместо прямых ссылок. Высокоуровневые модули не должны зависеть от низкоуровневых.
+
+## Domain-Driven Design (DDD)
+
+### Ubiquitous Language
+- Модель предметной области должна отражать бизнес-требования и терминологию
+- Давайте классам и методам понятные названия из языка предметной области
+- Синхронизируйте термины между кодом, документацией и общением с бизнесом
+
+### Bounded Contexts
+- Разделяйте систему на контексты с четкими границами
+- Каждый контекст имеет свою модель домена
+- Взаимодействие между контекстами через явные интерфейсы
+
+### Domain Building Blocks
+- **Entities**: Объекты с идентичностью (User, Course)
+- **Value Objects**: Неизменяемые объекты без идентичности (Email, CourseProgress)
+- **Aggregates**: Группы связанных объектов с единым корнем
+- **Domain Services**: Бизнес-логика, не принадлежащая конкретной сущности
+- **Domain Events**: События, происходящие в домене
+
+## Domain Layer Rules
+
+The Domain layer is the core of the application and MUST:
+- NOT import any external frameworks (UIKit, SwiftUI, Combine, etc.)
+- NOT depend on any other layers
+- Contain only pure Swift code
+- Define business entities, rules, and repository protocols
+
+### Domain Components:
+- **Entities**: Core business objects (User, Course, Competency)
+- **Value Objects**: Immutable objects (Email, Password, CourseID)
+- **Use Case Protocols**: Interfaces for business operations
+- **Repository Protocols**: Interfaces for data access
+- **Domain Services**: Business logic that doesn't fit in entities
+
+### Example Domain Entity:
+```swift
+// Domain/Entities/User.swift
+struct User {
+    let id: UserID
+    let email: Email
+    let name: String
+    let role: UserRole
+    
+    // Business rule example
+    func canAccessCourse(_ course: Course) -> Bool {
+        return role.permissions.contains(.accessCourses)
+    }
+}
+```
+
+## Application Layer Rules
+
+The Application layer implements use cases and MUST:
+- Import ONLY the Domain layer
+- NOT import UI frameworks
+- Implement Use Case protocols from Domain
+- Coordinate between Domain entities and services
+
+### Application Components:
+- **Use Case Implementations**: Concrete business operations
+- **Application Services**: Orchestration between use cases
+- **DTOs**: Data Transfer Objects for external communication
+- **Mappers**: Преобразователи между DTO и Domain моделями
+
+### Example Use Case:
+```swift
+// Application/UseCases/LoginUserUseCase.swift
+import Domain
+
+final class LoginUserUseCase: LoginUserUseCaseProtocol {
+    private let userRepository: UserRepositoryProtocol
+    private let authService: AuthServiceProtocol
+    
+    init(userRepository: UserRepositoryProtocol, authService: AuthServiceProtocol) {
+        self.userRepository = userRepository
+        self.authService = authService
+    }
+    
+    func execute(email: String, password: String) async throws -> User {
+        let credentials = Credentials(email: Email(email), password: Password(password))
+        let token = try await authService.authenticate(credentials)
+        return try await userRepository.getUser(token: token)
+    }
+}
+```
+
+## Presentation Layer Rules
+
+The Presentation layer handles UI and MUST:
+- Use MVVM pattern for all screens
+- Import Domain and Application layers only
+- NOT contain business logic
+- Handle only UI state and user interactions
+
+### Presentation Components:
+- **Views**: SwiftUI views (passive, no logic)
+- **ViewModels**: ObservableObject classes with @Published properties
+- **Coordinators**: Navigation logic
+- **UI Models**: UI-specific data representations
+
+### Example ViewModel:
+```swift
+// Presentation/ViewModels/LoginViewModel.swift
+import SwiftUI
+import Domain
+import Application
+
+@MainActor
+final class LoginViewModel: ObservableObject {
+    @Published var email = ""
+    @Published var password = ""
+    @Published var isLoading = false
+    @Published var error: String?
+    
+    private let loginUseCase: LoginUserUseCaseProtocol
+    
+    init(loginUseCase: LoginUserUseCaseProtocol) {
+        self.loginUseCase = loginUseCase
+    }
+    
+    func login() async {
+        isLoading = true
+        error = nil
+        
+        do {
+            let user = try await loginUseCase.execute(
+                email: email,
+                password: password
+            )
+            // Navigate to main screen
+        } catch {
+            self.error = error.localizedDescription
+        }
+        
+        isLoading = false
+    }
+}
+```
+
+## Infrastructure Layer Rules
+
+The Infrastructure layer provides concrete implementations and MUST:
+- Implement protocols defined in Domain
+- Handle all external dependencies
+- NOT be imported by Domain or Application layers
+- Contain all third-party framework usage
+- Абстрагировать инфраструктурные детали через интерфейсы
+
+### Infrastructure Components:
+- **Network**: API clients, URLSession wrappers
+- **Database**: Core Data, Realm, UserDefaults
+- **External Services**: Push notifications, Analytics
+- **Dependency Injection**: DI container setup
+- **Adapters**: Преобразователи внешних данных в Domain модели
+
+### Example Repository Implementation:
+```swift
+// Infrastructure/Repositories/UserRepository.swift
+import Foundation
+import Domain
+
+final class UserRepository: UserRepositoryProtocol {
+    private let apiClient: APIClient
+    private let cache: UserCache
+    private let mapper: UserDTOMapper
+    
+    init(apiClient: APIClient, cache: UserCache, mapper: UserDTOMapper) {
+        self.apiClient = apiClient
+        self.cache = cache
+        self.mapper = mapper
+    }
+    
+    func getUser(token: AuthToken) async throws -> User {
+        if let cached = cache.getUser(for: token) {
+            return cached
+        }
+        
+        let dto = try await apiClient.request(
+            UserEndpoint.profile(token: token)
+        )
+        
+        let user = mapper.toDomain(dto)
+        cache.store(user, for: token)
+        
+        return user
+    }
+}
+```
+
+## Dependency Injection Rules
+
+All dependencies MUST be:
+- Injected through initializers (constructor injection)
+- Protocol-based (program to interfaces)
+- Resolved at app startup in composition root
+- NO singletons in Domain/Application layers
+
+### Example DI Setup:
+```swift
+// Infrastructure/DI/AppContainer.swift
+final class AppContainer {
+    // Infrastructure
+    lazy var apiClient = APIClient(baseURL: Config.apiURL)
+    lazy var userCache = UserCache()
+    
+    // Repositories
+    lazy var userRepository: UserRepositoryProtocol = UserRepository(
+        apiClient: apiClient,
+        cache: userCache
+    )
+    
+    // Use Cases
+    lazy var loginUseCase: LoginUserUseCaseProtocol = LoginUserUseCase(
+        userRepository: userRepository,
+        authService: authService
+    )
+    
+    // ViewModels
+    func makeLoginViewModel() -> LoginViewModel {
+        LoginViewModel(loginUseCase: loginUseCase)
+    }
+}
+```
+
+## Проектирование с учетом изменений
+
+### Принципы эволюции архитектуры:
+- При добавлении новых функций изменения должны минимально затрагивать существующие модули
+- Новая функциональность внедряется путем добавления новых компонентов или расширения существующих
+- Избегайте изменения работающего кода - расширяйте через новые абстракции
+- Поддерживайте обратную совместимость при изменениях API
+
+### Стратегии для изменений:
+1. **Feature Toggles**: Новая функциональность за флагами
+2. **Branch by Abstraction**: Постепенная замена через новые интерфейсы
+3. **Parallel Implementation**: Новая реализация работает параллельно со старой
+4. **Incremental Migration**: Поэтапный переход на новую архитектуру
+
+## Naming Conventions
+
+### Use Cases:
+- Pattern: `VerbNounUseCase`
+- Examples: `LoginUserUseCase`, `GetCoursesUseCase`, `UpdateProfileUseCase`
+
+### Repositories:
+- Pattern: `EntityRepository`
+- Examples: `UserRepository`, `CourseRepository`, `CompetencyRepository`
+
+### ViewModels:
+- Pattern: `ScreenNameViewModel`
+- Examples: `LoginViewModel`, `CourseListViewModel`, `ProfileViewModel`
+
+### Views:
+- Pattern: `DescriptiveNameView`
+- Examples: `LoginView`, `CourseDetailView`, `CompetencyCardView`
+
+## File Organization
+
+```
+LMS_App/LMS/
+├── Domain/
+│   ├── Entities/
+│   │   ├── User.swift
+│   │   ├── Course.swift
+│   │   └── Competency.swift
+│   ├── ValueObjects/
+│   │   ├── Email.swift
+│   │   └── CourseProgress.swift
+│   ├── UseCases/
+│   │   ├── LoginUserUseCaseProtocol.swift
+│   │   └── GetCoursesUseCaseProtocol.swift
+│   └── Repositories/
+│       ├── UserRepositoryProtocol.swift
+│       └── CourseRepositoryProtocol.swift
+├── Application/
+│   ├── UseCases/
+│   │   ├── LoginUserUseCase.swift
+│   │   └── GetCoursesUseCase.swift
+│   ├── DTOs/
+│   │   ├── UserDTO.swift
+│   │   └── CourseDTO.swift
+│   ├── Mappers/
+│   │   ├── UserDTOMapper.swift
+│   │   └── CourseDTOMapper.swift
+│   └── Services/
+│       └── AuthenticationService.swift
+├── Presentation/
+│   ├── Views/
+│   │   ├── Login/
+│   │   │   └── LoginView.swift
+│   │   └── Courses/
+│   │       ├── CourseListView.swift
+│   │       └── CourseDetailView.swift
+│   └── ViewModels/
+│       ├── LoginViewModel.swift
+│       └── CourseListViewModel.swift
+└── Infrastructure/
+    ├── Network/
+    │   ├── APIClient.swift
+    │   ├── DTOs/
+    │   │   └── ResponseDTOs.swift
+    │   └── Endpoints/
+    ├── Database/
+    │   └── CoreDataStack.swift
+    └── DI/
+        └── AppContainer.swift
+```
+
+## AI Code Generation Instructions
+
+When generating code for this project:
+
+1. **Identify the layer** first - Domain, Application, Presentation, or Infrastructure
+2. **Follow dependency rules** - never violate the dependency direction
+3. **Use protocols** for all dependencies between layers
+4. **Keep business logic** in Domain and Application layers only
+5. **Generate tests** that respect the same layering
+6. **Apply SOLID principles** in every component
+7. **Use DDD terminology** from the ubiquitous language
+
+### Example prompt handling:
+- "Create login functionality" → Generate from Domain inward:
+  1. Domain entities and protocols
+  2. Application use case
+  3. Infrastructure implementations
+  4. Presentation ViewModel and View
+  5. Tests for each layer
+
+Remember: The architecture serves to make the code more maintainable, testable, and understandable. When in doubt, favor simplicity and clarity over strict adherence to rules. 

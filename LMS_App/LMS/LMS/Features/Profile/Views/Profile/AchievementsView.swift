@@ -2,13 +2,13 @@ import SwiftUI
 
 struct AchievementsView: View {
     let achievements = Achievement.mockAchievements
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Мои достижения")
                 .font(.headline)
                 .padding(.horizontal)
-            
+
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
                 ForEach(achievements) { achievement in
                     AchievementCard(achievement: achievement)
@@ -22,24 +22,24 @@ struct AchievementsView: View {
 
 struct AchievementCard: View {
     let achievement: Achievement
-    
+
     var body: some View {
         VStack(spacing: 10) {
             ZStack {
                 Circle()
                     .fill(achievement.isUnlocked ? achievement.color : Color.gray.opacity(0.3))
                     .frame(width: 60, height: 60)
-                
+
                 Image(systemName: achievement.icon)
                     .font(.system(size: 30))
                     .foregroundColor(.white)
             }
-            
+
             Text(achievement.title)
                 .font(.caption)
                 .fontWeight(.medium)
                 .multilineTextAlignment(.center)
-            
+
             if achievement.isUnlocked {
                 Text(achievement.date)
                     .font(.caption2)

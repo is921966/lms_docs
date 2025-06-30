@@ -12,7 +12,7 @@ struct Notification: Identifiable, Codable {
     let priority: NotificationPriority
     let actionUrl: String?
     let metadata: [String: String]?
-    
+
     var icon: String {
         switch type {
         case .courseAssigned:
@@ -35,7 +35,7 @@ struct Notification: Identifiable, Codable {
             return "at.circle.fill"
         }
     }
-    
+
     var color: Color {
         switch priority {
         case .high:
@@ -59,7 +59,7 @@ enum NotificationType: String, Codable, CaseIterable {
     case system = "system"
     case feedActivity = "feed_activity"
     case feedMention = "feed_mention"
-    
+
     var displayName: String {
         switch self {
         case .courseAssigned: return "Назначен курс"
@@ -80,7 +80,7 @@ enum NotificationPriority: String, Codable, CaseIterable {
     case high = "high"
     case medium = "medium"
     case low = "low"
-    
+
     var displayName: String {
         switch self {
         case .high: return "Высокий"
@@ -108,7 +108,7 @@ extension Notification {
             type: .courseAssigned,
             title: "Новый курс назначен",
             message: "Вам назначен курс 'Основы проектного управления'. Срок прохождения: 30 дней.",
-            createdAt: Date().addingTimeInterval(-3600),
+            createdAt: Date().addingTimeInterval(-3_600),
             isRead: false,
             priority: .high,
             actionUrl: "course://1",
@@ -119,7 +119,7 @@ extension Notification {
             type: .testReminder,
             title: "Напоминание о тесте",
             message: "Не забудьте пройти тест по курсу 'Работа с клиентами' до конца недели.",
-            createdAt: Date().addingTimeInterval(-7200),
+            createdAt: Date().addingTimeInterval(-7_200),
             isRead: false,
             priority: .medium,
             actionUrl: "test://1",
@@ -130,7 +130,7 @@ extension Notification {
             type: .certificateEarned,
             title: "Поздравляем с сертификатом!",
             message: "Вы успешно завершили курс и получили сертификат.",
-            createdAt: Date().addingTimeInterval(-86400),
+            createdAt: Date().addingTimeInterval(-86_400),
             isRead: true,
             priority: .low,
             actionUrl: "certificate://1",
@@ -141,11 +141,11 @@ extension Notification {
             type: .onboardingTask,
             title: "Задача онбординга",
             message: "Пожалуйста, завершите знакомство с корпоративными политиками.",
-            createdAt: Date().addingTimeInterval(-10800),
+            createdAt: Date().addingTimeInterval(-10_800),
             isRead: false,
             priority: .high,
             actionUrl: "onboarding://task/1",
             metadata: ["taskId": "1"]
         )
     ]
-} 
+}

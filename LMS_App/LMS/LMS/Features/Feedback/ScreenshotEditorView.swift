@@ -4,21 +4,21 @@ import PencilKit
 struct ScreenshotEditorView: View {
     let image: UIImage
     let onSave: (UIImage) -> Void
-    
+
     @State private var canvasView = PKCanvasView()
     @State private var toolPicker = PKToolPicker()
     @State private var selectedTool: DrawingTool = .pen
     @State private var selectedColor: Color = .red
     @State private var isDrawing = true
     @Environment(\.dismiss) var dismiss
-    
+
     enum DrawingTool {
         case pen
         case marker
         case arrow
         case rectangle
         case text
-        
+
         var icon: String {
             switch self {
             case .pen: return "pencil"
@@ -29,7 +29,7 @@ struct ScreenshotEditorView: View {
             }
         }
     }
-    
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -37,7 +37,7 @@ struct ScreenshotEditorView: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                
+
                 // Canvas for drawing
                 CanvasView(
                     canvasView: $canvasView,
@@ -46,11 +46,11 @@ struct ScreenshotEditorView: View {
                     isDrawing: isDrawing
                 )
                 .allowsHitTesting(isDrawing)
-                
+
                 // Drawing tools
                 VStack {
                     Spacer()
-                    
+
                     HStack(spacing: 0) {
                         // Tools
                         ForEach([DrawingTool.pen, .marker, .arrow, .rectangle], id: \.self) { tool in
@@ -62,14 +62,14 @@ struct ScreenshotEditorView: View {
                                     .foregroundColor(selectedTool == tool ? .white : .blue)
                             }
                         }
-                        
+
                         Divider()
                             .frame(height: 30)
                             .padding(.horizontal, 10)
-                        
+
                         // Colors
                         ForEach([Color.red, .blue, .green, .orange, .yellow], id: \.self) { color in
-                            Button(action: { 
+                            Button(action: {
                                 selectedColor = color
                                 updateCanvasColor()
                             }) {
@@ -83,9 +83,9 @@ struct ScreenshotEditorView: View {
                             }
                             .padding(.horizontal, 5)
                         }
-                        
+
                         Spacer()
-                        
+
                         // Clear button
                         Button(action: clearCanvas) {
                             Image(systemName: "trash")
@@ -108,7 +108,7 @@ struct ScreenshotEditorView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Сохранить") {
                         saveAnnotatedImage()
@@ -121,12 +121,12 @@ struct ScreenshotEditorView: View {
             setupCanvas()
         }
     }
-    
+
     private func setupCanvas() {
         canvasView.backgroundColor = .clear
         canvasView.isOpaque = false
         canvasView.tool = PKInkingTool(.pen, color: UIColor.red, width: 3)
-        
+
         // Enable tool picker on devices that support it
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let _ = windowScene.windows.first {
@@ -135,10 +135,10 @@ struct ScreenshotEditorView: View {
             canvasView.becomeFirstResponder()
         }
     }
-    
+
     private func updateCanvasColor() {
         let uiColor = UIColor(selectedColor)
-        
+
         switch selectedTool {
         case .pen:
             canvasView.tool = PKInkingTool(.pen, color: uiColor, width: 3)
@@ -148,34 +148,34 @@ struct ScreenshotEditorView: View {
             canvasView.tool = PKInkingTool(.pen, color: uiColor, width: 3)
         }
     }
-    
+
     private func clearCanvas() {
         canvasView.drawing = PKDrawing()
     }
-    
+
     private func saveAnnotatedImage() {
         let renderer = UIGraphicsImageRenderer(size: image.size)
-        
-        let annotatedImage = renderer.image { context in
+
+        let annotatedImage = renderer.image { _ in
             // Draw original image
             image.draw(at: .zero)
-            
+
             // Draw annotations
             let drawingImage = canvasView.drawing.image(
                 from: canvasView.bounds,
                 scale: UIScreen.main.scale
             )
-            
+
             // Scale drawing to match image size
             let scale = image.size.width / canvasView.bounds.width
             let scaledSize = CGSize(
                 width: drawingImage.size.width * scale,
                 height: drawingImage.size.height * scale
             )
-            
+
             drawingImage.draw(in: CGRect(origin: .zero, size: scaledSize))
         }
-        
+
         onSave(annotatedImage)
         dismiss()
     }
@@ -186,15 +186,15 @@ struct CanvasView: UIViewRepresentable {
     @Binding var toolPicker: PKToolPicker
     let selectedColor: Color
     let isDrawing: Bool
-    
+
     func makeUIView(context: Context) -> PKCanvasView {
         canvasView.backgroundColor = .clear
         canvasView.isOpaque = false
         canvasView.drawingPolicy = .anyInput
         return canvasView
     }
-    
+
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
         uiView.isUserInteractionEnabled = isDrawing
     }
-} 
+}

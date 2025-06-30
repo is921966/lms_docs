@@ -10,27 +10,26 @@ import XCTest
 
 @MainActor
 final class AdminEditTests: XCTestCase {
-    
-    var testService: TestMockService!
-    var courseService: CourseMockService!
-    
+    private var testService: TestMockService!
+    private var courseService: CourseMockService!
+
     override func setUpWithError() throws {
         testService = TestMockService()
         courseService = CourseMockService()
     }
-    
+
     override func tearDownWithError() throws {
         testService = nil
         courseService = nil
     }
-    
+
     func testTestServiceSavesChanges() throws {
         // Given
         let originalTest = testService.tests.first!
         let originalTitle = originalTest.title
         let newTitle = "Updated Test Title"
         let newPassingScore = 85.0
-        
+
         // When
         if let testIndex = testService.tests.firstIndex(where: { $0.id == originalTest.id }) {
             testService.tests[testIndex] = Test(
@@ -49,7 +48,7 @@ final class AdminEditTests: XCTestCase {
                 updatedAt: Date()
             )
         }
-        
+
         // Then
         let updatedTest = testService.tests.first(where: { $0.id == originalTest.id })
         XCTAssertNotNil(updatedTest)
@@ -57,7 +56,7 @@ final class AdminEditTests: XCTestCase {
         XCTAssertNotEqual(updatedTest?.title, originalTitle)
         XCTAssertEqual(updatedTest?.passingScore, newPassingScore)
     }
-    
+
     func testCourseServiceSavesChanges() throws {
         // Given
         let originalCourses = Course.mockCourses
@@ -65,11 +64,11 @@ final class AdminEditTests: XCTestCase {
             XCTFail("No mock courses available")
             return
         }
-        
+
         let originalTitle = firstCourse.title
         let newTitle = "Updated Course Title"
         let newDescription = "Updated description"
-        
+
         // When
         if let courseIndex = Course.mockCourses.firstIndex(where: { $0.id == firstCourse.id }) {
             Course.mockCourses[courseIndex] = Course(
@@ -95,7 +94,7 @@ final class AdminEditTests: XCTestCase {
                 publishedAt: firstCourse.publishedAt
             )
         }
-        
+
         // Then
         let updatedCourse = Course.mockCourses.first(where: { $0.title == newTitle })
         XCTAssertNotNil(updatedCourse)
@@ -103,7 +102,7 @@ final class AdminEditTests: XCTestCase {
         XCTAssertEqual(updatedCourse?.description, newDescription)
         XCTAssertNotEqual(updatedCourse?.title, originalTitle)
     }
-    
+
     func testAddingNewTest() throws {
         // Given
         let initialCount = testService.tests.count
@@ -116,15 +115,15 @@ final class AdminEditTests: XCTestCase {
             passingScore: 70.0,
             createdBy: "Admin"
         )
-        
+
         // When
         testService.tests.append(newTest)
-        
+
         // Then
         XCTAssertEqual(testService.tests.count, initialCount + 1)
         XCTAssertTrue(testService.tests.contains(where: { $0.title == "New Test" }))
     }
-    
+
     func testAddingNewCourse() throws {
         // Given
         let initialCount = Course.mockCourses.count
@@ -134,10 +133,10 @@ final class AdminEditTests: XCTestCase {
             duration: "4 часа",
             createdBy: UUID()
         )
-        
+
         // When
         Course.mockCourses.append(newCourse)
-        
+
         // Then
         XCTAssertEqual(Course.mockCourses.count, initialCount + 1)
         XCTAssertTrue(Course.mockCourses.contains(where: { $0.title == "New Course" }))
@@ -147,4 +146,4 @@ final class AdminEditTests: XCTestCase {
 // Mock service for courses
 class CourseMockService {
     var courses = Course.mockCourses
-} 
+}

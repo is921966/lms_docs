@@ -3,7 +3,7 @@ import SwiftUI
 struct ReportSectionView: View {
     let section: ReportSection
     @State private var isExpanded = true
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
@@ -11,19 +11,19 @@ struct ReportSectionView: View {
                 HStack {
                     Image(systemName: sectionIcon)
                         .foregroundColor(.blue)
-                    
+
                     Text(section.title)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
             }
-            
+
             // Content
             if isExpanded {
                 sectionContent
@@ -33,7 +33,7 @@ struct ReportSectionView: View {
             }
         }
     }
-    
+
     private var sectionIcon: String {
         switch section.type {
         case .summary: return "doc.text"
@@ -43,7 +43,7 @@ struct ReportSectionView: View {
         case .metrics: return "number"
         }
     }
-    
+
     @ViewBuilder
     private var sectionContent: some View {
         switch section.data {
@@ -54,7 +54,7 @@ struct ReportSectionView: View {
         case .text(let text):
             Text(text)
                 .font(.subheadline)
-        case .chart(_):
+        case .chart:
             // Chart preview
             Text("График")
                 .font(.caption)

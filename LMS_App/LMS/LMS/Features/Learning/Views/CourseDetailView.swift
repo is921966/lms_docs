@@ -7,34 +7,34 @@ struct CourseDetailView: View {
     @State private var showingAssignment = false
     @State private var showingCertificate = false
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Course header
                 CourseHeaderView(course: course)
-                
+
                 // Course info cards
                 CourseInfoCards(course: course)
-                
+
                 // Description
                 VStack(alignment: .leading, spacing: 10) {
                     Text("О курсе")
                         .font(.headline)
-                    
+
                     Text(course.fullDescription)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal)
-                
+
                 // Modules
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Программа курса")
                         .font(.headline)
                         .padding(.horizontal)
-                    
+
                     ForEach(course.modules) { module in
                         ModuleCard(module: module) {
                             selectedModule = module
@@ -42,7 +42,7 @@ struct CourseDetailView: View {
                         }
                     }
                 }
-                
+
                 // Action buttons
                 VStack(spacing: 12) {
                     // Certificate button (if course completed)
@@ -60,7 +60,7 @@ struct CourseDetailView: View {
                             .cornerRadius(15)
                         }
                     }
-                    
+
                     // Start/Continue button
                     Button(action: {
                         if let firstModule = course.modules.first {
@@ -97,7 +97,7 @@ struct CourseDetailView: View {
                             Image(systemName: "person.badge.plus")
                         }
                     }
-                    
+
                     Button(action: {}) {
                         Image(systemName: "bookmark")
                     }
@@ -119,11 +119,11 @@ struct CourseDetailView: View {
             }
         }
     }
-    
+
     private func generateCertificate() -> Certificate? {
         guard course.progress == 1.0,
               let user = MockAuthService.shared.currentUser else { return nil }
-        
+
         return Certificate(
             userId: UUID(),
             courseId: course.id,
@@ -150,7 +150,7 @@ struct CourseDetailView: View {
 // MARK: - Course Header
 struct CourseHeaderView: View {
     let course: Course
-    
+
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             // Background image
@@ -160,7 +160,7 @@ struct CourseHeaderView: View {
                 endPoint: .bottomTrailing
             )
             .frame(height: 200)
-            
+
             VStack(alignment: .leading, spacing: 10) {
                 Text(course.category)
                     .font(.caption)
@@ -169,12 +169,12 @@ struct CourseHeaderView: View {
                     .padding(.vertical, 6)
                     .background(Color.white.opacity(0.2))
                     .cornerRadius(20)
-                
+
                 Text(course.title)
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
-                
+
                 HStack {
                     Label(course.duration, systemImage: "clock")
                     Label("\(course.modules.count) модулей", systemImage: "square.stack.3d.up")
@@ -190,7 +190,7 @@ struct CourseHeaderView: View {
 // MARK: - Course Info Cards
 struct CourseInfoCards: View {
     let course: Course
-    
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 15) {
@@ -200,21 +200,21 @@ struct CourseInfoCards: View {
                     value: course.level,
                     color: .green
                 )
-                
+
                 InfoCard(
                     icon: "person.3.fill",
                     title: "Студентов",
                     value: "\(course.enrolledCount)",
                     color: .blue
                 )
-                
+
                 InfoCard(
                     icon: "star.fill",
                     title: "Рейтинг",
                     value: String(format: "%.1f", course.rating),
                     color: .orange
                 )
-                
+
                 InfoCard(
                     icon: "rosette",
                     title: "Сертификат",
@@ -232,16 +232,16 @@ struct InfoCard: View {
     let title: String
     let value: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
-            
+
             Text(value)
                 .font(.headline)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -258,7 +258,7 @@ struct InfoCard: View {
 struct ModuleCard: View {
     let module: Module
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 12) {
@@ -271,19 +271,19 @@ struct ModuleCard: View {
                         .frame(width: 40, height: 40)
                         .background(module.isCompleted ? Color.green : Color.gray)
                         .clipShape(Circle())
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text(module.title)
                             .font(.headline)
                             .foregroundColor(.primary)
-                        
+
                         Text("\(module.lessons.count) уроков • \(module.duration) мин")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Spacer()
-                    
+
                     if module.isCompleted {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
@@ -295,7 +295,7 @@ struct ModuleCard: View {
                             .foregroundColor(.gray)
                     }
                 }
-                
+
                 // Progress bar
                 if module.progress > 0 && !module.isCompleted {
                     GeometryReader { geometry in
@@ -303,7 +303,7 @@ struct ModuleCard: View {
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(Color.gray.opacity(0.2))
                                 .frame(height: 4)
-                            
+
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(Color.blue)
                                 .frame(width: geometry.size.width * module.progress, height: 4)
@@ -329,7 +329,7 @@ extension Course {
            let category = CourseCategory.categories.first(where: { $0.id == categoryId }) {
             return category.name
         }
-        
+
         // Fallback for old data
         switch title {
         case "Основы продаж", "Основы продаж в ЦУМ":
@@ -346,13 +346,13 @@ extension Course {
             return "Обучение"
         }
     }
-    
+
     var fullDescription: String {
         // Use description if it's already detailed
         if description.count > 100 {
             return description
         }
-        
+
         // Fallback descriptions
         switch title {
         case "Основы продаж", "Основы продаж в ЦУМ":
@@ -369,7 +369,7 @@ extension Course {
             return description
         }
     }
-    
+
     var level: String {
         switch title {
         case "Основы продаж", "Основы продаж в ЦУМ", "Работа с кассой":
@@ -382,15 +382,15 @@ extension Course {
             return "Начальный"
         }
     }
-    
+
     var enrolledCount: Int {
         Int.random(in: 150...500)
     }
-    
+
     var rating: Double {
         Double.random(in: 4.3...5.0)
     }
-    
+
     var hasCertificate: Bool {
         certificateTemplateId != nil || progress == 1.0 || title.contains("VIP")
     }
@@ -402,4 +402,4 @@ extension Course {
             course: Course.createMockCourses().first!
         )
     }
-} 
+}

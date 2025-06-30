@@ -5,6 +5,65 @@ All notable changes to the TDD Methodology will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2025-06-30
+
+### Added
+- **Comprehensive Cursor Rules System** - 7 specialized `.mdc` files for different development aspects
+  - `architecture.mdc` - Clean Architecture, SOLID, DDD principles
+  - `ui-guidelines.mdc` - SwiftUI, Apple HIG, Accessibility, Design Tokens
+  - `testing.mdc` - TDD/BDD with Gherkin scenarios
+  - `naming-and-structure.mdc` - Swift conventions and project organization
+  - `client-server-integration.mdc` - API contracts, DTOs, network layer
+  - `ci-cd-review.mdc` - CI/CD pipeline, code review, Conventional Commits
+  - `ai-interaction.mdc` - AI security, responsible usage, best practices
+- **BDD/ATDD Framework** integration with Gherkin scenarios
+- **AI Security Guidelines** for data protection and code validation
+- **Design System** with centralized tokens and theming
+- **Enhanced CI/CD** with SwiftLint, SonarCloud, security scanning
+- **Network Layer Standards** including offline support and interceptors
+
+### Changed
+- Significantly expanded `ai-interaction.mdc` with security focus
+- Updated architecture guidelines with DTOs and Mappers
+- Enhanced testing approach with BDD scenarios
+- Improved CI/CD pipeline with quality gates
+
+### Security
+- Added data anonymization requirements for AI interactions
+- Implemented AI code validation process
+- Added emergency procedures for security incidents
+- Mandated security scanning in CI/CD
+
+## [1.7.1] - 2025-06-29
+
+### Added
+- Feedback System best practices
+- Sprint 12 completion documentation
+
+## [1.7.0] - 2025-06-28
+
+### Added
+- Feature Registry Framework for module management
+- Automatic navigation registration
+- Integration testing requirements
+
+## [1.6.0] - 2025-06-27
+
+### Added
+- Central methodology repository synchronization
+- Enhanced "обнови методологию" command
+
+## [1.5.0] - 2025-06-26
+
+### Added
+- Feedback System design and implementation
+
+## [1.4.0] - 2025-06-25
+
+### Fixed
+- Report locations standardization
+- Folder structure improvements
+
 ## [1.3.0] - 2025-01-19
 
 ### Added

@@ -5,15 +5,15 @@ struct ReportsListView: View {
     @State private var showCreateReport = false
     @State private var selectedReport: Report?
     @State private var filterType: ReportType?
-    
+
     private let currentUserId = "user-1"
-    
+
     var body: some View {
         NavigationView {
             List {
                 // Filter section
                 ReportFilterSection(filterType: $filterType)
-                
+
                 // Reports list
                 ForEach(filteredReports) { report in
                     ReportRow(report: report) {
@@ -39,11 +39,11 @@ struct ReportsListView: View {
             }
         }
     }
-    
+
     // MARK: - Filtered Reports
     private var filteredReports: [Report] {
         let userReports = service.getReports(for: currentUserId)
-        
+
         if let filterType = filterType {
             return userReports.filter { $0.type == filterType }
         }

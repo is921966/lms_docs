@@ -14,7 +14,7 @@ enum LMSTestType: String, CaseIterable, Codable {
     case exam = "Экзамен"
     case assessment = "Оценка"
     case practice = "Практика"
-    
+
     var icon: String {
         switch self {
         case .quiz: return "questionmark.circle"
@@ -23,7 +23,7 @@ enum LMSTestType: String, CaseIterable, Codable {
         case .practice: return "pencil.and.ellipsis.rectangle"
         }
     }
-    
+
     var color: Color {
         switch self {
         case .quiz: return .blue
@@ -38,7 +38,7 @@ enum TestStatus: String, CaseIterable, Codable {
     case draft = "Черновик"
     case published = "Опубликован"
     case archived = "В архиве"
-    
+
     var color: Color {
         switch self {
         case .draft: return .gray
@@ -53,7 +53,7 @@ enum TestDifficulty: String, CaseIterable, Codable {
     case medium = "Средний"
     case hard = "Сложный"
     case expert = "Экспертный"
-    
+
     var color: Color {
         switch self {
         case .easy: return .green
@@ -62,7 +62,7 @@ enum TestDifficulty: String, CaseIterable, Codable {
         case .expert: return .red
         }
     }
-    
+
     var icon: String {
         switch self {
         case .easy: return "1.circle"
@@ -80,36 +80,36 @@ struct Test: Identifiable, Codable {
     var type: LMSTestType
     var status: TestStatus
     var difficulty: TestDifficulty
-    
+
     // Content
     var questions: [Question]
     var shuffleQuestions: Bool
     var questionsPerAttempt: Int? // nil = все вопросы
-    
+
     // Settings
     var timeLimit: Int? // в минутах, nil = без ограничения
     var attemptsAllowed: Int? // nil = неограниченно
     var passingScore: Double // в процентах (0-100)
     var showCorrectAnswers: Bool
     var showResultsImmediately: Bool
-    
+
     // Relations
     var courseId: String? // Связь с курсом
     var lessonId: String? // Связь с уроком
     var competencyIds: [String] // Связанные компетенции
     var positionIds: [String] // Для каких должностей
-    
+
     // Metadata
     var createdBy: String
     var createdAt: Date
     var updatedAt: Date
     var publishedAt: Date?
-    
+
     // Statistics
     var totalAttempts: Int
     var averageScore: Double
     var passRate: Double
-    
+
     init(
         id: UUID = UUID(),
         title: String,
@@ -163,16 +163,16 @@ struct Test: Identifiable, Codable {
         self.averageScore = averageScore
         self.passRate = passRate
     }
-    
+
     // Computed properties
     var totalQuestions: Int {
         questions.count
     }
-    
+
     var totalPoints: Double {
         questions.reduce(0) { $0 + $1.points }
     }
-    
+
     var estimatedTime: String {
         if let limit = timeLimit {
             return "\(limit) мин"
@@ -182,51 +182,51 @@ struct Test: Identifiable, Codable {
             return "~\(minutes) мин"
         }
     }
-    
+
     var isPublished: Bool {
         status == .published
     }
-    
+
     var canBeTaken: Bool {
         isPublished && !questions.isEmpty
     }
-    
+
     // Additional properties for student interface
     var deadline: Date? {
         // For student assignments, calculate deadline
         // For now return a mock deadline
         publishedAt?.addingTimeInterval(7 * 24 * 60 * 60) // 7 days after publishing
     }
-    
+
     var isPassed: Bool {
         // This would be checked against user's results
         // For now return false
         false
     }
-    
+
     var courseName: String? {
         // This would be fetched from course service
         // For now return mock name
         courseId != nil ? "iOS Development" : nil
     }
-    
+
     var questionsCount: Int {
         questions.count
     }
-    
+
     var duration: Int {
         timeLimit ?? (questions.count * 2) // 2 minutes per question if no limit
     }
-    
+
     var attempts: Int {
         attemptsAllowed ?? 0
     }
-    
+
     var score: Int? {
         // This would be fetched from user's results
         nil
     }
-    
+
     var allowsRetake: Bool {
         if let allowed = attemptsAllowed {
             return totalAttempts < allowed
@@ -238,5 +238,5 @@ struct Test: Identifiable, Codable {
 // MARK: - Test Sort Option
 enum TestSortOption: String, CaseIterable {
     case dateCreated = "Дата создания"
-    case title = "Название"  
+    case title = "Название"
 }

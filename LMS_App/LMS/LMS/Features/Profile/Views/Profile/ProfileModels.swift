@@ -8,7 +8,7 @@ struct Achievement: Identifiable {
     let color: Color
     let isUnlocked: Bool
     let date: String
-    
+
     static let mockAchievements = [
         Achievement(title: "Первый курс", icon: "star.fill", color: .yellow, isUnlocked: true, date: "15.06.2025"),
         Achievement(title: "Отличник", icon: "graduationcap.fill", color: .blue, isUnlocked: true, date: "20.06.2025"),
@@ -23,7 +23,7 @@ struct WeeklyActivity: Identifiable {
     let id = UUID()
     let day: String
     let minutes: Int
-    
+
     static let mockData = [
         WeeklyActivity(day: "Пн", minutes: 45),
         WeeklyActivity(day: "Вт", minutes: 60),
@@ -41,7 +41,7 @@ struct Activity: Identifiable {
     let time: String
     let icon: String
     let color: Color
-    
+
     static let mockActivities = [
         Activity(title: "Завершен модуль \"Работа с возражениями\"", time: "2 часа назад", icon: "checkmark.circle.fill", color: .green),
         Activity(title: "Начат курс \"Визуальный мерчандайзинг\"", time: "Вчера", icon: "play.circle.fill", color: .blue),
@@ -55,7 +55,7 @@ struct Skill: Identifiable {
     let name: String
     let level: Double
     let color: Color
-    
+
     static let mockSkills = [
         Skill(name: "Продажи", level: 0.85, color: .blue),
         Skill(name: "Клиентский сервис", level: 0.92, color: .green),

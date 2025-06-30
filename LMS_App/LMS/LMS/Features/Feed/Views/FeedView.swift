@@ -6,7 +6,7 @@ struct FeedView: View {
     @State private var showingCreatePost = false
     @State private var showingSettings = false
     @State private var isRefreshing = false
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -27,7 +27,7 @@ struct FeedView: View {
                     }
                     .padding(.horizontal)
                 }
-                
+
                 // Posts
                 if feedService.posts.isEmpty && !feedService.isLoading {
                     EmptyFeedView()
@@ -62,7 +62,7 @@ struct FeedView: View {
                         )
                 }
             }
-            
+
             if feedService.permissions.canModerate {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -84,7 +84,7 @@ struct FeedView: View {
             }
         }
     }
-    
+
     private func refreshFeed() async {
         isRefreshing = true
         // Simulate network delay
@@ -100,11 +100,11 @@ struct EmptyFeedView: View {
             Image(systemName: "newspaper")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text("Пока нет записей")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Будьте первым, кто поделится новостями!")
                 .font(.body)
                 .foregroundColor(.secondary)

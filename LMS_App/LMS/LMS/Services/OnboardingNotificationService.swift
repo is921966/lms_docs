@@ -4,17 +4,17 @@ import Combine
 
 class OnboardingNotificationService: ObservableObject {
     static let shared = OnboardingNotificationService()
-    
+
     @Published var pendingNotifications: [OnboardingNotification] = []
     private var cancellables = Set<AnyCancellable>()
-    
+
     init() {
         requestAuthorization()
         observeOnboardingChanges()
     }
-    
+
     // MARK: - Authorization
-    
+
     private func requestAuthorization() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if granted {
@@ -24,9 +24,9 @@ class OnboardingNotificationService: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Onboarding Observations
-    
+
     private func observeOnboardingChanges() {
         // Observe program status changes
         OnboardingMockService.shared.$programs
@@ -35,7 +35,7 @@ class OnboardingNotificationService: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     private func checkForStatusChanges(_ programs: [OnboardingProgram]) {
         for program in programs {
             // Check for overdue tasks
@@ -46,14 +46,14 @@ class OnboardingNotificationService: ObservableObject {
                     }
                 }
             }
-            
+
             // Check for stage completion
             for stage in program.stages {
                 if stage.progress >= 1.0 && stage.status != .completed {
                     sendStageCompletionNotification(stage: stage, program: program)
                 }
             }
-            
+
             // Check for program milestones
             let progress = program.overallProgress
             if progress >= 0.25 && progress < 0.5 {
@@ -67,9 +67,9 @@ class OnboardingNotificationService: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Notification Scheduling
-    
+
     func scheduleOverdueNotification(for task: OnboardingTask, in program: OnboardingProgram) {
         let notification = OnboardingNotification(
             id: UUID(),
@@ -80,10 +80,10 @@ class OnboardingNotificationService: ObservableObject {
             taskId: task.id,
             scheduledDate: Date()
         )
-        
+
         sendNotification(notification)
     }
-    
+
     func sendStageCompletionNotification(stage: OnboardingStage, program: OnboardingProgram) {
         let notification = OnboardingNotification(
             id: UUID(),
@@ -94,10 +94,10 @@ class OnboardingNotificationService: ObservableObject {
             stageId: stage.id,
             scheduledDate: Date()
         )
-        
+
         sendNotification(notification)
     }
-    
+
     func sendMilestoneNotification(program: OnboardingProgram, milestone: String) {
         let notification = OnboardingNotification(
             id: UUID(),
@@ -107,10 +107,10 @@ class OnboardingNotificationService: ObservableObject {
             programId: program.id,
             scheduledDate: Date()
         )
-        
+
         sendNotification(notification)
     }
-    
+
     func sendCompletionNotification(program: OnboardingProgram) {
         let notification = OnboardingNotification(
             id: UUID(),
@@ -120,15 +120,15 @@ class OnboardingNotificationService: ObservableObject {
             programId: program.id,
             scheduledDate: Date()
         )
-        
+
         sendNotification(notification)
     }
-    
+
     func scheduleTaskReminder(task: OnboardingTask, program: OnboardingProgram, daysBefore: Int = 1) {
         guard let dueDate = task.dueDate else { return }
-        
+
         let reminderDate = Calendar.current.date(byAdding: .day, value: -daysBefore, to: dueDate) ?? dueDate
-        
+
         let notification = OnboardingNotification(
             id: UUID(),
             type: .taskReminder,
@@ -138,49 +138,49 @@ class OnboardingNotificationService: ObservableObject {
             taskId: task.id,
             scheduledDate: reminderDate
         )
-        
+
         scheduleLocalNotification(notification)
     }
-    
+
     // MARK: - Local Notifications
-    
+
     private func sendNotification(_ notification: OnboardingNotification) {
         pendingNotifications.append(notification)
-        
+
         let content = UNMutableNotificationContent()
         content.title = notification.title
         content.body = notification.body
         content.sound = .default
         content.badge = NSNumber(value: pendingNotifications.count)
-        
+
         let request = UNNotificationRequest(
             identifier: notification.id.uuidString,
             content: content,
             trigger: nil // Immediate delivery
         )
-        
+
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("Error sending notification: \(error)")
             }
         }
     }
-    
+
     private func scheduleLocalNotification(_ notification: OnboardingNotification) {
         let content = UNMutableNotificationContent()
         content.title = notification.title
         content.body = notification.body
         content.sound = .default
-        
+
         let triggerDate = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: notification.scheduledDate)
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
-        
+
         let request = UNNotificationRequest(
             identifier: notification.id.uuidString,
             content: content,
             trigger: trigger
         )
-        
+
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("Error scheduling notification: \(error)")
@@ -189,9 +189,9 @@ class OnboardingNotificationService: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Helpers
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -199,14 +199,14 @@ class OnboardingNotificationService: ObservableObject {
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter.string(from: date)
     }
-    
+
     // MARK: - Notification Management
-    
+
     func clearNotification(_ id: UUID) {
         pendingNotifications.removeAll { $0.id == id }
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id.uuidString])
     }
-    
+
     func clearAllNotifications() {
         pendingNotifications.removeAll()
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
@@ -233,4 +233,4 @@ enum OnboardingNotificationType {
     case stageCompleted
     case milestone
     case programCompleted
-} 
+}

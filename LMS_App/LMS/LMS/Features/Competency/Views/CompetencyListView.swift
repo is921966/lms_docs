@@ -5,12 +5,12 @@ struct CompetencyListView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showingFilters = false
     @State private var selectedCompetency: Competency?
-    
+
     var isAdmin: Bool {
-        authViewModel.currentUser?.role == .admin || 
+        authViewModel.currentUser?.role == .admin ||
         authViewModel.currentUser?.role == .superAdmin
     }
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -56,9 +56,9 @@ struct CompetencyListView: View {
         }
         .accessibilityIdentifier("competencyListView")
     }
-    
+
     // MARK: - Components
-    
+
     private var competencyList: some View {
         Group {
             if viewModel.filteredCompetencies.isEmpty {
@@ -71,7 +71,7 @@ struct CompetencyListView: View {
                             statisticsCard
                                 .accessibilityIdentifier("statisticsCard")
                         }
-                        
+
                         // Competency cards
                         ForEach(viewModel.filteredCompetencies) { competency in
                             CompetencyCard(competency: competency)
@@ -93,13 +93,13 @@ struct CompetencyListView: View {
             }
         }
     }
-    
+
     private var statisticsCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Статистика")
                 .font(.headline)
                 .accessibilityIdentifier("statisticsTitle")
-            
+
             HStack(spacing: 20) {
                 StatItem(
                     title: "Всего",
@@ -108,7 +108,7 @@ struct CompetencyListView: View {
                     color: .blue
                 )
                 .accessibilityIdentifier("totalStatItem")
-                
+
                 StatItem(
                     title: "Активных",
                     value: "\(viewModel.statistics.active)",
@@ -116,7 +116,7 @@ struct CompetencyListView: View {
                     color: .green
                 )
                 .accessibilityIdentifier("activeStatItem")
-                
+
                 StatItem(
                     title: "Неактивных",
                     value: "\(viewModel.statistics.inactive)",
@@ -125,7 +125,7 @@ struct CompetencyListView: View {
                 )
                 .accessibilityIdentifier("inactiveStatItem")
             }
-            
+
             // Category breakdown
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
@@ -147,24 +147,24 @@ struct CompetencyListView: View {
         .background(Color(.systemGray6))
         .cornerRadius(12)
     }
-    
+
     private var emptyState: some View {
         VStack(spacing: 20) {
             Image(systemName: "tray")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
                 .accessibilityIdentifier("emptyStateIcon")
-            
+
             Text("Компетенции не найдены")
                 .font(.headline)
                 .accessibilityIdentifier("emptyStateTitle")
-            
+
             Text("Попробуйте изменить параметры поиска или фильтры")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .accessibilityIdentifier("emptyStateMessage")
-            
+
             if isAdmin {
                 Button(action: { viewModel.showingCreateSheet = true }) {
                     Label("Создать компетенцию", systemImage: "plus.circle.fill")
@@ -176,7 +176,7 @@ struct CompetencyListView: View {
         .padding()
         .accessibilityIdentifier("emptyStateView")
     }
-    
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -185,7 +185,7 @@ struct CompetencyListView: View {
                     .symbolVariant(hasActiveFilters ? .fill : .none)
             }
             .accessibilityIdentifier("filtersButton")
-            
+
             if isAdmin {
                 Button(action: { viewModel.showingCreateSheet = true }) {
                     Image(systemName: "plus")
@@ -194,7 +194,7 @@ struct CompetencyListView: View {
             }
         }
     }
-    
+
     private var filterSheet: some View {
         NavigationStack {
             Form {
@@ -208,12 +208,12 @@ struct CompetencyListView: View {
                     }
                     .accessibilityIdentifier("categoryPicker")
                 }
-                
+
                 Section("Статус") {
                     Toggle("Показывать неактивные", isOn: $viewModel.showInactiveCompetencies)
                         .accessibilityIdentifier("showInactiveToggle")
                 }
-                
+
                 Section {
                     Button("Сбросить фильтры") {
                         viewModel.clearFilters()
@@ -235,29 +235,29 @@ struct CompetencyListView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func competencyContextMenu(_ competency: Competency) -> some View {
         if isAdmin {
             Button(action: { viewModel.selectCompetencyForEdit(competency) }) {
                 Label("Редактировать", systemImage: "pencil")
             }
-            
+
             Button(action: { viewModel.toggleCompetencyStatus(competency) }) {
                 Label(
                     competency.isActive ? "Деактивировать" : "Активировать",
                     systemImage: competency.isActive ? "xmark.circle" : "checkmark.circle"
                 )
             }
-            
+
             Divider()
-            
+
             Button(role: .destructive, action: { viewModel.deleteCompetency(competency) }) {
                 Label("Удалить", systemImage: "trash")
             }
         }
     }
-    
+
     private var hasActiveFilters: Bool {
         viewModel.selectedCategory != nil || viewModel.showInactiveCompetencies
     }
@@ -267,7 +267,7 @@ struct CompetencyListView: View {
 
 struct CompetencyCard: View {
     let competency: Competency
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -275,14 +275,14 @@ struct CompetencyCard: View {
                 RoundedRectangle(cornerRadius: 4)
                     .fill(competency.swiftUIColor)
                     .frame(width: 6)
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text(competency.name)
                             .font(.headline)
-                        
+
                         Spacer()
-                        
+
                         if !competency.isActive {
                             Text("Неактивна")
                                 .font(.caption)
@@ -291,24 +291,24 @@ struct CompetencyCard: View {
                                 .background(Color.gray.opacity(0.2))
                                 .cornerRadius(4)
                         }
-                        
+
                         Image(systemName: "chevron.right")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Text(competency.description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
-                    
+
                     HStack {
                         Label(competency.category.rawValue, systemImage: competency.category.icon)
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         Spacer()
-                        
+
                         Text("\(competency.levels.count) уровней")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -328,17 +328,17 @@ struct StatItem: View {
     let value: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 4) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
-            
+
             Text(value)
                 .font(.title3)
                 .fontWeight(.semibold)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -352,16 +352,16 @@ struct CompetencyCategoryChip: View {
     let count: Int
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Image(systemName: category.icon)
                     .font(.caption)
-                
+
                 Text(category.rawValue)
                     .font(.caption)
-                
+
                 Text("(\(count))")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -381,4 +381,4 @@ struct CompetencyListView_Previews: PreviewProvider {
         CompetencyListView()
             .environmentObject(AuthViewModel())
     }
-} 
+}

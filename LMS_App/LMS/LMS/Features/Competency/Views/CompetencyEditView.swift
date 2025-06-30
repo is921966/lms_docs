@@ -2,10 +2,10 @@ import SwiftUI
 
 struct CompetencyEditView: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     let competency: Competency?
     let onSave: (Competency) -> Void
-    
+
     @State private var name: String = ""
     @State private var description: String = ""
     @State private var selectedCategory: CompetencyCategory = .technical
@@ -14,35 +14,35 @@ struct CompetencyEditView: View {
     @State private var isActive: Bool = true
     @State private var relatedPositions: [String] = []
     @State private var newPosition: String = ""
-    
+
     @State private var showingLevelEditor = false
     @State private var editingLevel: CompetencyLevel?
     @State private var showingValidationAlert = false
     @State private var validationMessage = ""
-    
+
     var isEditing: Bool {
         competency != nil
     }
-    
+
     init(competency: Competency?, onSave: @escaping (Competency) -> Void) {
         self.competency = competency
         self.onSave = onSave
     }
-    
+
     var body: some View {
         Form {
             // Basic info
             basicInfoSection
-            
+
             // Category and color
             appearanceSection
-            
+
             // Levels
             levelsSection
-            
+
             // Related positions
             positionsSection
-            
+
             // Status
             if isEditing {
                 statusSection
@@ -56,7 +56,7 @@ struct CompetencyEditView: View {
                     dismiss()
                 }
             }
-            
+
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Сохранить") {
                     saveCompetency()
@@ -83,24 +83,24 @@ struct CompetencyEditView: View {
             }
         }
     }
-    
+
     // MARK: - Sections
-    
+
     private var basicInfoSection: some View {
         Section("Основная информация") {
             TextField("Название компетенции", text: $name)
-            
+
             VStack(alignment: .leading) {
                 Text("Описание")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 TextEditor(text: $description)
                     .frame(minHeight: 100)
             }
         }
     }
-    
+
     private var appearanceSection: some View {
         Section("Категория и визуализация") {
             Picker("Категория", selection: $selectedCategory) {
@@ -109,11 +109,11 @@ struct CompetencyEditView: View {
                         .tag(category)
                 }
             }
-            
+
             VStack(alignment: .leading, spacing: 12) {
                 Text("Цвет")
                     .font(.subheadline)
-                
+
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
                     ForEach(CompetencyColor.allCases, id: \.self) { color in
                         ColorOption(
@@ -128,7 +128,7 @@ struct CompetencyEditView: View {
             .padding(.vertical, 8)
         }
     }
-    
+
     private var levelsSection: some View {
         Section("Уровни компетенции") {
             ForEach(levels) { level in
@@ -137,15 +137,15 @@ struct CompetencyEditView: View {
                         Text("Уровень \(level.level): \(level.name)")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        
+
                         Text(level.description)
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .lineLimit(1)
                     }
-                    
+
                     Spacer()
-                    
+
                     Button(action: { editingLevel = level }) {
                         Image(systemName: "pencil.circle")
                             .foregroundColor(.accentColor)
@@ -153,13 +153,13 @@ struct CompetencyEditView: View {
                 }
                 .padding(.vertical, 4)
             }
-            
+
             Button(action: { addLevel() }) {
                 Label("Добавить уровень", systemImage: "plus.circle")
             }
         }
     }
-    
+
     private var positionsSection: some View {
         Section("Связанные должности") {
             ForEach(relatedPositions, id: \.self) { position in
@@ -172,11 +172,11 @@ struct CompetencyEditView: View {
                     }
                 }
             }
-            
+
             HStack {
                 TextField("Добавить должность", text: $newPosition)
                     .textFieldStyle(.plain)
-                
+
                 Button(action: addPosition) {
                     Image(systemName: "plus.circle.fill")
                         .foregroundColor(.accentColor)
@@ -185,15 +185,15 @@ struct CompetencyEditView: View {
             }
         }
     }
-    
+
     private var statusSection: some View {
         Section("Статус") {
             Toggle("Активна", isOn: $isActive)
         }
     }
-    
+
     // MARK: - Actions
-    
+
     private func loadCompetencyData(_ competency: Competency) {
         name = competency.name
         description = competency.description
@@ -203,10 +203,10 @@ struct CompetencyEditView: View {
         isActive = competency.isActive
         relatedPositions = competency.relatedPositions
     }
-    
+
     private func saveCompetency() {
         guard validateCompetency() else { return }
-        
+
         let newCompetency = Competency(
             id: competency?.id ?? UUID(),
             name: name.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -219,27 +219,27 @@ struct CompetencyEditView: View {
             createdAt: competency?.createdAt ?? Date(),
             updatedAt: Date()
         )
-        
+
         onSave(newCompetency)
         dismiss()
     }
-    
+
     private func validateCompetency() -> Bool {
         if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             validationMessage = "Название компетенции не может быть пустым"
             showingValidationAlert = true
             return false
         }
-        
+
         if levels.isEmpty {
             validationMessage = "Компетенция должна иметь хотя бы один уровень"
             showingValidationAlert = true
             return false
         }
-        
+
         return true
     }
-    
+
     private func addLevel() {
         let newLevel = CompetencyLevel(
             level: levels.count + 1,
@@ -248,13 +248,13 @@ struct CompetencyEditView: View {
         )
         levels.append(newLevel)
     }
-    
+
     private func updateLevel(_ updatedLevel: CompetencyLevel) {
         if let index = levels.firstIndex(where: { $0.id == updatedLevel.id }) {
             levels[index] = updatedLevel
         }
     }
-    
+
     private func addPosition() {
         let trimmed = newPosition.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmed.isEmpty && !relatedPositions.contains(trimmed) {
@@ -262,7 +262,7 @@ struct CompetencyEditView: View {
             newPosition = ""
         }
     }
-    
+
     private func removePosition(_ position: String) {
         relatedPositions.removeAll { $0 == position }
     }
@@ -274,14 +274,14 @@ struct ColorOption: View {
     let color: CompetencyColor
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(color.swiftUIColor)
                     .frame(height: 40)
-                
+
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.white)
@@ -296,15 +296,15 @@ struct ColorOption: View {
 
 struct LevelEditView: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     let level: CompetencyLevel
     let onSave: (CompetencyLevel) -> Void
-    
+
     @State private var name: String
     @State private var description: String
     @State private var behaviors: [String]
     @State private var newBehavior: String = ""
-    
+
     init(level: CompetencyLevel, onSave: @escaping (CompetencyLevel) -> Void) {
         self.level = level
         self.onSave = onSave
@@ -312,22 +312,22 @@ struct LevelEditView: View {
         self._description = State(initialValue: level.description)
         self._behaviors = State(initialValue: level.behaviors)
     }
-    
+
     var body: some View {
         Form {
             Section("Основная информация") {
                 TextField("Название уровня", text: $name)
-                
+
                 VStack(alignment: .leading) {
                     Text("Описание")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     TextEditor(text: $description)
                         .frame(minHeight: 100)
                 }
             }
-            
+
             Section("Ключевые индикаторы") {
                 ForEach(behaviors, id: \.self) { behavior in
                     HStack {
@@ -339,11 +339,11 @@ struct LevelEditView: View {
                         }
                     }
                 }
-                
+
                 HStack {
                     TextField("Добавить индикатор", text: $newBehavior)
                         .textFieldStyle(.plain)
-                    
+
                     Button(action: addBehavior) {
                         Image(systemName: "plus.circle.fill")
                             .foregroundColor(.accentColor)
@@ -360,7 +360,7 @@ struct LevelEditView: View {
                     dismiss()
                 }
             }
-            
+
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Сохранить") {
                     saveLevel()
@@ -369,7 +369,7 @@ struct LevelEditView: View {
             }
         }
     }
-    
+
     private func saveLevel() {
         let updatedLevel = CompetencyLevel(
             id: level.id,
@@ -381,7 +381,7 @@ struct LevelEditView: View {
         onSave(updatedLevel)
         dismiss()
     }
-    
+
     private func addBehavior() {
         let trimmed = newBehavior.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmed.isEmpty && !behaviors.contains(trimmed) {
@@ -389,7 +389,7 @@ struct LevelEditView: View {
             newBehavior = ""
         }
     }
-    
+
     private func removeBehavior(_ behavior: String) {
         behaviors.removeAll { $0 == behavior }
     }
@@ -402,4 +402,4 @@ struct CompetencyEditView_Previews: PreviewProvider {
             CompetencyEditView(competency: nil) { _ in }
         }
     }
-} 
+}

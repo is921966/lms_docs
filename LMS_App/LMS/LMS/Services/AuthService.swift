@@ -4,41 +4,41 @@ import Combine
 // MARK: - AuthService
 final class AuthService: ObservableObject {
     static let shared = AuthService()
-    
+
     @Published private(set) var isAuthenticated = false
     @Published var currentUser: User?
     @Published private(set) var isLoading = false
     @Published private(set) var error: NetworkError?
-    
+
     private let networkService = NetworkService.shared
     var cancellables = Set<AnyCancellable>()  // Made public for external use
-    
+
     private init() {
         // Check if user is already authenticated
         checkAuthenticationStatus()
     }
-    
+
     // MARK: - Authentication Status
     private func checkAuthenticationStatus() {
         isAuthenticated = TokenManager.shared.isAuthenticated
-        
+
         if isAuthenticated {
             // Try to load user info from cache
             loadCachedUser()
         }
     }
-    
+
     private func loadCachedUser() {
         // TODO: Implement user caching
     }
-    
+
     // MARK: - Login
     func login(email: String, password: String) -> AnyPublisher<User, NetworkError> {
         isLoading = true
         error = nil
-        
+
         let loginRequest = LoginRequest(email: email, password: password)
-        
+
         return networkService.post(
             endpoint: "/auth/login",
             body: loginRequest,
@@ -51,22 +51,22 @@ final class AuthService: ObservableObject {
             },
             receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
-                
+
                 if case .failure(let error) = completion {
                     self?.error = error
                 }
             }
         )
-        .compactMap { [weak self] response in
+        .compactMap { [weak self] _ in
             self?.currentUser
         }
         .eraseToAnyPublisher()
     }
-    
+
     // MARK: - Logout
     func logout() -> AnyPublisher<Void, NetworkError> {
         isLoading = true
-        
+
         return networkService.post(
             endpoint: "/auth/logout",
             body: EmptyBody(),
@@ -78,23 +78,23 @@ final class AuthService: ObservableObject {
             }
         )
         .map { _ in () }
-        .catch { [weak self] error -> AnyPublisher<Void, NetworkError> in
+        .catch { [weak self] _ -> AnyPublisher<Void, NetworkError> in
             // Even if logout fails on server, clear local state
             self?.clearAuthState()
             return Just(()).setFailureType(to: NetworkError.self).eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
-    
+
     // MARK: - Refresh Token
     func refreshToken() -> AnyPublisher<Void, NetworkError> {
         guard let refreshToken = TokenManager.shared.refreshToken else {
             return Fail(error: NetworkError.unauthorized)
                 .eraseToAnyPublisher()
         }
-        
+
         let request = RefreshTokenRequest(refreshToken: refreshToken)
-        
+
         return networkService.post(
             endpoint: "/auth/refresh",
             body: request,
@@ -111,7 +111,7 @@ final class AuthService: ObservableObject {
         .map { _ in () }
         .eraseToAnyPublisher()
     }
-    
+
     // MARK: - Get Current User
     func getCurrentUser() -> AnyPublisher<User, NetworkError> {
         networkService.get(
@@ -128,7 +128,7 @@ final class AuthService: ObservableObject {
         }
         .eraseToAnyPublisher()
     }
-    
+
     // MARK: - User Management
     func loadCurrentUser() {
         // Load user from UserDefaults or keychain
@@ -138,7 +138,7 @@ final class AuthService: ObservableObject {
             self.isAuthenticated = true
         }
     }
-    
+
     // MARK: - Private Methods
     private func clearAuthState() {
         TokenManager.shared.clearTokens()
@@ -147,16 +147,16 @@ final class AuthService: ObservableObject {
         isLoading = false
         error = nil
     }
-    
+
     private func handleLoginResponse(_ response: LoginResponse) {
         TokenManager.shared.saveTokens(
             accessToken: response.tokens.accessToken,
             refreshToken: response.tokens.refreshToken
         )
-        
+
         isAuthenticated = true
         currentUser = User(from: response.user)
-        
+
         // Save user data to UserDefaults
         if let userData = try? JSONEncoder().encode(response.user) {
             UserDefaults.standard.set(userData, forKey: "currentUser")
@@ -171,4 +171,4 @@ private struct EmptyResponse: Decodable {}
 // MARK: - Notification Names
 extension NSNotification.Name {
     static let userDidLogout = NSNotification.Name("userDidLogout")
-} 
+}

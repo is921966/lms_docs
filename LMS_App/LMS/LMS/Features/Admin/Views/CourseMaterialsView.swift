@@ -14,7 +14,7 @@ struct CourseMaterialsView: View {
     @State private var selectedMaterial: CourseMaterial?
     @State private var showingDeleteAlert = false
     @State private var materialToDelete: CourseMaterial?
-    
+
     var body: some View {
         NavigationView {
             List {
@@ -34,13 +34,13 @@ struct CourseMaterialsView: View {
                             }
                         }
                     }
-                    
+
                     Button(action: { showingAddMaterial = true }) {
                         Label("Добавить материал", systemImage: "plus.circle.fill")
                             .foregroundColor(.blue)
                     }
                 }
-                
+
                 // Module materials
                 ForEach(course.modules.indices, id: \.self) { moduleIndex in
                     Section("Модуль: \(course.modules[moduleIndex].title)") {
@@ -92,7 +92,7 @@ struct MaterialRow: View {
     let material: CourseMaterial
     let onTap: () -> Void
     let onDelete: () -> Void
-    
+
     var body: some View {
         HStack {
             Image(systemName: material.type.icon)
@@ -101,23 +101,23 @@ struct MaterialRow: View {
                 .frame(width: 40, height: 40)
                 .background(materialColor.opacity(0.1))
                 .cornerRadius(10)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(material.title)
                     .font(.body)
                     .lineLimit(1)
-                
+
                 HStack {
                     Text(material.type.rawValue)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     if let size = material.fileSize {
                         Text("• \(formatFileSize(size))")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     if let duration = material.duration {
                         Text("• \(duration) мин")
                             .font(.caption)
@@ -125,9 +125,9 @@ struct MaterialRow: View {
                     }
                 }
             }
-            
+
             Spacer()
-            
+
             Button(action: onDelete) {
                 Image(systemName: "trash")
                     .foregroundColor(.red)
@@ -139,7 +139,7 @@ struct MaterialRow: View {
             onTap()
         }
     }
-    
+
     private var materialColor: Color {
         switch material.type {
         case .video: return .blue
@@ -149,7 +149,7 @@ struct MaterialRow: View {
         case .archive: return .gray
         }
     }
-    
+
     private func formatFileSize(_ bytes: Int64) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
@@ -166,15 +166,15 @@ struct AddMaterialView: View {
     @State private var duration = ""
     @State private var selectedItem: PhotosPickerItem?
     @State private var showingFilePicker = false
-    
+
     let onAdd: (CourseMaterial) -> Void
-    
+
     var body: some View {
         NavigationView {
             Form {
                 Section("Основная информация") {
                     TextField("Название материала", text: $title)
-                    
+
                     Picker("Тип материала", selection: $selectedType) {
                         ForEach(CourseMaterial.MaterialType.allCases, id: \.self) { type in
                             Label(type.rawValue, systemImage: type.icon)
@@ -182,7 +182,7 @@ struct AddMaterialView: View {
                         }
                     }
                 }
-                
+
                 Section("Файл или ссылка") {
                     if selectedType == .link {
                         TextField("URL ссылки", text: $url)
@@ -200,7 +200,7 @@ struct AddMaterialView: View {
                                 }
                             }
                         }
-                        
+
                         if !url.isEmpty {
                             Text(url)
                                 .font(.caption)
@@ -208,14 +208,14 @@ struct AddMaterialView: View {
                         }
                     }
                 }
-                
+
                 if selectedType == .video {
                     Section("Дополнительно") {
                         TextField("Длительность (минуты)", text: $duration)
                             .keyboardType(.numberPad)
                     }
                 }
-                
+
                 Section("Поддерживаемые форматы") {
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(CourseMaterial.MaterialType.allCases, id: \.self) { type in
@@ -223,12 +223,12 @@ struct AddMaterialView: View {
                                 Image(systemName: type.icon)
                                     .foregroundColor(colorForType(type))
                                     .frame(width: 20)
-                                
+
                                 Text(type.rawValue)
                                     .font(.subheadline)
-                                
+
                                 Spacer()
-                                
+
                                 if !type.acceptedExtensions.isEmpty {
                                     Text(type.acceptedExtensions.joined(separator: ", "))
                                         .font(.caption)
@@ -247,7 +247,7 @@ struct AddMaterialView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Добавить") {
                         let newMaterial = CourseMaterial(
@@ -281,7 +281,7 @@ struct AddMaterialView: View {
             }
         }
     }
-    
+
     private func colorForType(_ type: CourseMaterial.MaterialType) -> Color {
         switch type {
         case .video: return .blue
@@ -291,7 +291,7 @@ struct AddMaterialView: View {
         case .archive: return .gray
         }
     }
-    
+
     private func contentTypesForMaterialType(_ type: CourseMaterial.MaterialType) -> [UTType] {
         switch type {
         case .video:
@@ -312,7 +312,7 @@ struct AddMaterialView: View {
 struct MaterialDetailView: View {
     let material: CourseMaterial
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
@@ -323,18 +323,18 @@ struct MaterialDetailView: View {
                     .frame(width: 120, height: 120)
                     .background(materialColor.opacity(0.1))
                     .cornerRadius(30)
-                
+
                 // Material info
                 VStack(spacing: 12) {
                     Text(material.title)
                         .font(.title2)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
-                    
+
                     Label(material.type.rawValue, systemImage: material.type.icon)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
+
                     if let url = material.url {
                         Text(url)
                             .font(.caption)
@@ -342,7 +342,7 @@ struct MaterialDetailView: View {
                             .lineLimit(2)
                             .multilineTextAlignment(.center)
                     }
-                    
+
                     HStack(spacing: 20) {
                         if let size = material.fileSize {
                             VStack {
@@ -354,7 +354,7 @@ struct MaterialDetailView: View {
                                     .fontWeight(.medium)
                             }
                         }
-                        
+
                         if let duration = material.duration {
                             VStack {
                                 Text("Длительность")
@@ -365,7 +365,7 @@ struct MaterialDetailView: View {
                                     .fontWeight(.medium)
                             }
                         }
-                        
+
                         VStack {
                             Text("Загружено")
                                 .font(.caption)
@@ -377,9 +377,9 @@ struct MaterialDetailView: View {
                     }
                 }
                 .padding()
-                
+
                 Spacer()
-                
+
                 // Actions
                 VStack(spacing: 12) {
                     if material.type != .link {
@@ -392,7 +392,7 @@ struct MaterialDetailView: View {
                                 .cornerRadius(12)
                         }
                     }
-                    
+
                     if material.url != nil {
                         Button(action: {}) {
                             Label("Открыть", systemImage: "arrow.up.forward.square")
@@ -416,7 +416,7 @@ struct MaterialDetailView: View {
             }
         }
     }
-    
+
     private var materialColor: Color {
         switch material.type {
         case .video: return .blue
@@ -426,7 +426,7 @@ struct MaterialDetailView: View {
         case .archive: return .gray
         }
     }
-    
+
     private func formatFileSize(_ bytes: Int64) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
@@ -436,4 +436,4 @@ struct MaterialDetailView: View {
 
 #Preview {
     CourseMaterialsView(course: .constant(Course.mockCourses[0]))
-} 
+}

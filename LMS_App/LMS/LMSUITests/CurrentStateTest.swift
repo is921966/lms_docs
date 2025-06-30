@@ -1,14 +1,13 @@
 import XCTest
 
 final class CurrentStateTest: XCTestCase {
-    
     func testCheckCurrentScreen() throws {
         let app = XCUIApplication()
         app.launch()
-        
+
         // Ждем загрузки
         sleep(2)
-        
+
         // Проверяем различные возможные состояния
         if app.buttons["Войти для разработки"].exists {
             print("FOUND: Mock login button")
@@ -37,14 +36,14 @@ final class CurrentStateTest: XCTestCase {
                 let button = app.buttons.element(boundBy: i)
                 print("  Button: '\(button.label)'")
             }
-            
+
             print("First texts:")
             for i in 0..<min(5, app.staticTexts.count) {
                 let text = app.staticTexts.element(boundBy: i)
                 print("  Text: '\(text.label)'")
             }
-            
+
             XCTFail("Unknown app state")
         }
     }
-} 
+}

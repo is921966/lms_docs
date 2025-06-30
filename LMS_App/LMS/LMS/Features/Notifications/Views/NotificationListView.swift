@@ -6,16 +6,16 @@ struct NotificationListView: View {
     @State private var selectedFilter: NotificationType?
     @State private var showingDeleteConfirmation = false
     @State private var notificationToDelete: Notification?
-    
+
     var filteredNotifications: [Notification] {
         let allNotifications = notificationService.notifications
-        
+
         if let filter = selectedFilter {
             return allNotifications.filter { $0.type == filter }
         }
         return allNotifications
     }
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -27,7 +27,7 @@ struct NotificationListView: View {
                             isSelected: selectedFilter == nil,
                             action: { selectedFilter = nil }
                         )
-                        
+
                         ForEach(NotificationType.allCases, id: \.self) { type in
                             NotificationFilterChip(
                                 title: type.displayName,
@@ -38,7 +38,7 @@ struct NotificationListView: View {
                     }
                     .padding()
                 }
-                
+
                 if filteredNotifications.isEmpty {
                     EmptyNotificationsView()
                 } else {
@@ -96,7 +96,7 @@ struct NotificationFilterChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text(title)
@@ -115,7 +115,7 @@ struct NotificationRow: View {
     let notification: Notification
     @StateObject private var notificationService = NotificationService.shared
     @State private var navigateToAction = false
-    
+
     var body: some View {
         HStack(spacing: 12) {
             // Icon
@@ -123,38 +123,38 @@ struct NotificationRow: View {
                 Circle()
                     .fill(notification.color.opacity(0.2))
                     .frame(width: 50, height: 50)
-                
+
                 Image(systemName: notification.icon)
                     .font(.system(size: 24))
                     .foregroundColor(notification.color)
             }
-            
+
             // Content
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(notification.title)
                         .font(.headline)
                         .foregroundColor(notification.isRead ? .secondary : .primary)
-                    
+
                     Spacer()
-                    
+
                     Text(timeAgo(from: notification.createdAt))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Text(notification.message)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
-                
+
                 if notification.priority == .high && !notification.isRead {
                     Label("Важное", systemImage: "exclamationmark.circle.fill")
                         .font(.caption)
                         .foregroundColor(.red)
                 }
             }
-            
+
             // Unread indicator
             if !notification.isRead {
                 Circle()
@@ -178,14 +178,14 @@ struct NotificationRow: View {
             )
         )
     }
-    
+
     private func handleNotificationAction() {
         // Check if notification has an actionUrl
         if notification.actionUrl != nil {
             navigateToAction = true
         }
     }
-    
+
     @ViewBuilder
     private func destinationView() -> some View {
         // Route based on notification type
@@ -207,7 +207,7 @@ struct NotificationRow: View {
             EmptyView()
         }
     }
-    
+
     private func timeAgo(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
@@ -223,11 +223,11 @@ struct EmptyNotificationsView: View {
             Image(systemName: "bell.slash")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text("Нет уведомлений")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Здесь будут появляться важные уведомления о курсах, тестах и задачах")
                 .font(.subheadline)
                 .foregroundColor(.secondary)

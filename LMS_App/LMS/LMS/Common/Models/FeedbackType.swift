@@ -6,7 +6,7 @@ public enum FeedbackType: String, CaseIterable, Codable {
     case feature = "feature"
     case improvement = "improvement"
     case question = "question"
-    
+
     /// Локализованное название на русском
     public var title: String {
         switch self {
@@ -16,7 +16,7 @@ public enum FeedbackType: String, CaseIterable, Codable {
         case .question: return "Вопрос"
         }
     }
-    
+
     /// Иконка SF Symbols
     public var icon: String {
         switch self {
@@ -26,7 +26,7 @@ public enum FeedbackType: String, CaseIterable, Codable {
         case .question: return "questionmark.circle"
         }
     }
-    
+
     /// Цвет для UI
     public var color: Color {
         switch self {
@@ -36,7 +36,7 @@ public enum FeedbackType: String, CaseIterable, Codable {
         case .question: return .purple
         }
     }
-    
+
     /// Label для GitHub Issues
     public var githubLabel: String {
         switch self {
@@ -46,7 +46,7 @@ public enum FeedbackType: String, CaseIterable, Codable {
         case .question: return "question"
         }
     }
-    
+
     /// Emoji для отображения
     public var emoji: String {
         switch self {

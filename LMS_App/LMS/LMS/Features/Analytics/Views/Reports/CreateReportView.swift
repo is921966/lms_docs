@@ -7,7 +7,7 @@ struct CreateReportView: View {
     @State private var selectedType = ReportType.learningProgress
     @State private var selectedPeriod = AnalyticsPeriod.month
     @State private var selectedFormat = ReportFormat.pdf
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -16,7 +16,7 @@ struct CreateReportView: View {
                     TextField("Описание", text: $description, axis: .vertical)
                         .lineLimit(3...6)
                 }
-                
+
                 Section("Параметры") {
                     Picker("Тип отчета", selection: $selectedType) {
                         ForEach(ReportType.allCases, id: \.self) { type in
@@ -24,13 +24,13 @@ struct CreateReportView: View {
                                 .tag(type)
                         }
                     }
-                    
+
                     Picker("Период", selection: $selectedPeriod) {
                         ForEach(AnalyticsPeriod.allCases, id: \.self) { period in
                             Text(period.rawValue).tag(period)
                         }
                     }
-                    
+
                     Picker("Формат", selection: $selectedFormat) {
                         ForEach(ReportFormat.allCases, id: \.self) { format in
                             Label(format.rawValue, systemImage: format.icon)
@@ -47,7 +47,7 @@ struct CreateReportView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Создать") {
                         createReport()
@@ -57,7 +57,7 @@ struct CreateReportView: View {
             }
         }
     }
-    
+
     private func createReport() {
         // Create report logic
         // In real app would save to service

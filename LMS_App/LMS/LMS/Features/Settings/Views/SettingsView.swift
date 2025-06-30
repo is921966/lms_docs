@@ -6,11 +6,11 @@ struct SettingsView: View {
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
     @AppStorage("darkModeEnabled") private var darkModeEnabled = false
     @AppStorage("autoPlayVideos") private var autoPlayVideos = true
-    
+
     var isAdmin: Bool {
         authService.currentUser?.roles.contains("admin") == true
     }
-    
+
     var body: some View {
         NavigationStack {
             List {
@@ -20,26 +20,26 @@ struct SettingsView: View {
                         Image(systemName: "person.circle.fill")
                             .font(.system(size: 50))
                             .foregroundColor(.blue)
-                        
+
                         VStack(alignment: .leading, spacing: 4) {
                             Text(authService.currentUser?.fullName ?? "Пользователь")
                                 .font(.headline)
                             Text(authService.currentUser?.email ?? "")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
+
                             if isAdmin {
                                 Label("Администратор", systemImage: "crown.fill")
                                     .font(.caption2)
                                     .foregroundColor(.orange)
                             }
                         }
-                        
+
                         Spacer()
                     }
                     .padding(.vertical, 8)
                 }
-                
+
                 // Admin settings (only for admins)
                 if isAdmin {
                     Section("Режим администратора") {
@@ -47,66 +47,66 @@ struct SettingsView: View {
                             Label("Админский режим", systemImage: "crown")
                         }
                         .tint(.orange)
-                        
+
                         NavigationLink(destination: FeatureToggleSettings()) {
                             Label("Управление модулями", systemImage: "flag.2.crossed")
                         }
-                        
+
                         NavigationLink(destination: AdminDashboardView()) {
                             Label("Админ панель", systemImage: "chart.line.uptrend.xyaxis")
                         }
                     }
                 }
-                
+
                 // App settings
                 Section("Настройки приложения") {
                     Toggle(isOn: $notificationsEnabled) {
                         Label("Уведомления", systemImage: "bell")
                     }
-                    
+
                     Toggle(isOn: $darkModeEnabled) {
                         Label("Тёмная тема", systemImage: "moon")
                     }
-                    
+
                     Toggle(isOn: $autoPlayVideos) {
                         Label("Автовоспроизведение видео", systemImage: "play.circle")
                     }
                 }
-                
+
                 // Learning settings
                 Section("Обучение") {
                     NavigationLink(destination: Text("Настройки обучения")) {
                         Label("Предпочтения обучения", systemImage: "brain")
                     }
-                    
+
                     NavigationLink(destination: Text("История обучения")) {
                         Label("История просмотров", systemImage: "clock")
                     }
-                    
+
                     NavigationLink(destination: Text("Загрузки")) {
                         Label("Загруженные материалы", systemImage: "arrow.down.circle")
                     }
                 }
-                
+
                 // Support section
                 Section("Поддержка") {
                     NavigationLink(destination: FeedbackFeedView()) {
                         Label("Лента отзывов", systemImage: "message.badge.filled.fill")
                     }
-                    
+
                     NavigationLink(destination: FeedbackView()) {
                         Label("Отправить отзыв", systemImage: "exclamationmark.bubble")
                     }
-                    
+
                     NavigationLink(destination: Text("FAQ")) {
                         Label("Часто задаваемые вопросы", systemImage: "questionmark.circle")
                     }
-                    
+
                     NavigationLink(destination: Text("О приложении")) {
                         Label("О приложении", systemImage: "info.circle")
                     }
                 }
-                
+
                 // Logout section
                 Section {
                     Button(action: {
@@ -120,7 +120,7 @@ struct SettingsView: View {
                         }
                     }
                 }
-                
+
                 // Version info
                 Section {
                     HStack {
@@ -129,7 +129,7 @@ struct SettingsView: View {
                         Text("2.0.1 (Build 52)")
                             .foregroundColor(.secondary)
                     }
-                    
+
                     if isAdminMode {
                         HStack {
                             Text("Device ID")
@@ -153,11 +153,11 @@ struct SettingsView: View {
 struct QuickSettingsSection: View {
     @AppStorage("isAdminMode") private var isAdminMode = false
     @EnvironmentObject var authService: MockAuthService
-    
+
     var isAdmin: Bool {
         authService.currentUser?.roles.contains("admin") == true
     }
-    
+
     var body: some View {
         VStack(spacing: 12) {
             // Settings link
@@ -168,13 +168,13 @@ struct QuickSettingsSection: View {
                     Text("Настройки")
                         .font(.body)
                     Spacer()
-                    
+
                     if isAdmin && isAdminMode {
                         Image(systemName: "crown.fill")
                             .font(.caption)
                             .foregroundColor(.orange)
                     }
-                    
+
                     Image(systemName: "chevron.right")
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -185,7 +185,7 @@ struct QuickSettingsSection: View {
                 .cornerRadius(12)
                 .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
             }
-            
+
             // Admin quick toggle (if admin)
             if isAdmin {
                 Button(action: {
@@ -218,4 +218,4 @@ struct QuickSettingsSection: View {
         SettingsView()
             .environmentObject(MockAuthService.shared)
     }
-} 
+}

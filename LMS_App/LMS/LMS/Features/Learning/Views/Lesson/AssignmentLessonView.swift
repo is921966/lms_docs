@@ -6,20 +6,20 @@ struct AssignmentLessonView: View {
             Text("Практическое задание")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             Text("Выполните задание для закрепления материала")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            
+
             AssignmentInstructions()
-            
+
             HStack {
                 Image(systemName: "calendar")
                     .foregroundColor(.orange)
                 Text("Срок выполнения: 3 дня")
                     .font(.subheadline)
             }
-            
+
             Button(action: {}) {
                 Text("Загрузить выполненное задание")
                     .fontWeight(.semibold)
@@ -38,7 +38,7 @@ struct AssignmentInstructions: View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Инструкции:")
                 .font(.headline)
-            
+
             Text("1. Проведите анализ потребностей клиента\n2. Составьте презентацию товара\n3. Подготовьте ответы на возможные возражения")
                 .font(.subheadline)
                 .padding()

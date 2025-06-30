@@ -5,26 +5,26 @@ import Combine
 // MARK: - MockAuthService
 class MockAuthService: ObservableObject {
     static let shared = MockAuthService()
-    
+
     @Published private(set) var currentUser: UserResponse?
     @Published private(set) var isAuthenticated = false
     @Published private(set) var isApprovedByAdmin = false
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
-    
+
     private init() {
         checkAuthenticationStatus()
     }
-    
+
     // MARK: - Mock Login
     func mockLogin(asAdmin: Bool = false) {
         isLoading = true
         error = nil
-        
+
         // Simulate network delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             self?.isLoading = false
-            
+
             // Create mock user
             let mockUser = UserResponse(
                 id: "mock_user_123",
@@ -40,52 +40,52 @@ class MockAuthService: ObservableObject {
                 isApproved: true,
                 registrationDate: nil
             )
-            
+
             // Save mock tokens
             TokenManager.shared.saveTokens(
                 accessToken: "mock_access_token_\(UUID().uuidString)",
                 refreshToken: "mock_refresh_token_\(UUID().uuidString)"
             )
             TokenManager.shared.userId = mockUser.id
-            
+
             // Update state
             self?.currentUser = mockUser
             self?.isAuthenticated = true
             self?.isApprovedByAdmin = asAdmin // Admins are auto-approved
-            
+
             print("Mock login successful as \(asAdmin ? "Admin" : "Student")")
         }
     }
-    
+
     // Alias for UI compatibility
     func loginAsMockUser(isAdmin: Bool) {
         mockLogin(asAdmin: isAdmin)
     }
-    
+
     // MARK: - Mock Approve
     func mockApprove() {
         guard isAuthenticated && !isApprovedByAdmin else { return }
-        
+
         isLoading = true
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.isLoading = false
             self?.isApprovedByAdmin = true
-            
+
             // Update user permissions
             if var user = self?.currentUser {
                 user.permissions.append("access_courses")
                 self?.currentUser = user
             }
-            
+
             print("User approved by admin (mock)")
         }
     }
-    
+
     // MARK: - Check Status
     private func checkAuthenticationStatus() {
         isAuthenticated = TokenManager.shared.isAuthenticated
-        
+
         if isAuthenticated {
             // Restore mock user
             if let userId = TokenManager.shared.userId {
@@ -108,7 +108,7 @@ class MockAuthService: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Logout
     func logout() {
         TokenManager.shared.clearTokens()
@@ -117,7 +117,7 @@ class MockAuthService: ObservableObject {
         isApprovedByAdmin = false
         error = nil
     }
-    
+
     // MARK: - Get Users (for testing)
     func getUsers() -> [UserResponse] {
         return [
@@ -198,15 +198,15 @@ class MockAuthService: ObservableObject {
 // MARK: - Mock Admin Service
 class MockAdminService: ObservableObject {
     static let shared = MockAdminService()
-    
+
     @Published var pendingUsers: [PendingUser] = []
     @Published var isLoading = false
     @Published var error: String?
-    
+
     private init() {
         generateMockPendingUsers()
     }
-    
+
     // MARK: - Generate Mock Data
     private func generateMockPendingUsers() {
         pendingUsers = [
@@ -239,18 +239,18 @@ class MockAdminService: ObservableObject {
             )
         ]
     }
-    
+
     // MARK: - Fetch Pending Users
     func fetchPendingUsers() {
         isLoading = true
         error = nil
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.isLoading = false
             // Data already loaded in init
         }
     }
-    
+
     // MARK: - Approve Users
     func approveSelectedUsers(userIds: [String], completion: @escaping (Bool) -> Void) {
         guard !userIds.isEmpty else {
@@ -258,20 +258,20 @@ class MockAdminService: ObservableObject {
             completion(false)
             return
         }
-        
+
         isLoading = true
         error = nil
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             self?.isLoading = false
-            
+
             // Remove approved users
             self?.pendingUsers.removeAll { user in
                 userIds.contains(user.id)
             }
-            
+
             print("Approved \(userIds.count) users (mock)")
             completion(true)
         }
     }
-} 
+}

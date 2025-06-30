@@ -14,21 +14,21 @@ struct Position: Identifiable, Codable, Hashable {
     var employeeCount: Int
     var createdAt: Date
     var updatedAt: Date
-    
+
     // Computed properties
     var requiredCompetenciesCount: Int {
         competencyRequirements.count
     }
-    
+
     var totalRequiredScore: Int {
         competencyRequirements.reduce(0) { $0 + $1.requiredLevel }
     }
-    
+
     var averageRequiredLevel: Double {
         guard !competencyRequirements.isEmpty else { return 0 }
         return Double(totalRequiredScore) / Double(competencyRequirements.count)
     }
-    
+
     // Initialize with defaults
     init(
         id: UUID = UUID(),
@@ -67,7 +67,7 @@ enum PositionLevel: String, CaseIterable, Codable {
     case principal = "Principal"
     case manager = "Manager"
     case director = "Director"
-    
+
     var icon: String {
         switch self {
         case .intern: return "studentdesk"
@@ -80,7 +80,7 @@ enum PositionLevel: String, CaseIterable, Codable {
         case .director: return "building.2.fill"
         }
     }
-    
+
     var color: Color {
         switch self {
         case .intern: return .gray
@@ -93,7 +93,7 @@ enum PositionLevel: String, CaseIterable, Codable {
         case .director: return .pink
         }
     }
-    
+
     var sortOrder: Int {
         switch self {
         case .intern: return 0
@@ -115,7 +115,7 @@ struct CompetencyRequirement: Identifiable, Codable, Hashable {
     var competencyName: String // Denormalized for display
     var requiredLevel: Int
     var isCritical: Bool // Must-have vs nice-to-have
-    
+
     init(
         id: UUID = UUID(),
         competencyId: UUID,
@@ -129,4 +129,4 @@ struct CompetencyRequirement: Identifiable, Codable, Hashable {
         self.requiredLevel = requiredLevel
         self.isCritical = isCritical
     }
-} 
+}

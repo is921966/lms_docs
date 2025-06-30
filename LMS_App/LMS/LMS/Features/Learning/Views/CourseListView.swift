@@ -12,4 +12,4 @@ struct CourseListView: View {
     var body: some View {
         LearningListView()
     }
-} 
+}

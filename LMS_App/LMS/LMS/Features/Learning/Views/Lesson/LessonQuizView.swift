@@ -5,9 +5,9 @@ struct LessonQuizView: View {
     @State private var currentQuestion = 0
     @State private var selectedAnswers: [Int] = []
     @State private var showingResults = false
-    
+
     let questions = QuizMockData.questions
-    
+
     var body: some View {
         NavigationView {
             if showingResults {
@@ -40,7 +40,7 @@ struct LessonQuizView: View {
             }
         }
     }
-    
+
     private func calculateScore() -> Int {
         var score = 0
         for (index, answer) in selectedAnswers.enumerated() {

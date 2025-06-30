@@ -1,0 +1,698 @@
+# Client-Server Integration Rules for LMS iOS App
+
+## API Design Principles
+
+### RESTful API Conventions
+- Use standard HTTP methods: GET, POST, PUT, DELETE, PATCH
+- Use proper status codes: 2xx success, 4xx client errors, 5xx server errors
+- Version APIs in the URL: `/api/v1/courses`
+- Use plural nouns for resources: `/users`, `/courses`
+- Use query parameters for filtering: `/courses?category=ios&level=beginner`
+
+### URL Structure
+```swift
+// Base URL configuration
+enum APIConfiguration {
+    static let baseURL = "https://api.lms.company.com"
+    static let apiVersion = "v1"
+    
+    static var apiBaseURL: String {
+        "\(baseURL)/api/\(apiVersion)"
+    }
+}
+
+// Endpoint construction
+enum APIEndpoint {
+    case login
+    case courses
+    case course(id: String)
+    case enrollments(userId: String)
+    case progress(userId: String, courseId: String)
+    
+    var path: String {
+        switch self {
+        case .login:
+            return "/auth/login"
+        case .courses:
+            return "/courses"
+        case .course(let id):
+            return "/courses/\(id)"
+        case .enrollments(let userId):
+            return "/users/\(userId)/enrollments"
+        case .progress(let userId, let courseId):
+            return "/users/\(userId)/courses/\(courseId)/progress"
+        }
+    }
+}
+```
+
+## Data Transfer Objects (DTOs)
+
+### DTO Design Rules
+- DTOs are separate from domain models
+- Use Codable for automatic serialization
+- Handle null/missing fields gracefully
+- Map DTOs to domain models at the boundary
+
+### Request DTOs
+```swift
+// Network/DTOs/Requests/LoginRequestDTO.swift
+struct LoginRequestDTO: Encodable {
+    let email: String
+    let password: String
+    let deviceId: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case email
+        case password
+        case deviceId = "device_id"
+    }
+}
+
+// Network/DTOs/Requests/UpdateProgressRequestDTO.swift
+struct UpdateProgressRequestDTO: Encodable {
+    let moduleId: String
+    let status: String
+    let completedAt: Date
+    let timeSpent: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case moduleId = "module_id"
+        case status
+        case completedAt = "completed_at"
+        case timeSpent = "time_spent_seconds"
+    }
+}
+```
+
+### Response DTOs
+```swift
+// Network/DTOs/Responses/UserResponseDTO.swift
+struct UserResponseDTO: Decodable {
+    let id: String
+    let email: String
+    let firstName: String
+    let lastName: String
+    let role: String
+    let createdAt: String
+    let department: DepartmentDTO?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case email
+        case firstName = "first_name"
+        case lastName = "last_name"
+        case role
+        case createdAt = "created_at"
+        case department
+    }
+}
+
+// Nested DTOs
+struct DepartmentDTO: Decodable {
+    let id: String
+    let name: String
+    let code: String
+}
+
+// Generic response wrapper
+struct APIResponse<T: Decodable>: Decodable {
+    let success: Bool
+    let data: T?
+    let error: ErrorDTO?
+    let meta: MetaDTO?
+}
+
+struct ErrorDTO: Decodable {
+    let code: String
+    let message: String
+    let details: [String: String]?
+}
+
+struct MetaDTO: Decodable {
+    let page: Int
+    let perPage: Int
+    let total: Int
+    let totalPages: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case page
+        case perPage = "per_page"
+        case total
+        case totalPages = "total_pages"
+    }
+}
+```
+
+## DTO Mappers
+
+### Mapper Pattern
+```swift
+// Network/Mappers/UserMapper.swift
+protocol UserMapperProtocol {
+    func toDomain(_ dto: UserResponseDTO) -> User
+    func toDTO(_ domain: User) -> UserRequestDTO
+}
+
+struct UserMapper: UserMapperProtocol {
+    func toDomain(_ dto: UserResponseDTO) -> User {
+        User(
+            id: UserID(value: dto.id),
+            email: Email(dto.email),
+            name: PersonName(
+                first: dto.firstName,
+                last: dto.lastName
+            ),
+            role: UserRole(rawValue: dto.role) ?? .student,
+            department: dto.department.map { departmentMapper.toDomain($0) }
+        )
+    }
+    
+    func toDTO(_ domain: User) -> UserRequestDTO {
+        UserRequestDTO(
+            email: domain.email.value,
+            firstName: domain.name.first,
+            lastName: domain.name.last,
+            role: domain.role.rawValue
+        )
+    }
+}
+
+// Error mapping
+struct ErrorMapper {
+    func toDomain(_ dto: ErrorDTO) -> DomainError {
+        switch dto.code {
+        case "AUTH001":
+            return .invalidCredentials
+        case "AUTH002":
+            return .sessionExpired
+        case "NET001":
+            return .networkUnavailable
+        default:
+            return .unknown(message: dto.message)
+        }
+    }
+}
+```
+
+## Network Layer Architecture
+
+### API Client Design
+```swift
+// Network/Base/APIClient.swift
+protocol APIClientProtocol {
+    func request<T: Decodable>(
+        _ endpoint: APIEndpoint,
+        method: HTTPMethod,
+        parameters: Encodable?,
+        headers: [String: String]?
+    ) async throws -> T
+}
+
+class APIClient: APIClientProtocol {
+    private let session: URLSession
+    private let decoder: JSONDecoder
+    private let encoder: JSONEncoder
+    private let tokenManager: TokenManagerProtocol
+    private let interceptors: [RequestInterceptor]
+    
+    init(
+        session: URLSession = .shared,
+        tokenManager: TokenManagerProtocol,
+        interceptors: [RequestInterceptor] = []
+    ) {
+        self.session = session
+        self.tokenManager = tokenManager
+        self.interceptors = interceptors
+        
+        // Configure decoder
+        self.decoder = JSONDecoder()
+        self.decoder.dateDecodingStrategy = .iso8601
+        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        // Configure encoder
+        self.encoder = JSONEncoder()
+        self.encoder.dateEncodingStrategy = .iso8601
+        self.encoder.keyEncodingStrategy = .convertToSnakeCase
+    }
+    
+    func request<T: Decodable>(
+        _ endpoint: APIEndpoint,
+        method: HTTPMethod = .get,
+        parameters: Encodable? = nil,
+        headers: [String: String]? = nil
+    ) async throws -> T {
+        // Build request
+        var request = try buildRequest(
+            endpoint: endpoint,
+            method: method,
+            parameters: parameters,
+            headers: headers
+        )
+        
+        // Apply interceptors
+        for interceptor in interceptors {
+            request = try await interceptor.intercept(request)
+        }
+        
+        // Execute request
+        let (data, response) = try await session.data(for: request)
+        
+        // Validate response
+        try validateResponse(response, data: data)
+        
+        // Decode response
+        return try decoder.decode(T.self, from: data)
+    }
+}
+```
+
+### Request Building
+```swift
+extension APIClient {
+    private func buildRequest(
+        endpoint: APIEndpoint,
+        method: HTTPMethod,
+        parameters: Encodable?,
+        headers: [String: String]?
+    ) throws -> URLRequest {
+        // Construct URL
+        guard let url = URL(string: APIConfiguration.apiBaseURL + endpoint.path) else {
+            throw NetworkError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        
+        // Set headers
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        // Add custom headers
+        headers?.forEach { key, value in
+            request.setValue(value, forHTTPHeaderField: key)
+        }
+        
+        // Add body for POST/PUT/PATCH
+        if let parameters = parameters,
+           [.post, .put, .patch].contains(method) {
+            request.httpBody = try encoder.encode(parameters)
+        }
+        
+        return request
+    }
+    
+    private func validateResponse(_ response: URLResponse, data: Data) throws {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NetworkError.invalidResponse
+        }
+        
+        switch httpResponse.statusCode {
+        case 200...299:
+            return // Success
+        case 401:
+            throw NetworkError.unauthorized
+        case 404:
+            throw NetworkError.notFound
+        case 400...499:
+            // Try to decode error response
+            if let errorResponse = try? decoder.decode(ErrorDTO.self, from: data) {
+                throw NetworkError.serverError(errorResponse.message)
+            }
+            throw NetworkError.clientError(httpResponse.statusCode)
+        case 500...599:
+            throw NetworkError.serverError("Internal server error")
+        default:
+            throw NetworkError.unknown
+        }
+    }
+}
+```
+
+## Request Interceptors
+
+### Authentication Interceptor
+```swift
+// Network/Interceptors/AuthenticationInterceptor.swift
+protocol RequestInterceptor {
+    func intercept(_ request: URLRequest) async throws -> URLRequest
+}
+
+class AuthenticationInterceptor: RequestInterceptor {
+    private let tokenManager: TokenManagerProtocol
+    
+    init(tokenManager: TokenManagerProtocol) {
+        self.tokenManager = tokenManager
+    }
+    
+    func intercept(_ request: URLRequest) async throws -> URLRequest {
+        var modifiedRequest = request
+        
+        // Add auth token if available
+        if let token = await tokenManager.getAccessToken() {
+            modifiedRequest.setValue(
+                "Bearer \(token)",
+                forHTTPHeaderField: "Authorization"
+            )
+        }
+        
+        return modifiedRequest
+    }
+}
+
+// Logging interceptor
+class LoggingInterceptor: RequestInterceptor {
+    func intercept(_ request: URLRequest) async throws -> URLRequest {
+        #if DEBUG
+        print("🌐 Request: \(request.httpMethod ?? "") \(request.url?.absoluteString ?? "")")
+        if let headers = request.allHTTPHeaderFields {
+            print("📋 Headers: \(headers)")
+        }
+        if let body = request.httpBody,
+           let bodyString = String(data: body, encoding: .utf8) {
+            print("📦 Body: \(bodyString)")
+        }
+        #endif
+        
+        return request
+    }
+}
+```
+
+## Offline Support
+
+### Network Reachability
+```swift
+// Network/Reachability/NetworkMonitor.swift
+import Network
+
+@MainActor
+class NetworkMonitor: ObservableObject {
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: "NetworkMonitor")
+    
+    @Published var isConnected = true
+    @Published var connectionType = ConnectionType.unknown
+    
+    enum ConnectionType {
+        case wifi
+        case cellular
+        case ethernet
+        case unknown
+    }
+    
+    init() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            Task { @MainActor in
+                self?.isConnected = path.status == .satisfied
+                self?.connectionType = self?.getConnectionType(path) ?? .unknown
+            }
+        }
+        monitor.start(queue: queue)
+    }
+    
+    private func getConnectionType(_ path: NWPath) -> ConnectionType {
+        if path.usesInterfaceType(.wifi) {
+            return .wifi
+        } else if path.usesInterfaceType(.cellular) {
+            return .cellular
+        } else if path.usesInterfaceType(.wiredEthernet) {
+            return .ethernet
+        }
+        return .unknown
+    }
+}
+```
+
+### Request Queue for Offline
+```swift
+// Network/Offline/OfflineRequestQueue.swift
+actor OfflineRequestQueue {
+    private var pendingRequests: [OfflineRequest] = []
+    private let storage: OfflineRequestStorage
+    
+    struct OfflineRequest: Codable {
+        let id: UUID
+        let endpoint: String
+        let method: String
+        let parameters: Data?
+        let timestamp: Date
+    }
+    
+    init(storage: OfflineRequestStorage) {
+        self.storage = storage
+        Task {
+            self.pendingRequests = await storage.loadPendingRequests()
+        }
+    }
+    
+    func enqueue(_ request: OfflineRequest) async {
+        pendingRequests.append(request)
+        await storage.save(pendingRequests)
+    }
+    
+    func processPendingRequests() async throws {
+        let requests = pendingRequests
+        pendingRequests.removeAll()
+        
+        for request in requests {
+            do {
+                // Process request
+                try await processRequest(request)
+            } catch {
+                // Re-queue if failed
+                await enqueue(request)
+                throw error
+            }
+        }
+    }
+}
+```
+
+## Error Handling
+
+### Network Error Types
+```swift
+// Network/Errors/NetworkError.swift
+enum NetworkError: LocalizedError {
+    case noInternet
+    case timeout
+    case invalidURL
+    case invalidResponse
+    case decodingFailed(Error)
+    case encodingFailed(Error)
+    case unauthorized
+    case forbidden
+    case notFound
+    case clientError(Int)
+    case serverError(String)
+    case rateLimited(retryAfter: TimeInterval?)
+    case unknown
+    
+    var errorDescription: String? {
+        switch self {
+        case .noInternet:
+            return "No internet connection. Please check your network settings."
+        case .timeout:
+            return "Request timed out. Please try again."
+        case .unauthorized:
+            return "Your session has expired. Please log in again."
+        case .rateLimited(let retryAfter):
+            if let retryAfter = retryAfter {
+                return "Too many requests. Please try again in \(Int(retryAfter)) seconds."
+            }
+            return "Too many requests. Please try again later."
+        default:
+            return "An error occurred. Please try again."
+        }
+    }
+}
+```
+
+### Retry Logic
+```swift
+// Network/Retry/RetryPolicy.swift
+struct RetryPolicy {
+    let maxAttempts: Int
+    let initialDelay: TimeInterval
+    let multiplier: Double
+    let maxDelay: TimeInterval
+    
+    static let `default` = RetryPolicy(
+        maxAttempts: 3,
+        initialDelay: 1.0,
+        multiplier: 2.0,
+        maxDelay: 30.0
+    )
+}
+
+extension APIClient {
+    func requestWithRetry<T: Decodable>(
+        _ endpoint: APIEndpoint,
+        method: HTTPMethod = .get,
+        parameters: Encodable? = nil,
+        retryPolicy: RetryPolicy = .default
+    ) async throws -> T {
+        var lastError: Error?
+        var delay = retryPolicy.initialDelay
+        
+        for attempt in 1...retryPolicy.maxAttempts {
+            do {
+                return try await request(
+                    endpoint,
+                    method: method,
+                    parameters: parameters
+                )
+            } catch NetworkError.noInternet {
+                throw NetworkError.noInternet // Don't retry
+            } catch NetworkError.unauthorized {
+                throw NetworkError.unauthorized // Don't retry
+            } catch {
+                lastError = error
+                
+                if attempt < retryPolicy.maxAttempts {
+                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    delay = min(delay * retryPolicy.multiplier, retryPolicy.maxDelay)
+                }
+            }
+        }
+        
+        throw lastError ?? NetworkError.unknown
+    }
+}
+```
+
+## API Versioning
+
+### Version Management
+```swift
+// Network/Versioning/APIVersion.swift
+enum APIVersion: String {
+    case v1 = "v1"
+    case v2 = "v2"
+    
+    var minimumAppVersion: String {
+        switch self {
+        case .v1:
+            return "1.0.0"
+        case .v2:
+            return "2.0.0"
+        }
+    }
+}
+
+// Version-specific endpoints
+enum APIEndpointV1 {
+    case courses
+    
+    var path: String {
+        switch self {
+        case .courses:
+            return "/courses" // Old format
+        }
+    }
+}
+
+enum APIEndpointV2 {
+    case courses(filter: CourseFilter?)
+    
+    var path: String {
+        switch self {
+        case .courses(let filter):
+            var path = "/learning/courses" // New format
+            if let filter = filter {
+                path += "?\(filter.queryString)"
+            }
+            return path
+        }
+    }
+}
+```
+
+## WebSocket Integration
+
+### Real-time Updates
+```swift
+// Network/WebSocket/WebSocketManager.swift
+import Combine
+
+class WebSocketManager: NSObject {
+    private var webSocketTask: URLSessionWebSocketTask?
+    private let messageSubject = PassthroughSubject<WebSocketMessage, Never>()
+    
+    var messagePublisher: AnyPublisher<WebSocketMessage, Never> {
+        messageSubject.eraseToAnyPublisher()
+    }
+    
+    func connect(to url: URL, token: String) {
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+        webSocketTask = session.webSocketTask(with: request)
+        webSocketTask?.resume()
+        
+        receiveMessage()
+    }
+    
+    private func receiveMessage() {
+        webSocketTask?.receive { [weak self] result in
+            switch result {
+            case .success(let message):
+                switch message {
+                case .string(let text):
+                    if let data = text.data(using: .utf8),
+                       let wsMessage = try? JSONDecoder().decode(WebSocketMessage.self, from: data) {
+                        self?.messageSubject.send(wsMessage)
+                    }
+                case .data(let data):
+                    if let wsMessage = try? JSONDecoder().decode(WebSocketMessage.self, from: data) {
+                        self?.messageSubject.send(wsMessage)
+                    }
+                @unknown default:
+                    break
+                }
+                
+                self?.receiveMessage() // Continue receiving
+                
+            case .failure(let error):
+                print("WebSocket error: \(error)")
+                // Implement reconnection logic
+            }
+        }
+    }
+    
+    func send(_ message: WebSocketMessage) async throws {
+        let data = try JSONEncoder().encode(message)
+        try await webSocketTask?.send(.data(data))
+    }
+}
+
+struct WebSocketMessage: Codable {
+    let type: MessageType
+    let payload: Data
+    
+    enum MessageType: String, Codable {
+        case courseUpdate
+        case progressUpdate
+        case notification
+    }
+}
+```
+
+## AI Code Generation Instructions
+
+When implementing client-server integration:
+
+1. **Always use DTOs** - Never send domain models directly
+2. **Map at boundaries** - Convert DTOs to domain models immediately
+3. **Handle all errors** - Network, decoding, and business errors
+4. **Support offline** - Queue requests when offline
+5. **Use interceptors** - For auth, logging, and metrics
+6. **Version your APIs** - Plan for backward compatibility
+7. **Implement retry logic** - But know when not to retry
+8. **Monitor network status** - Inform users of connectivity
+9. **Secure all endpoints** - Use HTTPS and authentication
+10. **Test edge cases** - Slow networks, timeouts, malformed responses
+
+Remember: The network layer is the boundary between your app and the outside world. Make it robust, secure, and user-friendly. 

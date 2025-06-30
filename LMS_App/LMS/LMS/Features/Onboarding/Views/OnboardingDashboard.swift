@@ -16,7 +16,7 @@ struct OnboardingDashboard: View {
     @State private var selectedProgram: OnboardingProgram?
     @State private var showingCreateProgram = false
     @State private var selectedTemplate: OnboardingTemplate?
-    
+
     enum FilterType: String, CaseIterable {
         case all = "Все"
         case inProgress = "Активные"
@@ -24,10 +24,10 @@ struct OnboardingDashboard: View {
         case completed = "Завершены"
         case overdue = "Просроченные"
     }
-    
+
     var filteredPrograms: [OnboardingProgram] {
         var filtered = service.programs
-        
+
         // Apply status filter
         switch selectedFilter {
         case .all:
@@ -41,7 +41,7 @@ struct OnboardingDashboard: View {
         case .overdue:
             filtered = filtered.filter { $0.isOverdue }
         }
-        
+
         // Apply search
         if !searchText.isEmpty {
             filtered = filtered.filter { program in
@@ -50,17 +50,17 @@ struct OnboardingDashboard: View {
                 program.employeeDepartment.localizedCaseInsensitiveContains(searchText)
             }
         }
-        
+
         return filtered
     }
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
                 // Statistics
                 OnboardingStatsView(programs: service.programs)
                     .accessibilityIdentifier("onboardingStatsView")
-                
+
                 // Filter and Search
                 VStack(spacing: 12) {
                     // Filter chips
@@ -72,7 +72,7 @@ struct OnboardingDashboard: View {
                                 action: { selectedFilter = .all }
                             )
                             .accessibilityIdentifier("filterChipAll")
-                            
+
                             ForEach(FilterType.allCases, id: \.self) { filter in
                                 OnboardingFilterChip(
                                     title: filter.rawValue,
@@ -84,7 +84,7 @@ struct OnboardingDashboard: View {
                         }
                     }
                     .accessibilityIdentifier("filterChipsScrollView")
-                    
+
                     // Search bar
                     HStack {
                         Image(systemName: "magnifyingglass")
@@ -99,7 +99,7 @@ struct OnboardingDashboard: View {
                     .padding(.horizontal)
                     .accessibilityIdentifier("searchBar")
                 }
-                
+
                 // Programs list
                 if filteredPrograms.isEmpty {
                     OnboardingEmptyStateView(filter: selectedFilter)
@@ -139,7 +139,7 @@ struct OnboardingDashboard: View {
                     }
                     .accessibilityIdentifier("createProgramButton")
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: OnboardingReportsView()) {
                         Image(systemName: "chart.bar.doc.horizontal")
@@ -160,7 +160,7 @@ struct OnboardingDashboard: View {
                             .font(.title2)
                             .fontWeight(.bold)
                             .padding(.top, 40)
-                        
+
                         VStack(spacing: 16) {
                             Button(action: {
                                 showingNewProgram = false
@@ -187,7 +187,7 @@ struct OnboardingDashboard: View {
                                 .cornerRadius(12)
                             }
                             .buttonStyle(PlainButtonStyle())
-                            
+
                             Button(action: {}) {
                                 HStack {
                                     Image(systemName: "plus.square.fill")
@@ -210,7 +210,7 @@ struct OnboardingDashboard: View {
                             .buttonStyle(PlainButtonStyle())
                         }
                         .padding(.horizontal)
-                        
+
                         Spacer()
                     }
                     .navigationTitle("Новая программа")
@@ -237,11 +237,11 @@ struct OnboardingDashboard: View {
             }
         }
     }
-    
+
     private func loadPrograms() {
         // Programs are now loaded automatically from service
     }
-    
+
     private func countForFilter(_ filter: FilterType) -> Int {
         switch filter {
         case .all:
@@ -261,23 +261,23 @@ struct OnboardingDashboard: View {
 // MARK: - Stats View
 struct OnboardingStatsView: View {
     let programs: [OnboardingProgram]
-    
+
     var activePrograms: Int {
         programs.filter { $0.status == .inProgress }.count
     }
-    
+
     var completionRate: Double {
         guard !programs.isEmpty else { return 0 }
         let completed = programs.filter { $0.status == .completed }.count
         return Double(completed) / Double(programs.count) * 100
     }
-    
+
     var averageProgress: Double {
         guard !programs.isEmpty else { return 0 }
         let totalProgress = programs.reduce(0) { $0 + $1.overallProgress }
         return totalProgress / Double(programs.count) * 100
     }
-    
+
     var body: some View {
         HStack(spacing: 12) {
             StatCard(
@@ -286,14 +286,14 @@ struct OnboardingStatsView: View {
                 title: "Всего программ",
                 color: .blue
             )
-            
+
             StatCard(
                 icon: "person.fill.checkmark",
                 value: "\(programs.filter { $0.status == .completed }.count)",
                 title: "Завершено",
                 color: .green
             )
-            
+
             StatCard(
                 icon: "clock.fill",
                 value: "\(programs.filter { $0.status == .inProgress }.count)",
@@ -311,17 +311,17 @@ struct StatCard: View {
     let value: String
     let title: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
-            
+
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -338,7 +338,7 @@ struct OnboardingFilterChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text(title)
@@ -362,7 +362,7 @@ struct OnboardingFilterChip: View {
 // MARK: - Program Card
 struct OnboardingProgramCard: View {
     let program: OnboardingProgram
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
@@ -371,27 +371,27 @@ struct OnboardingProgramCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(program.employeeName)
                         .font(.headline)
-                    
+
                     HStack {
                         Text(program.employeePosition)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        
+
                         Text("•")
                             .foregroundColor(.secondary)
-                        
+
                         Text(program.employeeDepartment)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // Status badge
                 StatusBadge(status: program.status, isOverdue: program.isOverdue)
             }
-            
+
             // Program title
             Text(program.title)
                 .font(.subheadline)
@@ -399,28 +399,28 @@ struct OnboardingProgramCard: View {
                 .lineLimit(2)
                 .minimumScaleFactor(0.8)
                 .fixedSize(horizontal: false, vertical: true)
-            
+
             // Progress
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text("Этап \(program.completedStages + 1) из \(program.stages.count)")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     Text("\(Int(program.overallProgress * 100))%")
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.blue)
                 }
-                
+
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 4)
                             .fill(Color.gray.opacity(0.2))
                             .frame(height: 8)
-                        
+
                         RoundedRectangle(cornerRadius: 4)
                             .fill(program.isOverdue ? Color.red : Color.blue)
                             .frame(width: geometry.size.width * program.overallProgress, height: 8)
@@ -428,7 +428,7 @@ struct OnboardingProgramCard: View {
                 }
                 .frame(height: 8)
             }
-            
+
             // Footer
             HStack {
                 // Manager
@@ -440,9 +440,9 @@ struct OnboardingProgramCard: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 // Days remaining
                 if program.status == .inProgress {
                     HStack(spacing: 4) {
@@ -466,12 +466,12 @@ struct OnboardingProgramCard: View {
 struct StatusBadge: View {
     let status: OnboardingStatus
     let isOverdue: Bool
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: iconName)
                 .font(.caption)
-            
+
             Text(isOverdue && status == .inProgress ? "Просрочено" : status.rawValue)
                 .font(.caption)
                 .fontWeight(.medium)
@@ -482,12 +482,12 @@ struct StatusBadge: View {
         .foregroundColor(foregroundColor)
         .cornerRadius(12)
     }
-    
+
     private var iconName: String {
         if isOverdue && status == .inProgress {
             return "exclamationmark.triangle.fill"
         }
-        
+
         switch status {
         case .notStarted: return "clock"
         case .inProgress: return "arrow.triangle.2.circlepath"
@@ -495,12 +495,12 @@ struct StatusBadge: View {
         case .cancelled: return "xmark.circle.fill"
         }
     }
-    
+
     private var backgroundColor: Color {
         if isOverdue && status == .inProgress {
             return .red.opacity(0.1)
         }
-        
+
         switch status {
         case .notStarted: return .gray.opacity(0.1)
         case .inProgress: return .blue.opacity(0.1)
@@ -508,12 +508,12 @@ struct StatusBadge: View {
         case .cancelled: return .red.opacity(0.1)
         }
     }
-    
+
     private var foregroundColor: Color {
         if isOverdue && status == .inProgress {
             return .red
         }
-        
+
         switch status {
         case .notStarted: return .gray
         case .inProgress: return .blue
@@ -526,23 +526,23 @@ struct StatusBadge: View {
 // MARK: - Empty State
 struct OnboardingEmptyStateView: View {
     let filter: OnboardingDashboard.FilterType
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "person.badge.clock")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text(emptyMessage)
                 .font(.headline)
                 .foregroundColor(.secondary)
-            
+
             Text(emptyDescription)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
+
             Button(action: {}) {
                 Text("Создать программу")
                     .font(.subheadline)
@@ -557,7 +557,7 @@ struct OnboardingEmptyStateView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
     }
-    
+
     private var emptyMessage: String {
         switch filter {
         case .all: return "Нет программ онбординга"
@@ -567,7 +567,7 @@ struct OnboardingEmptyStateView: View {
         case .overdue: return "Нет просроченных программ"
         }
     }
-    
+
     private var emptyDescription: String {
         switch filter {
         case .all: return "Создайте первую программу адаптации для новых сотрудников"

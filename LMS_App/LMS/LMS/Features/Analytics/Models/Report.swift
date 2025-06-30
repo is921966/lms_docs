@@ -25,7 +25,7 @@ struct Report: Identifiable, Codable {
     var filters: ReportFilters
     var sections: [ReportSection]
     var attachments: [String]
-    
+
     init(
         id: UUID = UUID(),
         title: String,
@@ -70,7 +70,7 @@ enum ReportType: String, CaseIterable, Codable {
     case courseEffectiveness = "Эффективность курсов"
     case roi = "ROI обучения"
     case custom = "Пользовательский"
-    
+
     var icon: String {
         switch self {
         case .learningProgress: return "chart.line.uptrend.xyaxis"
@@ -82,7 +82,7 @@ enum ReportType: String, CaseIterable, Codable {
         case .custom: return "doc.text.fill"
         }
     }
-    
+
     var color: Color {
         switch self {
         case .learningProgress: return .blue
@@ -103,7 +103,7 @@ enum ReportStatus: String, CaseIterable, Codable {
     case ready = "Готов"
     case sent = "Отправлен"
     case failed = "Ошибка"
-    
+
     var icon: String {
         switch self {
         case .draft: return "doc.text"
@@ -113,7 +113,7 @@ enum ReportStatus: String, CaseIterable, Codable {
         case .failed: return "exclamationmark.triangle.fill"
         }
     }
-    
+
     var color: Color {
         switch self {
         case .draft: return .gray
@@ -132,7 +132,7 @@ enum ReportFormat: String, CaseIterable, Codable {
     case csv = "CSV"
     case json = "JSON"
     case html = "HTML"
-    
+
     var icon: String {
         switch self {
         case .pdf: return "doc.fill"
@@ -172,7 +172,7 @@ struct ReportFilters: Codable {
     var competencies: [String]
     var dateRange: DateRange?
     var customFilters: [String: String]
-    
+
     init(
         departments: [String] = [],
         positions: [String] = [],
@@ -206,7 +206,7 @@ struct ReportSection: Identifiable, Codable {
     var order: Int
     var data: ReportSectionData
     var isVisible: Bool
-    
+
     init(
         id: UUID = UUID(),
         title: String,
@@ -289,7 +289,7 @@ struct MetricData: Identifiable, Codable {
     var change: Double?
     var unit: String?
     var icon: String?
-    
+
     init(
         id: UUID = UUID(),
         title: String,
@@ -305,4 +305,4 @@ struct MetricData: Identifiable, Codable {
         self.unit = unit
         self.icon = icon
     }
-} 
+}

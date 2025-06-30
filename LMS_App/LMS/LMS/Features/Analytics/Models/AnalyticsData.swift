@@ -15,7 +15,7 @@ struct AnalyticsData: Identifiable, Codable {
     let type: AnalyticsType
     let metrics: [String: Double]
     let metadata: [String: String]
-    
+
     init(
         id: UUID = UUID(),
         userId: String,
@@ -41,7 +41,7 @@ enum AnalyticsType: String, CaseIterable, Codable {
     case learningTime = "Время обучения"
     case engagement = "Вовлеченность"
     case achievement = "Достижение"
-    
+
     var icon: String {
         switch self {
         case .courseProgress: return "chart.line.uptrend.xyaxis"
@@ -62,7 +62,7 @@ enum AnalyticsPeriod: String, CaseIterable, Codable {
     case quarter = "Квартал"
     case year = "Год"
     case all = "Все время"
-    
+
     var days: Int {
         switch self {
         case .day: return 1
@@ -70,7 +70,7 @@ enum AnalyticsPeriod: String, CaseIterable, Codable {
         case .month: return 30
         case .quarter: return 90
         case .year: return 365
-        case .all: return 9999
+        case .all: return 9_999
         }
     }
 }
@@ -110,7 +110,7 @@ enum PerformanceTrend {
     case improving
     case stable
     case declining
-    
+
     var icon: String {
         switch self {
         case .improving: return "arrow.up.right"
@@ -118,7 +118,7 @@ enum PerformanceTrend {
         case .declining: return "arrow.down.right"
         }
     }
-    
+
     var color: String {
         switch self {
         case .improving: return "green"
@@ -170,4 +170,4 @@ struct DropOffPoint: Identifiable {
     let dropOffRate: Double
     let averageTimeSpent: Double
     let commonReasons: [String]
-} 
+}

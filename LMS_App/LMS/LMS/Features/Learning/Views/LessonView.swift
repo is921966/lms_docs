@@ -7,11 +7,11 @@ struct LessonView: View {
     @State private var showingQuiz = false
     @State private var lessonCompleted = false
     @Environment(\.dismiss) private var dismiss
-    
+
     var currentLesson: Lesson {
         module.lessons[currentLessonIndex]
     }
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -20,7 +20,7 @@ struct LessonView: View {
                     current: currentLessonIndex + 1,
                     total: module.lessons.count
                 )
-                
+
                 // Content
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
@@ -39,7 +39,7 @@ struct LessonView: View {
                     }
                     .padding()
                 }
-                
+
                 // Navigation buttons
                 LessonNavigationBar(
                     currentIndex: currentLessonIndex,
@@ -56,7 +56,7 @@ struct LessonView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Text("\(currentLessonIndex + 1) / \(module.lessons.count)")
                         .font(.caption)
@@ -74,13 +74,13 @@ struct LessonView: View {
             }
         }
     }
-    
+
     private func previousLesson() {
         withAnimation {
             currentLessonIndex = max(0, currentLessonIndex - 1)
         }
     }
-    
+
     private func nextLesson() {
         withAnimation {
             if currentLessonIndex < module.lessons.count - 1 {
@@ -117,4 +117,4 @@ struct LessonView: View {
             ]
         )
     )
-} 
+}

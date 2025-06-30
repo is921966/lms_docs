@@ -6,29 +6,29 @@ struct CompetencyDetailView: View {
     @State private var showingEditSheet = false
     @State private var selectedLevel: CompetencyLevel?
     @StateObject private var viewModel = CompetencyViewModel()
-    
+
     var isAdmin: Bool {
-        authViewModel.currentUser?.role == .admin || 
+        authViewModel.currentUser?.role == .admin ||
         authViewModel.currentUser?.role == .superAdmin
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Header with color
                 headerSection
-                
+
                 // Description
                 descriptionSection
-                
+
                 // Levels
                 levelsSection
-                
+
                 // Related positions
                 if !competency.relatedPositions.isEmpty {
                     relatedPositionsSection
                 }
-                
+
                 // Metadata
                 metadataSection
             }
@@ -56,16 +56,16 @@ struct CompetencyDetailView: View {
             levelDetailSheet(level)
         }
     }
-    
+
     // MARK: - Sections
-    
+
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Color bar
             RoundedRectangle(cornerRadius: 8)
                 .fill(competency.swiftUIColor)
                 .frame(height: 6)
-            
+
             HStack {
                 // Category badge
                 HStack(spacing: 6) {
@@ -77,9 +77,9 @@ struct CompetencyDetailView: View {
                 .padding(.vertical, 6)
                 .background(Color(.systemGray5))
                 .cornerRadius(20)
-                
+
                 Spacer()
-                
+
                 // Status badge
                 if !competency.isActive {
                     Text("Неактивна")
@@ -92,12 +92,12 @@ struct CompetencyDetailView: View {
             }
         }
     }
-    
+
     private var descriptionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Описание")
                 .font(.headline)
-            
+
             Text(competency.description.isEmpty ? "Описание не указано" : competency.description)
                 .font(.body)
                 .foregroundColor(competency.description.isEmpty ? .secondary : .primary)
@@ -106,12 +106,12 @@ struct CompetencyDetailView: View {
         .background(Color(.systemGray6))
         .cornerRadius(12)
     }
-    
+
     private var levelsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Уровни компетенции")
                 .font(.headline)
-            
+
             ForEach(competency.levels) { level in
                 LevelCard(level: level, color: competency.swiftUIColor)
                     .onTapGesture {
@@ -120,12 +120,12 @@ struct CompetencyDetailView: View {
             }
         }
     }
-    
+
     private var relatedPositionsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Связанные должности")
                 .font(.headline)
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(competency.relatedPositions, id: \.self) { position in
@@ -143,12 +143,12 @@ struct CompetencyDetailView: View {
             }
         }
     }
-    
+
     private var metadataSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Информация")
                 .font(.headline)
-            
+
             VStack(spacing: 8) {
                 HStack {
                     Text("Цвет категории:")
@@ -161,18 +161,18 @@ struct CompetencyDetailView: View {
                         Text(competency.color.name)
                     }
                 }
-                
+
                 Divider()
-                
+
                 HStack {
                     Text("Дата создания:")
                         .foregroundColor(.secondary)
                     Spacer()
                     Text(competency.createdAt.formatted(date: .abbreviated, time: .omitted))
                 }
-                
+
                 Divider()
-                
+
                 HStack {
                     Text("Последнее обновление:")
                         .foregroundColor(.secondary)
@@ -186,9 +186,9 @@ struct CompetencyDetailView: View {
         .background(Color(.systemGray6))
         .cornerRadius(12)
     }
-    
+
     // MARK: - Level Detail Sheet
-    
+
     private func levelDetailSheet(_ level: CompetencyLevel) -> some View {
         NavigationStack {
             ScrollView {
@@ -198,42 +198,42 @@ struct CompetencyDetailView: View {
                         HStack {
                             Text("Уровень \(level.level) из \(competency.maxLevel)")
                                 .font(.headline)
-                            
+
                             Spacer()
-                            
+
                             Text("\(Int(level.progressPercentage))%")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         ProgressView(value: level.progressPercentage / 100)
                             .tint(Color(hex: level.progressColor))
                     }
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
-                    
+
                     // Description
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Описание")
                             .font(.headline)
-                        
+
                         Text(level.description)
                             .font(.body)
                     }
-                    
+
                     // Behaviors
                     if !level.behaviors.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Ключевые индикаторы")
                                 .font(.headline)
-                            
+
                             ForEach(level.behaviors, id: \.self) { behavior in
                                 HStack(alignment: .top, spacing: 12) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.green)
                                         .font(.caption)
-                                    
+
                                     Text(behavior)
                                         .font(.subheadline)
                                         .fixedSize(horizontal: false, vertical: true)
@@ -262,7 +262,7 @@ struct CompetencyDetailView: View {
 struct LevelCard: View {
     let level: CompetencyLevel
     let color: Color
-    
+
     var body: some View {
         HStack(spacing: 16) {
             // Level number
@@ -270,25 +270,25 @@ struct LevelCard: View {
                 Circle()
                     .fill(color.opacity(0.2))
                     .frame(width: 50, height: 50)
-                
+
                 Text("\(level.level)")
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundColor(color)
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(level.name)
                     .font(.headline)
-                
+
                 Text(level.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
             }
-            
+
             Spacer()
-            
+
             Image(systemName: "chevron.right")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -315,4 +315,4 @@ struct CompetencyDetailView_Previews: PreviewProvider {
             .environmentObject(AuthViewModel())
         }
     }
-} 
+}

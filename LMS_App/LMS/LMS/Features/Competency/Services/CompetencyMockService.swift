@@ -4,14 +4,14 @@ import Combine
 // MARK: - Competency Mock Service
 class CompetencyMockService: ObservableObject {
     static let shared = CompetencyMockService()
-    
+
     @Published private(set) var competencies: [Competency] = []
     private var cancellables = Set<AnyCancellable>()
-    
+
     init() {
         loadMockData()
     }
-    
+
     // MARK: - Mock Data Generation
     private func loadMockData() {
         competencies = [
@@ -40,7 +40,7 @@ class CompetencyMockService: ObservableObject {
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["DevOps Engineer", "SRE", "Platform Engineer"]
             ),
-            
+
             // Soft Skills
             Competency(
                 name: "Коммуникация",
@@ -58,7 +58,7 @@ class CompetencyMockService: ObservableObject {
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["All Positions"]
             ),
-            
+
             // Management
             Competency(
                 name: "Управление проектами",
@@ -76,7 +76,7 @@ class CompetencyMockService: ObservableObject {
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["Team Lead", "Engineering Manager", "Department Head"]
             ),
-            
+
             // Leadership
             Competency(
                 name: "Стратегическое мышление",
@@ -86,7 +86,7 @@ class CompetencyMockService: ObservableObject {
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["CTO", "VP Engineering", "Product Director"]
             ),
-            
+
             // Innovation
             Competency(
                 name: "Инновационность",
@@ -96,7 +96,7 @@ class CompetencyMockService: ObservableObject {
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["Innovation Manager", "R&D Lead", "Product Manager"]
             ),
-            
+
             // Sales
             Competency(
                 name: "Продажи B2B",
@@ -108,43 +108,43 @@ class CompetencyMockService: ObservableObject {
             )
         ]
     }
-    
+
     // MARK: - CRUD Operations
-    
+
     // Create
     func createCompetency(_ competency: Competency) {
         competencies.append(competency)
     }
-    
+
     // Read
     func getCompetency(by id: UUID) -> Competency? {
         competencies.first { $0.id == id }
     }
-    
+
     func searchCompetencies(query: String) -> [Competency] {
         guard !query.isEmpty else { return competencies }
-        
+
         return competencies.filter { competency in
             competency.name.localizedCaseInsensitiveContains(query) ||
             competency.description.localizedCaseInsensitiveContains(query) ||
             competency.category.rawValue.localizedCaseInsensitiveContains(query)
         }
     }
-    
+
     func getCompetencies(by category: CompetencyCategory? = nil, activeOnly: Bool = true) -> [Competency] {
         var filtered = competencies
-        
+
         if let category = category {
             filtered = filtered.filter { $0.category == category }
         }
-        
+
         if activeOnly {
             filtered = filtered.filter { $0.isActive }
         }
-        
+
         return filtered
     }
-    
+
     // Update
     func updateCompetency(_ competency: Competency) {
         if let index = competencies.firstIndex(where: { $0.id == competency.id }) {
@@ -153,12 +153,12 @@ class CompetencyMockService: ObservableObject {
             competencies[index] = updated
         }
     }
-    
+
     // Delete
     func deleteCompetency(_ id: UUID) {
         competencies.removeAll { $0.id == id }
     }
-    
+
     // Deactivate (soft delete)
     func toggleCompetencyStatus(_ id: UUID) {
         if let index = competencies.firstIndex(where: { $0.id == id }) {
@@ -166,38 +166,38 @@ class CompetencyMockService: ObservableObject {
             competencies[index].updatedAt = Date()
         }
     }
-    
+
     // MARK: - Bulk Operations
-    
+
     func importCompetencies(_ newCompetencies: [Competency]) {
         competencies.append(contentsOf: newCompetencies)
     }
-    
+
     func exportCompetencies() -> [Competency] {
         competencies
     }
-    
+
     // MARK: - Statistics
-    
+
     var totalCompetencies: Int {
         competencies.count
     }
-    
+
     var activeCompetencies: Int {
         competencies.filter { $0.isActive }.count
     }
-    
+
     var competenciesByCategory: [CompetencyCategory: Int] {
         Dictionary(grouping: competencies, by: { $0.category })
             .mapValues { $0.count }
     }
-    
+
     // MARK: - Sample Data Helpers
-    
+
     func generateSampleCompetency() -> Competency {
         let categories = CompetencyCategory.allCases
         let colors = CompetencyColor.allCases
-        
+
         return Competency(
             name: "Новая компетенция",
             description: "Описание новой компетенции",
@@ -205,4 +205,4 @@ class CompetencyMockService: ObservableObject {
             color: colors.randomElement()!
         )
     }
-} 
+}

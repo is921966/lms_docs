@@ -13,29 +13,29 @@ struct Competency: Identifiable, Codable, Hashable {
     var relatedPositions: [String] // Position IDs
     var createdAt: Date
     var updatedAt: Date
-    
+
     // Numeric properties for levels and statistics
     var currentLevel: Int = 1
     var requiredLevel: Int = 3
     var usageCount: Int = 0
     var coursesCount: Int = 0
-    
+
     // Recommended courses for improving this competency
-    var recommendedCourses: [String]? = nil
-    
+    var recommendedCourses: [String]?
+
     // Computed properties
     var maxLevel: Int {
         levels.count
     }
-    
+
     var colorHex: String {
         color.hex
     }
-    
+
     var swiftUIColor: Color {
         Color(hex: color.hex)
     }
-    
+
     // Initialize with defaults
     init(
         id: UUID = UUID(),
@@ -71,7 +71,7 @@ enum CompetencyCategory: String, CaseIterable, Codable {
     case innovation = "Инновации"
     case sales = "Продажи"
     case other = "Другое"
-    
+
     var icon: String {
         switch self {
         case .technical: return "gearshape.2"
@@ -95,7 +95,7 @@ enum CompetencyColor: String, CaseIterable, Codable {
     case pink = "pink"
     case yellow = "yellow"
     case gray = "gray"
-    
+
     var hex: String {
         switch self {
         case .blue: return "#2196F3"
@@ -108,7 +108,7 @@ enum CompetencyColor: String, CaseIterable, Codable {
         case .gray: return "#9E9E9E"
         }
     }
-    
+
     var name: String {
         switch self {
         case .blue: return "Синий"
@@ -121,7 +121,7 @@ enum CompetencyColor: String, CaseIterable, Codable {
         case .gray: return "Серый"
         }
     }
-    
+
     var swiftUIColor: Color {
         Color(hex: hex)
     }
@@ -149,8 +149,8 @@ extension Color {
             .sRGB,
             red: Double(r) / 255,
             green: Double(g) / 255,
-            blue:  Double(b) / 255,
+            blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
     }
-} 
+}

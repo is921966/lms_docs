@@ -2,7 +2,7 @@ import SwiftUI
 
 struct TableView: View {
     let data: TableData
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Headers
@@ -14,9 +14,9 @@ struct TableView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            
+
             Divider()
-            
+
             // Rows (show only first 3)
             ForEach(data.rows.prefix(3), id: \.self) { row in
                 HStack {
@@ -27,7 +27,7 @@ struct TableView: View {
                     }
                 }
             }
-            
+
             // More indicator
             if data.rows.count > 3 {
                 Text("... и еще \(data.rows.count - 3)")

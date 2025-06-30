@@ -10,7 +10,7 @@ import SwiftUI
 struct TestAnswerView: View {
     let question: Question
     @Binding var answerState: AnswerState
-    
+
     var body: some View {
         Group {
             switch question.type {

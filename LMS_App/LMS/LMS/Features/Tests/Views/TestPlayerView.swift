@@ -15,7 +15,7 @@ struct TestPlayerView: View {
     @State private var showSubmitAlert = false
     @State private var showTimeWarning = false
     @State private var answerState = AnswerState()
-    
+
     var body: some View {
         NavigationView {
             if viewModel.currentQuestion != nil && viewModel.currentAttempt != nil {
@@ -25,7 +25,7 @@ struct TestPlayerView: View {
                         viewModel: viewModel,
                         isTimeRunningOut: isTimeRunningOut
                     )
-                    
+
                     // Question content
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
@@ -33,7 +33,7 @@ struct TestPlayerView: View {
                                 question: viewModel.currentQuestion!,
                                 points: Int(viewModel.currentQuestion!.points)
                             )
-                            
+
                             TestAnswerView(
                                 question: viewModel.currentQuestion!,
                                 answerState: $answerState
@@ -41,7 +41,7 @@ struct TestPlayerView: View {
                         }
                         .padding()
                     }
-                    
+
                     // Navigation controls
                     TestPlayerNavigation(
                         viewModel: viewModel,
@@ -56,7 +56,7 @@ struct TestPlayerView: View {
                             showExitAlert = true
                         }
                     }
-                    
+
                     ToolbarItem(placement: .navigationBarTrailing) {
                         TestBookmarkButton(viewModel: viewModel)
                     }
@@ -92,29 +92,29 @@ struct TestPlayerView: View {
             loadCurrentAnswer()
         }
     }
-    
+
     private var isTimeRunningOut: Bool {
         guard let remaining = viewModel.currentAttempt?.remainingTimeSeconds else { return false }
         return remaining < 300 // менее 5 минут
     }
-    
+
     private func saveCurrentAnswer() {
         guard let question = viewModel.currentQuestion else { return }
         let answer = answerState.toUserAnswer(for: question)
         viewModel.saveCurrentAnswer(answer)
     }
-    
+
     private func loadCurrentAnswer() {
         guard let question = viewModel.currentQuestion else { return }
-        
+
         // Reset answer state
         answerState = AnswerState()
-        
+
         // Initialize with default values for ordering
         if question.type == .ordering {
             answerState.orderingAnswer = question.correctOrder.shuffled()
         }
-        
+
         // Load saved answer if exists
         if let savedAnswer = viewModel.getCurrentAnswer() {
             answerState.loadFrom(savedAnswer, question: question)
@@ -133,4 +133,4 @@ struct TestPlayerView_Previews: PreviewProvider {
         }
         return TestPlayerView(test: service.tests.first!, viewModel: viewModel)
     }
-} 
+}

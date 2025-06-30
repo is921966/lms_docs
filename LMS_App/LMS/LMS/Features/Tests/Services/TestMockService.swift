@@ -11,16 +11,16 @@ import Combine
 @MainActor
 class TestMockService: ObservableObject {
     static let shared = TestMockService()
-    
+
     @Published var tests: [Test] = []
     @Published var attempts: [TestAttempt] = []
     @Published var results: [TestResult] = []
     @Published var isLoading = false
-    
+
     init() {
         loadMockData()
     }
-    
+
     func loadMockData() {
         // Создаем примеры тестов
         tests = [
@@ -30,9 +30,9 @@ class TestMockService: ObservableObject {
             createDataAnalysisQuiz()
         ]
     }
-    
+
     // MARK: - Mock Tests Creation
-    
+
     private func createSwiftBasicsTest() -> Test {
         let questions = [
             Question(
@@ -85,7 +85,7 @@ class TestMockService: ObservableObject {
                 ]
             )
         ]
-        
+
         return Test(
             title: "Основы Swift",
             description: "Проверьте свои знания основ языка программирования Swift",
@@ -101,7 +101,7 @@ class TestMockService: ObservableObject {
             publishedAt: Date()
         )
     }
-    
+
     private func createProjectManagementTest() -> Test {
         let questions = [
             Question(
@@ -138,7 +138,7 @@ class TestMockService: ObservableObject {
                 ]
             )
         ]
-        
+
         return Test(
             title: "Управление проектами",
             description: "Экзамен по основам управления проектами",
@@ -155,7 +155,7 @@ class TestMockService: ObservableObject {
             publishedAt: Date()
         )
     }
-    
+
     private func createLeadershipAssessment() -> Test {
         let questions = [
             Question(
@@ -170,7 +170,7 @@ class TestMockService: ObservableObject {
                 points: 10.0
             )
         ]
-        
+
         return Test(
             title: "Оценка лидерских качеств",
             description: "Комплексная оценка лидерских компетенций",
@@ -186,7 +186,7 @@ class TestMockService: ObservableObject {
             publishedAt: Date()
         )
     }
-    
+
     private func createDataAnalysisQuiz() -> Test {
         return Test(
             title: "Основы анализа данных",
@@ -199,81 +199,81 @@ class TestMockService: ObservableObject {
             createdBy: "system"
         )
     }
-    
+
     // MARK: - Test Management
-    
+
     func getTest(by id: UUID) -> Test? {
         tests.first { $0.id == id }
     }
-    
+
     func getTestsForUser(_ userId: String) -> [Test] {
         // В реальном приложении фильтровать по должности и компетенциям пользователя
         tests.filter { $0.isPublished }
     }
-    
+
     func getTestsForCourse(_ courseId: String) -> [Test] {
         tests.filter { $0.courseId == courseId && $0.isPublished }
     }
-    
+
     // MARK: - Attempt Management
-    
+
     func getUserAttempts(userId: String, testId: UUID) -> [TestAttempt] {
         attempts.filter { $0.userId == userId && $0.testId == testId }
     }
-    
+
     func getActiveAttempt(userId: String, testId: UUID) -> TestAttempt? {
         attempts.first { $0.userId == userId && $0.testId == testId && $0.isActive }
     }
-    
+
     func startTest(testId: UUID, userId: String) -> TestAttempt? {
         guard let test = getTest(by: testId) else { return nil }
-        
+
         // Проверяем количество попыток
         let userAttempts = getUserAttempts(userId: userId, testId: testId)
         if let maxAttempts = test.attemptsAllowed, userAttempts.count >= maxAttempts {
             return nil // Превышен лимит попыток
         }
-        
+
         // Создаем новую попытку
         var questionsOrder = test.questions.map { $0.id }
         if test.shuffleQuestions {
             questionsOrder.shuffle()
         }
-        
+
         // Если ограничено количество вопросов на попытку
         if let limit = test.questionsPerAttempt, limit < questionsOrder.count {
             questionsOrder = Array(questionsOrder.prefix(limit))
         }
-        
+
         var attempt = TestAttempt(
             testId: testId,
             userId: userId,
             attemptNumber: userAttempts.count + 1
         )
-        
+
         attempt.start(with: questionsOrder, timeLimit: test.timeLimit)
         attempts.append(attempt)
-        
+
         return attempt
     }
-    
+
     func saveAnswer(attemptId: UUID, answer: UserAnswer) {
         guard let index = attempts.firstIndex(where: { $0.id == attemptId }) else { return }
         attempts[index].saveAnswer(answer)
     }
-    
+
     func submitTest(attemptId: UUID) -> TestResult? {
         guard let attemptIndex = attempts.firstIndex(where: { $0.id == attemptId }),
               let test = getTest(by: attempts[attemptIndex].testId) else { return nil }
-        
+
         var attempt = attempts[attemptIndex]
         attempt.submit()
-        
+
         // Автоматическая проверка
         var questionResults: [QuestionResult] = []
         var totalScore = 0.0
         var maxScore = 0.0
-        
+
         for question in test.questions {
             guard let userAnswer = attempt.getAnswer(for: question.id) else {
                 // Вопрос без ответа
@@ -289,7 +289,7 @@ class TestMockService: ObservableObject {
                 maxScore += question.points
                 continue
             }
-            
+
             let checkResult = question.checkAnswer(userAnswer)
             questionResults.append(QuestionResult(
                 questionId: question.id,
@@ -302,14 +302,14 @@ class TestMockService: ObservableObject {
                 feedback: checkResult.feedback,
                 correctAnswer: checkResult.correctAnswer
             ))
-            
+
             totalScore += checkResult.score
             maxScore += question.points
         }
-        
+
         let percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0
         let isPassed = percentage >= test.passingScore
-        
+
         // Обновляем попытку
         attempt.grade(
             score: totalScore,
@@ -319,7 +319,7 @@ class TestMockService: ObservableObject {
             feedback: nil
         )
         attempts[attemptIndex] = attempt
-        
+
         // Создаем результат
         let result = TestResult(
             attemptId: attemptId,
@@ -334,23 +334,23 @@ class TestMockService: ObservableObject {
             totalTimeSeconds: attempt.timeSpentSeconds,
             averageTimePerQuestion: attempt.timeSpentSeconds / test.questions.count
         )
-        
+
         results.append(result)
         return result
     }
-    
+
     // MARK: - Results & Analytics
-    
+
     func getUserResults(userId: String) -> [TestResult] {
         results.filter { $0.userId == userId }
     }
-    
+
     func getTestResults(testId: UUID) -> [TestResult] {
         results.filter { $0.testId == testId }
     }
-    
+
     func getTestAnalytics(testId: UUID) -> TestAnalytics {
         let testResults = getTestResults(testId: testId)
         return TestAnalytics(results: testResults)
     }
-} 
+}

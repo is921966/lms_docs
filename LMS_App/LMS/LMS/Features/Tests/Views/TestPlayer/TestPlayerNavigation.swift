@@ -11,11 +11,11 @@ struct TestPlayerNavigation: View {
     @ObservedObject var viewModel: TestViewModel
     @Binding var showSubmitAlert: Bool
     let saveAnswer: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 0) {
             Divider()
-            
+
             HStack(spacing: 20) {
                 // Previous button
                 Button(action: {
@@ -26,17 +26,17 @@ struct TestPlayerNavigation: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(!viewModel.hasPreviousQuestion)
-                
+
                 Spacer()
-                
+
                 // Question navigation
                 TestQuestionMenu(
                     viewModel: viewModel,
                     saveAnswer: saveAnswer
                 )
-                
+
                 Spacer()
-                
+
                 // Next/Submit button
                 if viewModel.isLastQuestion {
                     Button(action: {
@@ -65,7 +65,7 @@ struct TestPlayerNavigation: View {
 struct TestQuestionMenu: View {
     @ObservedObject var viewModel: TestViewModel
     let saveAnswer: () -> Void
-    
+
     var body: some View {
         Menu {
             ForEach(0..<viewModel.totalQuestions, id: \.self) { index in
@@ -91,14 +91,14 @@ struct TestQuestionMenu: View {
         }
         .buttonStyle(.bordered)
     }
-    
+
     private func isQuestionAnswered(at index: Int) -> Bool {
         guard let attempt = viewModel.currentAttempt,
               index < attempt.questionsOrder.count else { return false }
         let questionId = attempt.questionsOrder[index]
         return attempt.isQuestionAnswered(questionId)
     }
-    
+
     private func isQuestionMarked(at index: Int) -> Bool {
         guard let attempt = viewModel.currentAttempt,
               index < attempt.questionsOrder.count else { return false }

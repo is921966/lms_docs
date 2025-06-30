@@ -1,7 +1,6 @@
 import Foundation
 
 enum AccessibilityIdentifiers {
-    
     // MARK: - Authentication
     enum Auth {
         static let emailField = "loginEmailField"
@@ -10,7 +9,7 @@ enum AccessibilityIdentifiers {
         static let rememberMeToggle = "rememberMeToggle"
         static let errorLabel = "loginErrorLabel"
     }
-    
+
     // MARK: - Courses
     enum Courses {
         static let coursesList = "coursesList"
@@ -24,7 +23,7 @@ enum AccessibilityIdentifiers {
         static let cancelButton = "courseCancelButton"
         static let enrollButton = "courseEnrollButton"
     }
-    
+
     // MARK: - Tests
     enum Tests {
         static let testsList = "testsList"
@@ -37,7 +36,7 @@ enum AccessibilityIdentifiers {
         static let answerOption = "answerOption"
         static let testResultView = "testResultView"
     }
-    
+
     // MARK: - Competencies
     enum Competencies {
         static let competenciesList = "competenciesList"
@@ -47,7 +46,7 @@ enum AccessibilityIdentifiers {
         static let competencyLevelSlider = "competencyLevelSlider"
         static let assessButton = "assessCompetencyButton"
     }
-    
+
     // MARK: - Onboarding
     enum Onboarding {
         static let onboardingView = "onboardingView"
@@ -58,7 +57,7 @@ enum AccessibilityIdentifiers {
         static let completeTaskButton = "completeTaskButton"
         static let uploadButton = "uploadDocumentButton"
     }
-    
+
     // MARK: - Analytics
     enum Analytics {
         static let dashboardView = "analyticsDashboard"
@@ -68,7 +67,7 @@ enum AccessibilityIdentifiers {
         static let exportButton = "exportReportButton"
         static let chartView = "analyticsChartView"
     }
-    
+
     // MARK: - Profile
     enum Profile {
         static let profileView = "profileView"
@@ -79,7 +78,7 @@ enum AccessibilityIdentifiers {
         static let logoutButton = "logoutButton"
         static let settingsButton = "settingsButton"
     }
-    
+
     // MARK: - Common
     enum Common {
         static let tabBar = "mainTabBar"
@@ -89,4 +88,4 @@ enum AccessibilityIdentifiers {
         static let searchBar = "globalSearchBar"
         static let emptyStateView = "emptyStateView"
     }
-} 
+}

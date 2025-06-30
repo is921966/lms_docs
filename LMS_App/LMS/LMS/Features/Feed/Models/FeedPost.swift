@@ -18,7 +18,7 @@ struct FeedPost: Identifiable, Codable {
     let visibility: FeedVisibility
     let tags: [String]
     let mentions: [String] // User IDs mentioned
-    
+
     var likesCount: Int { likes.count }
     var commentsCount: Int { comments.count }
     var isEdited: Bool { updatedAt > createdAt }
@@ -34,7 +34,7 @@ struct FeedComment: Identifiable, Codable {
     let content: String
     let createdAt: Date
     var likes: [String]
-    
+
     var likesCount: Int { likes.count }
 }
 
@@ -46,7 +46,7 @@ struct FeedAttachment: Identifiable, Codable {
     let name: String
     let size: Int64?
     let thumbnailUrl: String?
-    
+
     enum AttachmentType: String, Codable, CaseIterable {
         case document = "document"
         case video = "video"
@@ -62,7 +62,7 @@ enum FeedVisibility: String, Codable, CaseIterable {
     case students = "students"
     case admins = "admins"
     case specific = "specific" // Specific roles or users
-    
+
     var icon: String {
         switch self {
         case .everyone: return "globe"
@@ -71,7 +71,7 @@ enum FeedVisibility: String, Codable, CaseIterable {
         case .specific: return "person.2"
         }
     }
-    
+
     var title: String {
         switch self {
         case .everyone: return "Все пользователи"
@@ -92,7 +92,7 @@ struct FeedPermissions: Codable {
     let canEdit: Bool
     let canModerate: Bool
     let visibilityOptions: [FeedVisibility]
-    
+
     static let studentDefault = FeedPermissions(
         canPost: false,
         canComment: true,
@@ -103,7 +103,7 @@ struct FeedPermissions: Codable {
         canModerate: false,
         visibilityOptions: []
     )
-    
+
     static let adminDefault = FeedPermissions(
         canPost: true,
         canComment: true,
@@ -126,7 +126,7 @@ struct FeedActivity: Identifiable, Codable {
     let targetId: String
     let targetName: String
     let createdAt: Date
-    
+
     enum ActivityType: String, Codable {
         case liked = "liked"
         case commented = "commented"
@@ -136,4 +136,4 @@ struct FeedActivity: Identifiable, Codable {
         case testPassed = "test_passed"
         case achievementUnlocked = "achievement_unlocked"
     }
-} 
+}

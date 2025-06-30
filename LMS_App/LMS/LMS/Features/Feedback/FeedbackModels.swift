@@ -16,7 +16,7 @@ struct FeedbackItem: Identifiable, Codable {
     let comments: [FeedbackComment]
     let userReaction: ReactionType?
     let isOwnFeedback: Bool
-    
+
     init(
         id: UUID = UUID(),
         title: String,
@@ -56,7 +56,7 @@ enum FeedbackStatus: String, CaseIterable, Codable {
     case inProgress = "in_progress"
     case resolved = "resolved"
     case closed = "closed"
-    
+
     var title: String {
         switch self {
         case .open: return "Открыт"
@@ -65,7 +65,7 @@ enum FeedbackStatus: String, CaseIterable, Codable {
         case .closed: return "Закрыт"
         }
     }
-    
+
     var color: String {
         switch self {
         case .open: return "blue"
@@ -82,7 +82,7 @@ enum ReactionType: String, CaseIterable, Codable {
     case dislike = "dislike"
     case heart = "heart"
     case fire = "fire"
-    
+
     var emoji: String {
         switch self {
         case .like: return "👍"
@@ -99,7 +99,7 @@ struct FeedbackReactions: Codable {
     var dislike: Int
     var heart: Int
     var fire: Int
-    
+
     init(like: Int = 0, dislike: Int = 0, heart: Int = 0, fire: Int = 0) {
         self.like = like
         self.dislike = dislike
@@ -116,7 +116,7 @@ struct FeedbackComment: Identifiable, Codable {
     let authorId: String
     let createdAt: Date
     let isAdmin: Bool
-    
+
     init(
         id: UUID = UUID(),
         text: String,

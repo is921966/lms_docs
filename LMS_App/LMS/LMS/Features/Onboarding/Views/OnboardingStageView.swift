@@ -15,13 +15,13 @@ struct OnboardingStageView: View {
     @State private var showingTaskDetail = false
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var onboardingService = OnboardingMockService.shared
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
                 // Stage header
                 StageHeaderView(stage: stage)
-                
+
                 // Tasks list
                 ScrollView {
                     LazyVStack(spacing: 12) {
@@ -59,11 +59,11 @@ struct OnboardingStageView: View {
             }
         }
     }
-    
+
     private func updateTask(_ updatedTask: OnboardingTask) {
         if let index = tasks.firstIndex(where: { $0.id == updatedTask.id }) {
             tasks[index] = updatedTask
-            
+
             // Update in service
             if let stageIndex = program.stages.firstIndex(where: { $0.id == stage.id }) {
                 if updatedTask.isCompleted {
@@ -87,7 +87,7 @@ struct OnboardingStageView: View {
 // MARK: - Stage Header
 struct StageHeaderView: View {
     let stage: OnboardingStage
-    
+
     var body: some View {
         VStack(spacing: 16) {
             // Icon and title
@@ -95,18 +95,18 @@ struct StageHeaderView: View {
                 Image(systemName: stage.icon)
                     .font(.system(size: 40))
                     .foregroundColor(.blue)
-                
+
                 Text(stage.title)
                     .font(.title2)
                     .fontWeight(.bold)
-                
+
                 Text(stage.description)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
-            
+
             // Progress and stats
             HStack(spacing: 30) {
                 VStack(spacing: 4) {
@@ -118,7 +118,7 @@ struct StageHeaderView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 VStack(spacing: 4) {
                     Text("\(stage.tasks.count - stage.completedTasks)")
                         .font(.title)
@@ -128,7 +128,7 @@ struct StageHeaderView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 VStack(spacing: 4) {
                     Text("\(stage.duration)")
                         .font(.title)
@@ -139,28 +139,28 @@ struct StageHeaderView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             // Progress bar
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text("Прогресс этапа")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     Text("\(Int(stage.progress * 100))%")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.blue)
                 }
-                
+
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 6)
                             .fill(Color.gray.opacity(0.2))
                             .frame(height: 10)
-                        
+
                         RoundedRectangle(cornerRadius: 6)
                             .fill(
                                 LinearGradient(
@@ -186,7 +186,7 @@ struct TaskCardView: View {
     let task: OnboardingTask
     let onUpdate: (OnboardingTask) -> Void
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
@@ -195,37 +195,37 @@ struct TaskCardView: View {
                     Circle()
                         .fill(task.iconColor.opacity(0.2))
                         .frame(width: 50, height: 50)
-                    
+
                     Image(systemName: task.icon)
                         .font(.system(size: 20))
                         .foregroundColor(task.iconColor)
                 }
-                
+
                 // Content
                 VStack(alignment: .leading, spacing: 6) {
                     Text(task.title)
                         .font(.headline)
                         .foregroundColor(.primary)
                         .multilineTextAlignment(.leading)
-                    
+
                     Text(task.description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
-                    
+
                     // Additional info
                     HStack(spacing: 12) {
                         Label(task.type.rawValue, systemImage: getTypeIcon())
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         if let dueDate = task.dueDate {
                             Label(formatDueDate(dueDate), systemImage: "calendar")
                                 .font(.caption)
                                 .foregroundColor(isOverdue(dueDate) ? .red : .secondary)
                         }
-                        
+
                         if !task.isRequired {
                             Text("Опционально")
                                 .font(.caption)
@@ -237,9 +237,9 @@ struct TaskCardView: View {
                         }
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // Completion button
                 Button(action: {
                     var updatedTask = task
@@ -264,7 +264,7 @@ struct TaskCardView: View {
         }
         .buttonStyle(PlainButtonStyle())
     }
-    
+
     private func getTypeIcon() -> String {
         switch task.type {
         case .course: return "book.closed"
@@ -275,14 +275,14 @@ struct TaskCardView: View {
         case .checklist: return "checklist"        case .feedback: return "bubble.left.and.bubble.right"
         }
     }
-    
+
     private func formatDueDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMM"
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter.string(from: date)
     }
-    
+
     private func isOverdue(_ date: Date) -> Bool {
         date < Date() && !task.isCompleted
     }
@@ -295,14 +295,14 @@ struct OnboardingTaskDetailView: View {
     let onUpdate: (OnboardingTask) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var updatedTask: OnboardingTask
-    
+
     init(task: OnboardingTask, program: OnboardingProgram, onUpdate: @escaping (OnboardingTask) -> Void) {
         self.task = task
         self.program = program
         self.onUpdate = onUpdate
         self._updatedTask = State(initialValue: task)
     }
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -313,17 +313,17 @@ struct OnboardingTaskDetailView: View {
                             Circle()
                                 .fill(task.iconColor.opacity(0.2))
                                 .frame(width: 80, height: 80)
-                            
+
                             Image(systemName: task.icon)
                                 .font(.system(size: 40))
                                 .foregroundColor(task.iconColor)
                         }
-                        
+
                         Text(task.title)
                             .font(.title2)
                             .fontWeight(.bold)
                             .multilineTextAlignment(.center)
-                        
+
                         Text(task.type.rawValue)
                             .font(.subheadline)
                             .padding(.horizontal, 16)
@@ -334,18 +334,18 @@ struct OnboardingTaskDetailView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    
+
                     // Description
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Описание")
                             .font(.headline)
-                        
+
                         Text(task.description)
                             .font(.body)
                             .foregroundColor(.secondary)
                     }
                     .padding(.horizontal)
-                    
+
                     // Details
                     VStack(alignment: .leading, spacing: 16) {
                         if let dueDate = task.dueDate {
@@ -356,14 +356,14 @@ struct OnboardingTaskDetailView: View {
                                 color: isOverdue(dueDate) ? .red : .primary
                             )
                         }
-                        
+
                         DetailRow(
                             icon: "exclamationmark.triangle",
                             title: "Обязательность",
                             value: task.isRequired ? "Обязательная" : "Опциональная",
                             color: task.isRequired ? .red : .orange
                         )
-                        
+
                         if task.isCompleted, let completedAt = task.completedAt {
                             DetailRow(
                                 icon: "checkmark.circle.fill",
@@ -374,7 +374,7 @@ struct OnboardingTaskDetailView: View {
                         }
                     }
                     .padding(.horizontal)
-                    
+
                     // Action buttons based on type
                     VStack(spacing: 12) {
                         if task.type == .course, task.courseId != nil {
@@ -386,7 +386,7 @@ struct OnboardingTaskDetailView: View {
                                 )
                             }
                         }
-                        
+
                         if task.type == .test, task.testId != nil {
                             NavigationLink(destination: EmptyView()) {
                                 ActionButton(
@@ -396,7 +396,7 @@ struct OnboardingTaskDetailView: View {
                                 )
                             }
                         }
-                        
+
                         if task.type == .document, task.documentUrl != nil {
                             Button(action: {}) {
                                 ActionButton(
@@ -406,7 +406,7 @@ struct OnboardingTaskDetailView: View {
                                 )
                             }
                         }
-                        
+
                         // Complete/Uncomplete button
                         Button(action: toggleCompletion) {
                             ActionButton(
@@ -431,7 +431,7 @@ struct OnboardingTaskDetailView: View {
             }
         }
     }
-    
+
     private func toggleCompletion() {
         updatedTask.isCompleted.toggle()
         if updatedTask.isCompleted {
@@ -441,14 +441,14 @@ struct OnboardingTaskDetailView: View {
         }
         onUpdate(updatedTask)
     }
-    
+
     private func formatFullDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMMM yyyy"
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter.string(from: date)
     }
-    
+
     private func isOverdue(_ date: Date) -> Bool {
         date < Date() && !updatedTask.isCompleted
     }
@@ -460,25 +460,25 @@ struct DetailRow: View {
     let title: String
     let value: String
     let color: Color
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 20))
                 .foregroundColor(color)
                 .frame(width: 30)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Text(value)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(color)
             }
-            
+
             Spacer()
         }
         .padding()
@@ -492,17 +492,17 @@ struct ActionButton: View {
     let title: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         HStack {
             Image(systemName: icon)
                 .font(.system(size: 20))
-            
+
             Text(title)
                 .fontWeight(.medium)
-            
+
             Spacer()
-            
+
             Image(systemName: "chevron.right")
                 .font(.system(size: 14))
                 .foregroundColor(.gray)
@@ -519,4 +519,4 @@ struct ActionButton: View {
         stage: OnboardingProgram.createMockStages()[1],
         program: OnboardingProgram.createMockPrograms()[0]
     )
-} 
+}

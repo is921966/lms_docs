@@ -10,7 +10,7 @@ enum NetworkError: LocalizedError {
     case noInternetConnection
     case unauthorized
     case unknown(Error)
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidURL:
@@ -43,17 +43,17 @@ enum HTTPMethod: String {
 // MARK: - NetworkService
 class NetworkService: ObservableObject {
     static let shared = NetworkService()
-    
+
     private let session: URLSession
     private var cancellables = Set<AnyCancellable>()
-    
+
     // Configuration
     private let baseURL: String
     private let timeout: TimeInterval = 30
-    
+
     init(session: URLSession = .shared) {
         self.session = session
-        
+
         // Configure base URL based on environment
         #if DEBUG
         self.baseURL = "https://dev-api.lms.tsum.ru/api/v1"
@@ -61,7 +61,7 @@ class NetworkService: ObservableObject {
         self.baseURL = "https://api.lms.tsum.ru/api/v1"
         #endif
     }
-    
+
     // MARK: - Request Building
     func buildRequest(
         endpoint: String,
@@ -72,31 +72,31 @@ class NetworkService: ObservableObject {
         guard let url = URL(string: baseURL + endpoint) else {
             throw NetworkError.invalidURL
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.timeoutInterval = timeout
-        
+
         // Default headers
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
+
         // Add auth token if available
         if let token = TokenManager.shared.accessToken {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-        
+
         // Custom headers
         headers?.forEach { key, value in
             request.setValue(value, forHTTPHeaderField: key)
         }
-        
+
         // Body
         request.httpBody = body
-        
+
         return request
     }
-    
+
     // MARK: - Generic Request
     func request<T: Decodable>(
         endpoint: String,
@@ -112,13 +112,13 @@ class NetworkService: ObservableObject {
                 headers: headers,
                 body: body
             )
-            
+
             return session.dataTaskPublisher(for: request)
                 .tryMap { data, response in
                     guard let httpResponse = response as? HTTPURLResponse else {
                         throw NetworkError.unknown(URLError(.badServerResponse))
                     }
-                    
+
                     // Check status code
                     switch httpResponse.statusCode {
                     case 200...299:
@@ -151,7 +151,7 @@ class NetworkService: ObservableObject {
                 .eraseToAnyPublisher()
         }
     }
-    
+
     // MARK: - Convenience Methods
     func get<T: Decodable>(
         endpoint: String,
@@ -165,7 +165,7 @@ class NetworkService: ObservableObject {
             responseType: responseType
         )
     }
-    
+
     func post<T: Decodable, B: Encodable>(
         endpoint: String,
         body: B,
@@ -186,4 +186,4 @@ class NetworkService: ObservableObject {
                 .eraseToAnyPublisher()
         }
     }
-} 
+}

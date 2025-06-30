@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TestResultView: View {
     let test: Test
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -17,7 +17,7 @@ struct TestResultView: View {
                 Text("Результаты теста")
                     .font(.largeTitle)
                     .padding()
-                
+
                 Text(test.title)
                     .font(.title2)
                     .padding()

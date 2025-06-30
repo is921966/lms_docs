@@ -10,10 +10,10 @@ import SwiftUI
 struct AdminEditButton: View {
     let action: () -> Void
     var size: ButtonSize = .medium
-    
+
     enum ButtonSize {
         case small, medium, large
-        
+
         var iconSize: Font {
             switch self {
             case .small: return .caption
@@ -21,7 +21,7 @@ struct AdminEditButton: View {
             case .large: return .body
             }
         }
-        
+
         var padding: CGFloat {
             switch self {
             case .small: return 4
@@ -30,7 +30,7 @@ struct AdminEditButton: View {
             }
         }
     }
-    
+
     var body: some View {
         Button(action: action) {
             Image(systemName: "pencil.circle.fill")
@@ -49,7 +49,7 @@ struct AdminControlsOverlay<Content: View>: View {
     let editAction: () -> Void
     let deleteAction: (() -> Void)?
     let content: () -> Content
-    
+
     init(
         isAdmin: Bool,
         editAction: @escaping () -> Void,
@@ -61,14 +61,14 @@ struct AdminControlsOverlay<Content: View>: View {
         self.deleteAction = deleteAction
         self.content = content
     }
-    
+
     var body: some View {
         if isAdmin {
             content()
                 .overlay(alignment: .topTrailing) {
                     HStack(spacing: 8) {
                         AdminEditButton(action: editAction)
-                        
+
                         if let deleteAction = deleteAction {
                             Button(action: deleteAction) {
                                 Image(systemName: "trash.circle.fill")
@@ -92,14 +92,14 @@ struct AdminControlsOverlay<Content: View>: View {
 struct AdminSectionHeader: View {
     let title: String
     let addAction: () -> Void
-    
+
     var body: some View {
         HStack {
             Text(title)
                 .font(.headline)
-            
+
             Spacer()
-            
+
             Button(action: addAction) {
                 HStack(spacing: 4) {
                     Image(systemName: "plus.circle.fill")
@@ -127,7 +127,7 @@ struct AdminCheck {
         AdminEditButton(action: {}, size: .small)
         AdminEditButton(action: {}, size: .medium)
         AdminEditButton(action: {}, size: .large)
-        
+
         AdminControlsOverlay(isAdmin: true, editAction: {}) {
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.gray.opacity(0.2))
@@ -135,4 +135,4 @@ struct AdminCheck {
         }
     }
     .padding()
-} 
+}

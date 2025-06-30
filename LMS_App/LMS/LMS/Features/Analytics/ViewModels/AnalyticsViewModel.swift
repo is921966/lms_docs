@@ -18,47 +18,47 @@ class AnalyticsViewModel: ObservableObject {
     @Published var competencyProgress: [CompetencyProgress] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
-    
+
     // Filters
     @Published var selectedDepartment: String?
     @Published var selectedPosition: String?
     @Published var selectedCourse: String?
-    
+
     private let service: AnalyticsServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     private let currentUserId = "user-1"
-    
+
     init(service: AnalyticsServiceProtocol = AnalyticsService()) {
         self.service = service
         loadAnalytics()
     }
-    
+
     // MARK: - Load Analytics
     func loadAnalytics() {
         isLoading = true
         errorMessage = nil
-        
+
         // Load summary
         analyticsSummary = service.getAnalyticsSummary(for: selectedPeriod)
-        
+
         // Load user performance
         userPerformance = service.getUserPerformance(userId: currentUserId, period: selectedPeriod)
-        
+
         // Load course statistics
         courseStatistics = service.getCourseStatistics(period: selectedPeriod)
-        
+
         // Load competency progress
         competencyProgress = service.getCompetencyProgress(period: selectedPeriod)
-        
+
         isLoading = false
     }
-    
+
     // MARK: - Change Period
     func changePeriod(_ period: AnalyticsPeriod) {
         selectedPeriod = period
         loadAnalytics()
     }
-    
+
     // MARK: - Track Event
     func trackEvent(type: AnalyticsType, metrics: [String: Double], metadata: [String: String] = [:]) {
         let event = AnalyticsData(
@@ -69,7 +69,7 @@ class AnalyticsViewModel: ObservableObject {
         )
         service.trackEvent(event)
     }
-    
+
     // MARK: - Filtered Data
     var filteredCourseStatistics: [CourseStatistics] {
         guard let selectedCourse = selectedCourse else {
@@ -77,15 +77,15 @@ class AnalyticsViewModel: ObservableObject {
         }
         return courseStatistics.filter { $0.courseId == selectedCourse }
     }
-    
+
     var topPerformers: [UserPerformance] {
         analyticsSummary?.topPerformers ?? []
     }
-    
+
     var popularCourses: [CourseStatistics] {
         analyticsSummary?.popularCourses ?? []
     }
-    
+
     // MARK: - Chart Data
     var learningProgressChartData: [DataPoint] {
         // Generate mock chart data based on period
@@ -115,7 +115,7 @@ class AnalyticsViewModel: ObservableObject {
             return []
         }
     }
-    
+
     var competencyGrowthChartData: [DataPoint] {
         competencyProgress.map { competency in
             DataPoint(
@@ -124,7 +124,7 @@ class AnalyticsViewModel: ObservableObject {
             )
         }
     }
-    
+
     var testScoresChartData: [DataPoint] {
         // Mock test scores over time
         switch selectedPeriod {
@@ -146,30 +146,30 @@ class AnalyticsViewModel: ObservableObject {
             return []
         }
     }
-    
+
     // MARK: - Statistics
     var totalLearningHours: String {
         guard let summary = analyticsSummary else { return "0" }
         return String(format: "%.0f", summary.totalLearningHours)
     }
-    
+
     var averageScore: String {
         guard let summary = analyticsSummary else { return "0%" }
         return String(format: "%.1f%%", summary.averageScore)
     }
-    
+
     var activeUsersPercentage: Double {
         guard let summary = analyticsSummary else { return 0 }
         return Double(summary.activeUsers) / Double(summary.totalUsers) * 100
     }
-    
+
     var completionRate: Double {
         let totalEnrolled = courseStatistics.reduce(0) { $0 + $1.enrolledCount }
         let totalCompleted = courseStatistics.reduce(0) { $0 + $1.completedCount }
         guard totalEnrolled > 0 else { return 0 }
         return Double(totalCompleted) / Double(totalEnrolled) * 100
     }
-    
+
     // MARK: - Export
     func exportDashboard() -> URL? {
         // Create a simple HTML dashboard
@@ -189,7 +189,7 @@ class AnalyticsViewModel: ObservableObject {
         </head>
         <body>
             <h1>Аналитика обучения - \(selectedPeriod.rawValue)</h1>
-            
+
             <div class="metrics">
                 <div class="metric">
                     <div>Активные пользователи</div>
@@ -204,7 +204,7 @@ class AnalyticsViewModel: ObservableObject {
                     <div class="metric-value">\(averageScore)</div>
                 </div>
             </div>
-            
+
             <h2>Топ исполнители</h2>
             <table>
                 <tr>
@@ -220,13 +220,13 @@ class AnalyticsViewModel: ObservableObject {
         </body>
         </html>
         """
-        
+
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let fileName = "analytics_dashboard_\(Date().timeIntervalSince1970).html"
         let fileURL = documentsPath.appendingPathComponent(fileName)
-        
+
         try? html.write(to: fileURL, atomically: true, encoding: .utf8)
-        
+
         return fileURL
     }
-} 
+}

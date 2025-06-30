@@ -20,7 +20,7 @@ struct TestEditView: View {
     @State private var showingAddQuestion = false
     @State private var questions: [Question] = []
     @State private var showingSaveAlert = false
-    
+
     init(test: Test) {
         self._test = State(initialValue: test)
         self._title = State(initialValue: test.title)
@@ -32,24 +32,24 @@ struct TestEditView: View {
         self._maxAttempts = State(initialValue: test.attemptsAllowed)
         self._questions = State(initialValue: test.questions)
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
                 // Basic info section
                 Section("Основная информация") {
                     TextField("Название теста", text: $title)
-                    
+
                     TextField("Описание", text: $description, axis: .vertical)
                         .lineLimit(3...6)
-                    
+
                     Picker("Тип теста", selection: $selectedType) {
                         ForEach(LMSTestType.allCases, id: \.self) { type in
                             Label(type.rawValue, systemImage: type.icon)
                                 .tag(type)
                         }
                     }
-                    
+
                     Picker("Сложность", selection: $selectedDifficulty) {
                         ForEach(TestDifficulty.allCases, id: \.self) { difficulty in
                             Label(difficulty.rawValue, systemImage: difficulty.icon)
@@ -57,7 +57,7 @@ struct TestEditView: View {
                         }
                     }
                 }
-                
+
                 // Settings section
                 Section("Настройки") {
                     HStack {
@@ -68,7 +68,7 @@ struct TestEditView: View {
                             .frame(width: 80)
                             .multilineTextAlignment(.trailing)
                     }
-                    
+
                     HStack {
                         Text("Проходной балл")
                         Spacer()
@@ -77,7 +77,7 @@ struct TestEditView: View {
                             .frame(width: 60)
                             .multilineTextAlignment(.trailing)
                     }
-                    
+
                     HStack {
                         Text("Макс. попыток")
                         Spacer()
@@ -87,14 +87,14 @@ struct TestEditView: View {
                             .multilineTextAlignment(.trailing)
                     }
                 }
-                
+
                 // Questions section
                 Section("Вопросы (\(questions.count))") {
                     ForEach(questions) { question in
                         QuestionRow(question: question)
                     }
                     .onDelete(perform: deleteQuestion)
-                    
+
                     Button(action: { showingAddQuestion = true }) {
                         HStack {
                             Image(systemName: "plus.circle.fill")
@@ -103,7 +103,7 @@ struct TestEditView: View {
                         .foregroundColor(.blue)
                     }
                 }
-                
+
                 // Preview section
                 Section("Предпросмотр") {
                     TestPreviewCard(
@@ -124,7 +124,7 @@ struct TestEditView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Сохранить") {
                         saveTest()
@@ -146,16 +146,15 @@ struct TestEditView: View {
             }
         }
     }
-    
+
     private func deleteQuestion(at offsets: IndexSet) {
         questions.remove(atOffsets: offsets)
     }
-    
+
     private func saveTest() {
         // Обновляем тест в сервисе
         let service = TestMockService.shared
         if let testIndex = service.tests.firstIndex(where: { $0.id == test.id }) {
-            
             service.tests[testIndex] = Test(
                 id: test.id,
                 title: title,
@@ -172,10 +171,10 @@ struct TestEditView: View {
                 updatedAt: Date()
             )
         }
-        
+
         // В реальном приложении здесь будет вызов API
         // await testService.updateTest(test)
-        
+
         showingSaveAlert = true
     }
 }
@@ -183,24 +182,24 @@ struct TestEditView: View {
 // Question row
 struct QuestionRow: View {
     let question: Question
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(question.text)
                 .font(.body)
                 .lineLimit(2)
-            
+
             HStack {
                 Image(systemName: question.type.icon)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Text(question.type.rawValue)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 Text("\(question.points) баллов")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -217,26 +216,26 @@ struct AddQuestionView: View {
     @State private var points = 1
     @State private var options: [String] = ["", "", "", ""]
     @State private var correctAnswer = 0
-    
+
     let onAdd: (Question) -> Void
-    
+
     var body: some View {
         NavigationView {
             Form {
                 Section("Вопрос") {
                     TextField("Текст вопроса", text: $questionText, axis: .vertical)
                         .lineLimit(3...10)
-                    
+
                     Picker("Тип вопроса", selection: $selectedType) {
                         ForEach(QuestionType.allCases, id: \.self) { type in
                             Label(type.rawValue, systemImage: type.icon)
                                 .tag(type)
                         }
                     }
-                    
+
                     Stepper("Баллы: \(points)", value: $points, in: 1...10)
                 }
-                
+
                 if selectedType == .singleChoice || selectedType == .multipleChoice {
                     Section("Варианты ответов") {
                         ForEach(0..<4) { index in
@@ -251,7 +250,7 @@ struct AddQuestionView: View {
                                     Image(systemName: "square")
                                         .foregroundColor(.gray)
                                 }
-                                
+
                                 TextField("Вариант \(index + 1)", text: $options[index])
                             }
                         }
@@ -266,7 +265,7 @@ struct AddQuestionView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Добавить") {
                         let answerOptions = options.enumerated().compactMap { index, text in
@@ -275,7 +274,7 @@ struct AddQuestionView: View {
                                 isCorrect: selectedType == .singleChoice ? index == correctAnswer : false
                             )
                         }
-                        
+
                         let newQuestion = Question(
                             text: questionText,
                             type: selectedType,
@@ -300,27 +299,27 @@ struct TestPreviewCard: View {
     let difficulty: TestDifficulty
     let questionCount: Int
     let timeLimit: Int?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: type.icon)
                     .font(.title2)
                     .foregroundColor(type.color)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.headline)
-                    
+
                     HStack(spacing: 8) {
                         Label(difficulty.rawValue, systemImage: difficulty.icon)
                             .font(.caption)
                             .foregroundColor(difficulty.color)
-                        
+
                         Label("\(questionCount) вопросов", systemImage: "questionmark.circle")
                             .font(.caption)
                             .foregroundColor(.gray)
-                        
+
                         if let timeLimit = timeLimit {
                             Label("\(timeLimit) мин", systemImage: "timer")
                                 .font(.caption)
@@ -328,10 +327,10 @@ struct TestPreviewCard: View {
                         }
                     }
                 }
-                
+
                 Spacer()
             }
-            
+
             Text(description)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -341,4 +340,4 @@ struct TestPreviewCard: View {
         .background(Color.gray.opacity(0.05))
         .cornerRadius(12)
     }
-} 
+}

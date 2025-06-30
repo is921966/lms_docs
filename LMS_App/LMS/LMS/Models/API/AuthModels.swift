@@ -17,7 +17,7 @@ struct TokensResponse: Decodable {
     let accessToken: String
     let refreshToken: String
     let expiresIn: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case refreshToken = "refresh_token"
@@ -39,7 +39,7 @@ struct UserResponse: Codable, Identifiable {
     var permissions: [String]
     let isApproved: Bool
     let registrationDate: Date?
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case email
@@ -59,7 +59,7 @@ struct UserResponse: Codable, Identifiable {
 // MARK: - Refresh Token Request
 struct RefreshTokenRequest: Encodable {
     let refreshToken: String
-    
+
     enum CodingKeys: String, CodingKey {
         case refreshToken = "refresh_token"
     }
@@ -70,10 +70,10 @@ struct ErrorResponse: Decodable {
     let error: String
     let message: String
     let statusCode: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case error
         case message
         case statusCode = "status_code"
     }
-} 
+}

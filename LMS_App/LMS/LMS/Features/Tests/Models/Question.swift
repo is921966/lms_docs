@@ -17,7 +17,7 @@ enum QuestionType: String, CaseIterable, Codable {
     case ordering = "Упорядочивание"
     case fillInBlanks = "Заполнить пропуски"
     case essay = "Эссе"
-    
+
     var icon: String {
         switch self {
         case .singleChoice: return "circle"
@@ -30,7 +30,7 @@ enum QuestionType: String, CaseIterable, Codable {
         case .essay: return "doc.text"
         }
     }
-    
+
     var requiresManualCheck: Bool {
         switch self {
         case .essay, .textInput:
@@ -49,29 +49,29 @@ struct Question: Identifiable, Codable, Equatable {
     var explanation: String? // Объяснение правильного ответа
     var hint: String? // Подсказка
     var imageUrl: String? // Изображение к вопросу
-    
+
     // Варианты ответов (для выбора)
     var options: [AnswerOption]
-    
+
     // Для текстовых ответов
     var acceptedAnswers: [String] // Принимаемые варианты ответа
     var caseSensitive: Bool
-    
+
     // Для сопоставления
     var matchingPairs: [MatchingPair]
-    
+
     // Для упорядочивания
     var correctOrder: [String]
-    
+
     // Для заполнения пропусков
     var textWithBlanks: String? // Текст с маркерами [blank1], [blank2]
     var blanksAnswers: [String: [String]] // blank1: ["ответ1", "ответ2"]
-    
+
     // Metadata
     var isRequired: Bool
     var shuffleOptions: Bool
     var attachments: [String] // URLs to attachments
-    
+
     init(
         id: UUID = UUID(),
         text: String,
@@ -109,7 +109,7 @@ struct Question: Identifiable, Codable, Equatable {
         self.shuffleOptions = shuffleOptions
         self.attachments = attachments
     }
-    
+
     // Проверка ответа
     func checkAnswer(_ userAnswer: UserAnswer) -> AnswerCheckResult {
         switch type {
@@ -128,16 +128,16 @@ struct Question: Identifiable, Codable, Equatable {
             return AnswerCheckResult(isCorrect: nil, score: 0, feedback: "Требует проверки преподавателем")
         }
     }
-    
+
     private func checkChoiceAnswer(_ userAnswer: UserAnswer) -> AnswerCheckResult {
         guard let selectedIds = userAnswer.selectedOptionIds else {
             return AnswerCheckResult(isCorrect: false, score: 0, feedback: "Не выбран ответ")
         }
-        
+
         let correctIds = options.filter { $0.isCorrect }.map { $0.id }
         let isCorrect = Set(selectedIds) == Set(correctIds)
         let score = isCorrect ? points : 0
-        
+
         return AnswerCheckResult(
             isCorrect: isCorrect,
             score: score,
@@ -145,18 +145,18 @@ struct Question: Identifiable, Codable, Equatable {
             correctAnswer: options.filter { $0.isCorrect }.map { $0.text }.joined(separator: ", ")
         )
     }
-    
+
     private func checkTextAnswer(_ userAnswer: UserAnswer) -> AnswerCheckResult {
         guard let text = userAnswer.textAnswer else {
             return AnswerCheckResult(isCorrect: false, score: 0, feedback: "Не введен ответ")
         }
-        
+
         let isCorrect = acceptedAnswers.contains { answer in
             caseSensitive ? text == answer : text.lowercased() == answer.lowercased()
         }
-        
+
         let score = isCorrect ? points : 0
-        
+
         return AnswerCheckResult(
             isCorrect: isCorrect,
             score: score,
@@ -164,52 +164,52 @@ struct Question: Identifiable, Codable, Equatable {
             correctAnswer: acceptedAnswers.first
         )
     }
-    
+
     private func checkMatchingAnswer(_ userAnswer: UserAnswer) -> AnswerCheckResult {
         guard let matches = userAnswer.matchingAnswers else {
             return AnswerCheckResult(isCorrect: false, score: 0, feedback: "Не выполнено сопоставление")
         }
-        
+
         var correctCount = 0
         for pair in matchingPairs {
             if matches[pair.left] == pair.right {
                 correctCount += 1
             }
         }
-        
+
         let isCorrect = correctCount == matchingPairs.count
         let score = points * (Double(correctCount) / Double(matchingPairs.count))
-        
+
         return AnswerCheckResult(
             isCorrect: isCorrect,
             score: score,
             feedback: "Правильных сопоставлений: \(correctCount) из \(matchingPairs.count)"
         )
     }
-    
+
     private func checkOrderingAnswer(_ userAnswer: UserAnswer) -> AnswerCheckResult {
         guard let order = userAnswer.orderingAnswer else {
             return AnswerCheckResult(isCorrect: false, score: 0, feedback: "Не выполнено упорядочивание")
         }
-        
+
         let isCorrect = order == correctOrder
         let score = isCorrect ? points : 0
-        
+
         return AnswerCheckResult(
             isCorrect: isCorrect,
             score: score,
             feedback: isCorrect ? "Правильный порядок!" : "Неправильный порядок"
         )
     }
-    
+
     private func checkFillInBlanksAnswer(_ userAnswer: UserAnswer) -> AnswerCheckResult {
         guard let blanks = userAnswer.fillInBlanksAnswers else {
             return AnswerCheckResult(isCorrect: false, score: 0, feedback: "Не заполнены пропуски")
         }
-        
+
         var correctCount = 0
         var totalBlanks = 0
-        
+
         for (blankId, acceptedValues) in blanksAnswers {
             totalBlanks += 1
             if let userValue = blanks[blankId] {
@@ -221,10 +221,10 @@ struct Question: Identifiable, Codable, Equatable {
                 }
             }
         }
-        
+
         let isCorrect = correctCount == totalBlanks
         let score = points * (Double(correctCount) / Double(totalBlanks))
-        
+
         return AnswerCheckResult(
             isCorrect: isCorrect,
             score: score,
@@ -238,7 +238,7 @@ struct AnswerOption: Identifiable, Codable, Equatable {
     var text: String
     var isCorrect: Bool
     var imageUrl: String?
-    
+
     init(
         id: UUID = UUID(),
         text: String,
@@ -256,7 +256,7 @@ struct MatchingPair: Identifiable, Codable, Equatable {
     let id: UUID
     var left: String
     var right: String
-    
+
     init(
         id: UUID = UUID(),
         left: String,
@@ -283,7 +283,7 @@ struct AnswerCheckResult {
     let score: Double
     let feedback: String
     let correctAnswer: String?
-    
+
     init(
         isCorrect: Bool?,
         score: Double,
@@ -295,4 +295,4 @@ struct AnswerCheckResult {
         self.feedback = feedback
         self.correctAnswer = correctAnswer
     }
-} 
+}

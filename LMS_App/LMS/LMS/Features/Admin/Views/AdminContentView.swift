@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AdminContentView: View {
     @State private var selectedTab = 0
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Content type selector
@@ -24,7 +24,7 @@ struct AdminContentView: View {
                     ) {
                         selectedTab = 0
                     }
-                    
+
                     ContentTypeCard(
                         icon: "doc.text.magnifyingglass",
                         title: "Тесты",
@@ -34,7 +34,7 @@ struct AdminContentView: View {
                     ) {
                         selectedTab = 1
                     }
-                    
+
                     ContentTypeCard(
                         icon: "star.fill",
                         title: "Компетенции",
@@ -44,7 +44,7 @@ struct AdminContentView: View {
                     ) {
                         selectedTab = 2
                     }
-                    
+
                     ContentTypeCard(
                         icon: "seal.fill",
                         title: "Сертификаты",
@@ -54,7 +54,7 @@ struct AdminContentView: View {
                     ) {
                         selectedTab = 3
                     }
-                    
+
                     ContentTypeCard(
                         icon: "person.badge.clock.fill",
                         title: "Онбординг",
@@ -67,7 +67,7 @@ struct AdminContentView: View {
                 }
                 .padding()
             }
-            
+
             // Content list based on selection
             switch selectedTab {
             case 0:
@@ -97,19 +97,19 @@ struct ContentTypeCard: View {
     let color: Color
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.title)
                     .foregroundColor(isSelected ? .white : color)
-                
+
                 Text("\(count)")
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundColor(isSelected ? .white : .primary)
-                
+
                 Text(title)
                     .font(.caption)
                     .foregroundColor(isSelected ? .white : .secondary)
@@ -130,7 +130,7 @@ struct AdminCourseListView: View {
     @State private var searchText = ""
     @State private var showingAddCourse = false
     @State private var selectedCourse: Course?
-    
+
     var filteredCourses: [Course] {
         if searchText.isEmpty {
             return viewModel.courses
@@ -140,7 +140,7 @@ struct AdminCourseListView: View {
             course.category.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Search and add button
@@ -153,7 +153,7 @@ struct AdminCourseListView: View {
                 .padding(10)
                 .background(Color(.systemGray6))
                 .cornerRadius(10)
-                
+
                 Button(action: {
                     showingAddCourse = true
                 }) {
@@ -163,7 +163,7 @@ struct AdminCourseListView: View {
                 }
             }
             .padding()
-            
+
             // Course list
             ScrollView {
                 LazyVStack(spacing: 12) {
@@ -198,7 +198,7 @@ struct AdminTestListView: View {
     @State private var searchText = ""
     @State private var showingAddTest = false
     @State private var selectedTest: Test?
-    
+
     var filteredTests: [Test] {
         let tests = viewModel.filteredTests
         return searchText.isEmpty ? tests : tests.filter { test in
@@ -206,7 +206,7 @@ struct AdminTestListView: View {
             test.description.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Search and add button
@@ -219,7 +219,7 @@ struct AdminTestListView: View {
                 .padding(10)
                 .background(Color(.systemGray6))
                 .cornerRadius(10)
-                
+
                 Button(action: {
                     showingAddTest = true
                 }) {
@@ -229,7 +229,7 @@ struct AdminTestListView: View {
                 }
             }
             .padding()
-            
+
             // Test list
             ScrollView {
                 LazyVStack(spacing: 12) {
@@ -263,21 +263,21 @@ struct AdminCompetencyListView: View {
     @StateObject private var viewModel = CompetencyViewModel()
     @State private var showingAddCompetency = false
     @State private var selectedCompetency: Competency?
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 // Competency matrix
                 CompetencyMatrixSection()
-                
+
                 // Competency list
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text("Все компетенции")
                             .font(.headline)
-                        
+
                         Spacer()
-                        
+
                         Button(action: {
                             showingAddCompetency = true
                         }) {
@@ -286,7 +286,7 @@ struct AdminCompetencyListView: View {
                                 .foregroundColor(.purple)
                         }
                     }
-                    
+
                     ForEach(viewModel.competencies) { competency in
                         AdminCompetencyCard(competency: competency) {
                             selectedCompetency = competency
@@ -314,21 +314,21 @@ struct AdminCompetencyListView: View {
 // MARK: - Admin Certificate List View
 struct AdminCertificateListView: View {
     @State private var showingAddTemplate = false
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 // Certificate statistics
                 CertificateStatsSection()
-                
+
                 // Certificate templates
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text("Шаблоны сертификатов")
                             .font(.headline)
-                        
+
                         Spacer()
-                        
+
                         Button(action: {
                             showingAddTemplate = true
                         }) {
@@ -337,7 +337,7 @@ struct AdminCertificateListView: View {
                                 .foregroundColor(.green)
                         }
                     }
-                    
+
                     // Template list
                     ForEach(0..<3) { _ in
                         CertificateTemplateCard()
@@ -359,13 +359,13 @@ struct AdminCertificateListView: View {
 struct AdminCourseCard: View {
     let course: Course
     let onEdit: () -> Void
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 6) {
                 Text(course.title)
                     .font(.headline)
-                
+
                 HStack(spacing: 12) {
                     if let categoryId = course.categoryId,
                        let category = CourseCategory.categories.first(where: { $0.id == categoryId }) {
@@ -373,16 +373,16 @@ struct AdminCourseCard: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Label("\(course.modules.count) модулей", systemImage: "square.grid.2x2")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Label("\(course.totalLessons) уроков", systemImage: "person.2")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 // Status
                 HStack {
                     Circle()
@@ -393,9 +393,9 @@ struct AdminCourseCard: View {
                         .foregroundColor(course.isPublished ? .green : .orange)
                 }
             }
-            
+
             Spacer()
-            
+
             Button(action: onEdit) {
                 Image(systemName: "pencil.circle.fill")
                     .font(.title2)
@@ -411,48 +411,48 @@ struct AdminCourseCard: View {
 struct AdminTestCard: View {
     let test: Test
     let onEdit: () -> Void
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 6) {
                 Text(test.title)
                     .font(.headline)
-                
+
                 HStack(spacing: 12) {
                     Label("\(test.questionsCount) вопросов", systemImage: "questionmark.circle")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Label("\(test.duration) мин", systemImage: "clock")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     if let courseName = test.courseName {
                         Label(courseName, systemImage: "book")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 // Statistics
                 if test.totalAttempts > 0 {
                     HStack(spacing: 8) {
                         Text("Попыток: \(test.totalAttempts)")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         Text("•")
                             .foregroundColor(.secondary)
-                        
+
                         Text("Средний балл: \(test.averageScore)%")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
             }
-            
+
             Spacer()
-            
+
             Button(action: onEdit) {
                 Image(systemName: "pencil.circle.fill")
                     .font(.title2)
@@ -468,31 +468,31 @@ struct AdminTestCard: View {
 struct AdminCompetencyCard: View {
     let competency: Competency
     let onEdit: () -> Void
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 6) {
                 Text(competency.name)
                     .font(.headline)
-                
+
                 Text(competency.category.rawValue)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 // Usage statistics
                 HStack(spacing: 12) {
                     Label("\(competency.usageCount) позиций", systemImage: "briefcase")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Label("\(competency.coursesCount) курсов", systemImage: "book")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             Spacer()
-            
+
             Button(action: onEdit) {
                 Image(systemName: "pencil.circle.fill")
                     .font(.title2)
@@ -510,7 +510,7 @@ struct CompetencyMatrixSection: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Матрица компетенций")
                 .font(.headline)
-            
+
             HStack(spacing: 12) {
                 MatrixAdminContentStatCard(
                     title: "Позиций",
@@ -518,14 +518,14 @@ struct CompetencyMatrixSection: View {
                     icon: "briefcase.fill",
                     color: .blue
                 )
-                
+
                 MatrixAdminContentStatCard(
                     title: "Компетенций",
                     value: "89",
                     icon: "star.fill",
                     color: .purple
                 )
-                
+
                 MatrixAdminContentStatCard(
                     title: "Связей",
                     value: "312",
@@ -543,7 +543,7 @@ struct CertificateStatsSection: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Статистика сертификатов")
                 .font(.headline)
-            
+
             HStack(spacing: 12) {
                 AdminContentStatCard(
                     icon: "doc.badge.gearshape.fill",
@@ -552,7 +552,7 @@ struct CertificateStatsSection: View {
                     trend: "+23%",
                     color: .green
                 )
-                
+
                 AdminContentStatCard(
                     icon: "checkmark.seal.fill",
                     title: "Активных",
@@ -560,7 +560,7 @@ struct CertificateStatsSection: View {
                     trend: "+18%",
                     color: .blue
                 )
-                
+
                 AdminContentStatCard(
                     icon: "xmark.seal.fill",
                     title: "Истекло",
@@ -580,14 +580,14 @@ struct CertificateTemplateCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Сертификат об окончании курса")
                     .font(.headline)
-                
+
                 Text("Используется в 45 курсах")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
+
             Button(action: {}) {
                 Image(systemName: "pencil.circle.fill")
                     .font(.title2)
@@ -605,17 +605,17 @@ struct MatrixAdminContentStatCard: View {
     let value: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundColor(color)
-            
+
             Text(value)
                 .font(.title3)
                 .fontWeight(.bold)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -634,16 +634,16 @@ struct AdminContentStatCard: View {
     let value: String
     let trend: String?
     let color: Color
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: icon)
                     .font(.title2)
                     .foregroundColor(color)
-                
+
                 Spacer()
-                
+
                 if let trend = trend {
                     Text(trend)
                         .font(.caption)
@@ -651,11 +651,11 @@ struct AdminContentStatCard: View {
                         .foregroundColor(trend.starts(with: "+") ? .green : .red)
                 }
             }
-            
+
             Text(value)
                 .font(.title)
                 .fontWeight(.bold)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -670,4 +670,4 @@ struct AdminContentStatCard: View {
     NavigationView {
         AdminContentView()
     }
-} 
+}

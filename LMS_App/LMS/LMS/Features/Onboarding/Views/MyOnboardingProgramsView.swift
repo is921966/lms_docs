@@ -11,13 +11,13 @@ struct MyOnboardingProgramsView: View {
     @StateObject private var onboardingService = OnboardingMockService.shared
     @StateObject private var authService = MockAuthService.shared
     @State private var selectedProgram: OnboardingProgram?
-    
+
     var userPrograms: [OnboardingProgram] {
         guard let userIdString = authService.currentUser?.id,
               let userId = UUID(uuidString: userIdString) else { return [] }
         return onboardingService.getPrograms().filter { $0.employeeId == userId }
     }
-    
+
     var body: some View {
         ScrollView {
             if userPrograms.isEmpty {
@@ -31,7 +31,7 @@ struct MyOnboardingProgramsView: View {
                             Text("Активные программы")
                                 .font(.headline)
                                 .padding(.horizontal)
-                            
+
                             ForEach(activePrograms) { program in
                                 MyProgramCard(program: program) {
                                     selectedProgram = program
@@ -39,7 +39,7 @@ struct MyOnboardingProgramsView: View {
                             }
                         }
                     }
-                    
+
                     // Completed programs
                     let completedPrograms = userPrograms.filter { $0.status == .completed }
                     if !completedPrograms.isEmpty {
@@ -48,7 +48,7 @@ struct MyOnboardingProgramsView: View {
                                 .font(.headline)
                                 .padding(.horizontal)
                                 .padding(.top)
-                            
+
                             ForEach(completedPrograms) { program in
                                 MyProgramCard(program: program) {
                                     selectedProgram = program
@@ -74,7 +74,7 @@ struct MyOnboardingProgramsView: View {
 struct MyProgramCard: View {
     let program: OnboardingProgram
     let onTap: () -> Void
-    
+
     var currentTaskDescription: String {
         if let currentStage = program.currentStage,
            let currentTask = currentStage.tasks.first(where: { !$0.isCompleted }) {
@@ -82,7 +82,7 @@ struct MyProgramCard: View {
         }
         return "Нет активных задач"
     }
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 16) {
@@ -92,52 +92,52 @@ struct MyProgramCard: View {
                         Text(program.title)
                             .font(.headline)
                             .foregroundColor(.primary)
-                        
+
                         Text("Руководитель: \(program.managerName)")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Spacer()
-                    
+
                     StatusBadge(status: program.status, isOverdue: program.isOverdue)
                 }
-                
+
                 // Current stage info
                 if let currentStage = program.currentStage {
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Текущий этап: \(currentStage.title)", systemImage: currentStage.icon)
                             .font(.subheadline)
                             .foregroundColor(.blue)
-                        
+
                         Text("Текущая задача: \(currentTaskDescription)")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .lineLimit(2)
                     }
                 }
-                
+
                 // Progress
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("Общий прогресс")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         Spacer()
-                        
+
                         Text("\(Int(program.overallProgress * 100))%")
                             .font(.caption)
                             .fontWeight(.semibold)
                             .foregroundColor(.blue)
                     }
-                    
+
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(Color.gray.opacity(0.2))
                                 .frame(height: 8)
-                            
+
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(
                                     LinearGradient(
@@ -151,7 +151,7 @@ struct MyProgramCard: View {
                     }
                     .frame(height: 8)
                 }
-                
+
                 // Stats
                 HStack(spacing: 20) {
                     HStack(spacing: 4) {
@@ -162,7 +162,7 @@ struct MyProgramCard: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     if program.status == .inProgress {
                         HStack(spacing: 4) {
                             Image(systemName: "calendar")
@@ -173,7 +173,7 @@ struct MyProgramCard: View {
                                 .foregroundColor(program.isOverdue ? .red : .secondary)
                         }
                     }
-                    
+
                     Spacer()
                 }
             }
@@ -192,21 +192,21 @@ struct MyOnboardingEmptyStateView: View {
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
-            
+
             Image(systemName: "person.badge.clock")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text("Нет программ адаптации")
                 .font(.headline)
                 .foregroundColor(.secondary)
-            
+
             Text("У вас пока нет назначенных программ онбординга")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
+
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SummaryView: View {
     let data: SummaryData
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if !data.highlights.isEmpty {
@@ -13,7 +13,7 @@ struct SummaryView: View {
                     items: data.highlights
                 )
             }
-            
+
             if !data.keyFindings.isEmpty {
                 SummarySection(
                     title: "Ключевые выводы",
@@ -22,7 +22,7 @@ struct SummaryView: View {
                     items: data.keyFindings
                 )
             }
-            
+
             if !data.recommendations.isEmpty {
                 SummarySection(
                     title: "Рекомендации",
@@ -40,13 +40,13 @@ struct SummarySection: View {
     let icon: String
     let color: Color
     let items: [String]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.caption)
                 .fontWeight(.semibold)
-            
+
             ForEach(items, id: \.self) { item in
                 HStack(alignment: .top) {
                     Image(systemName: icon)
