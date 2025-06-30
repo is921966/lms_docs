@@ -14,8 +14,16 @@ class CompetencyMockService: ObservableObject {
 
     // MARK: - Mock Data Generation
     private func loadMockData() {
-        competencies = [
-            // Technical Competencies
+        competencies = createTechnicalCompetencies() +
+                      createSoftSkillsCompetencies() +
+                      createManagementCompetencies() +
+                      createLeadershipCompetencies() +
+                      createInnovationCompetencies() +
+                      createSalesCompetencies()
+    }
+    
+    private func createTechnicalCompetencies() -> [Competency] {
+        [
             Competency(
                 name: "iOS разработка",
                 description: "Разработка мобильных приложений для платформы iOS с использованием Swift и SwiftUI",
@@ -39,9 +47,12 @@ class CompetencyMockService: ObservableObject {
                 color: .orange,
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["DevOps Engineer", "SRE", "Platform Engineer"]
-            ),
-
-            // Soft Skills
+            )
+        ]
+    }
+    
+    private func createSoftSkillsCompetencies() -> [Competency] {
+        [
             Competency(
                 name: "Коммуникация",
                 description: "Эффективное общение с коллегами, клиентами, презентационные навыки",
@@ -57,9 +68,12 @@ class CompetencyMockService: ObservableObject {
                 color: .pink,
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["All Positions"]
-            ),
-
-            // Management
+            )
+        ]
+    }
+    
+    private func createManagementCompetencies() -> [Competency] {
+        [
             Competency(
                 name: "Управление проектами",
                 description: "Планирование, организация и контроль проектов, работа с рисками",
@@ -75,9 +89,12 @@ class CompetencyMockService: ObservableObject {
                 color: .yellow,
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["Team Lead", "Engineering Manager", "Department Head"]
-            ),
-
-            // Leadership
+            )
+        ]
+    }
+    
+    private func createLeadershipCompetencies() -> [Competency] {
+        [
             Competency(
                 name: "Стратегическое мышление",
                 description: "Способность видеть долгосрочную перспективу, принимать стратегические решения",
@@ -85,9 +102,12 @@ class CompetencyMockService: ObservableObject {
                 color: .purple,
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["CTO", "VP Engineering", "Product Director"]
-            ),
-
-            // Innovation
+            )
+        ]
+    }
+    
+    private func createInnovationCompetencies() -> [Competency] {
+        [
             Competency(
                 name: "Инновационность",
                 description: "Генерация новых идей, внедрение инноваций, улучшение процессов",
@@ -95,9 +115,12 @@ class CompetencyMockService: ObservableObject {
                 color: .green,
                 levels: CompetencyLevel.defaultLevels(),
                 relatedPositions: ["Innovation Manager", "R&D Lead", "Product Manager"]
-            ),
-
-            // Sales
+            )
+        ]
+    }
+    
+    private func createSalesCompetencies() -> [Competency] {
+        [
             Competency(
                 name: "Продажи B2B",
                 description: "Навыки продаж корпоративным клиентам, работа с крупными сделками",

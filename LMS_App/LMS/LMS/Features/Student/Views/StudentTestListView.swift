@@ -298,25 +298,31 @@ struct TestInfoChip: View {
 // MARK: - Empty State View
 struct EmptyTestStateView: View {
     let selectedTab: Int
+    
+    struct EmptyStateInfo {
+        let icon: String
+        let title: String
+        let subtitle: String
+    }
 
-    var emptyStateInfo: (icon: String, title: String, subtitle: String) {
+    var emptyStateInfo: EmptyStateInfo {
         switch selectedTab {
-        case 0: return (
-            "doc.text.magnifyingglass",
-            "Нет назначенных тестов",
-            "Когда преподаватель назначит вам тест, он появится здесь"
+        case 0: return EmptyStateInfo(
+            icon: "doc.text.magnifyingglass",
+            title: "Нет назначенных тестов",
+            subtitle: "Когда преподаватель назначит вам тест, он появится здесь"
         )
-        case 1: return (
-            "checkmark.seal",
-            "Нет пройденных тестов",
-            "Здесь будут отображаться результаты пройденных тестов"
+        case 1: return EmptyStateInfo(
+            icon: "checkmark.seal",
+            title: "Нет пройденных тестов",
+            subtitle: "Здесь будут отображаться результаты пройденных тестов"
         )
-        case 2: return (
-            "pencil.and.ellipsis.rectangle",
-            "Нет тренировочных тестов",
-            "Тренировочные тесты помогут вам подготовиться к экзаменам"
+        case 2: return EmptyStateInfo(
+            icon: "pencil.and.ellipsis.rectangle",
+            title: "Нет тренировочных тестов",
+            subtitle: "Тренировочные тесты помогут вам подготовиться к экзаменам"
         )
-        default: return ("", "", "")
+        default: return EmptyStateInfo(icon: "", title: "", subtitle: "")
         }
     }
 

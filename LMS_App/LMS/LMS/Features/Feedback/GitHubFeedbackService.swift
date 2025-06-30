@@ -272,8 +272,8 @@ class GitHubFeedbackService {
         print("📢 Уведомление: Новый фидбэк от \(feedback.author): \(feedback.title)")
     }
 
-    private func getDeviceInfo() -> (model: String, osVersion: String, appVersion: String, buildNumber: String) {
-        (
+    private func getDeviceInfo() -> DeviceInfo {
+        DeviceInfo(
             model: UIDevice.current.model,
             osVersion: UIDevice.current.systemVersion,
             appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown",
@@ -283,6 +283,13 @@ class GitHubFeedbackService {
 }
 
 // MARK: - Data Models
+
+struct DeviceInfo {
+    let model: String
+    let osVersion: String
+    let appVersion: String
+    let buildNumber: String
+}
 
 struct GitHubIssueData: Codable {
     let title: String

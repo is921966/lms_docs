@@ -16,12 +16,18 @@ class PositionMockService: ObservableObject {
 
     // MARK: - Mock Data Generation
     private func loadMockData() {
-        // Get competencies for requirements
+        positions = createIOSPositions() +
+                   createBackendPositions() +
+                   createManagementPositions() +
+                   createSalesPositions()
+        
+        createCareerPaths()
+    }
+    
+    private func createIOSPositions() -> [Position] {
         let competencies = competencyService.competencies
-
-        // Create positions
-        positions = [
-            // Engineering positions
+        
+        return [
             Position(
                 name: "iOS Developer Junior",
                 description: "Разработка мобильных приложений под iOS, базовые задачи",
@@ -43,7 +49,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 12
             ),
-
+            
             Position(
                 name: "iOS Developer Middle",
                 description: "Самостоятельная разработка фичей, менторинг джуниоров",
@@ -71,7 +77,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 8
             ),
-
+            
             Position(
                 name: "iOS Developer Senior",
                 description: "Архитектурные решения, лидерство в проектах",
@@ -99,7 +105,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 4
             ),
-
+            
             Position(
                 name: "iOS Team Lead",
                 description: "Управление командой iOS разработчиков",
@@ -126,9 +132,14 @@ class PositionMockService: ObservableObject {
                     )
                 ],
                 employeeCount: 2
-            ),
-
-            // Backend positions
+            )
+        ]
+    }
+    
+    private func createBackendPositions() -> [Position] {
+        let competencies = competencyService.competencies
+        
+        return [
             Position(
                 name: "Backend Developer Middle",
                 description: "Разработка серверной части приложений",
@@ -149,9 +160,14 @@ class PositionMockService: ObservableObject {
                     )
                 ],
                 employeeCount: 10
-            ),
-
-            // Management positions
+            )
+        ]
+    }
+    
+    private func createManagementPositions() -> [Position] {
+        let competencies = competencyService.competencies
+        
+        return [
             Position(
                 name: "Product Manager",
                 description: "Управление продуктом, работа с требованиями",
@@ -179,7 +195,7 @@ class PositionMockService: ObservableObject {
                 ],
                 employeeCount: 5
             ),
-
+            
             Position(
                 name: "Engineering Manager",
                 description: "Управление инженерными командами",
@@ -200,9 +216,14 @@ class PositionMockService: ObservableObject {
                     )
                 ],
                 employeeCount: 3
-            ),
-
-            // Sales positions
+            )
+        ]
+    }
+    
+    private func createSalesPositions() -> [Position] {
+        let competencies = competencyService.competencies
+        
+        return [
             Position(
                 name: "Sales Manager",
                 description: "Продажи корпоративным клиентам",
@@ -225,109 +246,123 @@ class PositionMockService: ObservableObject {
                 employeeCount: 7
             )
         ]
-
-        // Create career paths
-        createCareerPaths()
     }
 
     private func createCareerPaths() {
         guard positions.count >= 4 else { return }
-
-        let juniorIOS = positions[0]
-        let middleIOS = positions[1]
-        let seniorIOS = positions[2]
-        let leadIOS = positions[3]
-
+        
         careerPaths = [
-            // Junior to Middle
-            CareerPath(
-                fromPositionId: juniorIOS.id,
-                toPositionId: middleIOS.id,
-                fromPositionName: juniorIOS.name,
-                toPositionName: middleIOS.name,
-                estimatedDuration: .year1,
-                requirements: [
-                    CareerPathRequirement(
-                        title: "iOS разработка уровень 3",
-                        description: "Повысить компетенцию iOS разработка до уровня 3",
-                        type: .competency
-                    ),
-                    CareerPathRequirement(
-                        title: "2+ года опыта",
-                        description: "Минимум 2 года опыта разработки iOS приложений",
-                        type: .experience
-                    ),
-                    CareerPathRequirement(
-                        title: "Успешные проекты",
-                        description: "Участие в 3+ успешных проектах",
-                        type: .project
-                    )
-                ],
-                description: "Стандартный путь развития iOS разработчика",
-                successRate: 0.85
-            ),
-
-            // Middle to Senior
-            CareerPath(
-                fromPositionId: middleIOS.id,
-                toPositionId: seniorIOS.id,
-                fromPositionName: middleIOS.name,
-                toPositionName: seniorIOS.name,
-                estimatedDuration: .years2,
-                requirements: [
-                    CareerPathRequirement(
-                        title: "iOS разработка уровень 4",
-                        description: "Экспертный уровень iOS разработки",
-                        type: .competency
-                    ),
-                    CareerPathRequirement(
-                        title: "Архитектурный опыт",
-                        description: "Опыт проектирования архитектуры приложений",
-                        type: .experience
-                    ),
-                    CareerPathRequirement(
-                        title: "Менторинг",
-                        description: "Опыт менторинга junior разработчиков",
-                        type: .experience
-                    ),
-                    CareerPathRequirement(
-                        title: "Сертификация Apple",
-                        description: "Желательна сертификация Apple Developer",
-                        type: .certification
-                    )
-                ],
-                description: "Требует глубоких технических знаний и лидерских качеств",
-                successRate: 0.65
-            ),
-
-            // Senior to Lead
-            CareerPath(
-                fromPositionId: seniorIOS.id,
-                toPositionId: leadIOS.id,
-                fromPositionName: seniorIOS.name,
-                toPositionName: leadIOS.name,
-                estimatedDuration: .years2,
-                requirements: [
-                    CareerPathRequirement(
-                        title: "Управление людьми",
-                        description: "Развить навыки управления командой",
-                        type: .competency
-                    ),
-                    CareerPathRequirement(
-                        title: "Опыт лидерства",
-                        description: "Опыт технического лидерства в проектах",
-                        type: .experience
-                    ),
-                    CareerPathRequirement(
-                        title: "Soft skills",
-                        description: "Развитые навыки коммуникации и эмпатии",
-                        type: .other
-                    )
-                ],
-                description: "Переход от технической роли к управленческой",
-                successRate: 0.5
-            )
-        ]
+            createJuniorToMiddlePath(),
+            createMiddleToSeniorPath(),
+            createSeniorToLeadPath()
+        ].compactMap { $0 }
+    }
+    
+    private func createJuniorToMiddlePath() -> CareerPath? {
+        guard let juniorIOS = positions.first(where: { $0.name == "iOS Developer Junior" }),
+              let middleIOS = positions.first(where: { $0.name == "iOS Developer Middle" }) else {
+            return nil
+        }
+        
+        return CareerPath(
+            fromPositionId: juniorIOS.id,
+            toPositionId: middleIOS.id,
+            fromPositionName: juniorIOS.name,
+            toPositionName: middleIOS.name,
+            estimatedDuration: .year1,
+            requirements: [
+                CareerPathRequirement(
+                    title: "iOS разработка уровень 3",
+                    description: "Повысить компетенцию iOS разработка до уровня 3",
+                    type: .competency
+                ),
+                CareerPathRequirement(
+                    title: "2+ года опыта",
+                    description: "Минимум 2 года опыта разработки iOS приложений",
+                    type: .experience
+                ),
+                CareerPathRequirement(
+                    title: "Успешные проекты",
+                    description: "Участие в 3+ успешных проектах",
+                    type: .project
+                )
+            ],
+            description: "Стандартный путь развития iOS разработчика",
+            successRate: 0.85
+        )
+    }
+    
+    private func createMiddleToSeniorPath() -> CareerPath? {
+        guard let middleIOS = positions.first(where: { $0.name == "iOS Developer Middle" }),
+              let seniorIOS = positions.first(where: { $0.name == "iOS Developer Senior" }) else {
+            return nil
+        }
+        
+        return CareerPath(
+            fromPositionId: middleIOS.id,
+            toPositionId: seniorIOS.id,
+            fromPositionName: middleIOS.name,
+            toPositionName: seniorIOS.name,
+            estimatedDuration: .years2,
+            requirements: [
+                CareerPathRequirement(
+                    title: "iOS разработка уровень 4",
+                    description: "Экспертный уровень iOS разработки",
+                    type: .competency
+                ),
+                CareerPathRequirement(
+                    title: "Архитектурный опыт",
+                    description: "Опыт проектирования архитектуры приложений",
+                    type: .experience
+                ),
+                CareerPathRequirement(
+                    title: "Менторинг",
+                    description: "Опыт менторинга junior разработчиков",
+                    type: .experience
+                ),
+                CareerPathRequirement(
+                    title: "Сертификация Apple",
+                    description: "Желательна сертификация Apple Developer",
+                    type: .certification
+                )
+            ],
+            description: "Требует глубоких технических знаний и лидерских качеств",
+            successRate: 0.65
+        )
+    }
+    
+    private func createSeniorToLeadPath() -> CareerPath? {
+        guard let seniorIOS = positions.first(where: { $0.name == "iOS Developer Senior" }),
+              let leadIOS = positions.first(where: { $0.name == "iOS Team Lead" }) else {
+            return nil
+        }
+        
+        return CareerPath(
+            fromPositionId: seniorIOS.id,
+            toPositionId: leadIOS.id,
+            fromPositionName: seniorIOS.name,
+            toPositionName: leadIOS.name,
+            estimatedDuration: .years2,
+            requirements: [
+                CareerPathRequirement(
+                    title: "Управление людьми",
+                    description: "Развить навыки управления командой",
+                    type: .competency
+                ),
+                CareerPathRequirement(
+                    title: "Опыт лидерства",
+                    description: "Опыт технического лидерства в проектах",
+                    type: .experience
+                ),
+                CareerPathRequirement(
+                    title: "Soft skills",
+                    description: "Развитые навыки коммуникации и эмпатии",
+                    type: .other
+                )
+            ],
+            description: "Переход от технической роли к управленческой",
+            successRate: 0.5
+        )
     }
 
     // MARK: - CRUD Operations

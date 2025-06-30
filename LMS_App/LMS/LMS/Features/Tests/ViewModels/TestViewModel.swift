@@ -249,13 +249,19 @@ class TestViewModel: ObservableObject {
 
     // MARK: - Statistics
 
-    func getTestStatistics(_ test: Test) -> (attempts: Int, avgScore: Double, passRate: Double) {
+    struct TestStatistics {
+        let attempts: Int
+        let avgScore: Double
+        let passRate: Double
+    }
+
+    func getTestStatistics(_ test: Test) -> TestStatistics {
         let results = service.getTestResults(testId: test.id)
         let userAttempts = service.getUserAttempts(userId: currentUserId, testId: test.id)
 
         let analytics = TestAnalytics(results: results)
 
-        return (
+        return TestStatistics(
             attempts: userAttempts.count,
             avgScore: analytics.averageScore,
             passRate: analytics.passRate
