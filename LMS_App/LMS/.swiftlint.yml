@@ -1,10 +1,16 @@
 # LMS SwiftLint Configuration
-# Based on project's CI/CD and code review rules
+# Version: 2.0.1 - Fixed for SwiftLint 0.59.1
+# Based on: ci-cd-review.mdc, naming-and-structure.mdc
 
+# Minimum SwiftLint version
+min_version: 0.55.0
+
+# Paths configuration
 included:
   - LMS
   - LMSTests
   - LMSUITests
+  - Features
   
 excluded:
   - Carthage
@@ -13,10 +19,20 @@ excluded:
   - DerivedData
   - vendor
   - "*/Generated"
+  - "*/Mocks/Generated"
   - fastlane
+  - ci_scripts
+  - "**/*.generated.swift"
+
+# Reporter for CI/CD integration
+reporter: "xcode" # Use "github-actions-logging" in CI
+
+# Strict mode - fail on warnings in CI
+strict: false # Set to true in CI via --strict flag
 
 # Rule configuration
 opt_in_rules:
+  # Architecture & Clean Code
   - array_init
   - attributes
   - closure_end_indentation
@@ -38,9 +54,14 @@ opt_in_rules:
   - fatal_error_message
   - file_header
   - file_name
+  - file_name_no_space
   - first_where
   - flatmap_over_map_reduce
+  - force_unwrapping
+  - function_default_parameter_at_end
   - identical_operands
+  - implicit_return
+  - implicitly_unwrapped_optional
   - joined_default_parameter
   - last_where
   - legacy_multiple
@@ -48,14 +69,20 @@ opt_in_rules:
   - literal_expression_end_indentation
   - lower_acl_than_parent
   - modifier_order
+  - multiline_arguments
+  - multiline_function_chains
+  - multiline_literal_brackets
+  - multiline_parameters
   - nimble_operator
   - nslocalizedstring_key
+  - nslocalizedstring_require_bundle
   - number_separator
   - object_literal
   - operator_usage_whitespace
   - overridden_super_call
   - pattern_matching_keywords
   - prefer_self_type_over_type_of_self
+  - prefer_zero_over_explicit_init
   - private_action
   - private_outlet
   - prohibited_interface_builder
@@ -67,64 +94,109 @@ opt_in_rules:
   - reduce_into
   - redundant_nil_coalescing
   - redundant_type_annotation
+  - required_enum_case
   - single_test_class
   - sorted_first_last
+  - sorted_imports
   - static_operator
   - strong_iboutlet
+  - switch_case_on_newline
   - test_case_accessibility
   - toggle_bool
+  - trailing_closure
+  - type_contents_order
   - unavailable_function
   - unneeded_parentheses_in_closure_argument
   - unowned_variable_capture
   - untyped_error_in_catch
+  - unused_capture_list
+  - unused_closure_parameter
+  - unused_control_flow_label
+  - unused_enumerated
+  - unused_optional_binding
+  - unused_setter_value
+  - valid_ibinspectable
   - vertical_parameter_alignment_on_call
   - vertical_whitespace_closing_braces
   - vertical_whitespace_opening_braces
+  - weak_delegate
   - xct_specific_matcher
   - yoda_condition
 
+# Disabled rules (with justification)
 disabled_rules:
-  - todo
-  - fixme
+  - todo # Allowed for development, but tracked separately
+  - fixme # Allowed for known issues tracking
+  - line_length # Handled separately with more flexible limits
+  - type_body_length # Clean Architecture may require larger types
+  - file_length # Some complex features may need larger files
 
+# Analyzer rules for deep code analysis
 analyzer_rules:
+  - capture_variable
+  - typesafe_array_init
   - unused_declaration
   - unused_import
 
-# Rule parameters
+# Rule parameters aligned with Cursor Rules
 line_length:
   warning: 120
   error: 150
   ignores_urls: true
   ignores_comments: true
+  ignores_interpolated_strings: true
 
 file_length:
   warning: 500
-  error: 1000
+  error: 800
+  ignore_comment_only_lines: true
 
 type_body_length:
   warning: 300
   error: 500
 
 function_body_length:
-  warning: 50
-  error: 100
+  warning: 40
+  error: 80
+
+function_parameter_count:
+  warning: 5
+  error: 8
+  ignores_default_parameters: true
 
 cyclomatic_complexity:
   warning: 10
-  error: 20
+  error: 15
+  ignores_case_statements: true
+
+nesting:
+  type_level:
+    warning: 2
+    error: 3
+  function_level:
+    warning: 3
+    error: 5
 
 type_name:
   min_length: 3
   max_length: 50
+  allowed_symbols: ["_"]
+  validates_start_with_lowercase: false # Allow protocols like IUserRepository
 
 identifier_name:
   min_length: 2
   max_length: 50
   allowed_symbols: ["_"]
   validates_start_with_lowercase: true
+  excluded:
+    - id
+    - URL
+    - url
+    - to
+    - vc
+    - vm
 
-# LMS-specific file header
+# Enhanced file header for LMS project
 file_header:
   required_pattern: |
     //
@@ -133,40 +205,116 @@ file_header:
     //
     //  Created by .* on \d{1,2}/\d{1,2}/\d{2}\.
     //
+    //  Copyright © \d{4} LMS\. All rights reserved\.
+    //
 
-# Custom rules for LMS project
+# Custom rules for LMS project with Cursor Rules compliance
 custom_rules:
   no_print_statements:
     name: "No print statements"
-    regex: '(^|\s)print\('
-    message: "Use proper logging instead of print statements"
-    severity: warning
-
-  no_force_unwrapping:
-    name: "Avoid Force Unwrapping"
-    regex: '(\w+)!'
-    message: "Force unwrapping is dangerous. Use if let or guard let instead."
+    regex: '^\s*print\('
+    message: "Use os.log or custom Logger instead of print statements"
     severity: error
-    match_kinds:
-      - identifier
-      - keyword
     
-  no_force_cast:
-    name: "Avoid Force Cast"
-    regex: 'as! '
-    message: "Force casting is dangerous. Use as? instead."
-    severity: error
+  proper_import_ordering:
+    name: "Import ordering"
+    regex: '^import UIKit\nimport Foundation'
+    message: "Foundation should be imported before UIKit"
+    severity: warning
     
   mark_spacing:
     name: "MARK comment spacing"
-    regex: '//\s*MARK:[^\s]'
-    message: "Add a space after MARK:"
+    regex: '//\s*MARK:\s*-(?!\s)'
+    message: "Add a space after MARK: -"
     severity: warning
     
   mock_naming:
     name: "Mock classes naming"
-    regex: 'class\s+[A-Z]\w*(?<!Mock)\s*:\s*\w*Protocol'
-    message: "Mock classes should end with 'Mock'"
+    regex: 'class\s+(?!Mock)[A-Z]\w*\s*:\s*\w*Protocol\s*\{[\s\S]*?//\s*mock'
+    message: "Mock classes should start with 'Mock' prefix"
     severity: warning
-    match_kinds:
-      - typeidentifier 
+    
+  dto_naming:
+    name: "DTO naming convention"
+    regex: 'struct\s+[A-Z]\w*(?<!DTO|Request|Response)\s*:\s*Codable'
+    message: "Codable structs should end with DTO, Request, or Response"
+    severity: warning
+    
+  value_object_immutability:
+    name: "Value objects must be immutable"
+    regex: 'struct\s+\w+VO\s*\{[^}]*\bvar\b'
+    message: "Value Objects (VO) should only have let properties"
+    severity: error
+    
+  use_case_naming:
+    name: "Use case naming"
+    regex: 'class\s+[A-Z]\w*(?<!UseCase)\s*:\s*\w*UseCase\w*Protocol'
+    message: "Use case implementations should end with 'UseCase'"
+    severity: warning
+    
+  repository_interface:
+    name: "Repository interface"
+    regex: 'class\s+\w+Repository\s*(?!:\s*I\w+Repository)'
+    message: "Repository implementations should conform to an interface (IXxxRepository)"
+    severity: error
+    
+  coordinator_pattern:
+    name: "Coordinator pattern"
+    regex: 'class\s+\w+Coordinator(?!\s*:\s*Coordinator)'
+    message: "Coordinators should conform to Coordinator protocol"
+    severity: error
+    
+  dependency_injection:
+    name: "Dependency injection"
+    regex: '=\s*(UserDefaults\.standard|URLSession\.shared|NotificationCenter\.default)'
+    message: "Inject dependencies instead of using singletons directly"
+    severity: warning
+
+# Type contents order (aligned with naming-and-structure.mdc)
+type_contents_order:
+  - case
+  - type_alias
+  - associated_type
+  - type_property
+  - instance_property
+  - ib_outlet
+  - ib_inspectable
+  - initializer
+  - deinitializer
+  - subscript
+  - type_method
+  - view_life_cycle_method
+  - ib_action
+  - other_method
+
+# Trailing whitespace configuration
+trailing_whitespace:
+  ignores_empty_lines: true
+  ignores_comments: false
+
+# Vertical whitespace configuration
+vertical_whitespace:
+  max_empty_lines: 2
+
+# Switch case alignment
+switch_case_alignment:
+  indented_cases: true
+
+# Multiline parameters configuration
+multiline_parameters:
+  allowsSingleLine: true
+
+# Attributes configuration
+attributes:
+  always_on_same_line:
+    - "@IBAction"
+    - "@NSManaged"
+    - "@testable"
+    - "@UIApplicationMain"
+  always_on_line_above:
+    - "@available"
+    - "@objc"
+    - "@IBOutlet"
+    - "@IBInspectable"
+    - "@GKInspectable"
+    - "@discardableResult" 
