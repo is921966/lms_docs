@@ -29,7 +29,7 @@
 
 ### Название:
 ```
-Workflow Name:  and TeBuildst
+Workflow Name: Build and Test
 ```
 
 ### Настройте триггеры:

@@ -371,36 +371,31 @@ cd scripts && python3 feedback_server.py
 - Обнаружены проблемы с существующими практиками
 
 ## Project Context
-This is a structured markdown documentation for "ЦУМ: Корпоративный университет" (Corporate University) LMS module version 10.2.0. The documentation is organized for optimal LLM readability.
+This is an LMS project "ЦУМ: Корпоративный университет" (Corporate University) with iOS native app and PHP backend.
 
 ## Documentation Structure
-- `/about/` - Product information and concepts
-- `/updates/` - Version history and changelog
-- `/competencies/` - Competency management documentation
-- `/positions/` - Position and career path management
-- `/courses/` - Course and training materials management
-- `/tests/` - Testing system documentation
-- `/analytics/` - Analytics and reporting features
-- `/setup/` - Installation and configuration guides
-- `/development_of_employees/` - Employee development programs
-- `/certificates/` - Certificate management
-- `/gamification/` - Gamification features
-- `/integrations/` - External integrations
-- `/personal_cabinet/` - Personal cabinet functionality
-- `/programs/` - Training programs
-- `/images/` - Documentation images
 - `/technical_requirements/` - Technical requirements and specifications
   - `/v1.0/` - MVP version requirements
     - `llm_development_guide.md` - Guide for LLM-based development
     - `llm_versioning_guide.md` - Incremental development guide
     - `microservices_contracts.md` - Detailed API contracts
+- `/reports/` - Development reports and progress tracking
+  - `/sprints/` - Sprint plans and completion reports
+  - `/daily/` - Daily development summaries
+  - `/methodology/` - Methodology updates
+- `/docs/` - Technical documentation
+  - `/api/` - API specifications (OpenAPI)
+  - `/project/` - Project context and plans
+- `/LMS_App/LMS/` - iOS application source code
+- `/src/` - Backend PHP source code (Domain-Driven Design)
+- `/tests/` - Test suites for backend
 
 ## Key Technical Information
-- **Platform**: Standalone web application
-- **Requirements**: PHP 8.1+, MySQL/PostgreSQL
-- **Authentication**: Microsoft Active Directory (LDAP/SAML)
-- **Compatibility**: Desktop browsers, mobile-responsive web interface
-- **Current Version**: 10.2.0
+- **iOS App**: SwiftUI, iOS 17+, TestFlight ready
+- **Backend**: PHP 8.1+, Symfony/Laravel, MySQL/PostgreSQL
+- **Authentication**: Mock auth for MVP, Microsoft AD planned
+- **Architecture**: Domain-Driven Design, Microservices ready
+- **Testing**: TDD mandatory, 95%+ coverage required
 
 ## Development Guidelines for LLM
 1. **File Size Limits**: Maximum 150 lines per file (optimal 50-100)
@@ -421,24 +416,24 @@ This is a structured markdown documentation for "ЦУМ: Корпоративн�
    - If test doesn't run, the code is not complete
 
 ## Documentation Guidelines
-1. All documentation is in Russian language
+1. Technical documentation in Russian, code comments in English
 2. Use markdown formatting with proper headers and lists
-3. Images are referenced with relative paths (`../images/`)
-4. Cross-references between sections use relative links
+3. Test-Driven Development is mandatory - write test first
+4. Feature Registry required for all new modules
 5. Important notes use blockquotes with "⚠️ Важно:" prefix
 
-## When Working with This Documentation
-- Maintain consistent formatting and structure
-- Update version history in `/updates/index.md` for any changes
-- Keep README.md table of contents synchronized with folder structure
-- Preserve technical accuracy and implementation details
-- Use clear step-by-step instructions for procedures
+## When Working with This Project
+- Always run tests before committing (use test-quick scripts)
+- Register new features in FeatureRegistry.swift
+- Update PROJECT_STATUS.md with progress
+- Create sprint/daily reports in `/reports/` folders
+- Follow TDD cycle: Red → Green → Refactor
 
 ## Common Tasks
-- **Adding new features**: Create appropriate markdown files in relevant folders
-- **Updating existing docs**: Maintain version history and cross-references
-- **Adding images**: Place in `/images/` folder with descriptive names
-- **Creating new sections**: Update README.md and STRUCTURE.md accordingly
+- **Adding iOS feature**: Use `./create-feature.sh` script
+- **Backend service**: Create in `/src/ServiceName/` with Domain/Application/Infrastructure layers
+- **Running tests**: `./test-quick.sh` for backend, `./test-quick-ui.sh` for iOS
+- **Updating docs**: Create reports in standardized `/reports/` structure
 
 ## Project Structure for Development
 ```
@@ -483,8 +478,14 @@ When implementing features, refer to:
 
 ## Версия методологии
 
-**Версия:** 1.7.0  
-**Последнее обновление:** 2025-06-28
+**Версия:** 1.7.1  
+**Последнее обновление:** 2025-06-29
+
+### Что нового в версии 1.7.1:
+- **Sprint 12 завершен**: Полная реализация системы обратной связи
+- Добавлены детальные инструкции по использованию Feedback System
+- Обновлена документация по интеграции feedback в новые модули
+- Документированы best practices для shake gesture и drawing annotations
 
 ### Что нового в версии 1.7.0:
 - **CRITICAL**: Feature Registry Framework для предотвращения потери функциональности

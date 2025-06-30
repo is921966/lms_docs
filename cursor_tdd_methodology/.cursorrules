@@ -358,7 +358,7 @@ cd scripts && python3 feedback_server.py
 - Обнаружены проблемы с существующими практиками
 
 ## Project Context
-This is a structured markdown documentation for "ЦУМ: Корпоративный университет" (Corporate University) LMS module version 10.2.0. The documentation is organized for optimal LLM readability.
+This is an LMS project "ЦУМ: Корпоративный университет" (Corporate University) with iOS native app and PHP backend.
 
 ## Documentation Structure
 - `/about/` - Product information and concepts

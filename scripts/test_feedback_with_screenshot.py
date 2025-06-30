@@ -17,27 +17,30 @@ test_image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP
 # Данные отзыва
 feedback_data = {
     "type": "bug",
-    "message": "Тест: Проверка загрузки скриншотов через Imgur",
+    "text": "Тест: Проверка загрузки скриншотов через GitHub",
     "userEmail": "test@example.com",
     "userName": "Test User",
     "deviceInfo": {
         "model": "Test Script",
-        "systemVersion": "Python",
-        "appVersion": "1.0.0"
+        "osVersion": "Python",
+        "appVersion": "1.0.0",
+        "buildNumber": "1",
+        "screenSize": "1920x1080",
+        "locale": "en-US"
     },
     "timestamp": datetime.now().isoformat(),
-    "screenshot": test_image_base64
+    "screenshot": f"data:image/png;base64,{test_image_base64}"
 }
 
 print("📤 Отправка тестового отзыва со скриншотом...")
-print(f"   URL: {SERVER_URL}/feedback")
+print(f"   URL: {SERVER_URL}/api/v1/feedback")
 print(f"   Тип: {feedback_data['type']}")
-print(f"   Сообщение: {feedback_data['message']}")
+print(f"   Сообщение: {feedback_data['text']}")
 print("   Скриншот: ✅ (тестовое изображение)")
 
 try:
     response = requests.post(
-        f"{SERVER_URL}/feedback",
+        f"{SERVER_URL}/api/v1/feedback",
         json=feedback_data,
         headers={"Content-Type": "application/json"},
         timeout=30
@@ -46,13 +49,13 @@ try:
     print(f"\n📥 Ответ сервера:")
     print(f"   Статус: {response.status_code}")
     
-    if response.status_code == 200:
+    if response.status_code == 201:
         result = response.json()
         print(f"   Результат: {json.dumps(result, indent=2)}")
         
-        if result.get("github_issue_url"):
+        if result.get("github_issue"):
             print(f"\n✅ GitHub Issue создан успешно!")
-            print(f"   URL: {result['github_issue_url']}")
+            print(f"   URL: {result['github_issue']}")
             print(f"\n🔍 Проверьте issue - скриншот должен отображаться!")
         else:
             print("\n⚠️  GitHub Issue URL не получен")
