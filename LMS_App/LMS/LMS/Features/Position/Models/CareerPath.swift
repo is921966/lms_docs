@@ -153,6 +153,6 @@ struct CareerProgress: Identifiable {
 
     private func getCareerPath() -> CareerPath? {
         // This would normally fetch from service
-        return nil
+        nil
     }
 }

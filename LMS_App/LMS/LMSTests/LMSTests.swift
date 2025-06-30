@@ -5,9 +5,9 @@
 //  Created by Igor Shirokov on 24.06.2025.
 //
 
-import Testing
-import SwiftUI
 @testable import LMS
+import SwiftUI
+import Testing
 
 struct LMSTests {
     @Test func example() async throws {

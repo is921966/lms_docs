@@ -5,8 +5,8 @@
 //  Created on 26/01/2025.
 //
 
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct AnalyticsDashboard: View {
     @StateObject private var viewModel = AnalyticsViewModel()

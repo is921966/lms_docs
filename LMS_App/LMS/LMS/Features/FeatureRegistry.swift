@@ -147,7 +147,7 @@ struct CompetencyListWrapper: View {
     }
 }
 
-/// Wrapper для PositionListView  
+/// Wrapper для PositionListView
 struct PositionListWrapper: View {
     @EnvironmentObject var authViewModel: AuthViewModel
 

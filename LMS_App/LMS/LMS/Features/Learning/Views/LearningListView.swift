@@ -81,9 +81,8 @@ struct LearningListView: View {
                     ForEach(categories, id: \.self) { category in
                         CategoryChip(
                             title: category,
-                            isSelected: selectedCategory == category,
-                            action: { selectedCategory = category }
-                        )
+                            isSelected: selectedCategory == category
+                        )                            { selectedCategory = category }
                     }
                 }
                 .padding(.horizontal)

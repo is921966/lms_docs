@@ -24,16 +24,14 @@ struct NotificationListView: View {
                     HStack(spacing: 10) {
                         NotificationFilterChip(
                             title: "Все",
-                            isSelected: selectedFilter == nil,
-                            action: { selectedFilter = nil }
-                        )
+                            isSelected: selectedFilter == nil
+                        )                            { selectedFilter = nil }
 
                         ForEach(NotificationType.allCases, id: \.self) { type in
                             NotificationFilterChip(
                                 title: type.displayName,
-                                isSelected: selectedFilter == type,
-                                action: { selectedFilter = type }
-                            )
+                                isSelected: selectedFilter == type
+                            )                                { selectedFilter = type }
                         }
                     }
                     .padding()
@@ -173,9 +171,8 @@ struct NotificationRow: View {
         .background(
             NavigationLink(
                 destination: destinationView(),
-                isActive: $navigateToAction,
-                label: { EmptyView() }
-            )
+                isActive: $navigateToAction
+            )                { EmptyView() }
         )
     }
 

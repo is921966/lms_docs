@@ -104,18 +104,16 @@ struct TestListView: View {
                 HStack(spacing: 8) {
                     FilterChip(
                         title: "Все типы",
-                        isSelected: viewModel.selectedType == nil,
-                        action: { viewModel.selectedType = nil }
-                    )
+                        isSelected: viewModel.selectedType == nil
+                    )                        { viewModel.selectedType = nil }
 
                     ForEach(LMSTestType.allCases, id: \.self) { type in
                         FilterChip(
                             title: type.rawValue,
                             icon: type.icon,
                             isSelected: viewModel.selectedType == type,
-                            color: type.color,
-                            action: { viewModel.selectedType = type }
-                        )
+                            color: type.color
+                        )                            { viewModel.selectedType = type }
                     }
                 }
                 .padding(.horizontal)
@@ -126,18 +124,16 @@ struct TestListView: View {
                 HStack(spacing: 8) {
                     FilterChip(
                         title: "Все уровни",
-                        isSelected: viewModel.selectedDifficulty == nil,
-                        action: { viewModel.selectedDifficulty = nil }
-                    )
+                        isSelected: viewModel.selectedDifficulty == nil
+                    )                        { viewModel.selectedDifficulty = nil }
 
                     ForEach(TestDifficulty.allCases, id: \.self) { difficulty in
                         FilterChip(
                             title: difficulty.rawValue,
                             icon: difficulty.icon,
                             isSelected: viewModel.selectedDifficulty == difficulty,
-                            color: difficulty.color,
-                            action: { viewModel.selectedDifficulty = difficulty }
-                        )
+                            color: difficulty.color
+                        )                            { viewModel.selectedDifficulty = difficulty }
                     }
                 }
                 .padding(.horizontal)

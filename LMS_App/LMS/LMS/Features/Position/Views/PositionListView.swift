@@ -118,7 +118,7 @@ struct PositionListView: View {
     }
 
     private var groupedPositions: [String: [Position]] {
-        Dictionary(grouping: viewModel.filteredPositions, by: { $0.department })
+        Dictionary(grouping: viewModel.filteredPositions) { $0.department }
     }
 
     private var statisticsCard: some View {

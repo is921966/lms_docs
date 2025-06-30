@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 import SwiftUI
 
 // MARK: - Competency ViewModel
@@ -125,7 +125,7 @@ class CompetencyViewModel: ObservableObject {
         CompetencyStatistics(
             total: competencies.count,
             active: competencies.filter { $0.isActive }.count,
-            byCategory: Dictionary(grouping: competencies, by: { $0.category })
+            byCategory: Dictionary(grouping: competencies) { $0.category }
                 .mapValues { $0.count }
         )
     }

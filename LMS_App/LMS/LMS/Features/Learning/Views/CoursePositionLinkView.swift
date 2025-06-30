@@ -123,15 +123,14 @@ struct CoursePositionLinkView: View {
                 List(filteredPositions) { position in
                     CoursePositionSelectionRow(
                         position: position,
-                        isSelected: selectedPositions.contains(position.id) || course.positionIds.contains(position.id),
-                        onToggle: {
+                        isSelected: selectedPositions.contains(position.id) || course.positionIds.contains(position.id)
+                    )                        {
                             if selectedPositions.contains(position.id) {
                                 selectedPositions.remove(position.id)
                             } else {
                                 selectedPositions.insert(position.id)
                             }
                         }
-                    )
                 }
                 .listStyle(PlainListStyle())
 

@@ -5,8 +5,8 @@
 //  Created on 27/01/2025.
 //
 
-import XCTest
 @testable import LMS
+import XCTest
 
 final class OnboardingTests: XCTestCase {
     private var onboardingService: OnboardingMockService!

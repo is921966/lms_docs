@@ -5,8 +5,8 @@
 //  Created on 26/01/2025.
 //
 
-import XCTest
 @testable import LMS
+import XCTest
 
 @MainActor
 final class AdminEditTests: XCTestCase {
@@ -50,7 +50,7 @@ final class AdminEditTests: XCTestCase {
         }
 
         // Then
-        let updatedTest = testService.tests.first(where: { $0.id == originalTest.id })
+        let updatedTest = testService.tests.first { $0.id == originalTest.id }
         XCTAssertNotNil(updatedTest)
         XCTAssertEqual(updatedTest?.title, newTitle)
         XCTAssertNotEqual(updatedTest?.title, originalTitle)
@@ -96,7 +96,7 @@ final class AdminEditTests: XCTestCase {
         }
 
         // Then
-        let updatedCourse = Course.mockCourses.first(where: { $0.title == newTitle })
+        let updatedCourse = Course.mockCourses.first { $0.title == newTitle }
         XCTAssertNotNil(updatedCourse)
         XCTAssertEqual(updatedCourse?.title, newTitle)
         XCTAssertEqual(updatedCourse?.description, newDescription)
@@ -121,7 +121,7 @@ final class AdminEditTests: XCTestCase {
 
         // Then
         XCTAssertEqual(testService.tests.count, initialCount + 1)
-        XCTAssertTrue(testService.tests.contains(where: { $0.title == "New Test" }))
+        XCTAssertTrue(testService.tests.contains { $0.title == "New Test" })
     }
 
     func testAddingNewCourse() throws {
@@ -139,7 +139,7 @@ final class AdminEditTests: XCTestCase {
 
         // Then
         XCTAssertEqual(Course.mockCourses.count, initialCount + 1)
-        XCTAssertTrue(Course.mockCourses.contains(where: { $0.title == "New Course" }))
+        XCTAssertTrue(Course.mockCourses.contains { $0.title == "New Course" })
     }
 }
 

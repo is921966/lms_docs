@@ -5,8 +5,8 @@
 //  Created on 26/01/2025.
 //
 
-import Foundation
 import Combine
+import Foundation
 import SwiftUI
 
 // MARK: - Analytics View Model

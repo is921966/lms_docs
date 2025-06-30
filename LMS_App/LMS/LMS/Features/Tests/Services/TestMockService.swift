@@ -5,8 +5,8 @@
 //  Created on 26/01/2025.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 @MainActor
 class TestMockService: ObservableObject {
@@ -188,7 +188,7 @@ class TestMockService: ObservableObject {
     }
 
     private func createDataAnalysisQuiz() -> Test {
-        return Test(
+        Test(
             title: "Основы анализа данных",
             description: "Практический тест по работе с данными",
             type: LMSTestType.practice,

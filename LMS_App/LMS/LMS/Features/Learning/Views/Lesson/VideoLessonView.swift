@@ -1,5 +1,5 @@
-import SwiftUI
 import AVKit
+import SwiftUI
 
 struct VideoLessonView: View {
     @State private var player = AVPlayer(url: URL(string: "https://example.com/video.mp4")!)

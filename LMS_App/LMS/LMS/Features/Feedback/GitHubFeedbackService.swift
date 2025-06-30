@@ -90,13 +90,13 @@ class GitHubFeedbackService {
     /// Обновляет статус GitHub Issue
     func updateIssueStatus(_ feedback: FeedbackItem) async -> Bool {
         // TODO: Реализовать обновление статуса существующего Issue
-        return true
+        true
     }
 
     /// Добавляет комментарий к GitHub Issue
     func addCommentToIssue(_ feedback: FeedbackItem, comment: FeedbackComment) async -> Bool {
         // TODO: Реализовать добавление комментария к Issue
-        return true
+        true
     }
 
     // MARK: - Private Methods
@@ -273,7 +273,7 @@ class GitHubFeedbackService {
     }
 
     private func getDeviceInfo() -> (model: String, osVersion: String, appVersion: String, buildNumber: String) {
-        return (
+        (
             model: UIDevice.current.model,
             osVersion: UIDevice.current.systemVersion,
             appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown",

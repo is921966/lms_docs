@@ -118,15 +118,14 @@ struct CourseCompetencyLinkView: View {
                 List(filteredCompetencies) { competency in
                     CourseCompetencySelectionRow(
                         competency: competency,
-                        isSelected: selectedCompetencies.contains(competency.id) || course.competencyIds.contains(competency.id),
-                        onToggle: {
+                        isSelected: selectedCompetencies.contains(competency.id) || course.competencyIds.contains(competency.id)
+                    )                        {
                             if selectedCompetencies.contains(competency.id) {
                                 selectedCompetencies.remove(competency.id)
                             } else {
                                 selectedCompetencies.insert(competency.id)
                             }
                         }
-                    )
                 }
                 .listStyle(PlainListStyle())
 

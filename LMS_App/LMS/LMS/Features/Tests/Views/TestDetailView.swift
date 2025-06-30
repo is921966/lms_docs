@@ -290,7 +290,7 @@ struct TestDetailView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             } else {
-                ForEach(attempts.sorted(by: { $0.startedAt ?? Date() > $1.startedAt ?? Date() })) { attempt in
+                ForEach(attempts.sorted { $0.startedAt ?? Date() > $1.startedAt ?? Date() }) { attempt in
                     AttemptRow(attempt: attempt) {
                         if let result = TestMockService.shared.results.first(where: { $0.attemptId == attempt.id }) {
                             selectedResult = result
@@ -308,7 +308,7 @@ struct TestDetailView: View {
             Text("Типы вопросов")
                 .font(.headline)
 
-            let questionsByType = Dictionary(grouping: test.questions, by: { $0.type })
+            let questionsByType = Dictionary(grouping: test.questions) { $0.type }
 
             ForEach(Array(questionsByType.keys), id: \.self) { type in
                 HStack {

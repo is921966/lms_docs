@@ -519,23 +519,20 @@ struct SystemSettingsView: View {
                 MaintenanceAction(
                     title: "Очистить кэш",
                     description: "Удалить временные файлы и кэш",
-                    icon: "trash",
-                    action: {}
-                )
+                    icon: "trash"
+                )                    {}
 
                 MaintenanceAction(
                     title: "Оптимизировать базу данных",
                     description: "Выполнить оптимизацию таблиц",
-                    icon: "cylinder",
-                    action: {}
-                )
+                    icon: "cylinder"
+                )                    {}
 
                 MaintenanceAction(
                     title: "Проверить обновления",
                     description: "Проверить наличие новых версий",
-                    icon: "arrow.down.circle",
-                    action: {}
-                )
+                    icon: "arrow.down.circle"
+                )                    {}
             }
 
             Divider()

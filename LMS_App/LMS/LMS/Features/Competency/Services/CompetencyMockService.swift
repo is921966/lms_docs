@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - Competency Mock Service
 class CompetencyMockService: ObservableObject {
@@ -188,7 +188,7 @@ class CompetencyMockService: ObservableObject {
     }
 
     var competenciesByCategory: [CompetencyCategory: Int] {
-        Dictionary(grouping: competencies, by: { $0.category })
+        Dictionary(grouping: competencies) { $0.category }
             .mapValues { $0.count }
     }
 

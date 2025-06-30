@@ -179,11 +179,11 @@ struct Course: Identifiable, Codable {
 
     // UI properties (remove when real data available)
     var color: Color {
-        CourseCategory.categories.first(where: { $0.id == categoryId })?.color ?? .blue
+        CourseCategory.categories.first { $0.id == categoryId }?.color ?? .blue
     }
 
     var icon: String {
-        CourseCategory.categories.first(where: { $0.id == categoryId })?.icon ?? "book.fill"
+        CourseCategory.categories.first { $0.id == categoryId }?.icon ?? "book.fill"
     }
 
     var progress: Double {

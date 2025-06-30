@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - Employee Role
 enum EmployeeRole: String, Codable, CaseIterable {
@@ -96,19 +96,19 @@ class UserMockService: ObservableObject {
     }
 
     func getUsers() -> [Employee] {
-        return users
+        users
     }
 
     func getEmployee(by id: String) -> Employee? {
-        return users.first { $0.id == id }
+        users.first { $0.id == id }
     }
 
     func getUsersByRole(_ role: EmployeeRole) -> [Employee] {
-        return users.filter { $0.role == role }
+        users.filter { $0.role == role }
     }
 
     func getUsersByDepartment(_ department: String) -> [Employee] {
-        return users.filter { $0.department == department }
+        users.filter { $0.department == department }
     }
 
     func searchUsers(_ query: String) -> [Employee] {
@@ -175,4 +175,3 @@ struct Employee: Identifiable, Codable {
         self.hireDate = hireDate
     }
 }
-

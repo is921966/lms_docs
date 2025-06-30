@@ -1,5 +1,5 @@
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct ProfileView: View {
     // TEMPORARY: Use mock service for TestFlight testing

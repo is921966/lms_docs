@@ -191,30 +191,26 @@ struct FeedbackDetailView: View {
                         ReactionButton(
                             type: .like,
                             count: feedback.reactions.like,
-                            isSelected: feedback.userReaction == .like,
-                            action: { feedbackService.addReaction(to: feedback.id, reaction: .like) }
-                        )
+                            isSelected: feedback.userReaction == .like
+                        )                            { feedbackService.addReaction(to: feedback.id, reaction: .like) }
 
                         ReactionButton(
                             type: .dislike,
                             count: feedback.reactions.dislike,
-                            isSelected: feedback.userReaction == .dislike,
-                            action: { feedbackService.addReaction(to: feedback.id, reaction: .dislike) }
-                        )
+                            isSelected: feedback.userReaction == .dislike
+                        )                            { feedbackService.addReaction(to: feedback.id, reaction: .dislike) }
 
                         ReactionButton(
                             type: .heart,
                             count: feedback.reactions.heart,
-                            isSelected: feedback.userReaction == .heart,
-                            action: { feedbackService.addReaction(to: feedback.id, reaction: .heart) }
-                        )
+                            isSelected: feedback.userReaction == .heart
+                        )                            { feedbackService.addReaction(to: feedback.id, reaction: .heart) }
 
                         ReactionButton(
                             type: .fire,
                             count: feedback.reactions.fire,
-                            isSelected: feedback.userReaction == .fire,
-                            action: { feedbackService.addReaction(to: feedback.id, reaction: .fire) }
-                        )
+                            isSelected: feedback.userReaction == .fire
+                        )                            { feedbackService.addReaction(to: feedback.id, reaction: .fire) }
 
                         Spacer()
                     }

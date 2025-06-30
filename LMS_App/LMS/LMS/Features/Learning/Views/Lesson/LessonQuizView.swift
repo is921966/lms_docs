@@ -27,8 +27,8 @@ struct LessonQuizView: View {
                 QuizQuestionView(
                     question: questions[currentQuestion],
                     questionNumber: currentQuestion + 1,
-                    totalQuestions: questions.count,
-                    onAnswer: { answer in
+                    totalQuestions: questions.count
+                )                    { answer in
                         selectedAnswers.append(answer)
                         if currentQuestion < questions.count - 1 {
                             currentQuestion += 1
@@ -36,7 +36,6 @@ struct LessonQuizView: View {
                             showingResults = true
                         }
                     }
-                )
             }
         }
     }

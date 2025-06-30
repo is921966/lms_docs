@@ -1,6 +1,6 @@
+import Combine
 import Foundation
 import UserNotifications
-import Combine
 
 class OnboardingNotificationService: ObservableObject {
     static let shared = OnboardingNotificationService()

@@ -1,6 +1,6 @@
+import Combine
 import Foundation
 import SwiftUI
-import Combine
 
 // MARK: - MockAuthService
 class MockAuthService: ObservableObject {
@@ -120,7 +120,7 @@ class MockAuthService: ObservableObject {
 
     // MARK: - Get Users (for testing)
     func getUsers() -> [UserResponse] {
-        return [
+        [
             UserResponse(
                 id: "user_1",
                 email: "ivanov@tsum.ru",

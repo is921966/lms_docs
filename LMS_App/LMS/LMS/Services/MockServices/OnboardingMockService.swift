@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 class OnboardingMockService: ObservableObject {
     static let shared = OnboardingMockService()
@@ -22,11 +22,11 @@ class OnboardingMockService: ObservableObject {
     // MARK: - Programs
 
     func getPrograms() -> [OnboardingProgram] {
-        return programs
+        programs
     }
 
     func getProgram(by id: UUID) -> OnboardingProgram? {
-        return programs.first { $0.id == id }
+        programs.first { $0.id == id }
     }
 
     func updateProgram(_ program: OnboardingProgram) {
@@ -46,11 +46,11 @@ class OnboardingMockService: ObservableObject {
     // MARK: - Templates
 
     func getTemplates() -> [OnboardingTemplate] {
-        return templates
+        templates
     }
 
     func getTemplate(by id: UUID) -> OnboardingTemplate? {
-        return templates.first { $0.id == id }
+        templates.first { $0.id == id }
     }
 
     func addTemplate(_ template: OnboardingTemplate) {
@@ -220,7 +220,7 @@ class OnboardingMockService: ObservableObject {
 
     func getProgramsForUser(_ userId: UUID) -> [OnboardingProgram] {
         // Фильтруем программы по employeeId
-        return programs.filter { $0.employeeId == userId }
+        programs.filter { $0.employeeId == userId }
     }
 
     func updateTaskStatus(programId: UUID, taskId: UUID, isCompleted: Bool) {

@@ -8,16 +8,14 @@ struct ReportFilterSection: View {
             HStack(spacing: 8) {
                 ReportFilterChip(
                     title: "Все",
-                    isSelected: filterType == nil,
-                    action: { filterType = nil }
-                )
+                    isSelected: filterType == nil
+                )                    { filterType = nil }
 
                 ForEach(ReportType.allCases, id: \.self) { type in
                     ReportFilterChip(
                         title: type.rawValue,
-                        isSelected: filterType == type,
-                        action: { filterType = type }
-                    )
+                        isSelected: filterType == type
+                    )                        { filterType = type }
                 }
             }
             .padding(.vertical, 8)

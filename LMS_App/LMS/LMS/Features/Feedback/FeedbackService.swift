@@ -184,7 +184,7 @@ class FeedbackService: ObservableObject {
     // MARK: - Private Methods
 
     private func createMockFeedbacks() -> [FeedbackItem] {
-        return [
+        [
             FeedbackItem(
                 title: "Ошибка при загрузке курсов",
                 description: "При попытке открыть раздел Курсы приложение зависает на экране загрузки более 30 секунд.",
@@ -239,7 +239,7 @@ class FeedbackService: ObservableObject {
 
     private func createFeedbackOnServer(_ feedback: FeedbackModel) async -> Bool {
         // TODO: Реализовать отправку на сервер
-        return false
+        false
     }
 
     private func updateReactionOnServer(feedbackId: UUID, reaction: ReactionType?) async {
@@ -262,15 +262,15 @@ class FeedbackService: ObservableObject {
             await updatePerformanceMetrics(duration: duration, success: success)
 
             if success {
-                print("✅ Фидбэк отправлен на сервер (\(String(format: "%.2f", duration))с)")
-                print("📝 Сервер автоматически создаст GitHub Issue")
+                Logger.shared.success("Фидбэк отправлен на сервер (\(String(format: "%.2f", duration))с)", category: .feedback)
+                Logger.shared.info("Сервер автоматически создаст GitHub Issue", category: .feedback)
             } else {
-                print("⚠️ Не удалось отправить - добавляем в offline queue")
+                Logger.shared.warning("Не удалось отправить - добавляем в offline queue", category: .feedback)
                 addToOfflineQueue(feedback)
             }
         } else {
             // ❌ Нет сети - добавляем в offline queue
-            print("📴 Нет сети - фидбэк сохранен в offline queue")
+            Logger.shared.warning("Нет сети - фидбэк сохранен в offline queue", category: .feedback)
             addToOfflineQueue(feedback)
         }
     }
@@ -279,7 +279,7 @@ class FeedbackService: ObservableObject {
     private func addToOfflineQueue(_ feedback: FeedbackItem) {
         if !pendingFeedbacks.contains(where: { $0.id == feedback.id }) {
             pendingFeedbacks.append(feedback)
-            print("📦 Добавлен в offline queue (\(pendingFeedbacks.count) ожидают)")
+            Logger.shared.info("Добавлен в offline queue (\(pendingFeedbacks.count) ожидают)", category: .feedback)
         }
     }
 
@@ -295,7 +295,7 @@ class FeedbackService: ObservableObject {
     }
 
     private func processOfflineQueue() async {
-        print("🔄 Обрабатываем offline queue (\(pendingFeedbacks.count) элементов)")
+        Logger.shared.info("Обрабатываем offline queue (\(pendingFeedbacks.count) элементов)", category: .feedback)
 
         var processedItems: [UUID] = []
 
@@ -303,7 +303,7 @@ class FeedbackService: ObservableObject {
             let success = await ServerFeedbackService.shared.sendFeedbackItem(feedback)
             if success {
                 processedItems.append(feedback.id)
-                print("✅ Offline фидбэк отправлен на сервер: \(feedback.title)")
+                Logger.shared.success("Offline фидбэк отправлен на сервер: \(feedback.title)", category: .feedback)
             }
         }
 
@@ -311,7 +311,7 @@ class FeedbackService: ObservableObject {
         pendingFeedbacks.removeAll { processedItems.contains($0.id) }
 
         if !processedItems.isEmpty {
-            print("🎉 Обработано \(processedItems.count) offline фидбэков")
+            Logger.shared.success("Обработано \(processedItems.count) offline фидбэков", category: .feedback)
         }
     }
 
@@ -331,13 +331,13 @@ class FeedbackService: ObservableObject {
         )
 
         // Логируем текущие метрики
-        print("""
-        📊 Feedback Performance Update:
+        Logger.shared.info("""
+        Feedback Performance Update:
         - Average GitHub time: \(String(format: "%.2f", performanceMetrics.averageGitHubCreateTime))s
         - Success rate: \(String(format: "%.1f", performanceMetrics.successRate * 100))%
         - Total created: \(performanceMetrics.totalFeedbacksCreated)
         - Pending: \(pendingFeedbacks.count)
-        """)
+        """, category: .feedback)
     }
 
     private func calculateAverageTime(current: TimeInterval, new: TimeInterval, count: Int) -> TimeInterval {

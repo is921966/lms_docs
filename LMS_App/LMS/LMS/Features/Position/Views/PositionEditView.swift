@@ -49,11 +49,10 @@ struct PositionEditView: View {
         }
         .sheet(item: $editingRequirement) { requirement in
             RequirementEditView(
-                requirement: requirement,
-                onSave: { updated in
+                requirement: requirement
+            )                { updated in
                     updateRequirement(updated)
                 }
-            )
         }
         .onAppear {
             loadPositionData()

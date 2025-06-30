@@ -5,8 +5,8 @@
 //  Created on 26/01/2025.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - Analytics Service Protocol
 protocol AnalyticsServiceProtocol {
@@ -158,7 +158,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
 
     // MARK: - Get User Performance
     func getUserPerformance(userId: String, period: AnalyticsPeriod) -> UserPerformance? {
-        return UserPerformance(
+        UserPerformance(
             userId: userId,
             userName: "Иван Иванов",
             avatar: nil,
@@ -174,7 +174,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
 
     // MARK: - Get Course Statistics
     func getCourseStatistics(period: AnalyticsPeriod) -> [CourseStatistics] {
-        return [
+        [
             CourseStatistics(
                 courseId: "course-1",
                 courseName: "Основы продаж",
@@ -220,7 +220,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
 
     // MARK: - Get Competency Progress
     func getCompetencyProgress(period: AnalyticsPeriod) -> [CompetencyProgress] {
-        return [
+        [
             CompetencyProgress(
                 competencyId: "comp-1",
                 competencyName: "Продажи",
@@ -258,7 +258,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
 
     // MARK: - Generate Report
     func generateReport(_ report: Report) -> AnyPublisher<Report, Error> {
-        return Future<Report, Error> { promise in
+        Future<Report, Error> { promise in
             // Simulate report generation
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 var updatedReport = report
@@ -277,7 +277,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
 
     // MARK: - Get Reports
     func getReports(for userId: String) -> [Report] {
-        return reports.filter { $0.createdBy == userId || $0.recipients.contains(userId) }
+        reports.filter { $0.createdBy == userId || $0.recipients.contains(userId) }
     }
 
     // MARK: - Export Report
@@ -333,7 +333,7 @@ class AnalyticsService: ObservableObject, AnalyticsServiceProtocol {
     }
 
     private func generateMockReports() -> [Report] {
-        return [
+        [
             Report(
                 title: "Ежемесячный отчет по обучению",
                 description: "Общая статистика обучения за последний месяц",

@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 class FeedService: ObservableObject {
     static let shared = FeedService()

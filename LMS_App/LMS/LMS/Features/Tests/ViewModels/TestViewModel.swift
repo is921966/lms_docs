@@ -5,9 +5,9 @@
 //  Created on 26/01/2025.
 //
 
+import Combine
 import Foundation
 import SwiftUI
-import Combine
 
 @MainActor
 class TestViewModel: ObservableObject {
@@ -31,7 +31,7 @@ class TestViewModel: ObservableObject {
     @Published var sortOption = TestSortOption.dateCreated
     @Published var isAscending = false
 
-    // Student specific properties  
+    // Student specific properties
     @Published var assignedTests: [Test] = []
     @Published var completedTests: [Test] = []
     @Published var practiceTests: [Test] = []
@@ -66,7 +66,7 @@ class TestViewModel: ObservableObject {
     }
 
     var testsGroupedByType: [LMSTestType: [Test]] {
-        Dictionary(grouping: filteredTests, by: { $0.type })
+        Dictionary(grouping: filteredTests) { $0.type }
     }
 
     var userResults: [TestResult] {
@@ -305,16 +305,16 @@ class TestViewModel: ObservableObject {
     }
 
     private func hasUserCompletedTest(_ test: Test) -> Bool {
-        return userResults.contains { $0.testId == test.id }
+        userResults.contains { $0.testId == test.id }
     }
 
     // MARK: - Public Access Methods
 
     func getUserAttempts(userId: String, testId: UUID) -> [TestAttempt] {
-        return service.getUserAttempts(userId: userId, testId: testId)
+        service.getUserAttempts(userId: userId, testId: testId)
     }
 
     func getActiveAttempt(userId: String, testId: UUID) -> TestAttempt? {
-        return service.getActiveAttempt(userId: userId, testId: testId)
+        service.getActiveAttempt(userId: userId, testId: testId)
     }
 }

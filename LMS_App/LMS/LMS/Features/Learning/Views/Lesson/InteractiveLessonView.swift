@@ -60,9 +60,8 @@ struct OptionsSection: View {
             ForEach(options, id: \.self) { option in
                 OptionButton(
                     option: option,
-                    isSelected: selectedAnswer == option,
-                    action: { selectedAnswer = option }
-                )
+                    isSelected: selectedAnswer == option
+                )                    { selectedAnswer = option }
             }
         }
     }

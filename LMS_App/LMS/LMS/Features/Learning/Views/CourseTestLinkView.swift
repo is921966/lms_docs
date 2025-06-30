@@ -127,12 +127,11 @@ struct CourseTestLinkView: View {
                 List(filteredTests) { test in
                     TestSelectionRow(
                         test: test,
-                        isSelected: selectedTestId == test.id || course.testId == test.id,
-                        onSelect: {
+                        isSelected: selectedTestId == test.id || course.testId == test.id
+                    )                        {
                             selectedTestId = test.id
                             saveTest()
                         }
-                    )
                 }
                 .listStyle(PlainListStyle())
             }

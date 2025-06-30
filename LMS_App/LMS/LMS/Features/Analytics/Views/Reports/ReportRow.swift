@@ -86,9 +86,8 @@ struct ReportInfoSection: View {
                 period: .month,
                 createdBy: "admin",
                 format: .pdf
-            ),
-            onTap: {}
-        )
+            )
+        )            {}
         ReportRow(
             report: Report(
                 title: "Отчет по обучению",
@@ -97,8 +96,7 @@ struct ReportInfoSection: View {
                 period: .month,
                 createdBy: "admin",
                 format: .pdf
-            ),
-            onTap: {}
-        )
+            )
+        )            {}
     }
 }

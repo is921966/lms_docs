@@ -31,14 +31,13 @@ struct QuizQuestionView: View {
             // Options
             QuizOptionsSection(
                 options: question.options,
-                selectedOption: selectedOption,
-                onSelect: { index in
+                selectedOption: selectedOption
+            )                { index in
                     selectedOption = index
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         onAnswer(index)
                     }
                 }
-            )
 
             Spacer()
         }
@@ -72,9 +71,8 @@ struct QuizOptionsSection: View {
                 QuizOptionButton(
                     text: options[index],
                     isSelected: selectedOption == index,
-                    isDisabled: selectedOption != nil,
-                    action: { onSelect(index) }
-                )
+                    isDisabled: selectedOption != nil
+                )                    { onSelect(index) }
             }
         }
         .padding()
@@ -118,8 +116,7 @@ struct QuizOptionButton: View {
                 correctAnswer: 1
             ),
             questionNumber: 1,
-            totalQuestions: 10,
-            onAnswer: { _ in }
-        )
+            totalQuestions: 10
+        )            { _ in }
     }
 }

@@ -5,8 +5,8 @@
 //  Created on 01.07.2025.
 //
 
-import XCTest
 @testable import LMS
+import XCTest
 
 class FeedbackModelTests: XCTestCase {
     // MARK: - Test Properties

@@ -77,15 +77,15 @@ class CourseMockService: ObservableObject {
     }
 
     func getAllCourses() -> [Course] {
-        return courses
+        courses
     }
 
     func getEnrolledCourses() -> [Course] {
-        return enrolledCourses
+        enrolledCourses
     }
 
     func getAvailableCourses() -> [Course] {
-        return availableCourses
+        availableCourses
     }
 
     func enrollInCourse(_ course: Course) {

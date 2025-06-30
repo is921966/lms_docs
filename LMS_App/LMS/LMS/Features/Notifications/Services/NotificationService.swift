@@ -1,6 +1,6 @@
+import Combine
 import Foundation
 import SwiftUI
-import Combine
 
 // MARK: - Notification Service
 class NotificationService: ObservableObject {

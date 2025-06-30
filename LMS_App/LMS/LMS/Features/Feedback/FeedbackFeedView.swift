@@ -133,9 +133,8 @@ struct FeedbackFilterView: View {
                     ForEach(FeedbackFilter.allCases, id: \.self) { filter in
                         FeedbackFilterButton(
                             filter: filter,
-                            isSelected: selectedFilter == filter,
-                            action: { selectedFilter = filter }
-                        )
+                            isSelected: selectedFilter == filter
+                        )                            { selectedFilter = filter }
                     }
                 }
                 .padding(.horizontal)
@@ -245,30 +244,26 @@ struct FeedbackCardView: View {
                     ReactionButton(
                         type: .like,
                         count: feedback.reactions.like,
-                        isSelected: feedback.userReaction == .like,
-                        action: { onReaction(.like) }
-                    )
+                        isSelected: feedback.userReaction == .like
+                    )                        { onReaction(.like) }
 
                     ReactionButton(
                         type: .dislike,
                         count: feedback.reactions.dislike,
-                        isSelected: feedback.userReaction == .dislike,
-                        action: { onReaction(.dislike) }
-                    )
+                        isSelected: feedback.userReaction == .dislike
+                    )                        { onReaction(.dislike) }
 
                     ReactionButton(
                         type: .heart,
                         count: feedback.reactions.heart,
-                        isSelected: feedback.userReaction == .heart,
-                        action: { onReaction(.heart) }
-                    )
+                        isSelected: feedback.userReaction == .heart
+                    )                        { onReaction(.heart) }
 
                     ReactionButton(
                         type: .fire,
                         count: feedback.reactions.fire,
-                        isSelected: feedback.userReaction == .fire,
-                        action: { onReaction(.fire) }
-                    )
+                        isSelected: feedback.userReaction == .fire
+                    )                        { onReaction(.fire) }
                 }
 
                 Spacer()

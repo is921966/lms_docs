@@ -166,7 +166,7 @@ struct OnboardingTaskView: View {
     }
 
     private func isOverdue(_ date: Date) -> Bool {
-        return date < Date() && !task.isCompleted
+        date < Date() && !task.isCompleted
     }
 
     private var dateFormatter: DateFormatter {
@@ -255,9 +255,8 @@ struct MeetingDetailView: View {
                 type: .course,
                 courseId: UUID(),
                 dueDate: Date().addingTimeInterval(3 * 24 * 60 * 60)
-            ),
-            onComplete: { _ in }
-        )
+            )
+        )            { _ in }
 
         OnboardingTaskView(
             task: OnboardingTask(
@@ -267,9 +266,8 @@ struct MeetingDetailView: View {
                 isCompleted: true,
                 completedAt: Date(),
                 testId: UUID()
-            ),
-            onComplete: { _ in }
-        )
+            )
+        )            { _ in }
     }
     .padding()
 }

@@ -5,8 +5,8 @@
 //  Created on 26/01/2025.
 //
 
-import SwiftUI
 import PhotosUI
+import SwiftUI
 
 struct CourseMaterialsView: View {
     @Binding var course: Course

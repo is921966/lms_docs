@@ -179,15 +179,14 @@ struct CourseAssignmentView: View {
                 List(filteredUsers) { user in
                     UserSelectionRow(
                         user: user,
-                        isSelected: selectedUsers.contains(user.id),
-                        onToggle: {
+                        isSelected: selectedUsers.contains(user.id)
+                    )                        {
                             if selectedUsers.contains(user.id) {
                                 selectedUsers.remove(user.id)
                             } else {
                                 selectedUsers.insert(user.id)
                             }
                         }
-                    )
                 }
                 .listStyle(PlainListStyle())
 

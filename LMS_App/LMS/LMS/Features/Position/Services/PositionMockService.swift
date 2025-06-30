@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - Position Mock Service
 class PositionMockService: ObservableObject {
@@ -409,7 +409,7 @@ class PositionMockService: ObservableObject {
     }
 
     var positionsByLevel: [PositionLevel: Int] {
-        Dictionary(grouping: positions, by: { $0.level })
+        Dictionary(grouping: positions) { $0.level }
             .mapValues { $0.count }
     }
 }

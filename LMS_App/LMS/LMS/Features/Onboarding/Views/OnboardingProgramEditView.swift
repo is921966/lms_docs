@@ -81,11 +81,10 @@ struct OnboardingProgramEditView: View {
                 Section {
                     ForEach(editedProgram.stages.indices, id: \.self) { stageIndex in
                         NavigationLink(destination: StageEditView(
-                            stage: $editedProgram.stages[stageIndex],
-                            onSave: { updatedStage in
+                            stage: $editedProgram.stages[stageIndex]
+                        )                            { updatedStage in
                                 editedProgram.stages[stageIndex] = updatedStage
-                            }
-                        )) {
+                            }) {
                             HStack {
                                 Text(editedProgram.stages[stageIndex].title)
                                 Spacer()

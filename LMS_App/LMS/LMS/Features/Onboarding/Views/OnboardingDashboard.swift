@@ -68,17 +68,15 @@ struct OnboardingDashboard: View {
                         HStack(spacing: 8) {
                             OnboardingFilterChip(
                                 title: "Все",
-                                isSelected: selectedFilter == .all,
-                                action: { selectedFilter = .all }
-                            )
+                                isSelected: selectedFilter == .all
+                            )                                { selectedFilter = .all }
                             .accessibilityIdentifier("filterChipAll")
 
                             ForEach(FilterType.allCases, id: \.self) { filter in
                                 OnboardingFilterChip(
                                     title: filter.rawValue,
-                                    isSelected: selectedFilter == filter,
-                                    action: { selectedFilter = filter }
-                                )
+                                    isSelected: selectedFilter == filter
+                                )                                    { selectedFilter = filter }
                                 .accessibilityIdentifier("filterChip\(filter.rawValue)")
                             }
                         }

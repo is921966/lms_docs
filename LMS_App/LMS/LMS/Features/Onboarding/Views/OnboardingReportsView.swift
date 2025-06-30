@@ -5,8 +5,8 @@
 //  Created on 27/01/2025.
 //
 
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct OnboardingReportsView: View {
     @ObservedObject var service = OnboardingMockService.shared

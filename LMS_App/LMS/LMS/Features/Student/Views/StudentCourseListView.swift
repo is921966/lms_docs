@@ -101,7 +101,7 @@ struct StudentCourseCard: View {
                         .font(.headline)
                         .lineLimit(2)
 
-                    Text(CourseCategory.categories.first(where: { $0.id == course.categoryId })?.name ?? "Общее")
+                    Text(CourseCategory.categories.first { $0.id == course.categoryId }?.name ?? "Общее")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

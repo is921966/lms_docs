@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - AuthService
 final class AuthService: ObservableObject {
@@ -72,11 +72,9 @@ final class AuthService: ObservableObject {
             body: EmptyBody(),
             responseType: EmptyResponse.self
         )
-        .handleEvents(
-            receiveCompletion: { [weak self] _ in
+        .handleEvents            { [weak self] _ in
                 self?.clearAuthState()
             }
-        )
         .map { _ in () }
         .catch { [weak self] _ -> AnyPublisher<Void, NetworkError> in
             // Even if logout fails on server, clear local state
@@ -100,14 +98,12 @@ final class AuthService: ObservableObject {
             body: request,
             responseType: TokensResponse.self
         )
-        .handleEvents(
-            receiveOutput: { [weak self] response in
+        .handleEvents            { [weak self] response in
                 TokenManager.shared.saveTokens(
                     accessToken: response.accessToken,
                     refreshToken: response.refreshToken
                 )
             }
-        )
         .map { _ in () }
         .eraseToAnyPublisher()
     }
@@ -118,11 +114,9 @@ final class AuthService: ObservableObject {
             endpoint: "/users/me",
             responseType: UserResponse.self
         )
-        .handleEvents(
-            receiveOutput: { [weak self] userResponse in
+        .handleEvents            { [weak self] userResponse in
                 self?.currentUser = User(from: userResponse)
             }
-        )
         .compactMap { [weak self] _ in
             self?.currentUser
         }

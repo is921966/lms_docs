@@ -129,7 +129,7 @@ struct TestResult: Identifiable, Codable {
     }
 
     var questionsByType: [QuestionType: [QuestionResult]] {
-        Dictionary(grouping: questionResults, by: { $0.questionType })
+        Dictionary(grouping: questionResults) { $0.questionType }
     }
 
     var scoreByType: [QuestionType: Double] {

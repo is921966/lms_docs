@@ -30,9 +30,8 @@ struct ReportDetailView: View {
                     report: report,
                     isGenerating: $isGenerating,
                     showExportOptions: $showExportOptions,
-                    onGenerate: generateReport,
-                    onExport: { showExportOptions = true }
-                )
+                    onGenerate: generateReport
+                )                    { showExportOptions = true }
             }
             .padding()
         }
@@ -159,7 +158,7 @@ struct ReportSectionsView: View {
             Text("Разделы отчета")
                 .font(.headline)
 
-            ForEach(sections.sorted(by: { $0.order < $1.order })) { section in
+            ForEach(sections.sorted { $0.order < $1.order }) { section in
                 ReportSectionView(section: section)
             }
         }

@@ -113,9 +113,8 @@ struct UsersListView: View {
                     ForEach(UserFilter.allCases, id: \.self) { filter in
                         AdminFilterChip(
                             title: filter.rawValue,
-                            isSelected: selectedFilter == filter,
-                            action: { selectedFilter = filter }
-                        )
+                            isSelected: selectedFilter == filter
+                        )                            { selectedFilter = filter }
                     }
                 }
                 .padding(.horizontal)

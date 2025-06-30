@@ -1,6 +1,6 @@
-import SwiftUI
 import Combine
 import Foundation
+import SwiftUI
 import UIKit
 
 class FeedbackManager: ObservableObject {
@@ -241,9 +241,9 @@ extension FeedbackManager {
             serverFeedbackService.submitFeedback(testFeedback) { result in
                 switch result {
                 case .success(let issueUrl):
-                    print("✅ Test feedback sent successfully: \(issueUrl)")
+                    Logger.shared.success("Test feedback sent successfully: \(issueUrl)", category: .feedback)
                 case .failure(let error):
-                    print("❌ Failed to send test feedback: \(error)")
+                    Logger.shared.error("Failed to send test feedback: \(error)", category: .feedback)
                 }
             }
         }
@@ -351,7 +351,7 @@ struct FeedbackDebugMenu: View {
                 Button("🔄 Process Queue Now") {
                     Task {
                         // Trigger manual processing
-                        print("Manual queue processing triggered")
+                        Logger.shared.info("Manual queue processing triggered", category: .feedback)
                     }
                 }
             }
@@ -414,14 +414,14 @@ struct FeedbackDebugMenu: View {
             let duration = Date().timeIntervalSince(startTime)
 
             await MainActor.run {
-                print("✅ Test feedback completed in \(String(format: "%.2f", duration))s: \(success)")
+                Logger.shared.success("Test feedback completed in \(String(format: "%.2f", duration))s: \(success)", category: .feedback)
             }
         }
     }
 
     private func performanceTest() {
         Task {
-            print("🚀 Starting performance test (10 feedbacks)...")
+            Logger.shared.info("Starting performance test (10 feedbacks)...", category: .feedback)
             let startTime = Date()
 
             for i in 1...10 {
@@ -445,12 +445,12 @@ struct FeedbackDebugMenu: View {
             let avgPerFeedback = totalDuration / 10
 
             await MainActor.run {
-                print("""
-                🏁 Performance test completed:
+                Logger.shared.info("""
+                Performance test completed:
                 - Total time: \(String(format: "%.2f", totalDuration))s
                 - Average per feedback: \(String(format: "%.2f", avgPerFeedback))s
                 - Rate: \(String(format: "%.1f", 10 / totalDuration)) feedbacks/sec
-                """)
+                """, category: .feedback)
             }
         }
     }
@@ -467,24 +467,24 @@ struct FeedbackDebugMenu: View {
 
                 if let httpResponse = response as? HTTPURLResponse {
                     await MainActor.run {
-                        print("""
-                        📡 GitHub API Test:
+                        Logger.shared.info("""
+                        GitHub API Test:
                         - Response time: \(String(format: "%.2f", duration))s
                         - Status: \(httpResponse.statusCode)
-                        - Connection: \(httpResponse.statusCode == 200 ? "✅ Good" : "❌ Failed")
-                        """)
+                        - Connection: \(httpResponse.statusCode == 200 ? "Good" : "Failed")
+                        """, category: .network)
                     }
 
                     if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                        let resources = json["resources"] as? [String: Any],
                        let core = resources["core"] as? [String: Any],
                        let remaining = core["remaining"] as? Int {
-                        print("- API calls remaining: \(remaining)")
+                        Logger.shared.info("- API calls remaining: \(remaining)", category: .network)
                     }
                 }
             } catch {
                 await MainActor.run {
-                    print("❌ GitHub API test failed: \(error)")
+                    Logger.shared.error("GitHub API test failed: \(error)", category: .network)
                 }
             }
         }
@@ -506,12 +506,12 @@ struct FeedbackDebugMenu: View {
             let duration = Date().timeIntervalSince(startTime)
 
             await MainActor.run {
-                print("""
-                🧪 GitHub Issue Test:
-                - Success: \(success ? "✅" : "❌")
+                Logger.shared.info("""
+                GitHub Issue Test:
+                - Success: \(success ? "Yes" : "No")
                 - Duration: \(String(format: "%.2f", duration))s
                 - Status: \(success ? "Issue created successfully" : "Failed to create issue")
-                """)
+                """, category: .network)
             }
         }
     }
