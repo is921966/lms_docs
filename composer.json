@@ -16,7 +16,7 @@
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
-        "firebase/php-jwt": "^6.8",
+        "firebase/php-jwt": "*",
         "monolog/monolog": "^3.4",
         "psr/cache": "^3.0",
         "psr/log": "^3.0",
@@ -58,13 +58,22 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/",
-            "Database\\": "database/"
+            "Database\\": "database/",
+            "User\\Domain\\": "src/User/Domain/",
+            "User\\Domain\\Traits\\": "src/User/Domain/Traits/",
+            "User\\Domain\\Events\\": "src/User/Domain/Events/",
+            "User\\Domain\\ValueObjects\\": "src/User/Domain/ValueObjects/",
+            "User\\Application\\": "src/User/Application/",
+            "User\\Application\\DTO\\": "src/User/Application/DTO/",
+            "User\\Infrastructure\\": "src/User/Infrastructure/",
+            "Auth\\": "src/Auth/",
+            "Competency\\": "src/Competency/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Tests\\Stubs\\": "tests/Stubs/"
         }
     },
     "replace": {
