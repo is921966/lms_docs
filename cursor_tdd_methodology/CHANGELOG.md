@@ -5,6 +5,39 @@ All notable changes to the TDD Methodology will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.4] - 2025-07-01
+
+### Fixed
+- **Critical**: Clarified time tracking terminology
+  - Условные дни (conditional days) - internal project numbering (Day 1, 2, 3, ..., 101, 102...)
+  - Календарные дни (calendar days) - actual days from project start June 21, 2025
+  - Clarified that there is NO mathematical relationship between these two systems
+  - Calendar days must be calculated programmatically
+
+### Changed
+- Updated `.cursorrules` with correct time calculation system
+- Updated `productmanager.mdc` with time tracking terminology section
+- Fixed all references to use proper terminology
+
+### Added
+- Examples of correct time tracking usage in reports
+- Python code example for calendar day calculation
+
+## [1.8.3] - 2025-06-30
+
+### Added
+- LLM agent automation for standard actions
+- Automatic execution without user confirmation for routine tasks
+- User approval required only for critical changes
+
+## [1.8.2] - 2025-06-30
+
+### Added
+- Complete time tracking system integration
+- Automatic report creation with time metrics
+- JSON storage for project time history
+- Project statistics and analytics support
+
 ## [1.8.0] - 2025-06-30
 
 ### Added
