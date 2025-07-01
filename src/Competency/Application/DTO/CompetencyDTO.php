@@ -1,60 +1,88 @@
 <?php
 
-declare(strict_types=1);
+namespace Competency\Application\DTO;
 
-namespace App\Competency\Application\DTO;
+use Competency\Domain\Entities\Competency;
 
-use App\Competency\Domain\Competency;
-
-final class CompetencyDTO
+class CompetencyDTO
 {
+    public string $id;
+    public string $name;
+    public string $description;
+    public string $categoryId;
+    public string $categoryName;
+    public bool $isActive;
+    public array $skillLevels;
+    public array $requiredForPositions;
+
     public function __construct(
-        public readonly string $id,
-        public readonly string $code,
-        public readonly string $name,
-        public readonly string $description,
-        public readonly string $category,
-        public readonly ?string $parentId,
-        public readonly bool $isActive
+        string $id,
+        string $name,
+        string $description,
+        string $categoryId,
+        string $categoryName,
+        bool $isActive,
+        array $skillLevels = [],
+        array $requiredForPositions = []
     ) {
+        $this->id = $id;
+        $this->name = $name;
+        $this->description = $description;
+        $this->categoryId = $categoryId;
+        $this->categoryName = $categoryName;
+        $this->isActive = $isActive;
+        $this->skillLevels = $skillLevels;
+        $this->requiredForPositions = $requiredForPositions;
     }
-    
+
+    public static function fromEntity(Competency $competency): self
+    {
+        $skillLevels = [];
+        foreach ($competency->getSkillLevels() as $level) {
+            $skillLevels[] = [
+                'level' => $level->getLevel(),
+                'name' => $level->getName(),
+                'description' => $level->getDescription()
+            ];
+        }
+
+        return new self(
+            $competency->getId()->getValue(),
+            $competency->getName(),
+            $competency->getDescription(),
+            $competency->getCategory()->getId()->getValue(),
+            $competency->getCategory()->getName(),
+            $competency->isActive(),
+            $skillLevels,
+            $competency->getRequiredForPositions()
+        );
+    }
+
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'],
-            code: $data['code'],
-            name: $data['name'],
-            description: $data['description'],
-            category: $data['category'],
-            parentId: $data['parent_id'] ?? null,
-            isActive: $data['is_active'] ?? true
+            $data['id'],
+            $data['name'],
+            $data['description'],
+            $data['categoryId'],
+            $data['categoryName'],
+            $data['isActive'],
+            $data['skillLevels'] ?? [],
+            $data['requiredForPositions'] ?? []
         );
     }
-    
-    public static function fromEntity(Competency $competency): self
-    {
-        return new self(
-            id: $competency->getId()->getValue(),
-            code: $competency->getCode()->getValue(),
-            name: $competency->getName(),
-            description: $competency->getDescription(),
-            category: $competency->getCategory()->getValue(),
-            parentId: $competency->getParentId()?->getValue(),
-            isActive: $competency->isActive()
-        );
-    }
-    
+
     public function toArray(): array
     {
         return [
             'id' => $this->id,
-            'code' => $this->code,
             'name' => $this->name,
             'description' => $this->description,
-            'category' => $this->category,
-            'parent_id' => $this->parentId,
-            'is_active' => $this->isActive
+            'categoryId' => $this->categoryId,
+            'categoryName' => $this->categoryName,
+            'isActive' => $this->isActive,
+            'skillLevels' => $this->skillLevels,
+            'requiredForPositions' => $this->requiredForPositions
         ];
     }
 } 

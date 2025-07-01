@@ -4,14 +4,14 @@ namespace Competency\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-class CompetencyId
+class CategoryId
 {
     private string $value;
 
     private function __construct(string $value)
     {
         if (empty($value)) {
-            throw new InvalidArgumentException('CompetencyId cannot be empty');
+            throw new InvalidArgumentException('CategoryId cannot be empty');
         }
 
         if (!$this->isValidUuid($value)) {
@@ -43,7 +43,7 @@ class CompetencyId
         return $this->value;
     }
 
-    public function equals(CompetencyId $other): bool
+    public function equals(CategoryId $other): bool
     {
         return $this->value === $other->value;
     }

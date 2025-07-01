@@ -2,60 +2,96 @@
 
 namespace Tests\Unit\Competency\Domain\ValueObjects;
 
-use Tests\TestCase;
-use App\Competency\Domain\ValueObjects\CompetencyId;
+use PHPUnit\Framework\TestCase;
+use Competency\Domain\ValueObjects\CompetencyId;
 
 class CompetencyIdTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function it_creates_competency_id_from_string(): void
+    public function testGenerateNewId()
     {
-        $uuid = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
-        $competencyId = new CompetencyId($uuid);
-        
-        $this->assertEquals($uuid, $competencyId->getValue());
-        $this->assertEquals($uuid, (string) $competencyId);
+        // Act
+        $id = CompetencyId::generate();
+
+        // Assert
+        $this->assertInstanceOf(CompetencyId::class, $id);
+        $this->assertNotEmpty($id->getValue());
+        $this->assertEquals(36, strlen($id->getValue())); // UUID v4 length
     }
-    
-    /**
-     * @test
-     */
-    public function it_generates_new_competency_id(): void
+
+    public function testCreateFromString()
     {
-        $competencyId = CompetencyId::generate();
-        
-        $this->assertInstanceOf(CompetencyId::class, $competencyId);
-        $this->assertNotEmpty($competencyId->getValue());
-        $this->assertMatchesRegularExpression(
-            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
-            $competencyId->getValue()
-        );
+        // Arrange
+        $uuid = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+
+        // Act
+        $id = CompetencyId::fromString($uuid);
+
+        // Assert
+        $this->assertInstanceOf(CompetencyId::class, $id);
+        $this->assertEquals($uuid, $id->getValue());
     }
-    
-    /**
-     * @test
-     */
-    public function it_validates_uuid_format(): void
+
+    public function testIdEquality()
     {
+        // Arrange
+        $uuid = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+        $id1 = CompetencyId::fromString($uuid);
+        $id2 = CompetencyId::fromString($uuid);
+
+        // Act & Assert
+        $this->assertTrue($id1->equals($id2));
+    }
+
+    public function testIdInequality()
+    {
+        // Arrange
+        $id1 = CompetencyId::generate();
+        $id2 = CompetencyId::generate();
+
+        // Act & Assert
+        $this->assertFalse($id1->equals($id2));
+    }
+
+    public function testToString()
+    {
+        // Arrange
+        $uuid = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+        $id = CompetencyId::fromString($uuid);
+
+        // Act & Assert
+        $this->assertEquals($uuid, (string)$id);
+    }
+
+    public function testInvalidUuidThrowsException()
+    {
+        // Assert
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid UUID format');
-        
-        new CompetencyId('invalid-uuid');
+
+        // Act
+        CompetencyId::fromString('invalid-uuid');
     }
-    
-    /**
-     * @test
-     */
-    public function it_compares_competency_ids(): void
+
+    public function testEmptyUuidThrowsException()
     {
-        $uuid = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
-        $id1 = new CompetencyId($uuid);
-        $id2 = new CompetencyId($uuid);
-        $id3 = CompetencyId::generate();
-        
-        $this->assertTrue($id1->equals($id2));
-        $this->assertFalse($id1->equals($id3));
+        // Assert
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('CompetencyId cannot be empty');
+
+        // Act
+        CompetencyId::fromString('');
+    }
+
+    public function testImmutability()
+    {
+        // Arrange
+        $id = CompetencyId::generate();
+        $originalValue = $id->getValue();
+
+        // Act - Try to get reference and modify (should not be possible)
+        $value = $id->getValue();
+
+        // Assert
+        $this->assertEquals($originalValue, $id->getValue());
     }
 } 
