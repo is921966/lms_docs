@@ -81,4 +81,31 @@
 2. Получить обратную связь
 3. Продемонстрировать новые backend возможности
 
-После этого можно спокойно исправить все проблемы в следующем спринте. 
+После этого можно спокойно исправить все проблемы в следующем спринте.
+
+### Build Process Update (19:10 MSK)
+
+After initial fastlane issues, switched to direct xcodebuild approach:
+
+1. **Method**: Direct xcodebuild archive command
+2. **Status**: 🟡 Building archive...
+3. **Build Number**: 202507021910
+4. **Expected completion**: 3-5 minutes
+
+### Build Command Used:
+```bash
+xcodebuild archive \
+    -project "LMS.xcodeproj" \
+    -scheme "LMS" \
+    -configuration "Release" \
+    -archivePath "build/LMS.xcarchive" \
+    -destination "generic/platform=iOS" \
+    -allowProvisioningUpdates \
+    DEVELOPMENT_TEAM=N85286S93X \
+    CODE_SIGN_STYLE=Automatic \
+    PRODUCT_BUNDLE_IDENTIFIER=ru.tsum.lms.igor \
+    MARKETING_VERSION=2.0.1 \
+    CURRENT_PROJECT_VERSION=202507021910
+```
+
+Once archive is complete, will export IPA and upload to TestFlight manually via Xcode Organizer or Transporter. 
