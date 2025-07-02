@@ -69,7 +69,8 @@
             "User\\Infrastructure\\": "src/User/Infrastructure/",
             "Auth\\": "src/Auth/",
             "Competency\\": "src/Competency/",
-            "Learning\\": "src/Learning/"
+            "Learning\\": "src/Learning/",
+            "Program\\": "src/Program/"
         },
         "files": [
             "src/Common/Helpers/functions.php"

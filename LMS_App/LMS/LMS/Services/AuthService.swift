@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import UIKit
 
 // MARK: - AuthService
 final class AuthService: ObservableObject {
@@ -216,7 +217,7 @@ final class AuthService: ObservableObject {
         // Validate response DTO
         let validationErrors = response.validationErrors()
         if !validationErrors.isEmpty {
-            error = NetworkError.invalidResponse("Invalid login response: \(validationErrors.joined(separator: ", "))")
+            error = NetworkError.serverError(statusCode: 500, data: "Invalid login response: \(validationErrors.joined(separator: ", "))".data(using: .utf8))
             return
         }
         
@@ -252,7 +253,7 @@ final class AuthService: ObservableObject {
         // Validate response DTO
         let validationErrors = response.validationErrors()
         if !validationErrors.isEmpty {
-            error = NetworkError.invalidResponse("Invalid token refresh response: \(validationErrors.joined(separator: ", "))")
+            error = NetworkError.serverError(statusCode: 500, data: "Invalid token refresh response: \(validationErrors.joined(separator: ", "))".data(using: .utf8))
             return
         }
         

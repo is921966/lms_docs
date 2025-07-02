@@ -314,12 +314,8 @@ public struct LogoutRequestDTO: DataTransferObject, Codable {
     }
 }
 
-// MARK: - Helper Extensions
+// MARK: - Type Aliases for backwards compatibility
 
-extension LoginRequestDTO: Encodable {}
-extension LoginResponseDTO: Decodable {}
-extension TokensDTO: Codable {}
-extension RefreshTokenRequestDTO: Encodable {}
-extension TokenResponseDTO: Decodable {}
-extension LogoutRequestDTO: Encodable {}
-extension AuthStatusDTO: Codable {} 
+public typealias TokensDTO = LoginResponseDTO
+public typealias TokenResponseDTO = TokenRefreshResponseDTO
+public typealias RefreshTokenRequestDTO = TokenRefreshRequestDTO 

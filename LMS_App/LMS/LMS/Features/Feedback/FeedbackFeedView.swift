@@ -334,7 +334,7 @@ struct ReactionButton: View {
             HStack(spacing: 4) {
                 Text(type.emoji)
                     .font(.system(size: 16))
-                if !isEmpty {
+                if count > 0 {
                     Text("\(count)")
                         .font(.caption2)
                         .fontWeight(.medium)

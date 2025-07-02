@@ -208,6 +208,50 @@
       "end_time": "2025-07-02T14:04:54.934387",
       "duration_hours": 2.11,
       "duration_formatted": "2ч 6м"
+    },
+    "day_115": {
+      "calendar_day": 115,
+      "project_day": 200,
+      "sprint_number": 40,
+      "day_in_sprint": 5,
+      "start_time": "2025-07-02T15:31:51.129275",
+      "date": "2025-07-02",
+      "end_time": "2025-07-02T16:37:21.087731",
+      "duration_hours": 1.09,
+      "duration_formatted": "1ч 5м"
+    },
+    "day_116": {
+      "calendar_day": 116,
+      "project_day": 201,
+      "sprint_number": 41,
+      "day_in_sprint": 1,
+      "start_time": "2025-07-02T16:56:17.433454",
+      "date": "2025-07-02",
+      "end_time": "2025-07-02T17:04:24.374390",
+      "duration_hours": 0.14,
+      "duration_formatted": "8м"
+    },
+    "day_117": {
+      "calendar_day": 117,
+      "project_day": 202,
+      "sprint_number": 41,
+      "day_in_sprint": 2,
+      "start_time": "2025-07-02T18:12:30.439776",
+      "date": "2025-07-02",
+      "end_time": "2025-07-02T18:22:11.402931",
+      "duration_hours": 0.16,
+      "duration_formatted": "9м"
+    },
+    "day_118": {
+      "calendar_day": 118,
+      "project_day": 203,
+      "sprint_number": 41,
+      "day_in_sprint": 3,
+      "start_time": "2025-07-02T18:22:56.619433",
+      "date": "2025-07-02",
+      "end_time": "2025-07-02T18:47:04.422900",
+      "duration_hours": 0.4,
+      "duration_formatted": "24м"
     }
   },
   "sprints": {
@@ -244,7 +288,17 @@
     "sprint_40": {
       "sprint_number": 40,
       "start_time": "2025-07-01T19:25:36.684629",
-      "start_date": "2025-07-01"
+      "start_date": "2025-07-01",
+      "end_time": "2025-07-02T16:37:21.087731",
+      "end_date": "2025-07-02",
+      "duration_hours": 21.2,
+      "duration_formatted": "21ч 11м",
+      "duration_days": 0.88
+    },
+    "sprint_41": {
+      "sprint_number": 41,
+      "start_time": "2025-07-02T16:56:17.433454",
+      "start_date": "2025-07-02"
     }
   },
   "project_start": "2025-06-21T09:00:00",

@@ -341,7 +341,7 @@ class FeedbackService: ObservableObject {
     }
 
     private func calculateAverageTime(current: TimeInterval, new: TimeInterval, count: Int) -> TimeInterval {
-        if isEmpty { return new }
+        if count == 0 { return new }
         return (current * Double(count) + new) / Double(count + 1)
     }
 

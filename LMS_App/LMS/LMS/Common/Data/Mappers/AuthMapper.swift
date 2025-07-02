@@ -26,14 +26,14 @@ public struct AuthMapper {
             firstName: dto.user.firstName,
             lastName: dto.user.lastName,
             role: dto.user.role,
-            department: nil, // Not available in auth response
-            position: nil,   // Not available in auth response
-            phoneNumber: nil, // Not available in auth response
             isActive: dto.user.isActive,
             profileImageUrl: dto.user.profileImageUrl,
-            lastLoginAt: nil, // Will be updated separately
+            phoneNumber: nil, // Not available in auth response
+            department: nil, // Not available in auth response
+            position: nil,   // Not available in auth response
             createdAt: Date().ISO8601Format(), // Current date as fallback
-            updatedAt: Date().ISO8601Format()  // Current date as fallback
+            updatedAt: Date().ISO8601Format(),  // Current date as fallback
+            lastLoginAt: nil // Will be updated separately
         ))
     }
     
@@ -47,14 +47,14 @@ public struct AuthMapper {
             firstName: dto.firstName,
             lastName: dto.lastName,
             role: dto.role,
-            department: nil,
-            position: nil,
-            phoneNumber: nil,
             isActive: dto.isActive,
             profileImageUrl: dto.profileImageUrl,
-            lastLoginAt: nil,
+            phoneNumber: nil,
+            department: nil,
+            position: nil,
             createdAt: Date().ISO8601Format(),
-            updatedAt: Date().ISO8601Format()
+            updatedAt: Date().ISO8601Format(),
+            lastLoginAt: nil
         ))
     }
     
@@ -86,8 +86,8 @@ public struct AuthMapper {
                 isActive: true,
                 profileImageUrl: userProfileDTO.profileImageUrl,
                 phoneNumber: nil,
-                department: userProfileDTO.department,
-                position: userProfileDTO.position,
+                department: nil,
+                position: nil,
                 createdAt: ISO8601DateFormatter().string(from: Date()),
                 updatedAt: ISO8601DateFormatter().string(from: Date()),
                 lastLoginAt: nil
@@ -150,16 +150,26 @@ public struct AuthMapper {
         )
     }
     
+    /// Create RefreshTokenRequestDTO from token (alias for consistency)
+    public static func createTokenRefreshRequest(
+        refreshToken: String,
+        deviceId: String? = nil
+    ) -> RefreshTokenRequestDTO {
+        return createRefreshRequest(refreshToken: refreshToken, deviceId: deviceId)
+    }
+    
     /// Create LogoutRequestDTO
     /// - Parameters:
     ///   - deviceId: Optional device ID
     ///   - logoutAllDevices: Logout all devices flag
     /// - Returns: LogoutRequestDTO
     public static func createLogoutRequest(
+        refreshToken: String? = nil,
         deviceId: String? = nil,
         logoutAllDevices: Bool = false
     ) -> LogoutRequestDTO {
         return LogoutRequestDTO(
+            refreshToken: refreshToken,
             deviceId: deviceId,
             logoutAllDevices: logoutAllDevices
         )
@@ -176,16 +186,17 @@ public struct AuthMapper {
         isAuthenticated: Bool,
         user: DomainUser? = nil,
         tokenExpiresAt: Date? = nil,
-        needsRefresh: Bool = false
+        lastLoginAt: Date? = nil
     ) -> AuthStatusDTO {
-        let userProfileDTO = user.flatMap { DomainUserMapper.toProfileDTO(from: $0) }
+        let userProfileDTO = user.map { toAuthUserProfileDTO(from: $0) }
         let expiresAtString = tokenExpiresAt.map { ISO8601DateFormatter().string(from: $0) }
+        let lastLoginAtString = lastLoginAt.map { ISO8601DateFormatter().string(from: $0) }
         
         return AuthStatusDTO(
             isAuthenticated: isAuthenticated,
             user: userProfileDTO,
             tokenExpiresAt: expiresAtString,
-            needsRefresh: needsRefresh
+            lastLoginAt: lastLoginAtString
         )
     }
     
@@ -219,13 +230,19 @@ public struct AuthMapper {
             switch networkError {
             case .unauthorized:
                 return "Invalid email or password"
-            case .forbidden:
-                return "Account is disabled or suspended"
-            case .notFound:
-                return "User account not found"
-            case .timeout:
-                return "Login request timed out. Please try again"
-            case .noConnection:
+            case .serverError(let statusCode, _):
+                if statusCode == 403 {
+                    return "Account is disabled or suspended"
+                } else if statusCode == 404 {
+                    return "User account not found"
+                }
+                return "Server error. Please try again"
+            case .unknown(let error):
+                if (error as NSError).code == NSURLErrorTimedOut {
+                    return "Login request timed out. Please try again"
+                }
+                return "Login failed. Please try again"
+            case .noInternetConnection:
                 return "No internet connection. Please check your network"
             default:
                 return "Login failed. Please try again"
@@ -267,6 +284,36 @@ public struct AuthMapper {
         let remaining = remainingTokenTime(expiresAtString)
         return remaining > 0 && remaining < 300 // Less than 5 minutes
     }
+    
+    // MARK: - Token Extraction Helpers
+    
+    /// Extract tokens from LoginResponseDTO
+    /// - Parameter response: LoginResponseDTO
+    /// - Returns: Tuple of access and refresh tokens
+    public static func extractTokens(from response: LoginResponseDTO) -> (accessToken: String, refreshToken: String) {
+        return (accessToken: response.accessToken, refreshToken: response.refreshToken)
+    }
+    
+    /// Extract tokens from TokenRefreshResponseDTO
+    /// - Parameter response: TokenRefreshResponseDTO
+    /// - Returns: Tuple of access and refresh tokens
+    public static func extractTokens(from response: TokenRefreshResponseDTO) -> (accessToken: String, refreshToken: String) {
+        return (accessToken: response.accessToken, refreshToken: response.refreshToken)
+    }
+    
+    /// Extract expiry date from LoginResponseDTO
+    /// - Parameter response: LoginResponseDTO
+    /// - Returns: Date if valid, nil otherwise
+    public static func extractExpiryDate(from response: LoginResponseDTO) -> Date? {
+        return ISO8601DateFormatter().date(from: response.expiresAt)
+    }
+    
+    /// Extract expiry date from TokenRefreshResponseDTO
+    /// - Parameter response: TokenRefreshResponseDTO
+    /// - Returns: Date if valid, nil otherwise
+    public static func extractExpiryDate(from response: TokenRefreshResponseDTO) -> Date? {
+        return ISO8601DateFormatter().date(from: response.expiresAt)
+    }
 }
 
 // MARK: - Auth Response Mapper
@@ -279,7 +326,7 @@ public struct AuthResponseMapper {
     /// - Returns: Tuple of user, tokens, and expiry
     public static func mapLoginSuccess(from dto: LoginResponseDTO) -> (user: DomainUser?, tokens: (String, String), expiresAt: Date?) {
         let user = AuthMapper.toDomainUser(from: dto)
-        let tokens = AuthMapper.toTokens(from: dto.tokens)
+        let tokens = AuthMapper.extractTokens(from: dto)
         let expiresAt = ISO8601DateFormatter().date(from: dto.expiresAt)
         
         return (user: user, tokens: tokens, expiresAt: expiresAt)
