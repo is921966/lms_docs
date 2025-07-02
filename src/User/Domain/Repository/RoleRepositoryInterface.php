@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\Repository;
+namespace User\Domain\Repository;
 
-use App\User\Domain\Role;
+use User\Domain\Role;
 
 /**
  * Role repository interface

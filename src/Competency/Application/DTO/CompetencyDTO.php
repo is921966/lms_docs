@@ -2,7 +2,7 @@
 
 namespace Competency\Application\DTO;
 
-use Competency\Domain\Entities\Competency;
+use Competency\Domain\Competency;
 
 class CompetencyDTO
 {
@@ -38,9 +38,9 @@ class CompetencyDTO
     public static function fromEntity(Competency $competency): self
     {
         $skillLevels = [];
-        foreach ($competency->getSkillLevels() as $level) {
+        foreach ($competency->getLevels() as $level) {
             $skillLevels[] = [
-                'level' => $level->getLevel(),
+                'level' => $level->getValue(),
                 'name' => $level->getName(),
                 'description' => $level->getDescription()
             ];
@@ -50,11 +50,11 @@ class CompetencyDTO
             $competency->getId()->getValue(),
             $competency->getName(),
             $competency->getDescription(),
-            $competency->getCategory()->getId()->getValue(),
-            $competency->getCategory()->getName(),
+            $competency->getCategory()->getValue(),
+            $competency->getCategory()->getDisplayName(),
             $competency->isActive(),
             $skillLevels,
-            $competency->getRequiredForPositions()
+            [] // getRequiredForPositions doesn't exist yet
         );
     }
 

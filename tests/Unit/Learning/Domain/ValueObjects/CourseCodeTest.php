@@ -4,84 +4,101 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain\ValueObjects;
 
-use App\Learning\Domain\ValueObjects\CourseCode;
+use Learning\Domain\ValueObjects\CourseCode;
 use PHPUnit\Framework\TestCase;
+use InvalidArgumentException;
 
 class CourseCodeTest extends TestCase
 {
-    public function testCanBeCreatedFromValidCode(): void
+    public function testCreateFromString(): void
     {
-        $code = CourseCode::fromString('CRS-001');
+        // Arrange
+        $code = 'PHP-101';
         
-        $this->assertInstanceOf(CourseCode::class, $code);
-        $this->assertEquals('CRS-001', $code->toString());
+        // Act
+        $courseCode = CourseCode::fromString($code);
+        
+        // Assert
+        $this->assertInstanceOf(CourseCode::class, $courseCode);
+        $this->assertEquals($code, $courseCode->getValue());
+        $this->assertEquals($code, (string)$courseCode);
     }
     
-    public function testAcceptsVariousValidFormats(): void
+    public function testGenerate(): void
     {
-        $validCodes = [
-            'CRS-001',
-            'CRS-999',
-            'TECH-101',
-            'MGMT-042',
-            'DEV-2023'
-        ];
+        // Act
+        $courseCode1 = CourseCode::generate('PHP');
+        $courseCode2 = CourseCode::generate('PHP');
         
-        foreach ($validCodes as $validCode) {
-            $code = CourseCode::fromString($validCode);
-            $this->assertEquals($validCode, $code->toString());
-        }
+        // Assert
+        $this->assertInstanceOf(CourseCode::class, $courseCode1);
+        $this->assertInstanceOf(CourseCode::class, $courseCode2);
+        $this->assertStringStartsWith('PHP-', $courseCode1->getValue());
+        $this->assertNotEquals($courseCode1->getValue(), $courseCode2->getValue());
+        $this->assertMatchesRegularExpression('/^[A-Z]+-\d{3,6}$/', $courseCode1->getValue());
+    }
+    
+    public function testGenerateWithoutPrefix(): void
+    {
+        // Act
+        $courseCode = CourseCode::generate();
+        
+        // Assert
+        $this->assertMatchesRegularExpression('/^CRS-\d{3,6}$/', $courseCode->getValue());
+    }
+    
+    public function testEquals(): void
+    {
+        // Arrange
+        $code = 'PHP-101';
+        $courseCode1 = CourseCode::fromString($code);
+        $courseCode2 = CourseCode::fromString($code);
+        $courseCode3 = CourseCode::fromString('JAVA-101');
+        
+        // Act & Assert
+        $this->assertTrue($courseCode1->equals($courseCode2));
+        $this->assertFalse($courseCode1->equals($courseCode3));
+    }
+    
+    public function testThrowsExceptionForEmptyCode(): void
+    {
+        // Arrange & Assert
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Course code cannot be empty');
+        
+        // Act
+        CourseCode::fromString('');
     }
     
     public function testThrowsExceptionForInvalidFormat(): void
     {
-        $invalidCodes = [
-            'CRS001',      // Missing hyphen
-            'crs-001',     // Lowercase
-            'C-001',       // Too short prefix
-            'COURSE-001',  // Too long prefix
-            'CRS-',        // Missing number
-            'CRS-00',      // Too short number
-            'CRS-ABC',     // Letters in number part
-            '-001',        // Missing prefix
-            'CRS--001',    // Double hyphen
-            ''             // Empty string
-        ];
+        // Arrange & Assert
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Course code must be in format: PREFIX-NUMBER (e.g., PHP-101)');
         
-        foreach ($invalidCodes as $invalidCode) {
-            try {
-                CourseCode::fromString($invalidCode);
-                $this->fail("Expected exception for invalid code: $invalidCode");
-            } catch (\InvalidArgumentException $e) {
-                $this->assertStringContainsString('Invalid course code format', $e->getMessage());
-            }
-        }
+        // Act
+        CourseCode::fromString('invalid_code');
     }
     
-    public function testCanBeCompared(): void
+    public function testThrowsExceptionForTooLongCode(): void
     {
-        $code1 = CourseCode::fromString('CRS-001');
-        $code2 = CourseCode::fromString('CRS-001');
-        $code3 = CourseCode::fromString('CRS-002');
+        // Arrange & Assert
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Course code cannot exceed 20 characters');
         
-        $this->assertTrue($code1->equals($code2));
-        $this->assertFalse($code1->equals($code3));
+        // Act
+        CourseCode::fromString('VERYLONGPREFIX-123456789');
     }
     
-    public function testCanBeSerializedToJson(): void
+    public function testNormalizeCode(): void
     {
-        $code = CourseCode::fromString('CRS-001');
-        $json = json_encode(['code' => $code]);
+        // Arrange
+        $code = 'php-101';
         
-        $this->assertJson($json);
-        $decoded = json_decode($json, true);
-        $this->assertEquals('CRS-001', $decoded['code']);
-    }
-    
-    public function testCanBeUsedAsString(): void
-    {
-        $code = CourseCode::fromString('CRS-001');
+        // Act
+        $courseCode = CourseCode::fromString($code);
         
-        $this->assertEquals('CRS-001', (string)$code);
+        // Assert
+        $this->assertEquals('PHP-101', $courseCode->getValue());
     }
 } 

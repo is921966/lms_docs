@@ -2,19 +2,40 @@
 
 namespace Competency\Domain\Repositories;
 
-use Competency\Domain\Entities\CompetencyCategory;
-
 interface CompetencyCategoryRepositoryInterface
 {
-    public function save(CompetencyCategory $category): void;
+    /**
+     * Save category data
+     * @param array{id: string, name: string, description?: string, is_active?: bool} $category
+     */
+    public function save(array $category): void;
     
-    public function findById(string $id): ?CompetencyCategory;
+    /**
+     * Find category by ID
+     * @return object{id: string, name: string, description?: string, is_active?: bool}|null
+     */
+    public function findById(string $id): ?object;
     
-    public function findByName(string $name): ?CompetencyCategory;
+    /**
+     * Find category by name
+     * @return object{id: string, name: string, description?: string, is_active?: bool}|null
+     */
+    public function findByName(string $name): ?object;
     
+    /**
+     * Get all categories
+     * @return array<object{id: string, name: string, description?: string, is_active?: bool}>
+     */
     public function findAll(): array;
     
+    /**
+     * Get active categories
+     * @return array<object{id: string, name: string, description?: string, is_active?: bool}>
+     */
     public function findActive(): array;
     
+    /**
+     * Delete category by ID
+     */
     public function delete(string $id): void;
 } 

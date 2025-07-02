@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Infrastructure\Http;
 
-use App\Competency\Application\Service\AssessmentService;
-use App\Competency\Domain\Repository\AssessmentRepositoryInterface;
-use App\Competency\Domain\Repository\UserCompetencyRepositoryInterface;
-use App\Competency\Domain\Service\CompetencyAssessmentService;
-use App\Competency\Infrastructure\Http\AssessmentController;
-use App\Competency\Infrastructure\Repository\InMemoryAssessmentRepository;
-use App\Competency\Infrastructure\Repository\InMemoryUserCompetencyRepository;
-use App\User\Domain\ValueObjects\UserId;
-use App\Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Application\Service\AssessmentService;
+use Competency\Domain\Repository\AssessmentRepositoryInterface;
+use Competency\Domain\Repository\UserCompetencyRepositoryInterface;
+use Competency\Domain\Service\CompetencyAssessmentService;
+use Competency\Infrastructure\Http\AssessmentController;
+use Competency\Infrastructure\Repository\InMemoryAssessmentRepository;
+use Competency\Infrastructure\Repository\InMemoryUserCompetencyRepository;
+use User\Domain\ValueObjects\UserId;
+use Competency\Domain\ValueObjects\CompetencyId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain;
 
-use App\Learning\Domain\Certificate;
-use App\Learning\Domain\ValueObjects\CertificateId;
-use App\Learning\Domain\ValueObjects\CertificateNumber;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Domain\Certificate;
+use Learning\Domain\ValueObjects\CertificateId;
+use Learning\Domain\ValueObjects\CertificateNumber;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\CourseId;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class CertificateTest extends TestCase
@@ -132,7 +132,7 @@ class CertificateTest extends TestCase
         $url = $certificate->generateVerificationUrl($baseUrl);
         
         $this->assertStringStartsWith($baseUrl . '/certificates/verify/', $url);
-        $this->assertStringContainsString($certificate->getId()->toString(), $url);
+        $this->assertStringContainsString($certificate->getId()->getValue(), $url);
     }
     
     public function testCanGenerateQrCode(): void

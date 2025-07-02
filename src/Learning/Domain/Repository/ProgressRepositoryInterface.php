@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\Repository;
+namespace Learning\Domain\Repository;
 
-use App\Learning\Domain\Progress;
-use App\Learning\Domain\ValueObjects\ProgressId;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\LessonId;
-use App\Learning\Domain\ValueObjects\ModuleId;
+use Learning\Domain\Progress;
+use Learning\Domain\ValueObjects\ProgressId;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\LessonId;
+use Learning\Domain\ValueObjects\ModuleId;
 
 interface ProgressRepositoryInterface
 {

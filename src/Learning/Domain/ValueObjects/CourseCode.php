@@ -2,55 +2,65 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\ValueObjects;
+namespace Learning\Domain\ValueObjects;
 
-final class CourseCode implements \JsonSerializable
+use InvalidArgumentException;
+
+final class CourseCode
 {
-    private const PATTERN = '/^[A-Z]{2,5}-\d{3,}$/';
-    
-    private string $code;
-    
-    private function __construct(string $code)
-    {
-        $this->validateCode($code);
-        $this->code = $code;
+    private function __construct(
+        private readonly string $value
+    ) {
+        $this->validate($value);
     }
     
-    public static function fromString(string $code): self
+    public static function fromString(string $value): self
     {
+        // Normalize to uppercase
+        $normalized = strtoupper(trim($value));
+        return new self($normalized);
+    }
+    
+    public static function generate(string $prefix = 'CRS'): self
+    {
+        $prefix = strtoupper(trim($prefix));
+        if (empty($prefix)) {
+            $prefix = 'CRS';
+        }
+        
+        $number = random_int(100, 999999);
+        $code = sprintf('%s-%03d', $prefix, $number);
+        
         return new self($code);
     }
     
-    private function validateCode(string $code): void
+    public function getValue(): string
     {
-        if (empty($code)) {
-            throw new \InvalidArgumentException('Invalid course code format: code cannot be empty');
-        }
-        
-        if (!preg_match(self::PATTERN, $code)) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid course code format: "%s". Expected format: 2-5 uppercase letters, hyphen, 3+ digits (e.g., CRS-001)', $code)
-            );
-        }
-    }
-    
-    public function toString(): string
-    {
-        return $this->code;
+        return $this->value;
     }
     
     public function equals(self $other): bool
     {
-        return $this->code === $other->code;
-    }
-    
-    public function jsonSerialize(): string
-    {
-        return $this->code;
+        return $this->value === $other->value;
     }
     
     public function __toString(): string
     {
-        return $this->code;
+        return $this->value;
+    }
+    
+    private function validate(string $value): void
+    {
+        if (empty($value)) {
+            throw new InvalidArgumentException('Course code cannot be empty');
+        }
+        
+        if (strlen($value) > 20) {
+            throw new InvalidArgumentException('Course code cannot exceed 20 characters');
+        }
+        
+        if (!preg_match('/^[A-Z]+-\d+$/', $value)) {
+            throw new InvalidArgumentException('Course code must be in format: PREFIX-NUMBER (e.g., PHP-101)');
+        }
     }
 } 

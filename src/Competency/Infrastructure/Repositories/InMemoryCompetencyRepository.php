@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Competency\Infrastructure\Repositories;
 
-use Competency\Domain\Entities\Competency;
+use Competency\Domain\Competency;
 use Competency\Domain\Repositories\CompetencyRepositoryInterface;
 use Competency\Domain\ValueObjects\CategoryId;
 use Competency\Domain\ValueObjects\CompetencyId;
@@ -44,7 +44,7 @@ class InMemoryCompetencyRepository implements CompetencyRepositoryInterface
         return array_values(
             array_filter(
                 $this->competencies,
-                fn(Competency $competency) => $competency->getCategory()->getId()->getValue() === $categoryId
+                fn(Competency $competency) => $competency->getCategory()->getValue() === $categoryId
             )
         );
     }

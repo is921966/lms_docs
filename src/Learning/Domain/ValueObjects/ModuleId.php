@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\ValueObjects;
+namespace Learning\Domain\ValueObjects;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -34,6 +34,11 @@ final class ModuleId implements \JsonSerializable
     {
         return $this->uuid->toString();
     }
+
+    public function getValue(): string
+    {
+        return $this->uuid->toString();
+    }
     
     public function equals(self $other): bool
     {
@@ -42,11 +47,11 @@ final class ModuleId implements \JsonSerializable
     
     public function jsonSerialize(): string
     {
-        return $this->toString();
+        return $this->getValue();
     }
     
     public function __toString(): string
     {
-        return $this->toString();
+        return $this->getValue();
     }
 } 

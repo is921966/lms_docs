@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain;
+namespace Learning\Domain;
 
-use App\Learning\Domain\ValueObjects\CertificateId;
+use Learning\Domain\ValueObjects\CertificateId;
 
 class CertificateTemplate
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Infrastructure\Http\Controllers;
+namespace User\Infrastructure\Http\Controllers;
 
 use App\Common\Http\BaseController;
 use App\User\Domain\Service\UserServiceInterface;

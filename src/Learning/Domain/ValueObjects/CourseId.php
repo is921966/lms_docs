@@ -2,51 +2,52 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\ValueObjects;
+namespace Learning\Domain\ValueObjects;
 
+use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 
-final class CourseId implements \JsonSerializable
+final class CourseId
 {
-    private UuidInterface $uuid;
+    private function __construct(
+        private readonly string $value
+    ) {
+        $this->validate($value);
+    }
     
-    private function __construct(UuidInterface $uuid)
+    public static function fromString(string $value): self
     {
-        $this->uuid = $uuid;
+        return new self($value);
     }
     
     public static function generate(): self
     {
-        return new self(Uuid::uuid4());
+        return new self(Uuid::uuid4()->toString());
     }
     
-    public static function fromString(string $uuid): self
+    public function getValue(): string
     {
-        try {
-            return new self(Uuid::fromString($uuid));
-        } catch (\InvalidArgumentException $e) {
-            throw new \InvalidArgumentException('Invalid CourseId format: ' . $e->getMessage());
-        }
-    }
-    
-    public function toString(): string
-    {
-        return $this->uuid->toString();
+        return $this->value;
     }
     
     public function equals(self $other): bool
     {
-        return $this->uuid->equals($other->uuid);
-    }
-    
-    public function jsonSerialize(): string
-    {
-        return $this->toString();
+        return $this->value === $other->value;
     }
     
     public function __toString(): string
     {
-        return $this->toString();
+        return $this->value;
+    }
+    
+    private function validate(string $value): void
+    {
+        if (empty($value)) {
+            throw new InvalidArgumentException('Course ID cannot be empty');
+        }
+        
+        if (!preg_match('/^[a-zA-Z0-9\-]+$/', $value)) {
+            throw new InvalidArgumentException('Course ID can only contain letters, numbers, and hyphens');
+        }
     }
 } 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Application\DTO;
 
-use App\Competency\Application\DTO\AssessmentDTO;
-use App\Competency\Domain\CompetencyAssessment;
-use App\Competency\Domain\Service\CompetencyAssessmentService;
-use App\Competency\Domain\ValueObjects\AssessmentScore;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\User\Domain\ValueObjects\UserId;
+use Competency\Application\DTO\AssessmentDTO;
+use Competency\Domain\CompetencyAssessment;
+use Competency\Domain\Service\CompetencyAssessmentService;
+use Competency\Domain\ValueObjects\AssessmentScore;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class AssessmentDTOTest extends TestCase

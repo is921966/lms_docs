@@ -59,10 +59,10 @@ public struct CourseProgress: NumericValueObject {
     }
 }
 
-// MARK: - Competency Level
+// MARK: - Domain Competency Level
 
-/// Level of competency mastery
-public enum CompetencyLevel: String, CaseIterable, Codable {
+/// Level of competency mastery (Domain layer)
+public enum DomainCompetencyLevel: String, CaseIterable, Codable {
     case novice = "NOVICE"
     case beginner = "BEGINNER"
     case intermediate = "INTERMEDIATE"
@@ -103,12 +103,12 @@ public enum CompetencyLevel: String, CaseIterable, Codable {
     }
     
     /// Check if this level is higher than another
-    public func isHigherThan(_ other: CompetencyLevel) -> Bool {
+    public func isHigherThan(_ other: DomainCompetencyLevel) -> Bool {
         return self.numericValue > other.numericValue
     }
     
     /// Get the next level
-    public var nextLevel: CompetencyLevel? {
+    public var nextLevel: DomainCompetencyLevel? {
         switch self {
         case .novice: return .beginner
         case .beginner: return .intermediate

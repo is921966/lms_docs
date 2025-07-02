@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Infrastructure\Repositories;
 
-use Competency\Domain\Entities\CompetencyCategory;
-use Competency\Domain\ValueObjects\CategoryId;
+use Competency\Domain\ValueObjects\CompetencyCategory;
 use Competency\Infrastructure\Repositories\InMemoryCompetencyCategoryRepository;
 use PHPUnit\Framework\TestCase;
 

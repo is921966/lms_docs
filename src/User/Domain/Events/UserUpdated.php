@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\Events;
+namespace User\Domain\Events;
 
-use App\User\Domain\ValueObjects\UserId;
+use User\Domain\ValueObjects\UserId;
 
 /**
  * Domain event: User updated

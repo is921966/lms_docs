@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain\ValueObjects;
 
-use App\Learning\Domain\ValueObjects\LessonId;
+use Learning\Domain\ValueObjects\LessonId;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -16,7 +16,7 @@ class LessonIdTest extends TestCase
         $lessonId = LessonId::fromString($uuid);
         
         $this->assertInstanceOf(LessonId::class, $lessonId);
-        $this->assertEquals($uuid, $lessonId->toString());
+        $this->assertEquals($uuid, $lessonId->getValue());
     }
     
     public function testCanGenerateNewId(): void
@@ -24,7 +24,7 @@ class LessonIdTest extends TestCase
         $lessonId = LessonId::generate();
         
         $this->assertInstanceOf(LessonId::class, $lessonId);
-        $this->assertTrue(Uuid::isValid($lessonId->toString()));
+        $this->assertTrue(Uuid::isValid($lessonId->getValue()));
     }
     
     public function testThrowsExceptionForInvalidUuid(): void

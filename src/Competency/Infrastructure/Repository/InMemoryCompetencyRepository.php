@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Infrastructure\Repository;
+namespace Competency\Infrastructure\Repository;
 
-use App\Competency\Domain\Competency;
-use App\Competency\Domain\Repository\CompetencyRepositoryInterface;
-use App\Competency\Domain\ValueObjects\CompetencyCategory;
-use App\Competency\Domain\ValueObjects\CompetencyCode;
-use App\Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\Competency;
+use Competency\Domain\Repository\CompetencyRepositoryInterface;
+use Competency\Domain\ValueObjects\CompetencyCategory;
+use Competency\Domain\ValueObjects\CompetencyCode;
+use Competency\Domain\ValueObjects\CompetencyId;
 
 class InMemoryCompetencyRepository implements CompetencyRepositoryInterface
 {

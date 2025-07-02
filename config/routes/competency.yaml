@@ -1,0 +1,73 @@
+# Competency Management Routes
+
+competency_list:
+    path: /api/v1/competencies
+    controller: Competency\Http\Controllers\CompetencyController::index
+    methods: GET
+
+competency_show:
+    path: /api/v1/competencies/{id}
+    controller: Competency\Http\Controllers\CompetencyController::show
+    methods: GET
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+competency_create:
+    path: /api/v1/competencies
+    controller: Competency\Http\Controllers\CompetencyController::store
+    methods: POST
+    defaults:
+        _route: create_competency
+
+competency_update:
+    path: /api/v1/competencies/{id}
+    controller: Competency\Http\Controllers\CompetencyController::update
+    methods: PUT
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+    defaults:
+        _route: update_competency
+
+competency_delete:
+    path: /api/v1/competencies/{id}
+    controller: Competency\Http\Controllers\CompetencyController::destroy
+    methods: DELETE
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+    defaults:
+        _route: delete_competency
+
+competency_assess:
+    path: /api/v1/competencies/{id}/assess
+    controller: Competency\Http\Controllers\CompetencyController::assess
+    methods: POST
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+    defaults:
+        _route: assess_competency
+
+# Competency Category Routes
+
+category_list:
+    path: /api/v1/competency-categories
+    controller: Competency\Http\Controllers\CompetencyCategoryController::index
+    methods: GET
+
+category_show:
+    path: /api/v1/competency-categories/{id}
+    controller: Competency\Http\Controllers\CompetencyCategoryController::show
+    methods: GET
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+category_create:
+    path: /api/v1/competency-categories
+    controller: Competency\Http\Controllers\CompetencyCategoryController::store
+    methods: POST
+
+category_update:
+    path: /api/v1/competency-categories/{id}
+    controller: Competency\Http\Controllers\CompetencyCategoryController::update
+    methods: PUT
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' 

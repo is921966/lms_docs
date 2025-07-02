@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\DTO;
+namespace Learning\Application\DTO;
 
-use App\Learning\Domain\Module;
+use Learning\Domain\Module;
 
 final class ModuleDTO
 {
@@ -42,8 +42,8 @@ final class ModuleDTO
     public static function fromEntity(Module $module, int $completedLessons = 0): self
     {
         return new self(
-            id: $module->getId()->toString(),
-            courseId: $module->getCourseId()->toString(),
+            id: $module->getId()->getValue(),
+            courseId: $module->getCourseId()->getValue(),
             title: $module->getTitle(),
             description: $module->getDescription(),
             orderIndex: $module->getOrderIndex(),

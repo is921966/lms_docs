@@ -8,6 +8,7 @@ class TokenManager {
     private let accessTokenKey = "ru.tsum.lms.accessToken"
     private let refreshTokenKey = "ru.tsum.lms.refreshToken"
     private let userIdKey = "ru.tsum.lms.userId"
+    private let tokenExpiryKey = "ru.tsum.lms.tokenExpiry"
 
     private init() {}
 
@@ -41,9 +42,65 @@ class TokenManager {
         set { UserDefaults.standard.set(newValue, forKey: userIdKey) }
     }
 
+    // MARK: - Token Expiry Date
+    var tokenExpiryDate: Date? {
+        get {
+            guard let timestamp = UserDefaults.standard.object(forKey: tokenExpiryKey) as? TimeInterval else {
+                return nil
+            }
+            return Date(timeIntervalSince1970: timestamp)
+        }
+        set {
+            if let date = newValue {
+                UserDefaults.standard.set(date.timeIntervalSince1970, forKey: tokenExpiryKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: tokenExpiryKey)
+            }
+        }
+    }
+
     // MARK: - Token Management
     var isAuthenticated: Bool {
-        accessToken != nil
+        guard let token = accessToken, !token.isEmpty else {
+            return false
+        }
+        
+        // Check if token is expired
+        if let expiryDate = tokenExpiryDate {
+            return Date() < expiryDate
+        }
+        
+        // If no expiry date, assume token is valid
+        return true
+    }
+
+    /// Check if token is expired
+    var isTokenExpired: Bool {
+        guard let expiryDate = tokenExpiryDate else {
+            return false // No expiry date means we don't know, assume valid
+        }
+        
+        return Date() >= expiryDate
+    }
+
+    /// Check if token needs refresh (expires in less than 5 minutes)
+    var needsRefresh: Bool {
+        guard let expiryDate = tokenExpiryDate else {
+            return false
+        }
+        
+        let fiveMinutesFromNow = Date().addingTimeInterval(300)
+        return fiveMinutesFromNow >= expiryDate
+    }
+
+    /// Time remaining until token expires
+    var timeUntilExpiry: TimeInterval {
+        guard let expiryDate = tokenExpiryDate else {
+            return 0
+        }
+        
+        let remaining = expiryDate.timeIntervalSince(Date())
+        return max(0, remaining)
     }
 
     func saveTokens(accessToken: String, refreshToken: String) {
@@ -51,10 +108,36 @@ class TokenManager {
         self.refreshToken = refreshToken
     }
 
+    func saveTokens(accessToken: String, refreshToken: String, expiryDate: Date) {
+        self.accessToken = accessToken
+        self.refreshToken = refreshToken
+        self.tokenExpiryDate = expiryDate
+    }
+
     func clearTokens() {
         accessToken = nil
         refreshToken = nil
         userId = nil
+        tokenExpiryDate = nil
+    }
+
+    // MARK: - Token Validation
+    
+    /// Validate current tokens and return status
+    func validateTokens() -> TokenValidationResult {
+        guard let accessToken = accessToken, !accessToken.isEmpty else {
+            return .noToken
+        }
+        
+        if isTokenExpired {
+            return .expired
+        }
+        
+        if needsRefresh {
+            return .needsRefresh
+        }
+        
+        return .valid
     }
 
     // MARK: - Keychain Operations
@@ -104,5 +187,36 @@ class TokenManager {
         ]
 
         SecItemDelete(query as CFDictionary)
+    }
+}
+
+// MARK: - Token Validation Result
+
+enum TokenValidationResult {
+    case valid
+    case needsRefresh
+    case expired
+    case noToken
+    
+    var isValid: Bool {
+        switch self {
+        case .valid, .needsRefresh:
+            return true
+        case .expired, .noToken:
+            return false
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .valid:
+            return "Token is valid"
+        case .needsRefresh:
+            return "Token needs refresh"
+        case .expired:
+            return "Token is expired"
+        case .noToken:
+            return "No token available"
+        }
     }
 }

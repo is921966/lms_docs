@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Application\DTO;
 
-use App\Learning\Application\DTO\ModuleDTO;
-use App\Learning\Domain\Module;
-use App\Learning\Domain\ValueObjects\CourseId;
+use Learning\Application\DTO\ModuleDTO;
+use Learning\Domain\Module;
+use Learning\Domain\ValueObjects\CourseId;
 use PHPUnit\Framework\TestCase;
 
 class ModuleDTOTest extends TestCase
@@ -44,8 +44,8 @@ class ModuleDTOTest extends TestCase
         
         $dto = ModuleDTO::fromEntity($module);
         
-        $this->assertEquals($module->getId()->toString(), $dto->id);
-        $this->assertEquals($module->getCourseId()->toString(), $dto->courseId);
+        $this->assertEquals($module->getId()->getValue(), $dto->id);
+        $this->assertEquals($module->getCourseId()->getValue(), $dto->courseId);
         $this->assertEquals($module->getTitle(), $dto->title);
         $this->assertEquals($module->getDescription(), $dto->description);
         $this->assertEquals($module->getOrderIndex(), $dto->orderIndex);

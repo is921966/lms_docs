@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Domain\ValueObjects;
 
-use App\Competency\Domain\ValueObjects\AssessmentScore;
+use Competency\Domain\ValueObjects\AssessmentScore;
 use PHPUnit\Framework\TestCase;
 
 class AssessmentScoreTest extends TestCase

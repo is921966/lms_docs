@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain\ValueObjects;
 
-use App\Learning\Domain\ValueObjects\ProgressId;
+use Learning\Domain\ValueObjects\ProgressId;
 use PHPUnit\Framework\TestCase;
 
 class ProgressIdTest extends TestCase
@@ -15,7 +15,7 @@ class ProgressIdTest extends TestCase
         $progressId = ProgressId::fromString($uuid);
         
         $this->assertInstanceOf(ProgressId::class, $progressId);
-        $this->assertEquals($uuid, $progressId->toString());
+        $this->assertEquals($uuid, $progressId->getValue());
     }
     
     public function testCanBeGenerated(): void
@@ -25,7 +25,7 @@ class ProgressIdTest extends TestCase
         $this->assertInstanceOf(ProgressId::class, $progressId);
         $this->assertMatchesRegularExpression(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
-            $progressId->toString()
+            $progressId->getValue()
         );
     }
     

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Infrastructure\Http\Controllers;
+namespace Learning\Infrastructure\Http\Controllers;
 
-use App\Learning\Application\Service\CourseService;
-use App\Learning\Application\DTO\CourseDTO;
+use Learning\Application\Service\CourseService;
+use Learning\Application\DTO\CourseDTO;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -77,7 +77,7 @@ class CourseController
             $course = $this->courseService->update($id, $data);
             
             return new JsonResponse(['data' => $course]);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -96,7 +96,7 @@ class CourseController
             }
             
             return new JsonResponse(['error' => 'Failed to publish course'], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -113,7 +113,7 @@ class CourseController
             }
             
             return new JsonResponse(['error' => 'Failed to archive course'], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);

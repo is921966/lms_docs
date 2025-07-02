@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\ValueObjects;
+namespace Learning\Domain\ValueObjects;
 
 final class EnrollmentId
 {
@@ -28,6 +28,11 @@ final class EnrollmentId
     }
     
     public function toString(): string
+    {
+        return $this->value;
+    }
+
+    public function getValue(): string
     {
         return $this->value;
     }

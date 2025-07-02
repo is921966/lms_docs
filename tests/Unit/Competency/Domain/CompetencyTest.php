@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Domain;
 
-use App\Competency\Domain\Competency;
-use App\Competency\Domain\ValueObjects\CompetencyCategory;
-use App\Competency\Domain\ValueObjects\CompetencyCode;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\Competency\Domain\Events\CompetencyCreated;
-use App\Competency\Domain\Events\CompetencyUpdated;
-use App\Competency\Domain\Events\CompetencyDeactivated;
+use Competency\Domain\Competency;
+use Competency\Domain\ValueObjects\CompetencyCategory;
+use Competency\Domain\ValueObjects\CompetencyCode;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Domain\Events\CompetencyCreated;
+use Competency\Domain\Events\CompetencyUpdated;
+use Competency\Domain\Events\CompetencyDeactivated;
 use PHPUnit\Framework\TestCase;
 
 class CompetencyTest extends TestCase

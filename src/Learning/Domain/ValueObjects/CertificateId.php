@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\ValueObjects;
+namespace Learning\Domain\ValueObjects;
 
 final class CertificateId
 {
@@ -28,6 +28,11 @@ final class CertificateId
     }
     
     public function toString(): string
+    {
+        return $this->value;
+    }
+
+    public function getValue(): string
     {
         return $this->value;
     }

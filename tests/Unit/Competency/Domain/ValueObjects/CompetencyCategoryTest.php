@@ -3,7 +3,7 @@
 namespace Tests\Unit\Competency\Domain\ValueObjects;
 
 use Tests\TestCase;
-use App\Competency\Domain\ValueObjects\CompetencyCategory;
+use Competency\Domain\ValueObjects\CompetencyCategory;
 
 class CompetencyCategoryTest extends TestCase
 {

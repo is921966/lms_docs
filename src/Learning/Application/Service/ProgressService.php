@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\Service;
+namespace Learning\Application\Service;
 
-use App\Common\Exceptions\BusinessLogicException;
-use App\Common\Exceptions\NotFoundException;
-use App\Learning\Application\DTO\ProgressDTO;
-use App\Learning\Domain\Progress;
-use App\Learning\Domain\Repository\ProgressRepositoryInterface;
-use App\Learning\Domain\Repository\EnrollmentRepositoryInterface;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\EnrollmentStatus;
-use App\Learning\Domain\ValueObjects\LessonId;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\User\Domain\ValueObjects\UserId;
+use Common\Exceptions\BusinessLogicException;
+use Common\Exceptions\NotFoundException;
+use Learning\Application\DTO\ProgressDTO;
+use Learning\Domain\Progress;
+use Learning\Domain\Repository\ProgressRepositoryInterface;
+use Learning\Domain\Repository\EnrollmentRepositoryInterface;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\EnrollmentStatus;
+use Learning\Domain\ValueObjects\LessonId;
+use Learning\Domain\ValueObjects\CourseId;
+use User\Domain\ValueObjects\UserId;
 
 class ProgressService
 {

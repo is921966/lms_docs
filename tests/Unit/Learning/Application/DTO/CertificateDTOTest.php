@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Application\DTO;
 
-use App\Learning\Application\DTO\CertificateDTO;
-use App\Learning\Domain\Certificate;
-use App\Learning\Domain\ValueObjects\CertificateNumber;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Application\DTO\CertificateDTO;
+use Learning\Domain\Certificate;
+use Learning\Domain\ValueObjects\CertificateNumber;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class CertificateDTOTest extends TestCase
@@ -51,7 +51,7 @@ class CertificateDTOTest extends TestCase
         
         $dto = CertificateDTO::fromEntity($certificate);
         
-        $this->assertEquals($certificate->getId()->toString(), $dto->id);
+        $this->assertEquals($certificate->getId()->getValue(), $dto->id);
         $this->assertEquals($certificate->getUserId()->getValue(), $dto->userId);
         $this->assertEquals($certificate->getCertificateNumber()->getValue(), $dto->certificateNumber);
         $this->assertEquals($certificate->getCourseName(), $dto->courseName);

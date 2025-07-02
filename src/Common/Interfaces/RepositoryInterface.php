@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Interfaces;
+namespace Common\Interfaces;
 
 /**
  * Base repository interface for all entities

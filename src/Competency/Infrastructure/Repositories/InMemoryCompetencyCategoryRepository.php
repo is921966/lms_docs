@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Competency\Infrastructure\Repositories;
 
-use Competency\Domain\Entities\CompetencyCategory;
 use Competency\Domain\Repositories\CompetencyCategoryRepositoryInterface;
-use Competency\Domain\ValueObjects\CategoryId;
 
 /**
  * In-memory implementation of CompetencyCategoryRepository for testing
@@ -14,24 +12,34 @@ use Competency\Domain\ValueObjects\CategoryId;
 class InMemoryCompetencyCategoryRepository implements CompetencyCategoryRepositoryInterface
 {
     /**
-     * @var array<string, CompetencyCategory>
+     * @var array<string, object>
      */
     private array $categories = [];
 
-    public function save(CompetencyCategory $category): void
+    public function save(array $category): void
     {
-        $this->categories[$category->getId()->getValue()] = $category;
+        if (!isset($category['id'])) {
+            throw new \InvalidArgumentException('Category must have an id');
+        }
+        
+        $categoryObject = (object) array_merge([
+            'name' => '',
+            'description' => '',
+            'is_active' => true
+        ], $category);
+        
+        $this->categories[$category['id']] = $categoryObject;
     }
 
-    public function findById(string $id): ?CompetencyCategory
+    public function findById(string $id): ?object
     {
         return $this->categories[$id] ?? null;
     }
 
-    public function findByName(string $name): ?CompetencyCategory
+    public function findByName(string $name): ?object
     {
         foreach ($this->categories as $category) {
-            if ($category->getName() === $name) {
+            if ($category->name === $name) {
                 return $category;
             }
         }
@@ -48,7 +56,7 @@ class InMemoryCompetencyCategoryRepository implements CompetencyCategoryReposito
         return array_values(
             array_filter(
                 $this->categories,
-                fn(CompetencyCategory $category) => $category->isActive()
+                fn(object $category) => $category->is_active ?? true
             )
         );
     }
@@ -61,22 +69,6 @@ class InMemoryCompetencyCategoryRepository implements CompetencyCategoryReposito
     /**
      * Additional helper methods for testing
      */
-    public function findByParentId(?string $parentId): array
-    {
-        return array_values(
-            array_filter(
-                $this->categories,
-                function (CompetencyCategory $category) use ($parentId) {
-                    if ($parentId === null) {
-                        return !$category->hasParent();
-                    }
-                    return $category->hasParent() && 
-                           $category->getParent()->getId()->getValue() === $parentId;
-                }
-            )
-        );
-    }
-
     public function exists(string $id): bool
     {
         return isset($this->categories[$id]);
@@ -97,4 +89,21 @@ class InMemoryCompetencyCategoryRepository implements CompetencyCategoryReposito
     {
         return count($this->categories);
     }
-}
+    
+    /**
+     * Initialize with default categories
+     */
+    public function initializeDefaults(): void
+    {
+        $defaultCategories = [
+            ['id' => 'technical', 'name' => 'Technical Skills', 'description' => 'Technical competencies'],
+            ['id' => 'soft', 'name' => 'Soft Skills', 'description' => 'Interpersonal and communication skills'],
+            ['id' => 'leadership', 'name' => 'Leadership', 'description' => 'Leadership and management skills'],
+            ['id' => 'business', 'name' => 'Business', 'description' => 'Business and domain knowledge']
+        ];
+        
+        foreach ($defaultCategories as $category) {
+            $this->save($category);
+        }
+    }
+} 

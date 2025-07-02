@@ -148,7 +148,8 @@ struct UsersListView: View {
         }
         .sheet(item: $selectedUser) { user in
             NavigationView {
-                UserDetailView(user: user)
+                Text("User Details: \(user.fullName)")
+                    .navigationTitle(user.fullName)
             }
         }
         .onAppear {
@@ -467,19 +468,6 @@ struct AddUserView: View {
                 }
             }
         }
-    }
-}
-
-struct UserDetailView: View {
-    let user: UserResponse
-
-    var body: some View {
-        VStack {
-            Text("Детали пользователя")
-                .font(.title)
-            Text(user.fullName)
-        }
-        .navigationTitle(user.fullName)
     }
 }
 

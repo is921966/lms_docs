@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Traits;
+namespace Common\Traits;
 
 use Psr\Cache\CacheItemPoolInterface;
 

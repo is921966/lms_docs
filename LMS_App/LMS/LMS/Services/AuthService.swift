@@ -6,12 +6,13 @@ final class AuthService: ObservableObject {
     static let shared = AuthService()
 
     @Published private(set) var isAuthenticated = false
-    @Published var currentUser: User?
+    @Published var currentUser: DomainUser?
     @Published private(set) var isLoading = false
     @Published private(set) var error: NetworkError?
+    @Published private(set) var authStatus: AuthStatusDTO?
 
     private let networkService = NetworkService.shared
-    var cancellables = Set<AnyCancellable>()  // Made public for external use
+    var cancellables = Set<AnyCancellable>()
 
     private init() {
         // Check if user is already authenticated
@@ -23,26 +24,49 @@ final class AuthService: ObservableObject {
         isAuthenticated = TokenManager.shared.isAuthenticated
 
         if isAuthenticated {
-            // Try to load user info from cache
             loadCachedUser()
+            updateAuthStatus()
         }
     }
 
     private func loadCachedUser() {
-        // TODO: Implement user caching
+        // Load user from UserDefaults using DTO
+        if let userData = UserDefaults.standard.data(forKey: "currentUser"),
+           let authUserProfileDTO = try? JSONDecoder().decode(AuthUserProfileDTO.self, from: userData) {
+            
+            // Convert AuthUserProfileDTO to DomainUser
+            self.currentUser = AuthMapper.toDomainUser(from: authUserProfileDTO)
+            self.isAuthenticated = true
+        }
     }
 
-    // MARK: - Login
-    func login(email: String, password: String) -> AnyPublisher<User, NetworkError> {
+    private func updateAuthStatus() {
+        let tokenExpiresAt = TokenManager.shared.tokenExpiryDate
+        
+        authStatus = AuthMapper.createAuthStatus(
+            isAuthenticated: isAuthenticated,
+            user: currentUser,
+            tokenExpiresAt: tokenExpiresAt,
+            lastLoginAt: currentUser?.lastLoginAt
+        )
+    }
+
+    // MARK: - Login with DTO
+    func login(email: String, password: String, rememberMe: Bool = false) -> AnyPublisher<DomainUser, NetworkError> {
         isLoading = true
         error = nil
 
-        let loginRequest = LoginRequest(email: email, password: password)
+        let loginRequestDTO = AuthMapper.createLoginRequest(
+            email: email,
+            password: password,
+            rememberMe: rememberMe,
+            deviceId: UIDevice.current.identifierForVendor?.uuidString
+        )
 
         return networkService.post(
             endpoint: "/auth/login",
-            body: loginRequest,
-            responseType: LoginResponse.self
+            body: loginRequestDTO,
+            responseType: LoginResponseDTO.self
         )
         .handleEvents(
             receiveOutput: { [weak self] response in
@@ -63,18 +87,26 @@ final class AuthService: ObservableObject {
         .eraseToAnyPublisher()
     }
 
-    // MARK: - Logout
-    func logout() -> AnyPublisher<Void, NetworkError> {
+    // MARK: - Logout with DTO
+    func logout(logoutAllDevices: Bool = false) -> AnyPublisher<Void, NetworkError> {
         isLoading = true
+
+        let logoutRequestDTO = AuthMapper.createLogoutRequest(
+            refreshToken: TokenManager.shared.refreshToken,
+            deviceId: UIDevice.current.identifierForVendor?.uuidString,
+            logoutAllDevices: logoutAllDevices
+        )
 
         return networkService.post(
             endpoint: "/auth/logout",
-            body: EmptyBody(),
+            body: logoutRequestDTO,
             responseType: EmptyResponse.self
         )
-        .handleEvents            { [weak self] _ in
+        .handleEvents(
+            receiveOutput: { [weak self] _ in
                 self?.clearAuthState()
             }
+        )
         .map { _ in () }
         .catch { [weak self] _ -> AnyPublisher<Void, NetworkError> in
             // Even if logout fails on server, clear local state
@@ -84,53 +116,87 @@ final class AuthService: ObservableObject {
         .eraseToAnyPublisher()
     }
 
-    // MARK: - Refresh Token
+    // MARK: - Refresh Token with DTO
     func refreshToken() -> AnyPublisher<Void, NetworkError> {
         guard let refreshToken = TokenManager.shared.refreshToken else {
             return Fail(error: NetworkError.unauthorized)
                 .eraseToAnyPublisher()
         }
 
-        let request = RefreshTokenRequest(refreshToken: refreshToken)
+        let refreshRequestDTO = AuthMapper.createTokenRefreshRequest(
+            refreshToken: refreshToken,
+            deviceId: UIDevice.current.identifierForVendor?.uuidString
+        )
 
         return networkService.post(
             endpoint: "/auth/refresh",
-            body: request,
-            responseType: TokensResponse.self
+            body: refreshRequestDTO,
+            responseType: TokenRefreshResponseDTO.self
         )
-        .handleEvents            { [weak self] response in
-                TokenManager.shared.saveTokens(
-                    accessToken: response.accessToken,
-                    refreshToken: response.refreshToken
-                )
+        .handleEvents(
+            receiveOutput: { [weak self] response in
+                self?.handleTokenRefreshResponse(response)
             }
+        )
         .map { _ in () }
         .eraseToAnyPublisher()
     }
 
-    // MARK: - Get Current User
-    func getCurrentUser() -> AnyPublisher<User, NetworkError> {
+    // MARK: - Get Current User with DTO
+    func getCurrentUser() -> AnyPublisher<DomainUser, NetworkError> {
         networkService.get(
             endpoint: "/users/me",
-            responseType: UserResponse.self
+            responseType: AuthUserProfileDTO.self
         )
-        .handleEvents            { [weak self] userResponse in
-                self?.currentUser = User(from: userResponse)
+        .handleEvents(
+            receiveOutput: { [weak self] authUserProfileDTO in
+                // Convert AuthUserProfileDTO to DomainUser
+                self?.currentUser = AuthMapper.toDomainUser(from: authUserProfileDTO)
+                self?.updateAuthStatus()
+                
+                // Save to cache
+                if let userData = try? JSONEncoder().encode(authUserProfileDTO) {
+                    UserDefaults.standard.set(userData, forKey: "currentUser")
+                }
             }
+        )
         .compactMap { [weak self] _ in
             self?.currentUser
         }
         .eraseToAnyPublisher()
     }
 
+    // MARK: - Authentication State Checks
+    
+    /// Check if current token needs refresh
+    func needsTokenRefresh() -> Bool {
+        guard let expiryDate = TokenManager.shared.tokenExpiryDate else { return false }
+        // Refresh if token expires within 5 minutes
+        return Date().addingTimeInterval(300) >= expiryDate
+    }
+    
+    /// Get time remaining until token expires
+    func tokenTimeRemaining() -> TimeInterval {
+        guard let expiryDate = TokenManager.shared.tokenExpiryDate else {
+            return 0
+        }
+        
+        return expiryDate.timeIntervalSinceNow
+    }
+    
+    /// Check if token is expired
+    func isTokenExpired() -> Bool {
+        guard let expiryDate = TokenManager.shared.tokenExpiryDate else {
+            return true
+        }
+        
+        return Date() >= expiryDate
+    }
+
     // MARK: - User Management
     func loadCurrentUser() {
-        // Load user from UserDefaults or keychain
-        if let userData = UserDefaults.standard.data(forKey: "currentUser"),
-           let userResponse = try? JSONDecoder().decode(UserResponse.self, from: userData) {
-            self.currentUser = User(from: userResponse)
-            self.isAuthenticated = true
-        }
+        loadCachedUser()
+        updateAuthStatus()
     }
 
     // MARK: - Private Methods
@@ -140,26 +206,77 @@ final class AuthService: ObservableObject {
         isAuthenticated = false
         isLoading = false
         error = nil
+        authStatus = nil
+        
+        // Clear cached user data
+        UserDefaults.standard.removeObject(forKey: "currentUser")
     }
 
-    private func handleLoginResponse(_ response: LoginResponse) {
+    private func handleLoginResponse(_ response: LoginResponseDTO) {
+        // Validate response DTO
+        let validationErrors = response.validationErrors()
+        if !validationErrors.isEmpty {
+            error = NetworkError.invalidResponse("Invalid login response: \(validationErrors.joined(separator: ", "))")
+            return
+        }
+        
+        // Extract tokens and expiry date
+        let tokens = AuthMapper.extractTokens(from: response)
+        let expiresAt = AuthMapper.extractExpiryDate(from: response)
+        
+        // Save tokens
         TokenManager.shared.saveTokens(
-            accessToken: response.tokens.accessToken,
-            refreshToken: response.tokens.refreshToken
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken
         )
+        
+        // Set expiry date if available
+        if let expiresAt = expiresAt {
+            TokenManager.shared.tokenExpiryDate = expiresAt
+        }
 
+        // Convert user profile to domain user
+        currentUser = AuthMapper.toDomainUser(from: response)
+
+        // Update state
         isAuthenticated = true
-        currentUser = User(from: response.user)
+        updateAuthStatus()
 
-        // Save user data to UserDefaults
+        // Save user data to cache
         if let userData = try? JSONEncoder().encode(response.user) {
             UserDefaults.standard.set(userData, forKey: "currentUser")
         }
     }
+    
+    private func handleTokenRefreshResponse(_ response: TokenRefreshResponseDTO) {
+        // Validate response DTO
+        let validationErrors = response.validationErrors()
+        if !validationErrors.isEmpty {
+            error = NetworkError.invalidResponse("Invalid token refresh response: \(validationErrors.joined(separator: ", "))")
+            return
+        }
+        
+        // Extract tokens and expiry date
+        let tokens = AuthMapper.extractTokens(from: response)
+        let expiresAt = AuthMapper.extractExpiryDate(from: response)
+        
+        // Save new tokens
+        TokenManager.shared.saveTokens(
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken
+        )
+        
+        // Set expiry date if available
+        if let expiresAt = expiresAt {
+            TokenManager.shared.tokenExpiryDate = expiresAt
+        }
+        
+        // Update auth status
+        updateAuthStatus()
+    }
 }
 
 // MARK: - Helper Types
-private struct EmptyBody: Encodable {}
 private struct EmptyResponse: Decodable {}
 
 // MARK: - Notification Names

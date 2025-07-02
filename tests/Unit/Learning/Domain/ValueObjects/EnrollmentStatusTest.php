@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain\ValueObjects;
 
-use App\Learning\Domain\ValueObjects\EnrollmentStatus;
+use Learning\Domain\ValueObjects\EnrollmentStatus;
 use PHPUnit\Framework\TestCase;
 
 class EnrollmentStatusTest extends TestCase

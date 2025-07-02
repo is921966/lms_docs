@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Application\Service\Auth;
+namespace User\Application\Service\Auth;
 
 use App\Common\Exceptions\AuthorizationException;
 use App\Common\Exceptions\BusinessLogicException;

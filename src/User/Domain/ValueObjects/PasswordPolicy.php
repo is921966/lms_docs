@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\ValueObjects;
+namespace User\Domain\ValueObjects;
 
 /**
  * Password policy and validation

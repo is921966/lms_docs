@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Infrastructure\Http\Controllers;
 
-use App\Learning\Infrastructure\Http\Controllers\EnrollmentController;
-use App\Learning\Application\Service\EnrollmentService;
-use App\Learning\Application\DTO\EnrollmentDTO;
+use Learning\Infrastructure\Http\Controllers\EnrollmentController;
+use Learning\Application\Service\EnrollmentService;
+use Learning\Application\DTO\EnrollmentDTO;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;
@@ -124,7 +124,7 @@ class EnrollmentControllerTest extends TestCase
         $this->enrollmentService
             ->expects($this->once())
             ->method('enroll')
-            ->willThrowException(new \App\Common\Exceptions\BusinessLogicException('User is already enrolled'));
+            ->willThrowException(new \Common\Exceptions\BusinessLogicException('User is already enrolled'));
         
         $request = Request::create('/', 'POST', [], [], [], [], json_encode($requestData));
         $response = $this->controller->enroll($request);

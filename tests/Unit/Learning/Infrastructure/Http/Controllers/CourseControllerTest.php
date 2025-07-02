@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Infrastructure\Http\Controllers;
 
-use App\Learning\Infrastructure\Http\Controllers\CourseController;
-use App\Learning\Application\Service\CourseService;
-use App\Learning\Application\DTO\CourseDTO;
+use Learning\Infrastructure\Http\Controllers\CourseController;
+use Learning\Application\Service\CourseService;
+use Learning\Application\DTO\CourseDTO;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;
@@ -174,17 +174,13 @@ class CourseControllerTest extends TestCase
     {
         return new CourseDTO(
             id: $id,
-            code: $overrides['code'] ?? 'CRS-001',
+            courseCode: $overrides['code'] ?? 'CRS-001',
             title: $overrides['title'] ?? 'Test Course',
             description: $overrides['description'] ?? 'Test Description',
-            type: $overrides['type'] ?? 'online',
-            status: $overrides['status'] ?? 'draft',
             durationHours: $overrides['durationHours'] ?? 40,
-            maxStudents: null,
-            price: null,
-            tags: $overrides['tags'] ?? [],
-            prerequisites: [],
-            imageUrl: null,
+            instructorId: 'instructor-123',
+            status: $overrides['status'] ?? 'draft',
+            metadata: ['tags' => $overrides['tags'] ?? []],
             createdAt: '2024-01-01T00:00:00+00:00',
             updatedAt: '2024-01-01T00:00:00+00:00'
         );

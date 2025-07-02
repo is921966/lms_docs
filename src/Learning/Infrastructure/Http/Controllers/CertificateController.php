@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Infrastructure\Http\Controllers;
+namespace Learning\Infrastructure\Http\Controllers;
 
-use App\Learning\Application\Service\CertificateService;
+use Learning\Application\Service\CertificateService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,9 +31,9 @@ class CertificateController
             );
             
             return new JsonResponse(['data' => $certificate], Response::HTTP_CREATED);
-        } catch (\App\Common\Exceptions\BusinessLogicException $e) {
+        } catch (\Common\Exceptions\BusinessLogicException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -46,7 +46,7 @@ class CertificateController
             $certificate = $this->certificateService->verify($certificateNumber);
             
             return new JsonResponse(['data' => $certificate]);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -71,7 +71,7 @@ class CertificateController
             }
             
             return new JsonResponse(['error' => 'Failed to revoke certificate'], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -88,7 +88,7 @@ class CertificateController
             }
             
             return new JsonResponse(['error' => 'Failed to reinstate certificate'], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);

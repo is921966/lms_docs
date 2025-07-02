@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Infrastructure\Repositories;
 
-use Competency\Domain\Entities\Competency;
-use Competency\Domain\Entities\CompetencyCategory;
-use Competency\Domain\ValueObjects\CategoryId;
+use Competency\Domain\Competency;
+use Competency\Domain\ValueObjects\CompetencyCategory;
 use Competency\Domain\ValueObjects\CompetencyId;
-use Competency\Domain\ValueObjects\SkillLevel;
+use Competency\Domain\ValueObjects\CompetencyCode;
 use Competency\Infrastructure\Repositories\InMemoryCompetencyRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -65,22 +64,23 @@ class InMemoryCompetencyRepositoryTest extends TestCase
     public function testFindByCategory(): void
     {
         // Arrange
-        $category = $this->createCategory();
-        $competency1 = $this->createCompetencyWithCategory($category);
-        $competency2 = $this->createCompetencyWithCategory($category);
-        $competency3 = $this->createCompetency(); // Different category
+        $technicalCompetency1 = $this->createCompetency('Tech 1', 'technical');
+        $technicalCompetency2 = $this->createCompetency('Tech 2', 'technical');
+        $softCompetency = $this->createCompetency('Soft 1', 'soft');
         
-        $this->repository->save($competency1);
-        $this->repository->save($competency2);
-        $this->repository->save($competency3);
+        $this->repository->save($technicalCompetency1);
+        $this->repository->save($technicalCompetency2);
+        $this->repository->save($softCompetency);
         
         // Act
-        $result = $this->repository->findByCategory($category->getId()->getValue());
+        $technicalResults = $this->repository->findByCategory('technical');
+        $softResults = $this->repository->findByCategory('soft');
         
         // Assert
-        $this->assertCount(2, $result);
-        $this->assertEquals($category->getId()->getValue(), $result[0]->getCategory()->getId()->getValue());
-        $this->assertEquals($category->getId()->getValue(), $result[1]->getCategory()->getId()->getValue());
+        $this->assertCount(2, $technicalResults);
+        $this->assertCount(1, $softResults);
+        $this->assertEquals('technical', $technicalResults[0]->getCategory()->getValue());
+        $this->assertEquals('soft', $softResults[0]->getCategory()->getValue());
     }
 
     public function testFindAll(): void
@@ -151,30 +151,22 @@ class InMemoryCompetencyRepositoryTest extends TestCase
         $this->assertEquals(2, $this->repository->count());
     }
 
-    private function createCategory(): CompetencyCategory
+    private function createCompetency(string $name = null, string $categoryType = 'technical'): Competency
     {
-        return CompetencyCategory::create(
-            'Test Category ' . uniqid(),
-            'Test Category Description',
-            'TEST_CAT_' . uniqid()
-        );
-    }
-
-    private function createCompetency(): Competency
-    {
+        $category = match($categoryType) {
+            'technical' => CompetencyCategory::technical(),
+            'soft' => CompetencyCategory::soft(),
+            'leadership' => CompetencyCategory::leadership(),
+            'business' => CompetencyCategory::business(),
+            default => CompetencyCategory::technical()
+        };
+        
         return Competency::create(
-            'Test Competency ' . uniqid(),
-            'Test Description',
-            $this->createCategory()
-        );
-    }
-
-    private function createCompetencyWithCategory(CompetencyCategory $category): Competency
-    {
-        return Competency::create(
-            'Test Competency ' . uniqid(),
+            CompetencyId::generate(),
+            CompetencyCode::fromString('TEST-' . rand(100, 999)),
+            $name ?? 'Test Competency ' . uniqid(),
             'Test Description',
             $category
         );
     }
-}
+} 

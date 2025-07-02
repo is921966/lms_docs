@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Competency\Infrastructure\Http\CompetencyController;
-use App\Competency\Infrastructure\Http\AssessmentController;
+use Competency\Infrastructure\Http\CompetencyController;
+use Competency\Infrastructure\Http\AssessmentController;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 return function (RoutingConfigurator $routes) {

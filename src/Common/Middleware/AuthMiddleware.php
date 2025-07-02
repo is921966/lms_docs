@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Middleware;
+namespace Common\Middleware;
 
-use App\Common\Exceptions\AuthorizationException;
+use Common\Exceptions\AuthorizationException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Psr\Http\Message\ResponseInterface;

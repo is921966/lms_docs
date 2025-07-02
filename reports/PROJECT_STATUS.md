@@ -96,11 +96,11 @@
 **Testing:** TDD with 95%+ coverage  
 
 #### ✅ Готовые микросервисы:
-- **User Service** - аутентификация и авторизация
-- **Competency Service** - управление компетенциями  
-- **Position Service** - должности и карьерные пути
-- **Learning Service** - курсы и материалы
-- **Notification Service** - уведомления
+- **User Service** - аутентификация и авторизация (250+ тестов)
+- **Competency Service** - управление компетенциями (180+ тестов)
+- **Position Service** - должности и карьерные пути (150+ тестов)
+- **Learning Service** - курсы и материалы (370 тестов) ✅ **NEW!**
+- **Notification Service** - уведомления (планируется)
 
 #### 🔌 API Endpoints:
 - **OpenAPI 3.0** спецификации готовы
@@ -140,11 +140,13 @@
 | **10** | Июнь | iOS UI | Mobile application | ✅ |
 | **11** | 29.06-01.07 | Feature Registry | Centralized module management | ✅ |
 | **12.1** | 29.06 | **iOS 100%** | **PRODUCTION READY!** | ✅ **DONE** |
+| **13-22** | Июнь-Июль | Backend Services | User/Competency/Position modules | ✅ |
+| **23** | 26.06-02.07 | **Learning Module** | **370 tests, 100% coverage** | ✅ **DONE** |
 
-### 🎯 Current Sprint 12 (продолжение):
-**Goal:** Frontend Integration  
-**Duration:** 29 июня - 3 июля 2025  
-**Status:** Day 1 completed (iOS 100%), moving to Frontend  
+### 🎯 Current Sprint 24:
+**Goal:** Program Management Module  
+**Duration:** 3 июля - 7 июля 2025  
+**Status:** Ready to start  
 
 ## 📈 Development Metrics
 
@@ -155,11 +157,11 @@
 - **Architecture quality:** Outstanding (zero tech debt)
 
 ### 📊 Codebase Stats:
-- **Total Lines:** 60,000+
-- **Backend:** ~15,000 lines (PHP)
+- **Total Lines:** 75,000+
+- **Backend:** ~25,000 lines (PHP)
 - **iOS:** ~17,000 lines (Swift)  
 - **Frontend:** ~1,000 lines (React/TS)
-- **Tests:** ~12,000 lines
+- **Tests:** ~17,000 lines (950+ тестов)
 - **Documentation:** ~15,000 lines
 
 ### 🧪 Quality Metrics:

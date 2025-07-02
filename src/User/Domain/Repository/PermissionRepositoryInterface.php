@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\Repository;
+namespace User\Domain\Repository;
 
-use App\User\Domain\Permission;
+use User\Domain\Permission;
 
 /**
  * Permission repository interface

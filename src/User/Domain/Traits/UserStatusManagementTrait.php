@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\Traits;
+namespace User\Domain\Traits;
 
 /**
  * Trait for user status management
@@ -14,15 +14,14 @@ trait UserStatusManagementTrait
      */
     public function activate(): void
     {
-        if ($this->status === self::STATUS_ACTIVE) {
-            throw new \DomainException('User already active');
+        if ($this->deletedAt !== null) {
+            throw new \DomainException('Cannot activate deleted user');
         }
         
         $this->status = self::STATUS_ACTIVE;
+        $this->suspensionReason = null;
+        $this->suspendedUntil = null;
         $this->updatedAt = new \DateTimeImmutable();
-        
-        $this->removeMetadata('suspension_reason');
-        $this->removeMetadata('suspended_at');
     }
     
     /**
@@ -35,30 +34,27 @@ trait UserStatusManagementTrait
     }
     
     /**
-     * Suspend user with reason and optional until date
+     * Suspend user
      */
-    public function suspend(string $reason, ?\DateTimeInterface $until = null): void
+    public function suspend(string $reason, ?\DateTimeImmutable $until = null): void
     {
-        if ($this->status === self::STATUS_SUSPENDED) {
-            throw new \DomainException('User already suspended');
+        if ($this->deletedAt !== null) {
+            throw new \DomainException('Cannot suspend deleted user');
         }
         
         $this->status = self::STATUS_SUSPENDED;
         $this->suspensionReason = $reason;
-        $this->suspendedUntil = $until ? \DateTimeImmutable::createFromInterface($until) : null;
+        $this->suspendedUntil = $until;
         $this->updatedAt = new \DateTimeImmutable();
-        
-        $this->addMetadata('suspension_reason', $reason);
-        $this->addMetadata('suspended_at', $this->updatedAt->format('Y-m-d H:i:s'));
     }
     
     /**
-     * Soft delete user
+     * Delete user (soft delete)
      */
     public function delete(): void
     {
         if ($this->deletedAt !== null) {
-            throw new \DomainException('User already deleted');
+            throw new \DomainException('User is already deleted');
         }
         
         $this->deletedAt = new \DateTimeImmutable();
@@ -72,7 +68,7 @@ trait UserStatusManagementTrait
     public function restore(): void
     {
         if ($this->deletedAt === null) {
-            throw new \DomainException('User not deleted');
+            throw new \DomainException('User is not deleted');
         }
         
         $this->deletedAt = null;
@@ -81,43 +77,63 @@ trait UserStatusManagementTrait
     }
     
     /**
-     * Status getters
+     * Check if user is active
      */
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-    
     public function isActive(): bool
     {
-        return $this->status === self::STATUS_ACTIVE;
+        return $this->status === self::STATUS_ACTIVE && $this->deletedAt === null;
     }
     
+    /**
+     * Check if user is deleted
+     */
     public function isDeleted(): bool
     {
         return $this->deletedAt !== null;
     }
     
+    /**
+     * Check if user is suspended
+     */
     public function isSuspended(): bool
     {
-        return $this->status === self::STATUS_SUSPENDED;
+        if ($this->status !== self::STATUS_SUSPENDED) {
+            return false;
+        }
+        
+        if ($this->suspendedUntil === null) {
+            return true;
+        }
+        
+        return $this->suspendedUntil > new \DateTimeImmutable();
     }
     
-    public function isAdmin(): bool
+    /**
+     * Get suspension info
+     */
+    public function getSuspensionInfo(): array
     {
-        return $this->isAdmin;
+        return [
+            'reason' => $this->suspensionReason,
+            'until' => $this->suspendedUntil
+        ];
     }
     
-    public function getSuspensionReason(): ?string
+    /**
+     * Check if suspension has expired
+     */
+    public function checkSuspensionExpiry(): void
     {
-        return $this->suspensionReason;
+        if ($this->isSuspended() && 
+            $this->suspendedUntil !== null && 
+            $this->suspendedUntil <= new \DateTimeImmutable()) {
+            $this->activate();
+        }
     }
     
-    public function getSuspendedUntil(): ?\DateTimeImmutable
-    {
-        return $this->suspendedUntil;
-    }
-    
+    /**
+     * Get deleted at timestamp
+     */
     public function getDeletedAt(): ?\DateTimeImmutable
     {
         return $this->deletedAt;

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Domain;
 
-use App\Competency\Domain\CompetencyAssessment;
-use App\Competency\Domain\ValueObjects\AssessmentScore;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\Competency\Domain\Events\AssessmentCreated;
-use App\Competency\Domain\Events\AssessmentConfirmed;
-use App\Competency\Domain\Events\AssessmentUpdated;
-use App\User\Domain\ValueObjects\UserId;
+use Competency\Domain\CompetencyAssessment;
+use Competency\Domain\ValueObjects\AssessmentScore;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Domain\Events\AssessmentCreated;
+use Competency\Domain\Events\AssessmentConfirmed;
+use Competency\Domain\Events\AssessmentUpdated;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class CompetencyAssessmentTest extends TestCase

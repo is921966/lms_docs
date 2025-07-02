@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Application\Service\User;
+namespace User\Application\Service\User;
 
 use App\Common\Exceptions\BusinessLogicException;
 use App\Common\Exceptions\ValidationException;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\ValueObjects;
+namespace Learning\Domain\ValueObjects;
 
 enum ProgressStatus: string
 {

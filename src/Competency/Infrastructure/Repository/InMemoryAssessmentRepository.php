@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Infrastructure\Repository;
+namespace Competency\Infrastructure\Repository;
 
-use App\Competency\Domain\CompetencyAssessment;
-use App\Competency\Domain\Repository\AssessmentRepositoryInterface;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\User\Domain\ValueObjects\UserId;
+use Competency\Domain\CompetencyAssessment;
+use Competency\Domain\Repository\AssessmentRepositoryInterface;
+use Competency\Domain\ValueObjects\CompetencyId;
+use User\Domain\ValueObjects\UserId;
 
 class InMemoryAssessmentRepository implements AssessmentRepositoryInterface
 {

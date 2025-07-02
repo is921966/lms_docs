@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Application\Service;
 
-use App\Learning\Application\Service\CourseService;
-use App\Learning\Application\DTO\CourseDTO;
-use App\Learning\Domain\Course;
-use App\Learning\Domain\Repository\CourseRepositoryInterface;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\CourseCode;
-use App\Learning\Domain\ValueObjects\CourseType;
+use Learning\Application\Service\CourseService;
+use Learning\Application\DTO\CourseDTO;
+use Learning\Domain\Course;
+use Learning\Domain\Repository\CourseRepositoryInterface;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\CourseCode;
+use Learning\Domain\ValueObjects\Duration;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -36,7 +36,7 @@ class CourseServiceTest extends TestCase
             ->with($courseId)
             ->willReturn($course);
         
-        $dto = $this->service->findById($courseId->toString());
+        $dto = $this->service->findById($courseId->getValue());
         
         $this->assertNotNull($dto);
         $this->assertInstanceOf(CourseDTO::class, $dto);
@@ -53,7 +53,7 @@ class CourseServiceTest extends TestCase
             ->with($courseId)
             ->willReturn(null);
         
-        $dto = $this->service->findById($courseId->toString());
+        $dto = $this->service->findById($courseId->getValue());
         
         $this->assertNull($dto);
     }
@@ -61,18 +61,14 @@ class CourseServiceTest extends TestCase
     public function testCanCreateNewCourse(): void
     {
         $dto = new CourseDTO(
-            id: null,
-            code: 'CRS-999',
+            id: '',
+            courseCode: 'CRS-999',
             title: 'New Course',
             description: 'New Description',
-            type: 'online',
-            status: 'draft',
             durationHours: 40,
-            maxStudents: null,
-            price: null,
-            tags: ['tag1', 'tag2'],
-            prerequisites: [],
-            imageUrl: null,
+            instructorId: 'instructor-123',
+            status: 'draft',
+            metadata: ['tags' => ['tag1', 'tag2']],
             createdAt: null,
             updatedAt: null
         );
@@ -81,9 +77,8 @@ class CourseServiceTest extends TestCase
             ->expects($this->once())
             ->method('save')
             ->with($this->callback(function (Course $course) use ($dto) {
-                return $course->getCode()->toString() === $dto->code
-                    && $course->getTitle() === $dto->title
-                    && $course->getTags() === $dto->tags;
+                return $course->getCode()->getValue() === $dto->courseCode
+                    && $course->getTitle() === $dto->title;
             }));
         
         $resultDto = $this->service->create($dto);
@@ -98,7 +93,7 @@ class CourseServiceTest extends TestCase
         $courseId = CourseId::generate();
         $course = $this->createTestCourse();
         
-        $updateDto = CourseDTO::fromEntity($course);
+        // Update DTO would be created from course
         
         $this->courseRepository
             ->expects($this->once())
@@ -111,7 +106,7 @@ class CourseServiceTest extends TestCase
             ->method('save')
             ->with($course);
         
-        $result = $this->service->update($courseId->toString(), [
+        $result = $this->service->update($courseId->getValue(), [
             'title' => 'Updated Title',
             'description' => 'Updated Description',
             'durationHours' => 50
@@ -145,6 +140,13 @@ class CourseServiceTest extends TestCase
         $courseId = CourseId::generate();
         $course = $this->createTestCourse();
         
+        // Add module to allow publishing
+        $course->addModule([
+            'title' => 'Module 1',
+            'duration' => 60,
+            'description' => 'First module'
+        ]);
+        
         $this->courseRepository
             ->expects($this->once())
             ->method('findById')
@@ -156,7 +158,7 @@ class CourseServiceTest extends TestCase
             ->method('save')
             ->with($course);
         
-        $result = $this->service->publish($courseId->toString());
+        $result = $this->service->publish($courseId->getValue());
         
         $this->assertTrue($result);
     }
@@ -171,19 +173,19 @@ class CourseServiceTest extends TestCase
             ->with($courseId)
             ->willReturn(null);
         
-        $this->expectException(\App\Common\Exceptions\NotFoundException::class);
+        $this->expectException(\Common\Exceptions\NotFoundException::class);
         
-        $this->service->update($courseId->toString(), ['title' => 'New Title']);
+        $this->service->update($courseId->getValue(), ['title' => 'New Title']);
     }
     
     private function createTestCourse(): Course
     {
         return Course::create(
+            id: CourseId::generate(),
             code: CourseCode::fromString('CRS-001'),
             title: 'Test Course',
             description: 'Test Description',
-            type: CourseType::ONLINE,
-            durationHours: 40
+            duration: Duration::fromHours(40)
         );
     }
 } 

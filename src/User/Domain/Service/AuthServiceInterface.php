@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\Service;
+namespace User\Domain\Service;
 
-use App\User\Domain\User;
+use User\Domain\User;
 
 /**
  * Authentication service interface

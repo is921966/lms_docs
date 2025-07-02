@@ -6,7 +6,7 @@ namespace Tests\Integration\Competency;
 
 use Competency\Application\Commands\CreateCompetencyCommand;
 use Competency\Application\Handlers\CreateCompetencyHandler;
-use Competency\Domain\Entities\CompetencyCategory;
+use Competency\Domain\ValueObjects\CompetencyCategory;
 use Competency\Infrastructure\Repositories\InMemoryCompetencyRepository;
 use Competency\Infrastructure\Repositories\InMemoryCompetencyCategoryRepository;
 use PHPUnit\Framework\TestCase;

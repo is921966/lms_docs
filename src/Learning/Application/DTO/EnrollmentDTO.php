@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\DTO;
+namespace Learning\Application\DTO;
 
-use App\Learning\Domain\Enrollment;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Domain\Enrollment;
+use Learning\Domain\ValueObjects\CourseId;
+use User\Domain\ValueObjects\UserId;
 
 final class EnrollmentDTO
 {
@@ -52,9 +52,9 @@ final class EnrollmentDTO
     public static function fromEntity(Enrollment $enrollment): self
     {
         return new self(
-            id: $enrollment->getId()->toString(),
+            id: $enrollment->getId()->getValue(),
             userId: $enrollment->getUserId()->getValue(),
-            courseId: $enrollment->getCourseId()->toString(),
+            courseId: $enrollment->getCourseId()->getValue(),
             enrolledBy: $enrollment->getEnrolledBy()->getValue(),
             status: $enrollment->getStatus()->value,
             progressPercentage: $enrollment->getProgressPercentage(),

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Application\Service;
 
-use App\Learning\Application\Service\EnrollmentService;
-use App\Learning\Application\DTO\EnrollmentDTO;
-use App\Learning\Domain\Enrollment;
-use App\Learning\Domain\Repository\EnrollmentRepositoryInterface;
-use App\Learning\Domain\Repository\CourseRepositoryInterface;
-use App\Learning\Domain\Course;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\CourseCode;
-use App\Learning\Domain\ValueObjects\CourseType;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Application\Service\EnrollmentService;
+use Learning\Application\DTO\EnrollmentDTO;
+use Learning\Domain\Enrollment;
+use Learning\Domain\Repository\EnrollmentRepositoryInterface;
+use Learning\Domain\Repository\CourseRepositoryInterface;
+use Learning\Domain\Course;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\CourseCode;
+use Learning\Domain\ValueObjects\Duration;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -56,11 +56,11 @@ class EnrollmentServiceTest extends TestCase
             ->method('save')
             ->with($this->isInstanceOf(Enrollment::class));
         
-        $dto = $this->service->enroll($userId->getValue(), $courseId->toString());
+        $dto = $this->service->enroll($userId->getValue(), $courseId->getValue());
         
         $this->assertInstanceOf(EnrollmentDTO::class, $dto);
         $this->assertEquals($userId->getValue(), $dto->userId);
-        $this->assertEquals($courseId->toString(), $dto->courseId);
+        $this->assertEquals($courseId->getValue(), $dto->courseId);
         $this->assertEquals('active', $dto->status); // Self-enrollment activates automatically
     }
     
@@ -82,10 +82,10 @@ class EnrollmentServiceTest extends TestCase
             ->method('findByUserAndCourse')
             ->willReturn($existingEnrollment);
         
-        $this->expectException(\App\Common\Exceptions\BusinessLogicException::class);
+        $this->expectException(\Common\Exceptions\BusinessLogicException::class);
         $this->expectExceptionMessage('already enrolled');
         
-        $this->service->enroll($userId->getValue(), $courseId->toString());
+        $this->service->enroll($userId->getValue(), $courseId->getValue());
     }
     
     public function testCanCompleteEnrollment(): void
@@ -105,7 +105,7 @@ class EnrollmentServiceTest extends TestCase
             ->method('save')
             ->with($enrollment);
         
-        $result = $this->service->complete($userId->getValue(), $courseId->toString(), 85.0);
+        $result = $this->service->complete($userId->getValue(), $courseId->getValue(), 85.0);
         
         $this->assertTrue($result);
     }
@@ -146,7 +146,7 @@ class EnrollmentServiceTest extends TestCase
             ->method('save')
             ->with($enrollment);
         
-        $result = $this->service->cancel($userId->getValue(), $courseId->toString(), 'Violation of terms');
+        $result = $this->service->cancel($userId->getValue(), $courseId->getValue(), 'Violation of terms');
         
         $this->assertTrue($result);
     }
@@ -161,19 +161,19 @@ class EnrollmentServiceTest extends TestCase
             ->method('findByUserAndCourse')
             ->willReturn(null);
         
-        $this->expectException(\App\Common\Exceptions\NotFoundException::class);
+        $this->expectException(\Common\Exceptions\NotFoundException::class);
         
-        $this->service->complete($userId->getValue(), $courseId->toString(), 80.0);
+        $this->service->complete($userId->getValue(), $courseId->getValue(), 80.0);
     }
     
     private function createTestCourse(): Course
     {
         return Course::create(
+            id: CourseId::generate(),
             code: CourseCode::fromString('CRS-001'),
             title: 'Test Course',
             description: 'Test Description',
-            type: CourseType::ONLINE,
-            durationHours: 40
+            duration: Duration::fromHours(40)
         );
     }
     

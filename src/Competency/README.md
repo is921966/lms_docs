@@ -1,209 +1,157 @@
 # Competency Management Module
 
-## Описание
+## Overview
 
-Модуль управления компетенциями предоставляет функциональность для:
-- Создания и управления компетенциями организации
-- Оценки компетенций сотрудников
-- Отслеживания прогресса развития компетенций
-- Построения матрицы компетенций
+The Competency Management module provides functionality for managing employee competencies, skill levels, and assessments within the LMS system.
 
-## Архитектура
+## Architecture
 
-Модуль построен по принципам Domain-Driven Design (DDD) и состоит из трех слоев:
+The module follows Domain-Driven Design (DDD) principles with clear separation of concerns:
 
-### Domain Layer
-- **Entities**: Competency, UserCompetency, CompetencyAssessment
-- **Value Objects**: CompetencyId, CompetencyCode, CompetencyLevel, CompetencyCategory, AssessmentScore
-- **Domain Events**: CompetencyCreated, AssessmentConfirmed и др.
-- **Domain Services**: CompetencyAssessmentService
-
-### Application Layer
-- **Services**: CompetencyService, AssessmentService
-- **DTOs**: CompetencyDTO, AssessmentDTO
-
-### Infrastructure Layer
-- **Repositories**: InMemoryCompetencyRepository, InMemoryAssessmentRepository, InMemoryUserCompetencyRepository
-- **HTTP Controllers**: CompetencyController, AssessmentController
-- **Routes**: competency_routes.php
+```
+Competency/
+├── Domain/                 # Core business logic
+│   ├── Competency.php     # Main aggregate root
+│   ├── CompetencyAssessment.php
+│   ├── UserCompetency.php
+│   ├── ValueObjects/      # Immutable value objects
+│   ├── Events/           # Domain events
+│   ├── Repository/       # Repository interfaces
+│   └── Service/          # Domain services
+├── Application/          # Application layer (CQRS)
+│   ├── Commands/         # Command objects
+│   ├── Handlers/         # Command handlers
+│   ├── Queries/          # Query objects
+│   └── DTO/              # Data transfer objects
+├── Infrastructure/       # Infrastructure implementations
+│   ├── Repository/       # Concrete repositories
+│   └── Persistence/      # Database mappings
+└── Http/                 # HTTP layer
+    ├── Controllers/      # REST controllers
+    ├── Requests/         # Request validation
+    ├── Resources/        # API resources
+    └── Middleware/       # HTTP middleware
+```
 
 ## API Endpoints
 
 ### Competencies
 
-#### GET /api/v1/competencies
-Получить список компетенций с фильтрацией.
+- `GET /api/v1/competencies` - List all competencies
+- `GET /api/v1/competencies/{id}` - Get competency details
+- `POST /api/v1/competencies` - Create new competency
+- `PUT /api/v1/competencies/{id}` - Update competency
+- `DELETE /api/v1/competencies/{id}` - Delete competency
+- `POST /api/v1/competencies/{id}/assess` - Assess user competency
 
-**Query Parameters:**
-- `category` - фильтр по категории (technical, soft, managerial, business)
-- `active` - только активные компетенции (default: true)
-- `search` - поиск по названию или описанию
+### Categories
 
-**Response:**
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "code": "TECH-001",
-      "name": "PHP Development",
-      "description": "Навыки разработки на PHP",
-      "category": "technical",
-      "parent_id": null,
-      "is_active": true,
-      "created_at": "2025-02-03T10:00:00Z",
-      "updated_at": "2025-02-03T10:00:00Z"
-    }
-  ]
-}
-```
+- `GET /api/v1/competency-categories` - List categories
+- `GET /api/v1/competency-categories/{id}` - Get category
+- `POST /api/v1/competency-categories` - Create category
+- `PUT /api/v1/competency-categories/{id}` - Update category
 
-#### POST /api/v1/competencies
-Создать новую компетенцию.
+## Domain Model
 
-**Request Body:**
-```json
-{
-  "code": "TECH-001",
-  "name": "PHP Development",
-  "description": "Навыки разработки на PHP",
-  "category": "technical",
-  "parent_id": null
-}
-```
+### Competency
+The main aggregate root representing a skill or knowledge area:
+- Has unique ID and code
+- Belongs to a category (technical, soft skills, etc.)
+- Has multiple skill levels (1-5)
+- Can be active/inactive
+- Supports hierarchical structure (parent/child)
 
-#### GET /api/v1/competencies/{id}
-Получить компетенцию по ID.
+### CompetencyAssessment
+Records an assessment of a user's competency level:
+- Links user, competency, and assessor
+- Records level and score
+- Includes optional comments
+- Immutable once confirmed
 
-#### PUT /api/v1/competencies/{id}
-Обновить компетенцию.
+### UserCompetency
+Tracks a user's current and target levels:
+- Current assessed level
+- Target level for development
+- Progress percentage
+- Last assessment date
 
-#### DELETE /api/v1/competencies/{id}
-Деактивировать компетенцию.
+## Value Objects
 
-### Assessments
+- **CompetencyId**: UUID-based identifier
+- **CompetencyCode**: Unique business code (e.g., "TECH-PHP-001")
+- **CompetencyLevel**: Skill level (1-5: Beginner to Expert)
+- **CompetencyCategory**: Category type (technical, soft, leadership, business)
+- **AssessmentScore**: Normalized score (0-100)
 
-#### POST /api/v1/assessments
-Создать оценку компетенции.
+## Testing
 
-**Request Body:**
-```json
-{
-  "user_id": "550e8400-e29b-41d4-a716-446655440001",
-  "competency_id": "550e8400-e29b-41d4-a716-446655440000",
-  "assessor_id": "550e8400-e29b-41d4-a716-446655440002",
-  "level": "intermediate",
-  "score": 75,
-  "comment": "Хороший прогресс"
-}
-```
+The module includes comprehensive test coverage:
 
-#### GET /api/v1/users/{userId}/assessments
-Получить все оценки пользователя.
+- **Unit Tests**: 236 tests covering all layers
+- **Integration Tests**: Repository and service integration
+- **Feature Tests**: HTTP endpoint testing
 
-#### PUT /api/v1/assessments/{id}
-Обновить оценку (только неподтвержденные).
-
-#### POST /api/v1/assessments/{id}/confirm
-Подтвердить оценку.
-
-#### GET /api/v1/users/{userId}/competencies/{competencyId}/assessments
-Получить историю оценок по конкретной компетенции.
-
-## Уровни компетенций
-
-1. **Beginner (Начинающий)** - базовые знания
-2. **Elementary (Элементарный)** - может выполнять простые задачи под контролем
-3. **Intermediate (Средний)** - может выполнять типовые задачи самостоятельно
-4. **Advanced (Продвинутый)** - может выполнять сложные задачи, менторить других
-5. **Expert (Эксперт)** - признанный эксперт, устанавливает стандарты
-
-## Использование
-
-### Создание компетенции
-```php
-$competencyService = $container->get(CompetencyService::class);
-
-$result = $competencyService->createCompetency(
-    code: 'TECH-001',
-    name: 'PHP Development',
-    description: 'Навыки разработки на PHP',
-    category: 'technical'
-);
-```
-
-### Оценка компетенции
-```php
-$assessmentService = $container->get(AssessmentService::class);
-
-$result = $assessmentService->createAssessment(
-    userId: '550e8400-e29b-41d4-a716-446655440001',
-    competencyId: '550e8400-e29b-41d4-a716-446655440000',
-    assessorId: '550e8400-e29b-41d4-a716-446655440002',
-    level: 'intermediate',
-    score: 75,
-    comment: 'Хороший прогресс'
-);
-```
-
-## Тестирование
-
-Модуль имеет 100% покрытие тестами. Для запуска тестов:
-
+Run tests:
 ```bash
-# Запустить все тесты модуля
+# All module tests
 ./test-quick.sh tests/Unit/Competency/
 
-# Запустить тесты конкретного слоя
+# Specific layer
 ./test-quick.sh tests/Unit/Competency/Domain/
 ./test-quick.sh tests/Unit/Competency/Application/
-./test-quick.sh tests/Unit/Competency/Infrastructure/
 ```
 
-## Структура директорий
+## Usage Examples
 
-```
-src/Competency/
-├── Domain/
-│   ├── Competency.php
-│   ├── UserCompetency.php
-│   ├── CompetencyAssessment.php
-│   ├── Events/
-│   ├── ValueObjects/
-│   ├── Repository/
-│   └── Service/
-├── Application/
-│   ├── DTO/
-│   └── Service/
-└── Infrastructure/
-    ├── Repository/
-    └── Http/
-        ├── CompetencyController.php
-        ├── AssessmentController.php
-        └── Routes/
+### Creating a Competency
+```php
+$competency = Competency::create(
+    CompetencyId::generate(),
+    CompetencyCode::fromString('PHP-001'),
+    'PHP Development',
+    'Proficiency in PHP programming',
+    CompetencyCategory::technical()
+);
 ```
 
-## Расширение функциональности
+### Assessing a Competency
+```php
+$command = new AssessCompetencyCommand(
+    competencyId: $competencyId,
+    userId: $userId,
+    assessorId: $assessorId,
+    level: 4,
+    comment: 'Excellent PHP skills demonstrated'
+);
 
-### Добавление новой категории компетенций
-1. Обновить enum в `CompetencyCategory` value object
-2. Обновить валидацию в `CompetencyService`
-3. Обновить OpenAPI документацию
+$handler->handle($command);
+```
 
-### Добавление нового уровня компетенций
-1. Обновить `CompetencyLevel` value object
-2. Обновить валидацию в `AssessmentService`
-3. Обновить документацию
+## Configuration
 
-## Безопасность
+### Middleware
+The module includes authorization middleware that protects:
+- Create/Update/Delete operations (admin, hr_manager)
+- Assessment operations (admin, hr_manager, manager)
 
-- Все ID используют UUID для предотвращения перебора
-- Валидация входных данных на всех уровнях
-- Проверка прав доступа (требует интеграции с User модулем)
+### Routes
+Routes are configured in `config/routes/competency.yaml`
 
-## Производительность
+## Future Enhancements
 
-- In-memory репозитории для быстрого прототипирования
-- Готовность к миграции на Doctrine ORM
-- Оптимизированные запросы для массовых операций 
+1. **Competency Matrix**: Visual representation of team competencies
+2. **Gap Analysis**: Identify skill gaps for positions
+3. **Development Plans**: Auto-generate based on gaps
+4. **Certification Integration**: Link to certifications
+5. **360° Assessments**: Multi-source feedback
+
+## Dependencies
+
+- PHP 8.1+
+- Symfony/Laravel framework components
+- UUID library for identifiers
+- Domain event system
+
+---
+
+Last updated: July 1, 2025 

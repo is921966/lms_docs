@@ -2,7 +2,7 @@
 
 namespace Competency\Domain\Repositories;
 
-use Competency\Domain\Entities\Competency;
+use Competency\Domain\Competency;
 
 interface CompetencyRepositoryInterface
 {

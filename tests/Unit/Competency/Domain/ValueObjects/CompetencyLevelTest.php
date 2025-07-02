@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Domain\ValueObjects;
 
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Domain\ValueObjects\CompetencyLevel;
 use PHPUnit\Framework\TestCase;
 
 class CompetencyLevelTest extends TestCase

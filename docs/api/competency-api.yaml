@@ -1,69 +1,74 @@
 openapi: 3.0.0
 info:
   title: Competency Management API
-  description: API для управления компетенциями и оценками сотрудников
+  description: API for managing competencies and competency categories in the LMS
   version: 1.0.0
   contact:
     name: LMS Development Team
     email: dev@lms.com
 
 servers:
-  - url: /api/v1
-    description: Production API
+  - url: https://api.lms.com/v1
+    description: Production server
+  - url: http://localhost:8000/api/v1
+    description: Development server
 
 tags:
   - name: Competencies
-    description: Управление компетенциями
+    description: Operations related to competencies
+  - name: Categories
+    description: Operations related to competency categories
   - name: Assessments
-    description: Оценка компетенций сотрудников
+    description: Operations related to competency assessments
 
 paths:
   /competencies:
     get:
+      summary: List competencies
+      description: Get a list of all competencies with optional filtering
+      operationId: listCompetencies
       tags:
         - Competencies
-      summary: Получить список компетенций
-      operationId: listCompetencies
       parameters:
-        - name: category
+        - name: category_id
           in: query
-          description: Фильтр по категории
+          description: Filter by category ID
+          required: false
           schema:
             type: string
-            enum: [technical, soft, managerial, business]
-        - name: active
+            format: uuid
+        - name: is_active
           in: query
-          description: Только активные компетенции
+          description: Filter by active status
+          required: false
           schema:
             type: boolean
             default: true
-        - name: search
-          in: query
-          description: Поиск по названию или описанию
-          schema:
-            type: string
       responses:
         '200':
-          description: Список компетенций
+          description: List of competencies
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
                   data:
                     type: array
                     items:
                       $ref: '#/components/schemas/Competency'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-          
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 25
+    
     post:
+      summary: Create competency
+      description: Create a new competency
+      operationId: createCompetency
       tags:
         - Competencies
-      summary: Создать новую компетенцию
-      operationId: createCompetency
       requestBody:
         required: true
         content:
@@ -72,49 +77,70 @@ paths:
               $ref: '#/components/schemas/CreateCompetencyRequest'
       responses:
         '201':
-          description: Компетенция создана
+          description: Competency created successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
                   data:
                     $ref: '#/components/schemas/Competency'
+                  message:
+                    type: string
+                    example: Competency created successfully
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
-  /competencies/{competencyId}:
+  /competencies/{id}:
     get:
+      summary: Get competency
+      description: Get a specific competency by ID
+      operationId: getCompetency
       tags:
         - Competencies
-      summary: Получить компетенцию по ID
-      operationId: getCompetency
       parameters:
-        - $ref: '#/components/parameters/CompetencyId'
+        - name: id
+          in: path
+          required: true
+          description: Competency ID
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
-          description: Данные компетенции
+          description: Competency details
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
                   data:
                     $ref: '#/components/schemas/Competency'
         '404':
           $ref: '#/components/responses/NotFound'
-          
+    
     put:
+      summary: Update competency
+      description: Update an existing competency
+      operationId: updateCompetency
       tags:
         - Competencies
-      summary: Обновить компетенцию
-      operationId: updateCompetency
       parameters:
-        - $ref: '#/components/parameters/CompetencyId'
+        - name: id
+          in: path
+          required: true
+          description: Competency ID
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -123,240 +149,124 @@ paths:
               $ref: '#/components/schemas/UpdateCompetencyRequest'
       responses:
         '200':
-          description: Компетенция обновлена
+          description: Competency updated successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
                   data:
                     $ref: '#/components/schemas/Competency'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                  message:
+                    type: string
+                    example: Competency updated successfully
         '404':
           $ref: '#/components/responses/NotFound'
-          
+    
     delete:
+      summary: Delete competency
+      description: Delete a competency
+      operationId: deleteCompetency
       tags:
         - Competencies
-      summary: Деактивировать компетенцию
-      operationId: deleteCompetency
       parameters:
-        - $ref: '#/components/parameters/CompetencyId'
+        - name: id
+          in: path
+          required: true
+          description: Competency ID
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
-          description: Компетенция деактивирована
+          description: Competency deleted successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      is_active:
-                        type: boolean
+                  message:
+                    type: string
+                    example: Competency deleted successfully
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /assessments:
+  /competencies/{id}/assess:
     post:
+      summary: Assess competency
+      description: Create an assessment for a competency
+      operationId: assessCompetency
       tags:
+        - Competencies
         - Assessments
-      summary: Создать оценку компетенции
-      operationId: createAssessment
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateAssessmentRequest'
-      responses:
-        '201':
-          description: Оценка создана
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    $ref: '#/components/schemas/Assessment'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
-  /users/{userId}/assessments:
-    get:
-      tags:
-        - Assessments
-      summary: Получить оценки пользователя
-      operationId: getUserAssessments
       parameters:
-        - $ref: '#/components/parameters/UserId'
-      responses:
-        '200':
-          description: Список оценок
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Assessment'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
-  /assessments/{assessmentId}:
-    put:
-      tags:
-        - Assessments
-      summary: Обновить оценку
-      operationId: updateAssessment
-      parameters:
-        - $ref: '#/components/parameters/AssessmentId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateAssessmentRequest'
-      responses:
-        '200':
-          description: Оценка обновлена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: object
-                    properties:
-                      assessment_id:
-                        type: string
-                      level:
-                        type: string
-                      score:
-                        type: integer
-                      comment:
-                        type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
-  /assessments/{assessmentId}/confirm:
-    post:
-      tags:
-        - Assessments
-      summary: Подтвердить оценку
-      operationId: confirmAssessment
-      parameters:
-        - $ref: '#/components/parameters/AssessmentId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - confirmer_id
-              properties:
-                confirmer_id:
-                  type: string
-                  format: uuid
-      responses:
-        '200':
-          description: Оценка подтверждена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: object
-                    properties:
-                      assessment_id:
-                        type: string
-                      is_confirmed:
-                        type: boolean
-                      confirmed_at:
-                        type: string
-                        format: date-time
-                      confirmed_by:
-                        type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
-  /users/{userId}/competencies/{competencyId}/assessments:
-    get:
-      tags:
-        - Assessments
-      summary: История оценок по компетенции
-      operationId: getAssessmentHistory
-      parameters:
-        - $ref: '#/components/parameters/UserId'
-        - $ref: '#/components/parameters/CompetencyId'
-        - name: limit
-          in: query
+        - name: id
+          in: path
+          required: true
+          description: Competency ID
           schema:
-            type: integer
-            default: 10
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssessCompetencyRequest'
       responses:
         '200':
-          description: История оценок
+          description: Assessment recorded successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
+                  message:
+                    type: string
+                    example: Assessment recorded successfully
+
+  /competency-categories:
+    get:
+      summary: List categories
+      description: Get a list of all competency categories
+      operationId: listCategories
+      tags:
+        - Categories
+      parameters:
+        - name: parent_id
+          in: query
+          description: Filter by parent ID (empty string for root categories)
+          required: false
+          schema:
+            type: string
+            format: uuid
+            nullable: true
+        - name: is_active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Assessment'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                      $ref: '#/components/schemas/CompetencyCategory'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
 
 components:
-  parameters:
-    CompetencyId:
-      name: competencyId
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-        
-    UserId:
-      name: userId
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-        
-    AssessmentId:
-      name: assessmentId
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-
   schemas:
     Competency:
       type: object
@@ -364,165 +274,218 @@ components:
         id:
           type: string
           format: uuid
-        code:
-          type: string
-          example: "TECH-001"
+          example: 123e4567-e89b-12d3-a456-426614174000
         name:
           type: string
-          example: "PHP Development"
+          example: PHP Development
         description:
           type: string
-          example: "Навыки разработки на PHP"
+          example: Advanced PHP programming skills including OOP, design patterns, and frameworks
         category:
-          type: string
-          enum: [technical, soft, managerial, business]
-        parent_id:
-          type: string
-          format: uuid
-          nullable: true
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+              example: Technical Skills
+            description:
+              type: string
         is_active:
           type: boolean
+          example: true
+        is_core:
+          type: boolean
+          example: false
+        required_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        skill_levels:
+          type: array
+          items:
+            type: object
+            properties:
+              level:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: Beginner
+              description:
+                type: string
+                example: Basic understanding of PHP syntax
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-          
-    CreateCompetencyRequest:
-      type: object
-      required:
-        - code
-        - name
-        - description
-        - category
-      properties:
-        code:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        category:
-          type: string
-          enum: [technical, soft, managerial, business]
-        parent_id:
-          type: string
-          format: uuid
-          nullable: true
-          
-    UpdateCompetencyRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-          
-    Assessment:
+
+    CompetencyCategory:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        user_id:
+        name:
+          type: string
+          example: Technical Skills
+        description:
+          type: string
+          example: Technical competencies for IT professionals
+        is_active:
+          type: boolean
+        parent_id:
           type: string
           format: uuid
-        competency_id:
-          type: string
-          format: uuid
-        assessor_id:
-          type: string
-          format: uuid
-        level:
-          type: string
-          enum: [beginner, elementary, intermediate, advanced, expert]
-        score:
-          type: integer
-          minimum: 0
-          maximum: 100
-        comment:
+          nullable: true
+        parent:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+        color:
           type: string
           nullable: true
-        is_self_assessment:
-          type: boolean
-        is_confirmed:
-          type: boolean
-        assessed_at:
+          example: "#3B82F6"
+        icon:
+          type: string
+          nullable: true
+          example: "code"
+        created_at:
           type: string
           format: date-time
-          
-    CreateAssessmentRequest:
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateCompetencyRequest:
+      type: object
+      required:
+        - name
+        - description
+        - category_id
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 200
+          example: PHP Development
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000
+          example: Advanced PHP programming skills
+        category_id:
+          type: string
+          format: uuid
+        required_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        is_core:
+          type: boolean
+          nullable: true
+
+    UpdateCompetencyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 200
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000
+        category_id:
+          type: string
+          format: uuid
+        is_active:
+          type: boolean
+
+    AssessCompetencyRequest:
       type: object
       required:
         - user_id
-        - competency_id
         - assessor_id
         - level
-        - score
       properties:
         user_id:
-          type: string
-          format: uuid
-        competency_id:
           type: string
           format: uuid
         assessor_id:
           type: string
           format: uuid
         level:
-          type: string
-          enum: [beginner, elementary, intermediate, advanced, expert]
-        score:
           type: integer
-          minimum: 0
-          maximum: 100
+          minimum: 1
+          maximum: 5
         comment:
           type: string
           nullable: true
-          
-    UpdateAssessmentRequest:
+          maxLength: 500
+
+    Error:
       type: object
-      required:
-        - level
-        - score
       properties:
-        level:
+        error:
           type: string
-          enum: [beginner, elementary, intermediate, advanced, expert]
-        score:
-          type: integer
-          minimum: 0
-          maximum: 100
-        comment:
-          type: string
-          nullable: true
+          example: Invalid request data
+        details:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
 
   responses:
-    BadRequest:
-      description: Неверный запрос
+    Unauthorized:
+      description: Authentication required
       content:
         application/json:
           schema:
             type: object
             properties:
-              success:
-                type: boolean
-                example: false
               error:
                 type: string
-                example: "Invalid request data"
-                
+                example: Unauthenticated
+    
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Unauthorized. Missing permission competency.create
+    
     NotFound:
-      description: Ресурс не найден
+      description: Resource not found
       content:
         application/json:
           schema:
             type: object
             properties:
-              success:
-                type: boolean
-                example: false
               error:
                 type: string
-                example: "Resource not found" 
+                example: Competency not found
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [] 

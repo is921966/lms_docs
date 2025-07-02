@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\Repository;
+namespace User\Domain\Repository;
 
-use App\User\Domain\User;
-use App\User\Domain\ValueObjects\Email;
-use App\User\Domain\ValueObjects\UserId;
+use User\Domain\User;
+use User\Domain\ValueObjects\Email;
+use User\Domain\ValueObjects\UserId;
 
 /**
  * User repository interface

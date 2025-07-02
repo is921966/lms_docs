@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain;
+namespace Learning\Domain;
 
-use App\Learning\Domain\ValueObjects\CertificateId;
-use App\Learning\Domain\ValueObjects\CertificateNumber;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Domain\ValueObjects\CertificateId;
+use Learning\Domain\ValueObjects\CertificateNumber;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\CourseId;
+use User\Domain\ValueObjects\UserId;
 
 class Certificate
 {
@@ -141,7 +141,7 @@ class Certificate
         return sprintf(
             '%s/certificates/verify/%s',
             rtrim($baseUrl, '/'),
-            $this->id->toString()
+            $this->id->getValue()
         );
     }
     

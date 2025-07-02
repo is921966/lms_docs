@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Application\DTO;
 
-use App\Learning\Application\DTO\EnrollmentDTO;
-use App\Learning\Domain\Enrollment;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Application\DTO\EnrollmentDTO;
+use Learning\Domain\Enrollment;
+use Learning\Domain\ValueObjects\CourseId;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class EnrollmentDTOTest extends TestCase
@@ -50,9 +50,9 @@ class EnrollmentDTOTest extends TestCase
         
         $dto = EnrollmentDTO::fromEntity($enrollment);
         
-        $this->assertEquals($enrollment->getId()->toString(), $dto->id);
+        $this->assertEquals($enrollment->getId()->getValue(), $dto->id);
         $this->assertEquals($enrollment->getUserId()->getValue(), $dto->userId);
-        $this->assertEquals($enrollment->getCourseId()->toString(), $dto->courseId);
+        $this->assertEquals($enrollment->getCourseId()->getValue(), $dto->courseId);
         $this->assertEquals($enrollment->getEnrolledBy()->getValue(), $dto->enrolledBy);
         $this->assertEquals('active', $dto->status);
         $this->assertEquals(50.0, $dto->progressPercentage);
@@ -114,7 +114,7 @@ class EnrollmentDTOTest extends TestCase
         
         $this->assertInstanceOf(Enrollment::class, $enrollment);
         $this->assertEquals($dto->userId, $enrollment->getUserId()->getValue());
-        $this->assertEquals($dto->courseId, $enrollment->getCourseId()->toString());
+        $this->assertEquals($dto->courseId, $enrollment->getCourseId()->getValue());
         $this->assertEquals('pending', $enrollment->getStatus()->value);
     }
     

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Infrastructure\Http\Controllers;
 
-use App\Learning\Infrastructure\Http\Controllers\ProgressController;
-use App\Learning\Application\Service\ProgressService;
-use App\Learning\Application\DTO\ProgressDTO;
+use Learning\Infrastructure\Http\Controllers\ProgressController;
+use Learning\Application\Service\ProgressService;
+use Learning\Application\DTO\ProgressDTO;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;

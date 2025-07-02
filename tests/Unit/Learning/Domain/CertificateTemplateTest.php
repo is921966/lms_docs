@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain;
 
-use App\Learning\Domain\CertificateTemplate;
-use App\Learning\Domain\ValueObjects\CertificateId;
+use Learning\Domain\CertificateTemplate;
+use Learning\Domain\ValueObjects\CertificateId;
 use PHPUnit\Framework\TestCase;
 
 class CertificateTemplateTest extends TestCase

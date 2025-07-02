@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\Repository;
+namespace Learning\Domain\Repository;
 
-use App\Learning\Domain\Enrollment;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\EnrollmentStatus;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Domain\Enrollment;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\EnrollmentStatus;
+use Learning\Domain\ValueObjects\CourseId;
+use User\Domain\ValueObjects\UserId;
 
 interface EnrollmentRepositoryInterface
 {

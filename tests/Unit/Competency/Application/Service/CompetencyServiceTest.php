@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Application\Service;
 
-use App\Competency\Application\Service\CompetencyService;
-use App\Competency\Domain\Competency;
-use App\Competency\Domain\Repository\CompetencyRepositoryInterface;
-use App\Competency\Domain\ValueObjects\CompetencyCategory;
-use App\Competency\Domain\ValueObjects\CompetencyCode;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Infrastructure\Repository\InMemoryCompetencyRepository;
+use Competency\Application\Service\CompetencyService;
+use Competency\Domain\Competency;
+use Competency\Domain\Repository\CompetencyRepositoryInterface;
+use Competency\Domain\ValueObjects\CompetencyCategory;
+use Competency\Domain\ValueObjects\CompetencyCode;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Infrastructure\Repository\InMemoryCompetencyRepository;
 use PHPUnit\Framework\TestCase;
 
 class CompetencyServiceTest extends TestCase

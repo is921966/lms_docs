@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Application\Service;
+namespace User\Application\Service;
 
 use App\User\Application\Service\User\UserCrudService;
 use App\User\Application\Service\User\UserImportExportService;

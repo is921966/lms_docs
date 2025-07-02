@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\Repository;
+namespace Learning\Domain\Repository;
 
-use App\Learning\Domain\Certificate;
-use App\Learning\Domain\ValueObjects\CertificateId;
-use App\Learning\Domain\ValueObjects\CertificateNumber;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Domain\Certificate;
+use Learning\Domain\ValueObjects\CertificateId;
+use Learning\Domain\ValueObjects\CertificateNumber;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use User\Domain\ValueObjects\UserId;
 
 interface CertificateRepositoryInterface
 {

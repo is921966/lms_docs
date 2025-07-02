@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Infrastructure\Repository;
+namespace User\Infrastructure\Repository;
 
 use App\Common\Exceptions\NotFoundException;
 use App\User\Domain\Repository\UserRepositoryInterface;

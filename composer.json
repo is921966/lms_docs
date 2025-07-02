@@ -59,6 +59,7 @@
     "autoload": {
         "psr-4": {
             "Database\\": "database/",
+            "Common\\": "src/Common/",
             "User\\Domain\\": "src/User/Domain/",
             "User\\Domain\\Traits\\": "src/User/Domain/Traits/",
             "User\\Domain\\Events\\": "src/User/Domain/Events/",
@@ -67,13 +68,18 @@
             "User\\Application\\DTO\\": "src/User/Application/DTO/",
             "User\\Infrastructure\\": "src/User/Infrastructure/",
             "Auth\\": "src/Auth/",
-            "Competency\\": "src/Competency/"
-        }
+            "Competency\\": "src/Competency/",
+            "Learning\\": "src/Learning/"
+        },
+        "files": [
+            "src/Common/Helpers/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/",
-            "Tests\\Stubs\\": "tests/Stubs/"
+            "Tests\\Stubs\\": "tests/Stubs/",
+            "Illuminate\\": "tests/Stubs/Illuminate/"
         }
     },
     "replace": {

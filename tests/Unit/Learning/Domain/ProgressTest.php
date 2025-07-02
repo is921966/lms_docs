@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain;
 
-use App\Learning\Domain\Progress;
-use App\Learning\Domain\ValueObjects\ProgressId;
-use App\Learning\Domain\ValueObjects\ProgressStatus;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\LessonId;
+use Learning\Domain\Progress;
+use Learning\Domain\ValueObjects\ProgressId;
+use Learning\Domain\ValueObjects\ProgressStatus;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\LessonId;
 use PHPUnit\Framework\TestCase;
 
 class ProgressTest extends TestCase

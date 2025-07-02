@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Infrastructure\Http\Controllers;
+namespace Learning\Infrastructure\Http\Controllers;
 
-use App\Learning\Application\Service\EnrollmentService;
+use Learning\Application\Service\EnrollmentService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,9 +31,9 @@ class EnrollmentController
             );
             
             return new JsonResponse(['data' => $enrollment], Response::HTTP_CREATED);
-        } catch (\App\Common\Exceptions\BusinessLogicException $e) {
+        } catch (\Common\Exceptions\BusinessLogicException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -82,7 +82,7 @@ class EnrollmentController
             }
             
             return new JsonResponse(['error' => 'Failed to complete enrollment'], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -109,7 +109,7 @@ class EnrollmentController
             }
             
             return new JsonResponse(['error' => 'Failed to cancel enrollment'], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -136,7 +136,7 @@ class EnrollmentController
             }
             
             return new JsonResponse(['error' => 'Failed to update progress'], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);

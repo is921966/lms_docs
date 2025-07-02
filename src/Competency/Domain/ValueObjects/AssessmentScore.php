@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Domain\ValueObjects;
+namespace Competency\Domain\ValueObjects;
 
 /**
  * Represents an assessment score

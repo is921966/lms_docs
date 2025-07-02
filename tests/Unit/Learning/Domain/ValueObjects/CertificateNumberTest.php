@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain\ValueObjects;
 
-use App\Learning\Domain\ValueObjects\CertificateNumber;
+use Learning\Domain\ValueObjects\CertificateNumber;
 use PHPUnit\Framework\TestCase;
 
 class CertificateNumberTest extends TestCase

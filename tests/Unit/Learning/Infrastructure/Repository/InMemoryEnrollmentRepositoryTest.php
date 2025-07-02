@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Infrastructure\Repository;
 
-use App\Learning\Infrastructure\Repository\InMemoryEnrollmentRepository;
-use App\Learning\Domain\Enrollment;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Infrastructure\Repository\InMemoryEnrollmentRepository;
+use Learning\Domain\Enrollment;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\CourseId;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class InMemoryEnrollmentRepositoryTest extends TestCase
@@ -29,7 +29,7 @@ class InMemoryEnrollmentRepositoryTest extends TestCase
         $found = $this->repository->findById($enrollment->getId());
         
         $this->assertNotNull($found);
-        $this->assertEquals($enrollment->getId()->toString(), $found->getId()->toString());
+        $this->assertEquals($enrollment->getId()->getValue(), $found->getId()->getValue());
     }
     
     public function testCanFindByUserAndCourse(): void
@@ -43,7 +43,7 @@ class InMemoryEnrollmentRepositoryTest extends TestCase
         $found = $this->repository->findByUserAndCourse($userId, $courseId);
         
         $this->assertNotNull($found);
-        $this->assertEquals($enrollment->getId()->toString(), $found->getId()->toString());
+        $this->assertEquals($enrollment->getId()->getValue(), $found->getId()->getValue());
     }
     
     public function testCanFindByUser(): void

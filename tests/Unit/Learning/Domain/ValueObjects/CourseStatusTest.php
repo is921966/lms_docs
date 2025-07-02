@@ -4,75 +4,127 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain\ValueObjects;
 
-use App\Learning\Domain\ValueObjects\CourseStatus;
+use Learning\Domain\ValueObjects\CourseStatus;
 use PHPUnit\Framework\TestCase;
+use InvalidArgumentException;
 
 class CourseStatusTest extends TestCase
 {
-    public function testCanBeCreatedFromValidStatus(): void
+    public function testCreateStatuses(): void
     {
-        $draft = CourseStatus::DRAFT;
-        $published = CourseStatus::PUBLISHED;
-        $archived = CourseStatus::ARCHIVED;
+        // Act & Assert
+        $draft = CourseStatus::draft();
+        $this->assertEquals('draft', $draft->getValue());
+        $this->assertEquals('Draft', $draft->getDisplayName());
+        $this->assertTrue($draft->isDraft());
+        $this->assertFalse($draft->isPublished());
+        $this->assertTrue($draft->canEnroll());
         
-        $this->assertEquals('DRAFT', $draft->value);
-        $this->assertEquals('PUBLISHED', $published->value);
-        $this->assertEquals('ARCHIVED', $archived->value);
-    }
-    
-    public function testCanGetAllValues(): void
-    {
-        $values = CourseStatus::values();
+        $published = CourseStatus::published();
+        $this->assertEquals('published', $published->getValue());
+        $this->assertEquals('Published', $published->getDisplayName());
+        $this->assertTrue($published->isPublished());
+        $this->assertTrue($published->canEnroll());
         
-        $this->assertCount(3, $values);
-        $this->assertContains('DRAFT', $values);
-        $this->assertContains('PUBLISHED', $values);
-        $this->assertContains('ARCHIVED', $values);
-    }
-    
-    public function testCanGetLabel(): void
-    {
-        $this->assertEquals('Draft', CourseStatus::DRAFT->getLabel());
-        $this->assertEquals('Published', CourseStatus::PUBLISHED->getLabel());
-        $this->assertEquals('Archived', CourseStatus::ARCHIVED->getLabel());
-    }
-    
-    public function testCanCheckIfActive(): void
-    {
-        $this->assertFalse(CourseStatus::DRAFT->isActive());
-        $this->assertTrue(CourseStatus::PUBLISHED->isActive());
-        $this->assertFalse(CourseStatus::ARCHIVED->isActive());
-    }
-    
-    public function testCanCheckIfEditable(): void
-    {
-        $this->assertTrue(CourseStatus::DRAFT->isEditable());
-        $this->assertFalse(CourseStatus::PUBLISHED->isEditable());
-        $this->assertFalse(CourseStatus::ARCHIVED->isEditable());
-    }
-    
-    public function testCanGetAllowedTransitions(): void
-    {
-        $draftTransitions = CourseStatus::DRAFT->getAllowedTransitions();
-        $this->assertCount(1, $draftTransitions);
-        $this->assertContains(CourseStatus::PUBLISHED, $draftTransitions);
+        $archived = CourseStatus::archived();
+        $this->assertEquals('archived', $archived->getValue());
+        $this->assertEquals('Archived', $archived->getDisplayName());
+        $this->assertTrue($archived->isArchived());
+        $this->assertFalse($archived->canEnroll());
         
-        $publishedTransitions = CourseStatus::PUBLISHED->getAllowedTransitions();
-        $this->assertCount(2, $publishedTransitions);
-        $this->assertContains(CourseStatus::DRAFT, $publishedTransitions);
-        $this->assertContains(CourseStatus::ARCHIVED, $publishedTransitions);
-        
-        $archivedTransitions = CourseStatus::ARCHIVED->getAllowedTransitions();
-        $this->assertCount(1, $archivedTransitions);
-        $this->assertContains(CourseStatus::DRAFT, $archivedTransitions);
+        $underReview = CourseStatus::underReview();
+        $this->assertEquals('under_review', $underReview->getValue());
+        $this->assertEquals('Under Review', $underReview->getDisplayName());
+        $this->assertTrue($underReview->isUnderReview());
+        $this->assertFalse($underReview->canEnroll());
     }
     
-    public function testCanCheckAllowedTransition(): void
+    public function testFromString(): void
     {
-        $draft = CourseStatus::DRAFT;
+        // Act & Assert
+        $draft = CourseStatus::fromString('draft');
+        $this->assertTrue($draft->isDraft());
         
-        $this->assertTrue($draft->canTransitionTo(CourseStatus::PUBLISHED));
-        $this->assertFalse($draft->canTransitionTo(CourseStatus::ARCHIVED));
-        $this->assertFalse($draft->canTransitionTo(CourseStatus::DRAFT));
+        // Test case insensitive
+        $published = CourseStatus::fromString('PUBLISHED');
+        $this->assertTrue($published->isPublished());
+        
+        // Test with spaces
+        $underReview = CourseStatus::fromString(' under_review ');
+        $this->assertTrue($underReview->isUnderReview());
+    }
+    
+    public function testTransitions(): void
+    {
+        // Arrange
+        $draft = CourseStatus::draft();
+        $published = CourseStatus::published();
+        $archived = CourseStatus::archived();
+        $underReview = CourseStatus::underReview();
+        
+        // Act & Assert
+        // Draft can transition to under_review or published
+        $this->assertTrue($draft->canTransitionTo($underReview));
+        $this->assertTrue($draft->canTransitionTo($published));
+        $this->assertFalse($draft->canTransitionTo($archived));
+        
+        // Under review can transition to draft or published
+        $this->assertTrue($underReview->canTransitionTo($draft));
+        $this->assertTrue($underReview->canTransitionTo($published));
+        $this->assertFalse($underReview->canTransitionTo($archived));
+        
+        // Published can only transition to archived
+        $this->assertFalse($published->canTransitionTo($draft));
+        $this->assertFalse($published->canTransitionTo($underReview));
+        $this->assertTrue($published->canTransitionTo($archived));
+        
+        // Archived cannot transition
+        $this->assertFalse($archived->canTransitionTo($draft));
+        $this->assertFalse($archived->canTransitionTo($published));
+        $this->assertFalse($archived->canTransitionTo($underReview));
+    }
+    
+    public function testEquals(): void
+    {
+        // Arrange
+        $draft1 = CourseStatus::draft();
+        $draft2 = CourseStatus::draft();
+        $published = CourseStatus::published();
+        
+        // Act & Assert
+        $this->assertTrue($draft1->equals($draft2));
+        $this->assertFalse($draft1->equals($published));
+    }
+    
+    public function testGetAllStatuses(): void
+    {
+        // Act
+        $statuses = CourseStatus::getAllStatuses();
+        
+        // Assert
+        $this->assertCount(4, $statuses);
+        $this->assertContains('draft', $statuses);
+        $this->assertContains('published', $statuses);
+        $this->assertContains('archived', $statuses);
+        $this->assertContains('under_review', $statuses);
+    }
+    
+    public function testThrowsExceptionForInvalidStatus(): void
+    {
+        // Arrange & Assert
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid course status: invalid');
+        
+        // Act
+        CourseStatus::fromString('invalid');
+    }
+    
+    public function testStringConversion(): void
+    {
+        // Arrange
+        $published = CourseStatus::published();
+        
+        // Act & Assert
+        $this->assertEquals('published', (string)$published);
     }
 } 

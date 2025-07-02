@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Infrastructure\Repository;
 
-use App\Competency\Domain\CompetencyAssessment;
-use App\Competency\Domain\Repository\AssessmentRepositoryInterface;
-use App\Competency\Domain\ValueObjects\AssessmentScore;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\Competency\Infrastructure\Repository\InMemoryAssessmentRepository;
-use App\User\Domain\ValueObjects\UserId;
+use Competency\Domain\CompetencyAssessment;
+use Competency\Domain\Repository\AssessmentRepositoryInterface;
+use Competency\Domain\ValueObjects\AssessmentScore;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Infrastructure\Repository\InMemoryAssessmentRepository;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class InMemoryAssessmentRepositoryTest extends TestCase

@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\Service;
+namespace Learning\Application\Service;
 
-use App\Common\Exceptions\BusinessLogicException;
-use App\Common\Exceptions\NotFoundException;
-use App\Learning\Application\DTO\CertificateDTO;
-use App\Learning\Domain\Certificate;
-use App\Learning\Domain\Repository\CertificateRepositoryInterface;
-use App\Learning\Domain\Repository\EnrollmentRepositoryInterface;
-use App\Learning\Domain\Repository\CourseRepositoryInterface;
-use App\Learning\Domain\ValueObjects\CertificateId;
-use App\Learning\Domain\ValueObjects\CertificateNumber;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\EnrollmentStatus;
-use App\User\Domain\ValueObjects\UserId;
+use Common\Exceptions\BusinessLogicException;
+use Common\Exceptions\NotFoundException;
+use Learning\Application\DTO\CertificateDTO;
+use Learning\Domain\Certificate;
+use Learning\Domain\Repository\CertificateRepositoryInterface;
+use Learning\Domain\Repository\EnrollmentRepositoryInterface;
+use Learning\Domain\Repository\CourseRepositoryInterface;
+use Learning\Domain\ValueObjects\CertificateId;
+use Learning\Domain\ValueObjects\CertificateNumber;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\EnrollmentStatus;
+use User\Domain\ValueObjects\UserId;
 
 class CertificateService
 {

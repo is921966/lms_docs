@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\Traits;
+namespace User\Domain\Traits;
 
-use App\User\Domain\Role;
+use User\Domain\Role;
 use Doctrine\Common\Collections\Collection;
 
 /**

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain\ValueObjects;
 
-use App\Learning\Domain\ValueObjects\CourseType;
+use Learning\Domain\ValueObjects\CourseType;
 use PHPUnit\Framework\TestCase;
 
 class CourseTypeTest extends TestCase

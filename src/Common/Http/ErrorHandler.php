@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Http;
+namespace Common\Http;
 
-use App\Common\Exceptions\ValidationException;
-use App\Common\Exceptions\NotFoundException;
-use App\Common\Exceptions\AuthorizationException;
-use App\Common\Exceptions\BusinessLogicException;
+use Common\Exceptions\ValidationException;
+use Common\Exceptions\NotFoundException;
+use Common\Exceptions\AuthorizationException;
+use Common\Exceptions\BusinessLogicException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

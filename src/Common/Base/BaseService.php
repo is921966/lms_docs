@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Base;
+namespace Common\Base;
 
-use App\Common\Interfaces\ServiceInterface;
-use App\Common\Interfaces\ValidatorInterface;
-use App\Common\Exceptions\ValidationException;
+use Common\Interfaces\ServiceInterface;
+use Common\Interfaces\ValidatorInterface;
+use Common\Exceptions\ValidationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 

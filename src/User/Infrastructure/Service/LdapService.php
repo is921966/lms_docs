@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Infrastructure\Service;
+namespace User\Infrastructure\Service;
 
 use App\User\Domain\Service\LdapServiceInterface;
 use App\User\Domain\User;

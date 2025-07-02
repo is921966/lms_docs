@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Application\DTO;
 
-use App\Learning\Application\DTO\ProgressDTO;
-use App\Learning\Domain\Progress;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\LessonId;
+use Learning\Application\DTO\ProgressDTO;
+use Learning\Domain\Progress;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\LessonId;
 use PHPUnit\Framework\TestCase;
 
 class ProgressDTOTest extends TestCase
@@ -53,9 +53,9 @@ class ProgressDTOTest extends TestCase
         
         $dto = ProgressDTO::fromEntity($progress);
         
-        $this->assertEquals($progress->getId()->toString(), $dto->id);
-        $this->assertEquals($progress->getEnrollmentId()->toString(), $dto->enrollmentId);
-        $this->assertEquals($progress->getLessonId()->toString(), $dto->lessonId);
+        $this->assertEquals($progress->getId()->getValue(), $dto->id);
+        $this->assertEquals($progress->getEnrollmentId()->getValue(), $dto->enrollmentId);
+        $this->assertEquals($progress->getLessonId()->getValue(), $dto->lessonId);
         $this->assertEquals('in_progress', $dto->status);
         $this->assertEquals(50.0, $dto->percentage);
         $this->assertEquals(80.0, $dto->score);

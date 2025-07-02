@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Infrastructure\Repository;
 
-use App\Learning\Infrastructure\Repository\InMemoryCertificateRepository;
-use App\Learning\Domain\Certificate;
-use App\Learning\Domain\ValueObjects\CertificateId;
-use App\Learning\Domain\ValueObjects\CertificateNumber;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Infrastructure\Repository\InMemoryCertificateRepository;
+use Learning\Domain\Certificate;
+use Learning\Domain\ValueObjects\CertificateId;
+use Learning\Domain\ValueObjects\CertificateNumber;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class InMemoryCertificateRepositoryTest extends TestCase
@@ -31,7 +31,7 @@ class InMemoryCertificateRepositoryTest extends TestCase
         $found = $this->repository->findById($certificate->getId());
         
         $this->assertNotNull($found);
-        $this->assertEquals($certificate->getId()->toString(), $found->getId()->toString());
+        $this->assertEquals($certificate->getId()->getValue(), $found->getId()->getValue());
     }
     
     public function testCanFindByNumber(): void
@@ -42,7 +42,7 @@ class InMemoryCertificateRepositoryTest extends TestCase
         $found = $this->repository->findByNumber($certificate->getCertificateNumber());
         
         $this->assertNotNull($found);
-        $this->assertEquals($certificate->getId()->toString(), $found->getId()->toString());
+        $this->assertEquals($certificate->getId()->getValue(), $found->getId()->getValue());
     }
     
     public function testCanFindByUser(): void

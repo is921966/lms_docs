@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Application\Service;
 
-use App\Learning\Application\Service\CertificateService;
-use App\Learning\Application\DTO\CertificateDTO;
-use App\Learning\Domain\Certificate;
-use App\Learning\Domain\Repository\CertificateRepositoryInterface;
-use App\Learning\Domain\Repository\EnrollmentRepositoryInterface;
-use App\Learning\Domain\Repository\CourseRepositoryInterface;
-use App\Learning\Domain\Enrollment;
-use App\Learning\Domain\Course;
-use App\Learning\Domain\ValueObjects\CertificateId;
-use App\Learning\Domain\ValueObjects\CertificateNumber;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\CourseCode;
-use App\Learning\Domain\ValueObjects\CourseType;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Application\Service\CertificateService;
+use Learning\Application\DTO\CertificateDTO;
+use Learning\Domain\Certificate;
+use Learning\Domain\Repository\CertificateRepositoryInterface;
+use Learning\Domain\Repository\EnrollmentRepositoryInterface;
+use Learning\Domain\Repository\CourseRepositoryInterface;
+use Learning\Domain\Enrollment;
+use Learning\Domain\Course;
+use Learning\Domain\ValueObjects\CertificateId;
+use Learning\Domain\ValueObjects\CertificateNumber;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\CourseCode;
+use Learning\Domain\ValueObjects\Duration;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -78,11 +78,11 @@ class CertificateServiceTest extends TestCase
             ->method('save')
             ->with($this->isInstanceOf(Certificate::class));
         
-        $dto = $this->service->issue($userId->getValue(), $courseId->toString());
+        $dto = $this->service->issue($userId->getValue(), $courseId->getValue());
         
         $this->assertInstanceOf(CertificateDTO::class, $dto);
         $this->assertEquals($userId->getValue(), $dto->userId);
-        $this->assertEquals($courseId->toString(), $dto->courseId);
+        $this->assertEquals($courseId->getValue(), $dto->courseId);
         $this->assertEquals("CERT-{$year}-00001", $dto->certificateNumber);
         $this->assertTrue($dto->isValid);
     }
@@ -98,10 +98,10 @@ class CertificateServiceTest extends TestCase
             ->method('findByUserAndCourse')
             ->willReturn($enrollment);
         
-        $this->expectException(\App\Common\Exceptions\BusinessLogicException::class);
+        $this->expectException(\Common\Exceptions\BusinessLogicException::class);
         $this->expectExceptionMessage('Enrollment is not completed');
         
-        $this->service->issue($userId->getValue(), $courseId->toString());
+        $this->service->issue($userId->getValue(), $courseId->getValue());
     }
     
     public function testCanVerifyCertificate(): void
@@ -140,7 +140,7 @@ class CertificateServiceTest extends TestCase
             ->method('save')
             ->with($certificate);
         
-        $result = $this->service->revoke($certificateId->toString(), 'Academic dishonesty');
+        $result = $this->service->revoke($certificateId->getValue(), 'Academic dishonesty');
         
         $this->assertTrue($result);
     }
@@ -174,7 +174,7 @@ class CertificateServiceTest extends TestCase
             ->method('findByNumber')
             ->willReturn(null);
         
-        $this->expectException(\App\Common\Exceptions\NotFoundException::class);
+        $this->expectException(\Common\Exceptions\NotFoundException::class);
         $this->expectExceptionMessage('Certificate not found');
         
         $this->service->verify("CERT-{$year}-99999");
@@ -183,11 +183,11 @@ class CertificateServiceTest extends TestCase
     private function createTestCourse(): Course
     {
         return Course::create(
+            id: CourseId::generate(),
             code: CourseCode::fromString('CRS-001'),
             title: 'Test Course',
             description: 'Test Description',
-            type: CourseType::ONLINE,
-            durationHours: 40
+            duration: Duration::fromHours(40)
         );
     }
     
@@ -211,7 +211,7 @@ class CertificateServiceTest extends TestCase
         return Certificate::create(
             userId: UserId::generate(),
             courseId: CourseId::generate(),
-            enrollmentId: \App\Learning\Domain\ValueObjects\EnrollmentId::generate(),
+            enrollmentId: \Learning\Domain\ValueObjects\EnrollmentId::generate(),
             certificateNumber: CertificateNumber::generate((int) date('Y'), 1),
             courseName: 'Test Course',
             completionDate: new \DateTimeImmutable(),

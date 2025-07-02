@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Domain;
+namespace Competency\Domain;
 
-use App\Common\Traits\HasDomainEvents;
-use App\Competency\Domain\Events\AssessmentCreated;
-use App\Competency\Domain\Events\AssessmentUpdated;
-use App\Competency\Domain\Events\AssessmentConfirmed;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\Competency\Domain\ValueObjects\AssessmentScore;
-use App\User\Domain\ValueObjects\UserId;
+use Common\Traits\HasDomainEvents;
+use Competency\Domain\Events\AssessmentCreated;
+use Competency\Domain\Events\AssessmentUpdated;
+use Competency\Domain\Events\AssessmentConfirmed;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Domain\ValueObjects\AssessmentScore;
+use User\Domain\ValueObjects\UserId;
 
 class CompetencyAssessment
 {

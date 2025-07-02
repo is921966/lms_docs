@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Infrastructure\Repository;
 
-use App\Learning\Infrastructure\Repository\InMemoryProgressRepository;
-use App\Learning\Domain\Progress;
-use App\Learning\Domain\ValueObjects\ProgressId;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\LessonId;
+use Learning\Infrastructure\Repository\InMemoryProgressRepository;
+use Learning\Domain\Progress;
+use Learning\Domain\ValueObjects\ProgressId;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\LessonId;
 use PHPUnit\Framework\TestCase;
 
 class InMemoryProgressRepositoryTest extends TestCase
@@ -29,7 +29,7 @@ class InMemoryProgressRepositoryTest extends TestCase
         $found = $this->repository->findById($progress->getId());
         
         $this->assertNotNull($found);
-        $this->assertEquals($progress->getId()->toString(), $found->getId()->toString());
+        $this->assertEquals($progress->getId()->getValue(), $found->getId()->getValue());
     }
     
     public function testCanFindByEnrollmentAndLesson(): void
@@ -43,7 +43,7 @@ class InMemoryProgressRepositoryTest extends TestCase
         $found = $this->repository->findByEnrollmentAndLesson($enrollmentId, $lessonId);
         
         $this->assertNotNull($found);
-        $this->assertEquals($progress->getId()->toString(), $found->getId()->toString());
+        $this->assertEquals($progress->getId()->getValue(), $found->getId()->getValue());
     }
     
     public function testCanFindByEnrollment(): void

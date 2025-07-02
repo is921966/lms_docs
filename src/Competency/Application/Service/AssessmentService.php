@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Application\Service;
+namespace Competency\Application\Service;
 
-use App\Competency\Domain\Repository\AssessmentRepositoryInterface;
-use App\Competency\Domain\Repository\UserCompetencyRepositoryInterface;
-use App\Competency\Domain\Service\CompetencyAssessmentService;
-use App\Competency\Domain\UserCompetency;
-use App\Competency\Domain\ValueObjects\AssessmentScore;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\User\Domain\ValueObjects\UserId;
+use Competency\Domain\Repository\AssessmentRepositoryInterface;
+use Competency\Domain\Repository\UserCompetencyRepositoryInterface;
+use Competency\Domain\Service\CompetencyAssessmentService;
+use Competency\Domain\UserCompetency;
+use Competency\Domain\ValueObjects\AssessmentScore;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use User\Domain\ValueObjects\UserId;
 
 class AssessmentService
 {

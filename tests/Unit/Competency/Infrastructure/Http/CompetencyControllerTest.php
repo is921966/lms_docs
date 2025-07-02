@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Infrastructure\Http;
 
-use App\Competency\Application\Service\CompetencyService;
-use App\Competency\Infrastructure\Http\CompetencyController;
-use App\Competency\Infrastructure\Repository\InMemoryCompetencyRepository;
+use Competency\Application\Service\CompetencyService;
+use Competency\Infrastructure\Http\CompetencyController;
+use Competency\Infrastructure\Repository\InMemoryCompetencyRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

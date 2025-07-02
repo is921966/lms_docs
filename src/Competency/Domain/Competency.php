@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Domain;
+namespace Competency\Domain;
 
-use App\Common\Traits\HasDomainEvents;
-use App\Competency\Domain\Events\CompetencyCreated;
-use App\Competency\Domain\Events\CompetencyDeactivated;
-use App\Competency\Domain\Events\CompetencyUpdated;
-use App\Competency\Domain\ValueObjects\CompetencyCategory;
-use App\Competency\Domain\ValueObjects\CompetencyCode;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
+use Common\Traits\HasDomainEvents;
+use Competency\Domain\Events\CompetencyCreated;
+use Competency\Domain\Events\CompetencyDeactivated;
+use Competency\Domain\Events\CompetencyUpdated;
+use Competency\Domain\ValueObjects\CompetencyCategory;
+use Competency\Domain\ValueObjects\CompetencyCode;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
 
 class Competency
 {
@@ -132,14 +132,14 @@ class Competency
         $this->parentId = $parentId;
         $this->recordDomainEvent(new CompetencyUpdated(
             $this->id,
-            ['parentId' => ['old' => null, 'new' => $parentId->toString()]]
+            ['parentId' => ['old' => null, 'new' => $parentId->getValue()]]
         ));
     }
     
     public function removeParent(): void
     {
         if ($this->parentId !== null) {
-            $oldParentId = $this->parentId->toString();
+            $oldParentId = $this->parentId->getValue();
             $this->parentId = null;
             $this->recordDomainEvent(new CompetencyUpdated(
                 $this->id,

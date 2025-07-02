@@ -1,0 +1,414 @@
+openapi: 3.0.0
+info:
+  title: LMS Learning Management API
+  version: 1.0.0
+  description: API для управления курсами, модулями и обучением
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+  - url: https://api.lms.example.com/v1
+    description: Production server
+
+tags:
+  - name: courses
+    description: Управление курсами
+  - name: enrollments
+    description: Управление записями на курсы
+  - name: progress
+    description: Отслеживание прогресса обучения
+
+paths:
+  /courses:
+    get:
+      tags:
+        - courses
+      summary: Получить список курсов
+      operationId: listCourses
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, published, archived]
+          description: Фильтр по статусу
+        - name: instructor_id
+          in: query
+          schema:
+            type: string
+          description: Фильтр по инструктору
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Фильтр по категории
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        '200':
+          description: Список курсов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    
+    post:
+      tags:
+        - courses
+      summary: Создать новый курс
+      operationId: createCourse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseRequest'
+      responses:
+        '201':
+          description: Курс создан
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL созданного курса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Course'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /courses/{courseId}:
+    get:
+      tags:
+        - courses
+      summary: Получить курс по ID
+      operationId: getCourse
+      parameters:
+        - $ref: '#/components/parameters/courseId'
+      responses:
+        '200':
+          description: Детали курса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Course'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags:
+        - courses
+      summary: Обновить курс
+      operationId: updateCourse
+      parameters:
+        - $ref: '#/components/parameters/courseId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCourseRequest'
+      responses:
+        '200':
+          description: Курс обновлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Course'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      tags:
+        - courses
+      summary: Архивировать курс
+      operationId: archiveCourse
+      parameters:
+        - $ref: '#/components/parameters/courseId'
+      responses:
+        '204':
+          description: Курс архивирован
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /courses/{courseId}/publish:
+    post:
+      tags:
+        - courses
+      summary: Опубликовать курс
+      operationId: publishCourse
+      parameters:
+        - $ref: '#/components/parameters/courseId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notify_students:
+                  type: boolean
+                  default: false
+                publish_date:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Курс опубликован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Course'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /courses/{courseId}/enroll:
+    post:
+      tags:
+        - enrollments
+      summary: Записаться на курс
+      operationId: enrollInCourse
+      parameters:
+        - $ref: '#/components/parameters/courseId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentRequest'
+      responses:
+        '201':
+          description: Запись создана
+          headers:
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Enrollment'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: Пользователь уже записан
+
+components:
+  parameters:
+    courseId:
+      name: courseId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Идентификатор курса
+
+  schemas:
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        course_code:
+          type: string
+          pattern: '^[A-Z]{2,10}-\d{3,5}$'
+          example: PHP-101
+        title:
+          type: string
+          minLength: 3
+          maxLength: 255
+        description:
+          type: string
+        status:
+          type: string
+          enum: [draft, published, archived]
+        duration_hours:
+          type: integer
+          minimum: 1
+          maximum: 1000
+        instructor_id:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - course_code
+        - title
+        - description
+        - status
+        - duration_hours
+        - instructor_id
+
+    CreateCourseRequest:
+      type: object
+      properties:
+        course_code:
+          type: string
+          pattern: '^[A-Z]{2,10}-\d{3,5}$'
+        title:
+          type: string
+          minLength: 3
+          maxLength: 255
+        description:
+          type: string
+          minLength: 10
+        duration_hours:
+          type: integer
+          minimum: 1
+          maximum: 1000
+        instructor_id:
+          type: string
+        metadata:
+          type: object
+      required:
+        - course_code
+        - title
+        - description
+        - duration_hours
+        - instructor_id
+
+    UpdateCourseRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 255
+        description:
+          type: string
+          minLength: 10
+        metadata:
+          type: object
+
+    EnrollmentRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+        enrollment_type:
+          type: string
+          enum: [voluntary, mandatory, recommended]
+          default: voluntary
+      required:
+        - user_id
+
+    Enrollment:
+      type: object
+      properties:
+        enrollment_id:
+          type: string
+          format: uuid
+        course_id:
+          type: string
+        user_id:
+          type: string
+        enrollment_type:
+          type: string
+        status:
+          type: string
+          enum: [active, completed, dropped]
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+            code:
+              type: string
+
+    ValidationErrors:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+
+  responses:
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              message: Course not found
+              code: COURSE_NOT_FOUND
+
+    ValidationError:
+      description: Ошибка валидации
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrors'
+
+    Unauthorized:
+      description: Не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [] 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Infrastructure\Service\Ldap;
+namespace User\Infrastructure\Service\Ldap;
 
 use App\User\Domain\User;
 use App\User\Domain\ValueObjects\Email;

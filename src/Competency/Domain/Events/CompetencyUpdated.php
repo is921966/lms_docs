@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Domain\Events;
+namespace Competency\Domain\Events;
 
-use App\Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyId;
 
 final class CompetencyUpdated
 {

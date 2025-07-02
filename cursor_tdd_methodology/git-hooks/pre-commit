@@ -1,6 +1,35 @@
 #!/bin/sh
-# Pre-commit hook for TDD enforcement
-# This hook runs tests before allowing a commit
+# Pre-commit hook for TDD enforcement and time tracking
+
+# === TIME TRACKING & REPORT CHECKS ===
+echo "⏰ Проверка учета времени и отчетности..."
+
+if [ ! -f "./scripts/report.sh" ]; then
+    echo "❌ Не найден ./scripts/report.sh. Учет времени невозможен."
+    exit 1
+fi
+
+# Проверка: начат ли текущий день
+./scripts/report.sh time-info | grep -q 'Текущий день: '
+if [ $? -ne 0 ]; then
+    echo "❌ Текущий день не начат! Выполните: ./scripts/report.sh start-day"
+    exit 1
+fi
+
+# Проверка: завершен ли предыдущий день (нет незавершенных дней)
+./scripts/report.sh time-info | grep -q 'Незавершенные дни: 0'
+if [ $? -ne 0 ]; then
+    echo "❌ Есть незавершенные дни! Завершите предыдущий день: ./scripts/report.sh end-day"
+    exit 1
+fi
+
+# Проверка: создан ли отчет за текущий день с двойной нумерацией
+./scripts/report.sh check-report || {
+    echo "❌ Не найден или некорректно назван ежедневный отчет за текущий день! Используйте: ./scripts/report.sh daily-create";
+    exit 1;
+}
+
+echo "✅ Учет времени и отчетность в порядке!"
 
 echo "🚨 Running tests before commit..."
 

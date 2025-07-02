@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Infrastructure\Repository;
 
-use App\Competency\Domain\Repository\UserCompetencyRepositoryInterface;
-use App\Competency\Domain\UserCompetency;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\Competency\Infrastructure\Repository\InMemoryUserCompetencyRepository;
-use App\User\Domain\ValueObjects\UserId;
+use Competency\Domain\Repository\UserCompetencyRepositoryInterface;
+use Competency\Domain\UserCompetency;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Infrastructure\Repository\InMemoryUserCompetencyRepository;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class InMemoryUserCompetencyRepositoryTest extends TestCase

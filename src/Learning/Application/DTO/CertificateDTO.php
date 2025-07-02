@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\DTO;
+namespace Learning\Application\DTO;
 
-use App\Learning\Domain\Certificate;
+use Learning\Domain\Certificate;
 
 final class CertificateDTO
 {
@@ -56,10 +56,10 @@ final class CertificateDTO
     public static function fromEntity(Certificate $certificate): self
     {
         return new self(
-            id: $certificate->getId()->toString(),
+            id: $certificate->getId()->getValue(),
             userId: $certificate->getUserId()->getValue(),
-            courseId: $certificate->getCourseId()->toString(),
-            enrollmentId: $certificate->getEnrollmentId()->toString(),
+            courseId: $certificate->getCourseId()->getValue(),
+            enrollmentId: $certificate->getEnrollmentId()->getValue(),
             certificateNumber: $certificate->getCertificateNumber()->getValue(),
             courseName: $certificate->getCourseName(),
             userName: $certificate->getUserName(),

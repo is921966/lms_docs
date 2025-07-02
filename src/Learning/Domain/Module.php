@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain;
+namespace Learning\Domain;
 
-use App\Learning\Domain\ValueObjects\ModuleId;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\LessonId;
+use Learning\Domain\ValueObjects\ModuleId;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\LessonId;
 
 class Module
 {

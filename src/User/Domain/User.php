@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain;
+namespace User\Domain;
 
-use App\User\Domain\Events\UserCreated;
-use App\User\Domain\Events\UserUpdated;
-use App\User\Domain\Events\UserLoggedIn;
-use App\User\Domain\ValueObjects\Email;
-use App\User\Domain\ValueObjects\Password;
-use App\User\Domain\ValueObjects\UserId;
-use App\User\Domain\Traits\UserAuthenticationTrait;
-use App\User\Domain\Traits\UserProfileTrait;
-use App\User\Domain\Traits\UserRoleManagementTrait;
-use App\User\Domain\Traits\UserStatusManagementTrait;
+use User\Domain\Events\UserCreated;
+use User\Domain\Events\UserUpdated;
+use User\Domain\Events\UserLoggedIn;
+use User\Domain\ValueObjects\Email;
+use User\Domain\ValueObjects\Password;
+use User\Domain\ValueObjects\UserId;
+use User\Domain\Traits\UserAuthenticationTrait;
+use User\Domain\Traits\UserProfileTrait;
+use User\Domain\Traits\UserRoleManagementTrait;
+use User\Domain\Traits\UserStatusManagementTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -50,6 +50,8 @@ class User
     // Status properties
     private string $status = self::STATUS_ACTIVE;
     private bool $isAdmin = false;
+    private bool $isDeleted = false;
+    private bool $isActive = true;
     private ?\DateTimeImmutable $deletedAt = null;
     private ?string $suspensionReason = null;
     private ?\DateTimeImmutable $suspendedUntil = null;
@@ -179,5 +181,70 @@ class User
     public function getUpdatedAt(): \DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email->getValue();
+    }
+
+    public function getRole(): string
+    {
+        return $this->roles->first() ? $this->roles->first()->getName() : '';
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+    
+    public function isAdmin(): bool
+    {
+        return $this->isAdmin;
+    }
+    
+    public function setAdminStatus(bool $isAdmin): void
+    {
+        $this->isAdmin = $isAdmin;
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function verifyPassword(string $password): bool
+    {
+        return $this->password->verify($password);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive && !$this->isDeleted;
+    }
+
+    public function activate(): void
+    {
+        $this->isActive = true;
+    }
+
+    public function deactivate(): void
+    {
+        $this->isActive = false;
+    }
+
+    public function updateLastLogin(): void
+    {
+        $this->lastLoginAt = new \DateTimeImmutable();
+    }
+
+    public function getLastLoginAt(): ?\DateTimeImmutable
+    {
+        return $this->lastLoginAt;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = ['user'];
+        if ($this->isAdmin) {
+            $roles[] = 'admin';
+        }
+        return $roles;
     }
 } 

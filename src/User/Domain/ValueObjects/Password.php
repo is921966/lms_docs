@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\ValueObjects;
+namespace User\Domain\ValueObjects;
 
 /**
  * Password value object
@@ -155,5 +155,10 @@ final class Password implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         return $this->__toString();
+    }
+
+    public function getValue(): string
+    {
+        return $this->hashedValue;
     }
 } 

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain;
 
-use App\Learning\Domain\Lesson;
-use App\Learning\Domain\ValueObjects\LessonId;
-use App\Learning\Domain\ValueObjects\ModuleId;
-use App\Learning\Domain\ValueObjects\LessonType;
+use Learning\Domain\Lesson;
+use Learning\Domain\ValueObjects\LessonId;
+use Learning\Domain\ValueObjects\ModuleId;
+use Learning\Domain\ValueObjects\LessonType;
 use PHPUnit\Framework\TestCase;
 
 class LessonTest extends TestCase

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\Service;
+namespace Learning\Application\Service;
 
-use App\Common\Exceptions\BusinessLogicException;
-use App\Common\Exceptions\NotFoundException;
-use App\Learning\Application\DTO\EnrollmentDTO;
-use App\Learning\Domain\Enrollment;
-use App\Learning\Domain\Repository\EnrollmentRepositoryInterface;
-use App\Learning\Domain\Repository\CourseRepositoryInterface;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\User\Domain\ValueObjects\UserId;
+use Common\Exceptions\BusinessLogicException;
+use Common\Exceptions\NotFoundException;
+use Learning\Application\DTO\EnrollmentDTO;
+use Learning\Domain\Enrollment;
+use Learning\Domain\Repository\EnrollmentRepositoryInterface;
+use Learning\Domain\Repository\CourseRepositoryInterface;
+use Learning\Domain\ValueObjects\CourseId;
+use User\Domain\ValueObjects\UserId;
 
 class EnrollmentService
 {

@@ -4,34 +4,24 @@ namespace Tests\Unit\Competency\Application\DTO;
 
 use PHPUnit\Framework\TestCase;
 use Competency\Application\DTO\CompetencyDTO;
-use Competency\Domain\Entities\Competency;
-use Competency\Domain\Entities\CompetencyCategory;
+use Competency\Domain\Competency;
+use Competency\Domain\ValueObjects\CompetencyCategory;
+use Competency\Domain\ValueObjects\CompetencyCode;
 use Competency\Domain\ValueObjects\CompetencyId;
-use Competency\Domain\ValueObjects\CategoryId;
-use Competency\Domain\ValueObjects\SkillLevel;
+use Competency\Domain\ValueObjects\CompetencyLevel;
 
 class CompetencyDTOTest extends TestCase
 {
     public function testCreateFromEntity()
     {
         // Arrange
-        $category = CompetencyCategory::createWithId(
-            CategoryId::fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            'Technical Skills',
-            'Technical competencies'
-        );
-
-        $competency = Competency::createWithId(
+        $competency = Competency::create(
             CompetencyId::fromString('b1ffcd00-0d1e-4ef8-cc7e-7cc0ce491b22'),
+            CompetencyCode::fromString('JS-001'),
             'JavaScript Development',
             'JavaScript programming skills',
-            $category
+            CompetencyCategory::technical()
         );
-
-        // Add skill levels
-        $competency->addSkillLevel(new SkillLevel(1, 'Beginner', 'Basic JS syntax'));
-        $competency->addSkillLevel(new SkillLevel(2, 'Elementary', 'DOM manipulation'));
-        $competency->addSkillLevel(new SkillLevel(3, 'Intermediate', 'ES6+ and frameworks'));
 
         // Act
         $dto = CompetencyDTO::fromEntity($competency);
@@ -40,20 +30,29 @@ class CompetencyDTOTest extends TestCase
         $this->assertEquals('b1ffcd00-0d1e-4ef8-cc7e-7cc0ce491b22', $dto->id);
         $this->assertEquals('JavaScript Development', $dto->name);
         $this->assertEquals('JavaScript programming skills', $dto->description);
-        $this->assertEquals('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', $dto->categoryId);
-        $this->assertEquals('Technical Skills', $dto->categoryName);
+        $this->assertEquals('technical', $dto->categoryId);
+        $this->assertEquals('Technical', $dto->categoryName);
         $this->assertTrue($dto->isActive);
-        $this->assertCount(3, $dto->skillLevels);
+        $this->assertCount(5, $dto->skillLevels); // Default levels
     }
 
     public function testSkillLevelsInDTO()
     {
-        // Arrange
-        $category = CompetencyCategory::create('Soft Skills', 'Interpersonal skills');
-        $competency = Competency::create('Communication', 'Communication skills', $category);
+        // Arrange - создаем с кастомными уровнями
+        $customLevels = [
+            CompetencyLevel::beginner(),
+            CompetencyLevel::intermediate()
+        ];
         
-        $competency->addSkillLevel(new SkillLevel(1, 'Basic', 'Can communicate simple ideas'));
-        $competency->addSkillLevel(new SkillLevel(2, 'Good', 'Clear communication'));
+        $competency = Competency::create(
+            CompetencyId::generate(),
+            CompetencyCode::fromString('COMM-001'),
+            'Communication',
+            'Communication skills',
+            CompetencyCategory::soft(),
+            null,
+            $customLevels
+        );
 
         // Act
         $dto = CompetencyDTO::fromEntity($competency);
@@ -61,15 +60,19 @@ class CompetencyDTOTest extends TestCase
         // Assert
         $this->assertCount(2, $dto->skillLevels);
         $this->assertEquals(1, $dto->skillLevels[0]['level']);
-        $this->assertEquals('Basic', $dto->skillLevels[0]['name']);
-        $this->assertEquals('Can communicate simple ideas', $dto->skillLevels[0]['description']);
+        $this->assertEquals('Beginner', $dto->skillLevels[0]['name']);
     }
 
     public function testInactiveCompetencyDTO()
     {
         // Arrange
-        $category = CompetencyCategory::create('Legacy', 'Old skills');
-        $competency = Competency::create('COBOL', 'COBOL programming', $category);
+        $competency = Competency::create(
+            CompetencyId::generate(),
+            CompetencyCode::fromString('COBOL-001'),
+            'COBOL',
+            'COBOL programming',
+            CompetencyCategory::technical()
+        );
         $competency->deactivate();
 
         // Act
@@ -79,30 +82,16 @@ class CompetencyDTOTest extends TestCase
         $this->assertFalse($dto->isActive);
     }
 
-    public function testRequiredForPositionsInDTO()
-    {
-        // Arrange
-        $category = CompetencyCategory::create('Leadership', 'Leadership skills');
-        $competency = Competency::create('Team Management', 'Managing teams', $category);
-        
-        $competency->addRequiredForPosition('team-lead', 4);
-        $competency->addRequiredForPosition('department-head', 5);
-
-        // Act
-        $dto = CompetencyDTO::fromEntity($competency);
-
-        // Assert
-        $this->assertCount(2, $dto->requiredForPositions);
-        $this->assertEquals(4, $dto->requiredForPositions['team-lead']);
-        $this->assertEquals(5, $dto->requiredForPositions['department-head']);
-    }
-
     public function testToArray()
     {
         // Arrange
-        $category = CompetencyCategory::create('Technical', 'Tech skills');
-        $competency = Competency::create('Docker', 'Container technology', $category);
-        $competency->addSkillLevel(SkillLevel::beginner());
+        $competency = Competency::create(
+            CompetencyId::generate(),
+            CompetencyCode::fromString('DOCKER-001'),
+            'Docker',
+            'Container technology',
+            CompetencyCategory::technical()
+        );
 
         $dto = CompetencyDTO::fromEntity($competency);
 
@@ -129,13 +118,13 @@ class CompetencyDTOTest extends TestCase
             'id' => 'test-id-123',
             'name' => 'Test Competency',
             'description' => 'Test description',
-            'categoryId' => 'cat-id-456',
-            'categoryName' => 'Test Category',
+            'categoryId' => 'technical',
+            'categoryName' => 'Technical',
             'isActive' => true,
             'skillLevels' => [
                 ['level' => 1, 'name' => 'Level 1', 'description' => 'Desc 1']
             ],
-            'requiredForPositions' => ['position-1' => 3]
+            'requiredForPositions' => []
         ];
 
         // Act
@@ -145,10 +134,10 @@ class CompetencyDTOTest extends TestCase
         $this->assertEquals('test-id-123', $dto->id);
         $this->assertEquals('Test Competency', $dto->name);
         $this->assertEquals('Test description', $dto->description);
-        $this->assertEquals('cat-id-456', $dto->categoryId);
-        $this->assertEquals('Test Category', $dto->categoryName);
+        $this->assertEquals('technical', $dto->categoryId);
+        $this->assertEquals('Technical', $dto->categoryName);
         $this->assertTrue($dto->isActive);
         $this->assertCount(1, $dto->skillLevels);
-        $this->assertCount(1, $dto->requiredForPositions);
+        $this->assertCount(0, $dto->requiredForPositions);
     }
 } 

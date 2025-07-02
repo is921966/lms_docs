@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Utils;
+namespace Common\Utils;
 
 /**
  * Date helper utility class

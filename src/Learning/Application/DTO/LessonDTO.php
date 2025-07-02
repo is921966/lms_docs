@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\DTO;
+namespace Learning\Application\DTO;
 
-use App\Learning\Domain\Lesson;
-use App\Learning\Domain\ValueObjects\LessonType;
+use Learning\Domain\Lesson;
+use Learning\Domain\ValueObjects\LessonType;
 
 final class LessonDTO
 {
@@ -53,8 +53,8 @@ final class LessonDTO
         $type = strtolower($lesson->getType()->value);
         
         return new self(
-            id: $lesson->getId()->toString(),
-            moduleId: $lesson->getModuleId()->toString(),
+            id: $lesson->getId()->getValue(),
+            moduleId: $lesson->getModuleId()->getValue(),
             title: $lesson->getTitle(),
             type: $type,
             content: $lesson->getContent(),

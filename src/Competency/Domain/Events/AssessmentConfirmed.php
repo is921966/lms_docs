@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Domain\Events;
+namespace Competency\Domain\Events;
 
-use App\User\Domain\ValueObjects\UserId;
+use User\Domain\ValueObjects\UserId;
 
 final class AssessmentConfirmed
 {

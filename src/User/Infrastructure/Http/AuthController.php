@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Infrastructure\Http;
+namespace User\Infrastructure\Http;
 
 use App\Common\Http\BaseController;
 use App\User\Domain\Service\AuthServiceInterface;

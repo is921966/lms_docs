@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Domain\ValueObjects;
 
-use App\Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\EnrollmentId;
 use PHPUnit\Framework\TestCase;
 
 class EnrollmentIdTest extends TestCase
@@ -15,7 +15,7 @@ class EnrollmentIdTest extends TestCase
         $enrollmentId = EnrollmentId::fromString($uuid);
         
         $this->assertInstanceOf(EnrollmentId::class, $enrollmentId);
-        $this->assertEquals($uuid, $enrollmentId->toString());
+        $this->assertEquals($uuid, $enrollmentId->getValue());
     }
     
     public function testCanBeGenerated(): void
@@ -25,7 +25,7 @@ class EnrollmentIdTest extends TestCase
         $this->assertInstanceOf(EnrollmentId::class, $enrollmentId);
         $this->assertMatchesRegularExpression(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
-            $enrollmentId->toString()
+            $enrollmentId->getValue()
         );
     }
     

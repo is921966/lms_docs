@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Exceptions;
+namespace Common\Exceptions;
 
 /**
  * Exception thrown when user is not authorized to perform action

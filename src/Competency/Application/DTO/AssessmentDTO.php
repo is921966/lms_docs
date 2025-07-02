@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Application\DTO;
+namespace Competency\Application\DTO;
 
-use App\Competency\Domain\CompetencyAssessment;
+use Competency\Domain\CompetencyAssessment;
 
 final class AssessmentDTO
 {

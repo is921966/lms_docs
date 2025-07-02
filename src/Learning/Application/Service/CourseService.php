@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\Service;
+namespace Learning\Application\Service;
 
-use App\Common\Exceptions\NotFoundException;
-use App\Learning\Application\DTO\CourseDTO;
-use App\Learning\Domain\Course;
-use App\Learning\Domain\Repository\CourseRepositoryInterface;
-use App\Learning\Domain\ValueObjects\CourseCode;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\CourseType;
-use App\Learning\Domain\ValueObjects\CourseStatus;
+use Common\Exceptions\NotFoundException;
+use Learning\Application\DTO\CourseDTO;
+use Learning\Domain\Course;
+use Learning\Domain\Repository\CourseRepositoryInterface;
+use Learning\Domain\ValueObjects\CourseCode;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\CourseStatus;
 
 class CourseService
 {
@@ -29,27 +28,18 @@ class CourseService
     public function create(CourseDTO $dto): CourseDTO
     {
         $course = Course::create(
-            code: CourseCode::fromString($dto->code),
+            id: CourseId::generate(),
+            code: CourseCode::fromString($dto->courseCode),
             title: $dto->title,
             description: $dto->description,
-            type: CourseType::from(strtoupper($dto->type)),
-            durationHours: $dto->durationHours
+            duration: \Learning\Domain\ValueObjects\Duration::fromHours($dto->durationHours)
         );
         
-        if ($dto->tags) {
-            foreach ($dto->tags as $tag) {
-                $course->addTag($tag);
+        // Set metadata if provided
+        if (!empty($dto->metadata)) {
+            foreach ($dto->metadata as $key => $value) {
+                $course->setMetadata($key, $value);
             }
-        }
-        
-        if ($dto->prerequisites) {
-            foreach ($dto->prerequisites as $prerequisiteId) {
-                $course->addPrerequisite(CourseId::fromString($prerequisiteId));
-            }
-        }
-        
-        if ($dto->imageUrl) {
-            $course->setImageUrl($dto->imageUrl);
         }
         
         $this->courseRepository->save($course);
@@ -66,25 +56,16 @@ class CourseService
             throw new NotFoundException("Course with ID {$id} not found");
         }
         
-        if (isset($data['title']) || isset($data['description']) || isset($data['durationHours'])) {
-            $course->updateBasicInfo(
+        if (isset($data['title']) || isset($data['description'])) {
+            $course->updateDetails(
                 $data['title'] ?? $course->getTitle(),
-                $data['description'] ?? $course->getDescription(),
-                $data['durationHours'] ?? $course->getDurationHours()
+                $data['description'] ?? $course->getDescription()
             );
         }
         
-        if (isset($data['imageUrl'])) {
-            $course->setImageUrl($data['imageUrl']);
-        }
-        
-        if (isset($data['tags'])) {
-            // Clear existing tags and add new ones
-            foreach ($course->getTags() as $tag) {
-                $course->removeTag($tag);
-            }
-            foreach ($data['tags'] as $tag) {
-                $course->addTag($tag);
+        if (isset($data['metadata'])) {
+            foreach ($data['metadata'] as $key => $value) {
+                $course->setMetadata($key, $value);
             }
         }
         

@@ -1,0 +1,58 @@
+Learning\Domain\Course:
+  type: entity
+  table: courses
+  repositoryClass: Learning\Infrastructure\Persistence\Doctrine\DoctrineCourseRepository
+  
+  id:
+    id:
+      type: course_id
+      generator:
+        strategy: NONE
+        
+  fields:
+    code:
+      type: course_code
+      unique: true
+      nullable: false
+      
+    title:
+      type: string
+      length: 255
+      nullable: false
+      
+    description:
+      type: text
+      nullable: false
+      
+    status:
+      type: course_status
+      nullable: false
+      
+    duration:
+      type: duration
+      nullable: false
+      column: duration_minutes
+      
+    metadata:
+      type: json
+      nullable: true
+      
+    createdAt:
+      type: datetime_immutable
+      nullable: false
+      
+    publishedAt:
+      type: datetime_immutable
+      nullable: true
+      
+  indexes:
+    idx_course_status:
+      columns: [status]
+    idx_course_published:
+      columns: [publishedAt]
+    idx_course_created:
+      columns: [createdAt]
+      
+  lifecycleCallbacks:
+    prePersist: [onPrePersist]
+    preUpdate: [onPreUpdate] 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Infrastructure\Repository;
+namespace Learning\Infrastructure\Repository;
 
-use App\Learning\Domain\Repository\EnrollmentRepositoryInterface;
-use App\Learning\Domain\Enrollment;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\EnrollmentStatus;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Domain\Repository\EnrollmentRepositoryInterface;
+use Learning\Domain\Enrollment;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\EnrollmentStatus;
+use User\Domain\ValueObjects\UserId;
 
 class InMemoryEnrollmentRepository implements EnrollmentRepositoryInterface
 {
@@ -18,19 +18,19 @@ class InMemoryEnrollmentRepository implements EnrollmentRepositoryInterface
     
     public function save(Enrollment $enrollment): void
     {
-        $this->enrollments[$enrollment->getId()->toString()] = $enrollment;
+        $this->enrollments[$enrollment->getId()->getValue()] = $enrollment;
     }
     
     public function findById(EnrollmentId $id): ?Enrollment
     {
-        return $this->enrollments[$id->toString()] ?? null;
+        return $this->enrollments[$id->getValue()] ?? null;
     }
     
     public function findByUserAndCourse(UserId $userId, CourseId $courseId): ?Enrollment
     {
         foreach ($this->enrollments as $enrollment) {
             if ($enrollment->getUserId()->getValue() === $userId->getValue() &&
-                $enrollment->getCourseId()->toString() === $courseId->toString()) {
+                $enrollment->getCourseId()->getValue() === $courseId->getValue()) {
                 return $enrollment;
             }
         }
@@ -59,7 +59,7 @@ class InMemoryEnrollmentRepository implements EnrollmentRepositoryInterface
     {
         $enrollments = array_filter(
             $this->enrollments,
-            fn(Enrollment $enrollment) => $enrollment->getCourseId()->toString() === $courseId->toString()
+            fn(Enrollment $enrollment) => $enrollment->getCourseId()->getValue() === $courseId->getValue()
         );
         
         if ($status !== null) {
@@ -138,7 +138,7 @@ class InMemoryEnrollmentRepository implements EnrollmentRepositoryInterface
     
     public function delete(Enrollment $enrollment): void
     {
-        unset($this->enrollments[$enrollment->getId()->toString()]);
+        unset($this->enrollments[$enrollment->getId()->getValue()]);
     }
     
     public function getNextId(): EnrollmentId

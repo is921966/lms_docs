@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Infrastructure\Http\Controllers;
+namespace Learning\Infrastructure\Http\Controllers;
 
-use App\Learning\Application\Service\ProgressService;
+use Learning\Application\Service\ProgressService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,9 +31,9 @@ class ProgressController
             );
             
             return new JsonResponse(['data' => $progress]);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
-        } catch (\App\Common\Exceptions\BusinessLogicException $e) {
+        } catch (\Common\Exceptions\BusinessLogicException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -60,7 +60,7 @@ class ProgressController
             }
             
             return new JsonResponse(['error' => 'Failed to update progress'], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -87,7 +87,7 @@ class ProgressController
             }
             
             return new JsonResponse(['error' => 'Failed to complete lesson'], Response::HTTP_BAD_REQUEST);
-        } catch (\App\Common\Exceptions\NotFoundException $e) {
+        } catch (\Common\Exceptions\NotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);

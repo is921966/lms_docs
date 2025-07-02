@@ -1,0 +1,80 @@
+Learning\Domain\Enrollment:
+  type: entity
+  table: enrollments
+  repositoryClass: Learning\Infrastructure\Persistence\Doctrine\DoctrineEnrollmentRepository
+  
+  id:
+    id:
+      type: enrollment_id
+      generator:
+        strategy: NONE
+        
+  fields:
+    userId:
+      type: user_id
+      nullable: false
+      
+    courseId:
+      type: course_id
+      nullable: false
+      
+    enrolledBy:
+      type: user_id
+      nullable: false
+      
+    enrollmentType:
+      type: string
+      length: 20
+      nullable: false
+      options:
+        default: 'voluntary'
+        
+    status:
+      type: enrollment_status
+      nullable: false
+      options:
+        default: 'active'
+        
+    enrolledAt:
+      type: datetime_immutable
+      nullable: false
+      
+    startedAt:
+      type: datetime_immutable
+      nullable: true
+      
+    completedAt:
+      type: datetime_immutable
+      nullable: true
+      
+    expiresAt:
+      type: datetime_immutable
+      nullable: true
+      
+    progressPercentage:
+      type: decimal
+      precision: 5
+      scale: 2
+      nullable: false
+      options:
+        default: 0
+        
+    metadata:
+      type: json
+      nullable: true
+      
+  uniqueConstraints:
+    uniq_user_course:
+      columns: [userId, courseId]
+      
+  indexes:
+    idx_enrollment_status:
+      columns: [status]
+    idx_enrollment_enrolled:
+      columns: [enrolledAt]
+    idx_enrollment_completed:
+      columns: [completedAt]
+    idx_enrollment_user:
+      columns: [userId]
+    idx_enrollment_course:
+      columns: [courseId] 

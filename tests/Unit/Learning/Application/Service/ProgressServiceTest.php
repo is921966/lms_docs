@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Application\Service;
 
-use App\Learning\Application\Service\ProgressService;
-use App\Learning\Application\DTO\ProgressDTO;
-use App\Learning\Domain\Progress;
-use App\Learning\Domain\Repository\ProgressRepositoryInterface;
-use App\Learning\Domain\Repository\EnrollmentRepositoryInterface;
-use App\Learning\Domain\Enrollment;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\LessonId;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Application\Service\ProgressService;
+use Learning\Application\DTO\ProgressDTO;
+use Learning\Domain\Progress;
+use Learning\Domain\Repository\ProgressRepositoryInterface;
+use Learning\Domain\Repository\EnrollmentRepositoryInterface;
+use Learning\Domain\Enrollment;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\LessonId;
+use Learning\Domain\ValueObjects\CourseId;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -61,13 +61,13 @@ class ProgressServiceTest extends TestCase
         
         $dto = $this->service->startLesson(
             $userId->getValue(),
-            $courseId->toString(),
-            $lessonId->toString()
+            $courseId->getValue(),
+            $lessonId->getValue()
         );
         
         $this->assertInstanceOf(ProgressDTO::class, $dto);
-        $this->assertEquals($enrollmentId->toString(), $dto->enrollmentId);
-        $this->assertEquals($lessonId->toString(), $dto->lessonId);
+        $this->assertEquals($enrollmentId->getValue(), $dto->enrollmentId);
+        $this->assertEquals($lessonId->getValue(), $dto->lessonId);
         $this->assertEquals('in_progress', $dto->status);
     }
     
@@ -90,8 +90,8 @@ class ProgressServiceTest extends TestCase
             ->with($progress);
         
         $result = $this->service->updateProgress(
-            $enrollmentId->toString(),
-            $lessonId->toString(),
+            $enrollmentId->getValue(),
+            $lessonId->getValue(),
             75.5
         );
         
@@ -117,8 +117,8 @@ class ProgressServiceTest extends TestCase
             ->with($progress);
         
         $result = $this->service->completeLesson(
-            $enrollmentId->toString(),
-            $lessonId->toString(),
+            $enrollmentId->getValue(),
+            $lessonId->getValue(),
             90.0
         );
         
@@ -139,7 +139,7 @@ class ProgressServiceTest extends TestCase
             ->with($enrollmentId)
             ->willReturn($progresses);
         
-        $dtos = $this->service->getEnrollmentProgress($enrollmentId->toString());
+        $dtos = $this->service->getEnrollmentProgress($enrollmentId->getValue());
         
         $this->assertCount(2, $dtos);
         $this->assertContainsOnlyInstancesOf(ProgressDTO::class, $dtos);
@@ -156,13 +156,13 @@ class ProgressServiceTest extends TestCase
             ->method('findByUserAndCourse')
             ->willReturn(null);
         
-        $this->expectException(\App\Common\Exceptions\NotFoundException::class);
+        $this->expectException(\Common\Exceptions\NotFoundException::class);
         $this->expectExceptionMessage('Enrollment not found');
         
         $this->service->startLesson(
             $userId->getValue(),
-            $courseId->toString(),
-            $lessonId->toString()
+            $courseId->getValue(),
+            $lessonId->getValue()
         );
     }
     
@@ -180,13 +180,13 @@ class ProgressServiceTest extends TestCase
             ->method('findByUserAndCourse')
             ->willReturn($enrollment);
         
-        $this->expectException(\App\Common\Exceptions\BusinessLogicException::class);
+        $this->expectException(\Common\Exceptions\BusinessLogicException::class);
         $this->expectExceptionMessage('Enrollment is not active');
         
         $this->service->startLesson(
             $userId->getValue(),
-            $courseId->toString(),
-            $lessonId->toString()
+            $courseId->getValue(),
+            $lessonId->getValue()
         );
     }
     

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Exceptions;
+namespace Common\Exceptions;
 
 /**
  * Exception thrown when business logic rules are violated

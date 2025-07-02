@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Infrastructure\Http\Controllers;
 
-use App\Learning\Infrastructure\Http\Controllers\CertificateController;
-use App\Learning\Application\Service\CertificateService;
-use App\Learning\Application\DTO\CertificateDTO;
+use Learning\Infrastructure\Http\Controllers\CertificateController;
+use Learning\Application\Service\CertificateService;
+use Learning\Application\DTO\CertificateDTO;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;

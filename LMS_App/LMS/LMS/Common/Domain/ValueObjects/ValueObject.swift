@@ -12,7 +12,7 @@ import Foundation
 /// Base protocol for all Value Objects in the domain layer
 /// Value Objects are immutable and defined by their attributes
 public protocol ValueObject: Equatable, Hashable, Codable {
-    associatedtype Value: Equatable
+    associatedtype Value: Equatable & Hashable
     
     /// The underlying value
     var value: Value { get }

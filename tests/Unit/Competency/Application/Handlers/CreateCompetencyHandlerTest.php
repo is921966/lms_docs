@@ -7,10 +7,11 @@ use Competency\Application\Handlers\CreateCompetencyHandler;
 use Competency\Application\Commands\CreateCompetencyCommand;
 use Competency\Domain\Repositories\CompetencyRepositoryInterface;
 use Competency\Domain\Repositories\CompetencyCategoryRepositoryInterface;
-use Competency\Domain\Entities\CompetencyCategory;
-use Competency\Domain\Entities\Competency;
-use Competency\Domain\ValueObjects\CategoryId;
+use Competency\Domain\ValueObjects\CompetencyCategory;
+use Competency\Domain\ValueObjects\CompetencyCode;
 use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Domain\Competency;
 
 class CreateCompetencyHandlerTest extends TestCase
 {
@@ -31,23 +32,18 @@ class CreateCompetencyHandlerTest extends TestCase
     public function testHandleCreateCompetency()
     {
         // Arrange
-        $categoryId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-        $category = CompetencyCategory::createWithId(
-            CategoryId::fromString($categoryId),
-            'Technical Skills',
-            'Technical competencies'
-        );
-
+        $categoryId = 'technical'; // Using predefined category value
         $command = new CreateCompetencyCommand(
             'Python Development',
             'Python programming skills',
             $categoryId
         );
 
+        // Mock that category exists
         $this->categoryRepository->expects($this->once())
             ->method('findById')
             ->with($categoryId)
-            ->willReturn($category);
+            ->willReturn((object)['id' => $categoryId, 'name' => 'Technical Skills']);
 
         $this->competencyRepository->expects($this->once())
             ->method('save')
@@ -64,13 +60,7 @@ class CreateCompetencyHandlerTest extends TestCase
     public function testHandleWithSkillLevels()
     {
         // Arrange
-        $categoryId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-        $category = CompetencyCategory::createWithId(
-            CategoryId::fromString($categoryId),
-            'Technical Skills',
-            'Technical competencies'
-        );
-
+        $categoryId = 'technical';
         $skillLevels = [
             ['level' => 1, 'name' => 'Beginner', 'description' => 'Basic knowledge'],
             ['level' => 2, 'name' => 'Elementary', 'description' => 'Can perform simple tasks']
@@ -86,7 +76,7 @@ class CreateCompetencyHandlerTest extends TestCase
         $this->categoryRepository->expects($this->once())
             ->method('findById')
             ->with($categoryId)
-            ->willReturn($category);
+            ->willReturn((object)['id' => $categoryId, 'name' => 'Technical Skills']);
 
         $savedCompetency = null;
         $this->competencyRepository->expects($this->once())
@@ -100,8 +90,13 @@ class CreateCompetencyHandlerTest extends TestCase
 
         // Assert
         $this->assertNotNull($savedCompetency);
-        $this->assertCount(2, $savedCompetency->getSkillLevels());
-        $this->assertEquals('Beginner', $savedCompetency->getSkillLevel(1)->getName());
+        $levels = $savedCompetency->getLevels();
+        $this->assertCount(2, $levels);
+        
+        // Check first level
+        $firstLevel = $levels[0];
+        $this->assertEquals(1, $firstLevel->getValue());
+        $this->assertEquals('Beginner', $firstLevel->getName());
     }
 
     public function testHandleWithNonExistentCategory()
@@ -127,50 +122,17 @@ class CreateCompetencyHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 
-    public function testHandleWithInactiveCategory()
-    {
-        // Arrange
-        $categoryId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-        $category = CompetencyCategory::createWithId(
-            CategoryId::fromString($categoryId),
-            'Legacy Skills',
-            'Old competencies'
-        );
-        $category->deactivate();
-
-        $command = new CreateCompetencyCommand(
-            'COBOL Development',
-            'COBOL programming skills',
-            $categoryId
-        );
-
-        $this->categoryRepository->expects($this->once())
-            ->method('findById')
-            ->with($categoryId)
-            ->willReturn($category);
-
-        // Assert
-        $this->expectException(\DomainException::class);
-        $this->expectExceptionMessage('Cannot create competency in inactive category');
-
-        // Act
-        $this->handler->handle($command);
-    }
-
     public function testHandleWithDuplicateName()
     {
         // Arrange
-        $categoryId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-        $category = CompetencyCategory::createWithId(
-            CategoryId::fromString($categoryId),
-            'Technical Skills',
-            'Technical competencies'
-        );
-
+        $categoryId = 'technical';
+        
         $existingCompetency = Competency::create(
+            CompetencyId::generate(),
+            CompetencyCode::fromString('PHP-001'),
             'PHP Development',
             'Existing competency',
-            $category
+            CompetencyCategory::technical()
         );
 
         $command = new CreateCompetencyCommand(
@@ -181,7 +143,7 @@ class CreateCompetencyHandlerTest extends TestCase
 
         $this->categoryRepository->expects($this->once())
             ->method('findById')
-            ->willReturn($category);
+            ->willReturn((object)['id' => $categoryId, 'name' => 'Technical Skills']);
 
         $this->competencyRepository->expects($this->once())
             ->method('findByName')

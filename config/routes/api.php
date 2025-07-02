@@ -1,6 +1,7 @@
 <?php
 
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+use User\Http\Controllers\UserController;
 
 return function (RoutingConfigurator $routes) {
     // API v1 routes
@@ -57,4 +58,28 @@ return function (RoutingConfigurator $routes) {
     $routes->add('api.openapi', '/api/openapi.json')
         ->controller('App\Common\Http\Controllers\ApiDocController::openapi')
         ->methods(['GET']);
+
+    // User routes
+    $routes->add('users.index', '/api/users')
+        ->controller([UserController::class, 'index'])
+        ->methods(['GET']);
+        
+    $routes->add('users.store', '/api/users')
+        ->controller([UserController::class, 'store'])
+        ->methods(['POST']);
+        
+    $routes->add('users.show', '/api/users/{id}')
+        ->controller([UserController::class, 'show'])
+        ->methods(['GET'])
+        ->requirements(['id' => '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}']);
+        
+    $routes->add('users.update', '/api/users/{id}')
+        ->controller([UserController::class, 'update'])
+        ->methods(['PUT', 'PATCH'])
+        ->requirements(['id' => '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}']);
+        
+    $routes->add('users.destroy', '/api/users/{id}')
+        ->controller([UserController::class, 'destroy'])
+        ->methods(['DELETE'])
+        ->requirements(['id' => '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}']);
 }; 

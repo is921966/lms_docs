@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Domain\Repository;
+namespace Learning\Domain\Repository;
 
-use App\Learning\Domain\Course;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\CourseCode;
-use App\Learning\Domain\ValueObjects\CourseStatus;
+use Learning\Domain\Course;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\CourseCode;
+use Learning\Domain\ValueObjects\CourseStatus;
 
 interface CourseRepositoryInterface
 {

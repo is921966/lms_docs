@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Infrastructure;
+namespace Common\Infrastructure;
 
-use App\Common\Interfaces\CacheInterface;
+use Common\Interfaces\CacheInterface;
 
 /**
  * In-memory cache implementation

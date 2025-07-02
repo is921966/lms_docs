@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Infrastructure\Repository;
+namespace Learning\Infrastructure\Repository;
 
-use App\Learning\Domain\Repository\ProgressRepositoryInterface;
-use App\Learning\Domain\Progress;
-use App\Learning\Domain\ValueObjects\ProgressId;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\Learning\Domain\ValueObjects\LessonId;
-use App\Learning\Domain\ValueObjects\ModuleId;
-use App\Learning\Domain\ValueObjects\ProgressStatus;
+use Learning\Domain\Repository\ProgressRepositoryInterface;
+use Learning\Domain\Progress;
+use Learning\Domain\ValueObjects\ProgressId;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use Learning\Domain\ValueObjects\LessonId;
+use Learning\Domain\ValueObjects\ModuleId;
+use Learning\Domain\ValueObjects\ProgressStatus;
 
 class InMemoryProgressRepository implements ProgressRepositoryInterface
 {
@@ -22,19 +22,19 @@ class InMemoryProgressRepository implements ProgressRepositoryInterface
     
     public function save(Progress $progress): void
     {
-        $this->progresses[$progress->getId()->toString()] = $progress;
+        $this->progresses[$progress->getId()->getValue()] = $progress;
     }
     
     public function findById(ProgressId $id): ?Progress
     {
-        return $this->progresses[$id->toString()] ?? null;
+        return $this->progresses[$id->getValue()] ?? null;
     }
     
     public function findByEnrollmentAndLesson(EnrollmentId $enrollmentId, LessonId $lessonId): ?Progress
     {
         foreach ($this->progresses as $progress) {
-            if ($progress->getEnrollmentId()->toString() === $enrollmentId->toString() &&
-                $progress->getLessonId()->toString() === $lessonId->toString()) {
+            if ($progress->getEnrollmentId()->getValue() === $enrollmentId->getValue() &&
+                $progress->getLessonId()->getValue() === $lessonId->getValue()) {
                 return $progress;
             }
         }
@@ -46,7 +46,7 @@ class InMemoryProgressRepository implements ProgressRepositoryInterface
     {
         return array_values(array_filter(
             $this->progresses,
-            fn(Progress $progress) => $progress->getEnrollmentId()->toString() === $enrollmentId->toString()
+            fn(Progress $progress) => $progress->getEnrollmentId()->getValue() === $enrollmentId->getValue()
         ));
     }
     
@@ -55,13 +55,13 @@ class InMemoryProgressRepository implements ProgressRepositoryInterface
         return array_values(array_filter(
             $this->progresses,
             function (Progress $progress) use ($enrollmentId, $moduleId) {
-                if ($progress->getEnrollmentId()->toString() !== $enrollmentId->toString()) {
+                if ($progress->getEnrollmentId()->getValue() !== $enrollmentId->getValue()) {
                     return false;
                 }
                 
-                $lessonId = $progress->getLessonId()->toString();
+                $lessonId = $progress->getLessonId()->getValue();
                 return isset($this->lessonToModule[$lessonId]) && 
-                       $this->lessonToModule[$lessonId] === $moduleId->toString();
+                       $this->lessonToModule[$lessonId] === $moduleId->getValue();
             }
         ));
     }
@@ -70,7 +70,7 @@ class InMemoryProgressRepository implements ProgressRepositoryInterface
     {
         return array_values(array_filter(
             $this->progresses,
-            fn(Progress $progress) => $progress->getLessonId()->toString() === $lessonId->toString()
+            fn(Progress $progress) => $progress->getLessonId()->getValue() === $lessonId->getValue()
         ));
     }
     
@@ -133,7 +133,7 @@ class InMemoryProgressRepository implements ProgressRepositoryInterface
         $scores = [];
         
         foreach ($progresses as $progress) {
-            $lessonId = $progress->getLessonId()->toString();
+            $lessonId = $progress->getLessonId()->getValue();
             $score = $progress->getHighestScore();
             
             if ($score !== null) {
@@ -151,13 +151,13 @@ class InMemoryProgressRepository implements ProgressRepositoryInterface
     
     public function delete(Progress $progress): void
     {
-        unset($this->progresses[$progress->getId()->toString()]);
+        unset($this->progresses[$progress->getId()->getValue()]);
     }
     
     public function deleteByEnrollment(EnrollmentId $enrollmentId): void
     {
         foreach ($this->progresses as $id => $progress) {
-            if ($progress->getEnrollmentId()->toString() === $enrollmentId->toString()) {
+            if ($progress->getEnrollmentId()->getValue() === $enrollmentId->getValue()) {
                 unset($this->progresses[$id]);
             }
         }
@@ -171,6 +171,6 @@ class InMemoryProgressRepository implements ProgressRepositoryInterface
     // Helper method for testing
     public function setLessonModule(LessonId $lessonId, ModuleId $moduleId): void
     {
-        $this->lessonToModule[$lessonId->toString()] = $moduleId->toString();
+        $this->lessonToModule[$lessonId->getValue()] = $moduleId->getValue();
     }
 } 

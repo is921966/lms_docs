@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\Traits;
+namespace User\Domain\Traits;
 
-use App\User\Domain\Events\UserLoggedIn;
-use App\User\Domain\ValueObjects\Password;
+use User\Domain\Events\UserLoggedIn;
+use User\Domain\ValueObjects\Password;
 
 /**
  * Trait for user authentication functionality

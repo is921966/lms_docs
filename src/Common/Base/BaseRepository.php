@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Common\Base;
+namespace Common\Base;
 
-use App\Common\Interfaces\RepositoryInterface;
+use Common\Interfaces\RepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use App\Common\Exceptions\NotFoundException;
+use Common\Exceptions\NotFoundException;
 
 /**
  * Base repository implementation with Doctrine ORM

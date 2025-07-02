@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Infrastructure\Http;
+namespace Competency\Infrastructure\Http;
 
-use App\Competency\Application\DTO\AssessmentDTO;
-use App\Competency\Application\Service\AssessmentService;
+use Competency\Application\DTO\AssessmentDTO;
+use Competency\Application\Service\AssessmentService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

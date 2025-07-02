@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Application\Service;
+namespace User\Application\Service;
 
 use App\Common\Exceptions\AuthorizationException;
 use App\User\Domain\Repository\UserRepositoryInterface;

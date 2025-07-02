@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Domain\Repository;
+namespace Competency\Domain\Repository;
 
-use App\Competency\Domain\CompetencyAssessment;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\User\Domain\ValueObjects\UserId;
+use Competency\Domain\CompetencyAssessment;
+use Competency\Domain\ValueObjects\CompetencyId;
+use User\Domain\ValueObjects\UserId;
 
 interface AssessmentRepositoryInterface
 {

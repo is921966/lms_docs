@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Domain;
 
-use App\Competency\Domain\UserCompetency;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\Competency\Domain\Events\UserCompetencyCreated;
-use App\Competency\Domain\Events\UserCompetencyProgressUpdated;
-use App\Competency\Domain\Events\TargetLevelSet;
-use App\User\Domain\ValueObjects\UserId;
+use Competency\Domain\UserCompetency;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Domain\Events\UserCompetencyCreated;
+use Competency\Domain\Events\UserCompetencyProgressUpdated;
+use Competency\Domain\Events\TargetLevelSet;
+use User\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 class UserCompetencyTest extends TestCase

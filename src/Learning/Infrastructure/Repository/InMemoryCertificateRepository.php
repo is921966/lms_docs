@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Infrastructure\Repository;
+namespace Learning\Infrastructure\Repository;
 
-use App\Learning\Domain\Repository\CertificateRepositoryInterface;
-use App\Learning\Domain\Certificate;
-use App\Learning\Domain\ValueObjects\CertificateId;
-use App\Learning\Domain\ValueObjects\CertificateNumber;
-use App\Learning\Domain\ValueObjects\CourseId;
-use App\Learning\Domain\ValueObjects\EnrollmentId;
-use App\User\Domain\ValueObjects\UserId;
+use Learning\Domain\Repository\CertificateRepositoryInterface;
+use Learning\Domain\Certificate;
+use Learning\Domain\ValueObjects\CertificateId;
+use Learning\Domain\ValueObjects\CertificateNumber;
+use Learning\Domain\ValueObjects\CourseId;
+use Learning\Domain\ValueObjects\EnrollmentId;
+use User\Domain\ValueObjects\UserId;
 
 class InMemoryCertificateRepository implements CertificateRepositoryInterface
 {
@@ -19,12 +19,12 @@ class InMemoryCertificateRepository implements CertificateRepositoryInterface
     
     public function save(Certificate $certificate): void
     {
-        $this->certificates[$certificate->getId()->toString()] = $certificate;
+        $this->certificates[$certificate->getId()->getValue()] = $certificate;
     }
     
     public function findById(CertificateId $id): ?Certificate
     {
-        return $this->certificates[$id->toString()] ?? null;
+        return $this->certificates[$id->getValue()] ?? null;
     }
     
     public function findByNumber(CertificateNumber $number): ?Certificate
@@ -41,7 +41,7 @@ class InMemoryCertificateRepository implements CertificateRepositoryInterface
     public function findByEnrollment(EnrollmentId $enrollmentId): ?Certificate
     {
         foreach ($this->certificates as $certificate) {
-            if ($certificate->getEnrollmentId()->toString() === $enrollmentId->toString()) {
+            if ($certificate->getEnrollmentId()->getValue() === $enrollmentId->getValue()) {
                 return $certificate;
             }
         }
@@ -70,7 +70,7 @@ class InMemoryCertificateRepository implements CertificateRepositoryInterface
     {
         $certificates = array_filter(
             $this->certificates,
-            fn(Certificate $certificate) => $certificate->getCourseId()->toString() === $courseId->toString()
+            fn(Certificate $certificate) => $certificate->getCourseId()->getValue() === $courseId->getValue()
         );
         
         if ($validOnly) {
@@ -128,6 +128,6 @@ class InMemoryCertificateRepository implements CertificateRepositoryInterface
     
     public function delete(Certificate $certificate): void
     {
-        unset($this->certificates[$certificate->getId()->toString()]);
+        unset($this->certificates[$certificate->getId()->getValue()]);
     }
 } 

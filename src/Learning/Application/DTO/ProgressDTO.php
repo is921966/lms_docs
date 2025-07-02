@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\DTO;
+namespace Learning\Application\DTO;
 
-use App\Learning\Domain\Progress;
+use Learning\Domain\Progress;
 
 final class ProgressDTO
 {
@@ -48,9 +48,9 @@ final class ProgressDTO
     public static function fromEntity(Progress $progress): self
     {
         return new self(
-            id: $progress->getId()->toString(),
-            enrollmentId: $progress->getEnrollmentId()->toString(),
-            lessonId: $progress->getLessonId()->toString(),
+            id: $progress->getId()->getValue(),
+            enrollmentId: $progress->getEnrollmentId()->getValue(),
+            lessonId: $progress->getLessonId()->getValue(),
             status: $progress->getStatus()->value,
             percentage: $progress->getPercentage(),
             score: $progress->getScore(),

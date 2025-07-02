@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Domain\Events;
+namespace Competency\Domain\Events;
 
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\Competency\Domain\ValueObjects\AssessmentScore;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Domain\ValueObjects\AssessmentScore;
 
 final class AssessmentUpdated
 {

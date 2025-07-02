@@ -2,71 +2,55 @@
 
 declare(strict_types=1);
 
-namespace App\Learning\Application\DTO;
+namespace Learning\Application\DTO;
 
-use App\Learning\Domain\Course;
-use App\Learning\Domain\ValueObjects\CourseCode;
-use App\Learning\Domain\ValueObjects\CourseType;
+use JsonSerializable;
 
-final class CourseDTO
+final class CourseDTO implements JsonSerializable
 {
     public function __construct(
-        public readonly ?string $id,
-        public readonly string $code,
+        public readonly string $id,
+        public readonly string $courseCode,
         public readonly string $title,
         public readonly string $description,
-        public readonly string $type,
-        public readonly string $status,
         public readonly int $durationHours,
-        public readonly ?int $maxStudents,
-        public readonly ?float $price,
-        public readonly array $tags,
-        public readonly array $prerequisites,
-        public readonly ?string $imageUrl = null,
+        public readonly string $instructorId,
+        public readonly string $status,
+        public readonly array $metadata = [],
         public readonly ?string $createdAt = null,
         public readonly ?string $updatedAt = null
-    ) {}
+    ) {
+    }
     
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'] ?? null,
-            code: $data['code'],
-            title: $data['title'],
-            description: $data['description'],
-            type: $data['type'],
+            id: $data['id'] ?? '',
+            courseCode: $data['course_code'] ?? $data['courseCode'] ?? '',
+            title: $data['title'] ?? '',
+            description: $data['description'] ?? '',
+            durationHours: (int)($data['duration_hours'] ?? $data['durationHours'] ?? 0),
+            instructorId: $data['instructor_id'] ?? $data['instructorId'] ?? '',
             status: $data['status'] ?? 'draft',
-            durationHours: $data['durationHours'],
-            maxStudents: $data['maxStudents'] ?? null,
-            price: $data['price'] ?? null,
-            tags: $data['tags'] ?? [],
-            prerequisites: $data['prerequisites'] ?? [],
-            imageUrl: $data['imageUrl'] ?? null,
-            createdAt: $data['createdAt'] ?? null,
-            updatedAt: $data['updatedAt'] ?? null
+            metadata: $data['metadata'] ?? [],
+            createdAt: $data['created_at'] ?? $data['createdAt'] ?? null,
+            updatedAt: $data['updated_at'] ?? $data['updatedAt'] ?? null
         );
     }
     
-    public static function fromEntity(Course $course): self
+    public static function fromEntity(\Learning\Domain\Course $course): self
     {
         return new self(
-            id: $course->getId()->toString(),
-            code: $course->getCode()->toString(),
+            id: $course->getId()->getValue(),
+            courseCode: $course->getCode()->getValue(),
             title: $course->getTitle(),
             description: $course->getDescription(),
-            type: strtolower($course->getType()->value),
-            status: $course->getStatus()->value,
-            durationHours: $course->getDurationHours(),
-            maxStudents: null, // Not in domain yet
-            price: null, // Not in domain yet
-            tags: $course->getTags(),
-            prerequisites: array_map(
-                fn($prerequisite) => $prerequisite->toString(),
-                $course->getPrerequisites()
-            ),
-            imageUrl: $course->getImageUrl(),
-            createdAt: $course->getCreatedAt()->format('c'),
-            updatedAt: $course->getUpdatedAt()->format('c')
+            durationHours: $course->getDuration()->getHours(),
+            instructorId: '', // Will be set by service layer
+            status: $course->getStatus()->getValue(),
+            metadata: $course->getMetadata(),
+            createdAt: $course->getCreatedAt()->format('Y-m-d H:i:s'),
+            updatedAt: $course->getUpdatedAt() ? $course->getUpdatedAt()->format('Y-m-d H:i:s') : null
         );
     }
     
@@ -74,34 +58,20 @@ final class CourseDTO
     {
         return [
             'id' => $this->id,
-            'code' => $this->code,
+            'course_code' => $this->courseCode,
             'title' => $this->title,
             'description' => $this->description,
-            'type' => $this->type,
+            'duration_hours' => $this->durationHours,
+            'instructor_id' => $this->instructorId,
             'status' => $this->status,
-            'durationHours' => $this->durationHours,
-            'maxStudents' => $this->maxStudents,
-            'price' => $this->price,
-            'tags' => $this->tags,
-            'prerequisites' => $this->prerequisites,
-            'imageUrl' => $this->imageUrl,
-            'createdAt' => $this->createdAt,
-            'updatedAt' => $this->updatedAt,
+            'metadata' => $this->metadata,
+            'created_at' => $this->createdAt,
+            'updated_at' => $this->updatedAt
         ];
     }
     
-    public function toNewEntity(): Course
+    public function jsonSerialize(): array
     {
-        if ($this->id !== null) {
-            throw new \InvalidArgumentException('Cannot create new entity from DTO with ID');
-        }
-        
-        return Course::create(
-            code: CourseCode::fromString($this->code),
-            title: $this->title,
-            description: $this->description,
-            type: CourseType::from(strtoupper($this->type)),
-            durationHours: $this->durationHours
-        );
+        return $this->toArray();
     }
-} 
+}

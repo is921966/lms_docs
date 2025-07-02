@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Learning\Application\DTO;
 
-use App\Learning\Application\DTO\LessonDTO;
-use App\Learning\Domain\Lesson;
-use App\Learning\Domain\ValueObjects\ModuleId;
-use App\Learning\Domain\ValueObjects\LessonType;
+use Learning\Application\DTO\LessonDTO;
+use Learning\Domain\Lesson;
+use Learning\Domain\ValueObjects\ModuleId;
+use Learning\Domain\ValueObjects\LessonType;
 use PHPUnit\Framework\TestCase;
 
 class LessonDTOTest extends TestCase
@@ -52,8 +52,8 @@ class LessonDTOTest extends TestCase
         
         $dto = LessonDTO::fromEntity($lesson);
         
-        $this->assertEquals($lesson->getId()->toString(), $dto->id);
-        $this->assertEquals($lesson->getModuleId()->toString(), $dto->moduleId);
+        $this->assertEquals($lesson->getId()->getValue(), $dto->id);
+        $this->assertEquals($lesson->getModuleId()->getValue(), $dto->moduleId);
         $this->assertEquals($lesson->getTitle(), $dto->title);
         $this->assertEquals('video', $dto->type); // Lowercase
         $this->assertEquals($lesson->getContent(), $dto->content);

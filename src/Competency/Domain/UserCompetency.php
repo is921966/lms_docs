@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Competency\Domain;
+namespace Competency\Domain;
 
-use App\Common\Traits\HasDomainEvents;
-use App\Competency\Domain\Events\UserCompetencyCreated;
-use App\Competency\Domain\Events\UserCompetencyProgressUpdated;
-use App\Competency\Domain\Events\TargetLevelSet;
-use App\Competency\Domain\ValueObjects\CompetencyId;
-use App\Competency\Domain\ValueObjects\CompetencyLevel;
-use App\User\Domain\ValueObjects\UserId;
+use Common\Traits\HasDomainEvents;
+use Competency\Domain\Events\UserCompetencyCreated;
+use Competency\Domain\Events\UserCompetencyProgressUpdated;
+use Competency\Domain\Events\TargetLevelSet;
+use Competency\Domain\ValueObjects\CompetencyId;
+use Competency\Domain\ValueObjects\CompetencyLevel;
+use User\Domain\ValueObjects\UserId;
 
 class UserCompetency
 {
