@@ -7,6 +7,7 @@
 import datetime
 import os
 import sys
+import json
 from pathlib import Path
 
 def get_project_start_date():
@@ -152,7 +153,18 @@ def main():
             date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
     
     if command == 'daily':
-        filename = generate_daily_report_name(date)
+        # Проверяем условный день из tracker файла
+        tracker_file = Path(__file__).parent / "project_day_tracker.json"
+        if tracker_file.exists():
+            import json
+            with open(tracker_file, 'r') as f:
+                tracker_data = json.load(f)
+                conditional_day = tracker_data.get('current_conditional_day', calculate_day_number(date))
+                if date is None:
+                    date = datetime.date.today()
+                filename = f"DAY_{conditional_day}_SUMMARY_{date.strftime('%Y%m%d')}.md"
+        else:
+            filename = generate_daily_report_name(date)
         print(filename)
         
         if '--create' in sys.argv:
@@ -187,11 +199,28 @@ def main():
     elif command == 'info':
         sprint_info = get_current_sprint_info()
         print(f"Текущая дата: {sprint_info['date']}")
-        print(f"День проекта: {sprint_info['day_number']}")
+        
+        # Читаем условный день из tracker файла
+        tracker_file = Path(__file__).parent / "project_day_tracker.json"
+        if tracker_file.exists():
+            import json
+            with open(tracker_file, 'r') as f:
+                tracker_data = json.load(f)
+                conditional_day = tracker_data.get('current_conditional_day', sprint_info['day_number'])
+                print(f"День проекта: {conditional_day} (условный)")
+        else:
+            print(f"День проекта: {sprint_info['day_number']}")
+            
         print(f"Спринт: {sprint_info['sprint_number']}")
         print(f"День в спринте: {sprint_info['day_in_sprint']}/5")
         print()
-        print(f"Название ежедневного отчета: {generate_daily_report_name()}")
+        
+        # Используем условный день для имени файла
+        if tracker_file.exists():
+            report_name = f"DAY_{conditional_day}_SUMMARY_{sprint_info['date'].strftime('%Y%m%d')}.md"
+            print(f"Название ежедневного отчета: {report_name}")
+        else:
+            print(f"Название ежедневного отчета: {generate_daily_report_name()}")
     
     else:
         print(f"Неизвестная команда: {command}")
