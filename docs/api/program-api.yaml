@@ -1,0 +1,336 @@
+openapi: 3.0.0
+info:
+  title: Program Management API
+  description: API для управления программами обучения
+  version: 1.0.0
+  contact:
+    name: LMS Development Team
+    email: support@lms.com
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://api.lms.com/v1
+    description: Production server
+
+tags:
+  - name: Programs
+    description: Управление программами обучения
+
+paths:
+  /programs:
+    get:
+      tags:
+        - Programs
+      summary: Получить список программ
+      description: Возвращает список всех программ обучения
+      operationId: listPrograms
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Program'
+    
+    post:
+      tags:
+        - Programs
+      summary: Создать новую программу
+      description: Создает новую программу обучения
+      operationId: createProgram
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProgramRequest'
+      responses:
+        '201':
+          description: Программа успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Program'
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /programs/{id}:
+    get:
+      tags:
+        - Programs
+      summary: Получить программу по ID
+      description: Возвращает детальную информацию о программе
+      operationId: getProgram
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID программы
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Program'
+        '404':
+          description: Программа не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    put:
+      tags:
+        - Programs
+      summary: Обновить программу
+      description: Обновляет информацию о программе (только для черновиков)
+      operationId: updateProgram
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID программы
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProgramRequest'
+      responses:
+        '200':
+          description: Программа успешно обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Program'
+        '400':
+          description: Неверные данные или программа не может быть обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /programs/{id}/publish:
+    post:
+      tags:
+        - Programs
+      summary: Опубликовать программу
+      description: Переводит программу в активный статус
+      operationId: publishProgram
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID программы
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Программа успешно опубликована
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Program'
+        '400':
+          description: Программа не может быть опубликована
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /programs/{programId}/enroll:
+    post:
+      tags:
+        - Programs
+      summary: Записать пользователя на программу
+      description: Создает запись о зачислении пользователя на программу
+      operationId: enrollUser
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: UUID программы
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollUserRequest'
+      responses:
+        '201':
+          description: Пользователь успешно записан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Enrollment'
+        '400':
+          description: Ошибка при записи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Program:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор программы
+        code:
+          type: string
+          pattern: '^[A-Z]{4}-\d{3}$'
+          example: 'PROG-001'
+          description: Код программы
+        name:
+          type: string
+          description: Название программы
+        description:
+          type: string
+          description: Описание программы
+        status:
+          type: string
+          enum: [draft, active, archived]
+          description: Статус программы
+        tracks:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Список ID треков в программе
+      required:
+        - id
+        - code
+        - name
+        - description
+        - status
+        - tracks
+
+    CreateProgramRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: '^[A-Z]{4}-\d{3}$'
+          example: 'PROG-001'
+          description: Код программы
+        name:
+          type: string
+          minLength: 3
+          maxLength: 255
+          description: Название программы
+        description:
+          type: string
+          minLength: 10
+          description: Описание программы
+      required:
+        - code
+        - name
+        - description
+
+    UpdateProgramRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 255
+          description: Новое название программы
+        description:
+          type: string
+          minLength: 10
+          description: Новое описание программы
+
+    EnrollUserRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: ID пользователя для записи
+      required:
+        - userId
+
+    Enrollment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID записи
+        programId:
+          type: string
+          format: uuid
+          description: ID программы
+        userId:
+          type: string
+          format: uuid
+          description: ID пользователя
+        status:
+          type: string
+          enum: [enrolled, in_progress, completed, dropped]
+          description: Статус прохождения
+        enrolledAt:
+          type: string
+          format: date-time
+          description: Дата и время записи
+      required:
+        - id
+        - programId
+        - userId
+        - status
+        - enrolledAt
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Описание ошибки
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Детальные ошибки валидации
+      required:
+        - error 

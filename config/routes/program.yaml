@@ -1,0 +1,39 @@
+# Program Management API Routes
+
+program_list:
+    path: /api/v1/programs
+    controller: Program\Http\Controllers\ProgramController::index
+    methods: GET
+
+program_create:
+    path: /api/v1/programs
+    controller: Program\Http\Controllers\ProgramController::create
+    methods: POST
+
+program_show:
+    path: /api/v1/programs/{id}
+    controller: Program\Http\Controllers\ProgramController::show
+    methods: GET
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+program_update:
+    path: /api/v1/programs/{id}
+    controller: Program\Http\Controllers\ProgramController::update
+    methods: PUT
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+program_publish:
+    path: /api/v1/programs/{id}/publish
+    controller: Program\Http\Controllers\ProgramController::publish
+    methods: POST
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+program_enroll:
+    path: /api/v1/programs/{programId}/enroll
+    controller: Program\Http\Controllers\ProgramController::enroll
+    methods: POST
+    requirements:
+        programId: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' 
