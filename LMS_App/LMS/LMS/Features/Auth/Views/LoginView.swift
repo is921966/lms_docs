@@ -1,11 +1,12 @@
 import SwiftUI
 
 struct LoginView: View {
-    @StateObject private var authService = MockAuthService.shared
+    @StateObject private var authService = AuthService.shared
     @State private var email = ""
     @State private var password = ""
     @State private var showingAlert = false
     @State private var alertMessage = ""
+    @State private var isLoggingIn = false
 
     @Environment(\.dismiss) private var dismiss
 
@@ -73,7 +74,7 @@ struct LoginView: View {
 
                         // Login button
                         Button(action: login) {
-                            if authService.isLoading {
+                            if isLoggingIn {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .frame(maxWidth: .infinity)
@@ -90,8 +91,17 @@ struct LoginView: View {
                         }
                         .background(loginButtonColor)
                         .cornerRadius(10)
-                        .disabled(!isFormValid || authService.isLoading)
+                        .disabled(!isFormValid || isLoggingIn)
                         .accessibilityIdentifier("loginButton")
+                        
+                        // Mock login hint for testing
+                        #if DEBUG
+                        Text("Для тестирования используйте:\nuser@example.com / password")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.top, 10)
+                        #endif
                     }
                     .padding(.horizontal, 40)
 
@@ -124,15 +134,30 @@ struct LoginView: View {
     }
 
     private var loginButtonColor: Color {
-        isFormValid && !authService.isLoading ? .blue : Color.gray.opacity(0.6)
+        isFormValid && !isLoggingIn ? .blue : Color.gray.opacity(0.6)
     }
 
     // MARK: - Private Methods
     private func login() {
         guard isFormValid else { return }
-
-        // For mock login, determine if admin based on email
-        let isAdmin = email.contains("admin")
-        authService.mockLogin(asAdmin: isAdmin)
+        
+        isLoggingIn = true
+        
+        Task {
+            do {
+                _ = try await authService.login(email: email, password: password)
+                // Success - view will dismiss automatically via onReceive
+            } catch {
+                // Show error
+                if let apiError = error as? APIError {
+                    alertMessage = apiError.localizedDescription
+                } else {
+                    alertMessage = "Произошла ошибка при входе. Попробуйте еще раз."
+                }
+                showingAlert = true
+            }
+            
+            isLoggingIn = false
+        }
     }
 }

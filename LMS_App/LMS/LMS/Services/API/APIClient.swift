@@ -14,6 +14,7 @@ final class APIClient {
     private let session: URLSession
     private var authToken: String?
     private let tokenManager: TokenManager
+    private let networkMonitor = NetworkMonitor.shared
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
     
@@ -42,6 +43,9 @@ final class APIClient {
     
     /// Выполняет запрос к API
     func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
+        // Check network connectivity
+        try networkMonitor.checkConnectivity()
+        
         let request = try buildRequest(for: endpoint)
         
         do {
@@ -69,6 +73,9 @@ final class APIClient {
     
     /// Выполняет запрос без ожидания ответа
     func requestVoid(_ endpoint: APIEndpoint) async throws {
+        // Check network connectivity
+        try networkMonitor.checkConnectivity()
+        
         let request = try buildRequest(for: endpoint)
         
         do {
@@ -87,6 +94,9 @@ final class APIClient {
     
     /// Загружает данные (файлы, изображения)
     func download(_ endpoint: APIEndpoint) async throws -> Data {
+        // Check network connectivity
+        try networkMonitor.checkConnectivity()
+        
         let request = try buildRequest(for: endpoint)
         
         let (data, response) = try await session.data(for: request)
@@ -102,6 +112,9 @@ final class APIClient {
     
     /// Загружает файл на сервер
     func upload<T: Decodable>(_ endpoint: APIEndpoint, data: Data, mimeType: String) async throws -> T {
+        // Check network connectivity
+        try networkMonitor.checkConnectivity()
+        
         var request = try buildRequest(for: endpoint)
         
         // Create multipart form data

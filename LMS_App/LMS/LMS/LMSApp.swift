@@ -10,11 +10,13 @@ import SwiftUI
 @main
 struct LMSApp: App {
     // let persistenceController = PersistenceController.shared
-    @StateObject private var authService = MockAuthService.shared
+    @StateObject private var authService = AuthService.shared
     @StateObject private var authViewModel = AuthViewModel()
     @StateObject private var adminService = MockAdminService.shared
-    // @StateObject private var networkMonitor = NetworkMonitor()
+    @StateObject private var networkMonitor = NetworkMonitor.shared
     @StateObject private var feedbackManager = FeedbackManager.shared
+    
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         setupAppearance()
@@ -46,13 +48,18 @@ struct LMSApp: App {
                 .environmentObject(authService)
                 .environmentObject(authViewModel)
                 .environmentObject(adminService)
+                .environmentObject(networkMonitor)
                 .environmentObject(feedbackManager)
                 // .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                // .environmentObject(networkMonitor)
                 .feedbackEnabled()
+                .withOfflineIndicator()
                 .preferredColorScheme(.light)
                 .onAppear {
-                    // Auth status is checked automatically in MockAuthService.init()
+                    // Start token refresh monitoring
+                    TokenRefreshManager.shared.startTokenRefreshMonitoring()
+                }
+                .onChange(of: scenePhase) { newPhase in
+                    handleScenePhaseChange(newPhase)
                 }
         }
     }
@@ -76,6 +83,19 @@ struct LMSApp: App {
 
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+    }
+    
+    private func handleScenePhaseChange(_ phase: ScenePhase) {
+        switch phase {
+        case .active:
+            TokenRefreshManager.shared.handleAppDidBecomeActive()
+        case .inactive:
+            break
+        case .background:
+            TokenRefreshManager.shared.handleAppDidEnterBackground()
+        @unknown default:
+            break
+        }
     }
 }
 
