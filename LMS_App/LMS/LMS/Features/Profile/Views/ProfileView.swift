@@ -75,7 +75,7 @@ struct ProfileView: View {
                     .padding(.horizontal)
 
                     // Version info
-                    Text("Версия 2.0.1 (Build 52)")
+                    Text("Версия \(Bundle.main.appVersion)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .padding(.top, 10)

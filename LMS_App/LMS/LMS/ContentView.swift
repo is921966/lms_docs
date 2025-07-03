@@ -22,45 +22,40 @@ struct ContentView: View {
         if authService.isAuthenticated {
             authenticatedView
         } else {
-            LoginView()
+            MockLoginView()
         }
     }
 
     var authenticatedView: some View {
         TabView(selection: $selectedTab) {
-            // Автоматическая генерация табов из FeatureRegistry
-            // КРИТИЧЕСКИ ВАЖНО: Зависимость на featureRegistry.lastUpdate для TDD
-            ForEach(Array(Feature.enabledTabFeatures.enumerated()), id: \.element) { index, feature in
-                NavigationStack {
-                    feature.view
-                }
+            // Временно упрощаем структуру для отладки
+            Text("Главная")
                 .tabItem {
-                    Label(feature.rawValue, systemImage: feature.icon)
+                    Label("Главная", systemImage: "house.fill")
                 }
-                .tag(index)
-            }
-            .id(featureRegistry.lastUpdate) // КРИТИЧЕСКОЕ для обновления UI!
-
-            // Profile + Settings combined tab
+                .tag(0)
+            
+            Text("Курсы")
+                .tabItem {
+                    Label("Курсы", systemImage: "book.fill")
+                }
+                .tag(1)
+            
             NavigationStack {
                 ProfileView()
             }
             .tabItem {
                 Label("Профиль", systemImage: "person.fill")
             }
-            .tag(Feature.enabledTabFeatures.count)
-
-            // Debug menu для разработки и тестирования
-            // Всегда показываем в симуляторе (для разработки и UI тестов)
-            #if targetEnvironment(simulator)
+            .tag(2)
+            
             NavigationStack {
-                DebugMenuView()
+                SettingsView()
             }
             .tabItem {
-                Label("Debug", systemImage: "wrench.fill")
+                Label("Настройки", systemImage: "gear")
             }
-            .tag(Feature.enabledTabFeatures.count + 1)
-            #endif
+            .tag(3)
         }
         .accentColor(.blue)
         // Добавляем индикатор админского режима
