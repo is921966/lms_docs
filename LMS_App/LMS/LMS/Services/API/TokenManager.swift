@@ -10,67 +10,63 @@ final class TokenManager {
     
     static let shared = TokenManager()
     
-    private let accessTokenKey = "com.lms.accessToken"
-    private let refreshTokenKey = "com.lms.refreshToken"
-    private let keychainService = "com.lms.keychain"
+    private let accessTokenKey = "accessToken"
+    private let refreshTokenKey = "refreshToken"
+    private let keychainService = "com.lms.app"
     
     // MARK: - Initialization
     
     private init() {}
     
+    // MARK: - Public Properties
+    
+    var accessToken: String? {
+        return getToken(for: accessTokenKey)
+    }
+    
+    var refreshToken: String? {
+        return getToken(for: refreshTokenKey)
+    }
+    
     // MARK: - Public Methods
     
     /// Сохраняет токены в Keychain
     func saveTokens(accessToken: String, refreshToken: String) {
-        saveToKeychain(accessToken, key: accessTokenKey)
-        saveToKeychain(refreshToken, key: refreshTokenKey)
-    }
-    
-    /// Получает access token
-    func getAccessToken() -> String? {
-        return loadFromKeychain(key: accessTokenKey)
-    }
-    
-    /// Получает refresh token
-    func getRefreshToken() -> String? {
-        return loadFromKeychain(key: refreshTokenKey)
+        saveToken(accessToken, for: accessTokenKey)
+        saveToken(refreshToken, for: refreshTokenKey)
     }
     
     /// Удаляет все токены
     func clearTokens() {
-        deleteFromKeychain(key: accessTokenKey)
-        deleteFromKeychain(key: refreshTokenKey)
+        deleteToken(for: accessTokenKey)
+        deleteToken(for: refreshTokenKey)
     }
     
     /// Проверяет, есть ли сохраненные токены
-    var hasValidTokens: Bool {
-        return getAccessToken() != nil
+    func hasValidTokens() -> Bool {
+        return accessToken != nil && refreshToken != nil
     }
     
-    // MARK: - Private Keychain Methods
+    // MARK: - Private Methods
     
-    private func saveToKeychain(_ value: String, key: String) {
-        guard let data = value.data(using: .utf8) else { return }
-        
-        // Delete existing item first
-        deleteFromKeychain(key: key)
+    private func saveToken(_ token: String, for key: String) {
+        let data = token.data(using: .utf8)!
         
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: key,
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+            kSecValueData as String: data
         ]
         
-        let status = SecItemAdd(query as CFDictionary, nil)
+        // Delete any existing item
+        SecItemDelete(query as CFDictionary)
         
-        if status != errSecSuccess {
-            print("Failed to save to keychain: \(status)")
-        }
+        // Add new item
+        SecItemAdd(query as CFDictionary, nil)
     }
     
-    private func loadFromKeychain(key: String) -> String? {
+    private func getToken(for key: String) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
@@ -79,19 +75,19 @@ final class TokenManager {
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
         
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        var dataTypeRef: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
         
-        guard status == errSecSuccess,
-              let data = result as? Data,
-              let value = String(data: data, encoding: .utf8) else {
-            return nil
+        if status == errSecSuccess,
+           let data = dataTypeRef as? Data,
+           let token = String(data: data, encoding: .utf8) {
+            return token
         }
         
-        return value
+        return nil
     }
     
-    private func deleteFromKeychain(key: String) {
+    private func deleteToken(for key: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,

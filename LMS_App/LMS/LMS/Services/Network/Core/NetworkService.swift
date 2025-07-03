@@ -2,188 +2,186 @@ import Combine
 import Foundation
 
 // MARK: - NetworkError
-enum NetworkError: LocalizedError {
+enum NetworkError: Error {
     case invalidURL
     case noData
-    case decodingError(Error)
-    case serverError(statusCode: Int, data: Data?)
-    case noInternetConnection
-    case unauthorized
-    case unknown(Error)
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL:
-            return "Invalid URL"
-        case .noData:
-            return "No data received"
-        case .decodingError(let error):
-            return "Failed to decode response: \(error.localizedDescription)"
-        case .serverError(let statusCode, _):
-            return "Server error with status code: \(statusCode)"
-        case .noInternetConnection:
-            return "No internet connection"
-        case .unauthorized:
-            return "Unauthorized. Please login again."
-        case .unknown(let error):
-            return error.localizedDescription
-        }
-    }
+    case decodingError
+    case serverError(Int)
+    case unknown
 }
 
-// MARK: - HTTPMethod
-enum HTTPMethod: String {
-    case get = "GET"
-    case post = "POST"
-    case put = "PUT"
-    case delete = "DELETE"
-    case patch = "PATCH"
+// MARK: - NetworkServiceProtocol
+protocol NetworkServiceProtocol {
+    func request<T: Decodable>(
+        _ url: String,
+        method: HTTPMethod,
+        headers: [String: String]?,
+        body: Data?
+    ) -> AnyPublisher<T, Error>
+    
+    func request<T: Decodable>(
+        _ url: String,
+        method: HTTPMethod,
+        headers: [String: String]?,
+        body: Data?
+    ) async throws -> T
 }
 
 // MARK: - NetworkService
-class NetworkService: ObservableObject {
+final class NetworkService: NetworkServiceProtocol {
     static let shared = NetworkService()
-
+    
     private let session: URLSession
-    private var cancellables = Set<AnyCancellable>()
-
-    // Configuration
     private let baseURL: String
-    private let timeout: TimeInterval = 30
-
-    init(session: URLSession = .shared) {
-        self.session = session
-
-        // Configure base URL based on environment
-        #if DEBUG
-        self.baseURL = "https://dev-api.lms.tsum.ru/api/v1"
-        #else
-        self.baseURL = "https://api.lms.tsum.ru/api/v1"
-        #endif
+    
+    private init() {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 30
+        configuration.timeoutIntervalForResource = 60
+        
+        self.session = URLSession(configuration: configuration)
+        self.baseURL = AppConfig.shared.apiBaseURL
     }
-
-    // MARK: - Request Building
-    func buildRequest(
-        endpoint: String,
+    
+    // MARK: - Combine API
+    
+    func request<T: Decodable>(
+        _ endpoint: String,
         method: HTTPMethod = .get,
         headers: [String: String]? = nil,
         body: Data? = nil
-    ) throws -> URLRequest {
+    ) -> AnyPublisher<T, Error> {
         guard let url = URL(string: baseURL + endpoint) else {
-            throw NetworkError.invalidURL
+            return Fail(error: NetworkError.invalidURL)
+                .eraseToAnyPublisher()
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
-        request.timeoutInterval = timeout
-
+        request.httpBody = body
+        
         // Default headers
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        // Add auth token if available
+        
+        // Add authorization header if token exists
         if let token = TokenManager.shared.accessToken {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-
+        
         // Custom headers
         headers?.forEach { key, value in
             request.setValue(value, forHTTPHeaderField: key)
         }
-
-        // Body
-        request.httpBody = body
-
-        return request
+        
+        return session.dataTaskPublisher(for: request)
+            .tryMap { data, response in
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    throw NetworkError.unknown
+                }
+                
+                if httpResponse.statusCode >= 400 {
+                    throw NetworkError.serverError(httpResponse.statusCode)
+                }
+                
+                return data
+            }
+            .decode(type: T.self, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
     }
-
-    // MARK: - Generic Request
+    
+    // MARK: - Async/Await API
+    
     func request<T: Decodable>(
-        endpoint: String,
+        _ endpoint: String,
         method: HTTPMethod = .get,
         headers: [String: String]? = nil,
-        body: Data? = nil,
-        responseType: T.Type
-    ) -> AnyPublisher<T, NetworkError> {
+        body: Data? = nil
+    ) async throws -> T {
+        guard let url = URL(string: baseURL + endpoint) else {
+            throw NetworkError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        request.httpBody = body
+        
+        // Default headers
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        // Add authorization header if token exists
+        if let token = TokenManager.shared.accessToken {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        
+        // Custom headers
+        headers?.forEach { key, value in
+            request.setValue(value, forHTTPHeaderField: key)
+        }
+        
+        let (data, response) = try await session.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NetworkError.unknown
+        }
+        
+        if httpResponse.statusCode >= 400 {
+            throw NetworkError.serverError(httpResponse.statusCode)
+        }
+        
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        
         do {
-            let request = try buildRequest(
-                endpoint: endpoint,
-                method: method,
-                headers: headers,
-                body: body
-            )
-
-            return session.dataTaskPublisher(for: request)
-                .tryMap { data, response in
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        throw NetworkError.unknown(URLError(.badServerResponse))
-                    }
-
-                    // Check status code
-                    switch httpResponse.statusCode {
-                    case 200...299:
-                        return data
-                    case 401:
-                        throw NetworkError.unauthorized
-                    default:
-                        throw NetworkError.serverError(
-                            statusCode: httpResponse.statusCode,
-                            data: data
-                        )
-                    }
-                }
-                .decode(type: T.self, decoder: JSONDecoder())
-                .mapError { error in
-                    if let networkError = error as? NetworkError {
-                        return networkError
-                    } else if error is DecodingError {
-                        return NetworkError.decodingError(error)
-                    } else if (error as NSError).code == NSURLErrorNotConnectedToInternet {
-                        return NetworkError.noInternetConnection
-                    } else {
-                        return NetworkError.unknown(error)
-                    }
-                }
-                .receive(on: DispatchQueue.main)
-                .eraseToAnyPublisher()
+            return try decoder.decode(T.self, from: data)
         } catch {
-            return Fail(error: error as? NetworkError ?? NetworkError.unknown(error))
-                .eraseToAnyPublisher()
+            throw NetworkError.decodingError
         }
     }
+}
 
-    // MARK: - Convenience Methods
-    func get<T: Decodable>(
-        endpoint: String,
-        headers: [String: String]? = nil,
-        responseType: T.Type
-    ) -> AnyPublisher<T, NetworkError> {
-        request(
-            endpoint: endpoint,
-            method: .get,
-            headers: headers,
-            responseType: responseType
-        )
-    }
-
-    func post<T: Decodable, B: Encodable>(
-        endpoint: String,
-        body: B,
-        headers: [String: String]? = nil,
-        responseType: T.Type
-    ) -> AnyPublisher<T, NetworkError> {
-        do {
-            let bodyData = try JSONEncoder().encode(body)
-            return request(
-                endpoint: endpoint,
-                method: .post,
-                headers: headers,
-                body: bodyData,
-                responseType: responseType
-            )
-        } catch {
-            return Fail(error: NetworkError.unknown(error))
+// MARK: - MockNetworkService
+final class MockNetworkService: NetworkServiceProtocol {
+    var mockResponse: Any?
+    var shouldThrowError = false
+    var error: Error = NetworkError.unknown
+    
+    func request<T: Decodable>(
+        _ url: String,
+        method: HTTPMethod,
+        headers: [String: String]?,
+        body: Data?
+    ) -> AnyPublisher<T, Error> {
+        if shouldThrowError {
+            return Fail(error: error)
                 .eraseToAnyPublisher()
         }
+        
+        guard let response = mockResponse as? T else {
+            return Fail(error: NetworkError.decodingError)
+                .eraseToAnyPublisher()
+        }
+        
+        return Just(response)
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
+    }
+    
+    func request<T: Decodable>(
+        _ url: String,
+        method: HTTPMethod,
+        headers: [String: String]?,
+        body: Data?
+    ) async throws -> T {
+        if shouldThrowError {
+            throw error
+        }
+        
+        guard let response = mockResponse as? T else {
+            throw NetworkError.decodingError
+        }
+        
+        return response
     }
 }

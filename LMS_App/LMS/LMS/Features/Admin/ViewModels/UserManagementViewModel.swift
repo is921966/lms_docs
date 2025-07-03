@@ -61,14 +61,3 @@ class UserManagementViewModel: ObservableObject {
         // In real app this would update user roles
     }
 }
-
-// Extension to add computed properties to UserResponse
-extension UserResponse {
-    var fullName: String {
-        "\(firstName) \(lastName)"
-    }
-
-    var isActive: Bool {
-        isApproved
-    }
-}

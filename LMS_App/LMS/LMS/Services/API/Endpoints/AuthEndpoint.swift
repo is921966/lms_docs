@@ -3,81 +3,54 @@ import Foundation
 // MARK: - AuthEndpoint
 
 enum AuthEndpoint: APIEndpoint {
-    case login(email: String, password: String)
+    case login(credentials: LoginRequest)
+    case refreshToken(request: RefreshTokenRequest)
     case logout
-    case refresh(token: String)
-    case me
+    case getCurrentUser
     
     var path: String {
         switch self {
         case .login:
             return "/auth/login"
+        case .refreshToken:
+            return "/auth/refresh"
         case .logout:
             return "/auth/logout"
-        case .refresh:
-            return "/auth/refresh"
-        case .me:
+        case .getCurrentUser:
             return "/auth/me"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .login, .logout, .refresh:
+        case .login, .refreshToken, .logout:
             return .post
-        case .me:
+        case .getCurrentUser:
             return .get
         }
     }
     
     var requiresAuth: Bool {
         switch self {
-        case .login, .refresh:
+        case .login, .refreshToken:
             return false
-        case .logout, .me:
+        case .logout, .getCurrentUser:
             return true
         }
     }
     
+    var parameters: [String: Any]? {
+        return nil
+    }
+    
     var body: Encodable? {
         switch self {
-        case .login(let email, let password):
-            return LoginRequest(email: email, password: password)
-        case .refresh(let token):
-            return RefreshTokenRequest(refreshToken: token)
-        case .logout, .me:
+        case .login(let credentials):
+            return credentials
+        case .refreshToken(let request):
+            return request
+        default:
             return nil
         }
     }
-}
-
-// MARK: - Request Models
-
-struct LoginRequest: Encodable {
-    let email: String
-    let password: String
-}
-
-struct RefreshTokenRequest: Encodable {
-    let refreshToken: String
-}
-
-// MARK: - Response Models
-
-struct AuthResponse: Decodable {
-    let user: UserResponse
-    let accessToken: String
-    let refreshToken: String
-    let tokenType: String
-    let expiresIn: Int
-}
-
-struct UserResponse: Decodable {
-    let id: String
-    let email: String
-    let name: String
-    let role: String
-    let avatarUrl: String?
-    let createdAt: Date
-    let updatedAt: Date
 } 

@@ -23,7 +23,7 @@ final class AuthService: ObservableObject {
 
     // MARK: - Authentication Status
     private func checkAuthenticationStatus() {
-        isAuthenticated = tokenManager.hasValidTokens
+        isAuthenticated = tokenManager.hasValidTokens()
 
         if isAuthenticated {
             loadCachedUser()
@@ -59,8 +59,9 @@ final class AuthService: ObservableObject {
         error = nil
         
         do {
-            let endpoint = AuthEndpoint.login(email: email, password: password)
-            let response: AuthResponse = try await apiClient.request(endpoint)
+            let loginRequest = LoginRequest(email: email, password: password)
+            let endpoint = AuthEndpoint.login(credentials: loginRequest)
+            let response: LoginResponse = try await apiClient.request(endpoint)
             
             // Save tokens
             tokenManager.saveTokens(
@@ -72,13 +73,27 @@ final class AuthService: ObservableObject {
             let domainUser = DomainUser(
                 id: response.user.id,
                 email: response.user.email,
-                name: response.user.name,
-                role: response.user.role,
-                avatarUrl: response.user.avatarUrl,
+                firstName: "", // We'll parse from name
+                lastName: "",  // We'll parse from name
+                role: DomainUserRole(rawValue: response.user.role) ?? .student,
+                isActive: response.user.isActive,
+                profileImageUrl: response.user.avatar,
+                phoneNumber: nil,
+                department: response.user.department,
+                position: nil,
+                lastLoginAt: Date(),
                 createdAt: response.user.createdAt,
-                updatedAt: response.user.updatedAt,
-                lastLoginAt: Date()
+                updatedAt: response.user.updatedAt
             )
+            
+            // Parse name into firstName and lastName
+            let nameComponents = response.user.name.split(separator: " ")
+            if nameComponents.count >= 2 {
+                domainUser.firstName = String(nameComponents[0])
+                domainUser.lastName = nameComponents.dropFirst().joined(separator: " ")
+            } else if !nameComponents.isEmpty {
+                domainUser.firstName = String(nameComponents[0])
+            }
             
             // Update state
             currentUser = domainUser
@@ -123,20 +138,34 @@ final class AuthService: ObservableObject {
 
     // MARK: - Get Current User
     func getCurrentUser() async throws -> DomainUser {
-        let endpoint = AuthEndpoint.me
+        let endpoint = AuthEndpoint.getCurrentUser
         let response: UserResponse = try await apiClient.request(endpoint)
         
         // Convert to domain user
         let domainUser = DomainUser(
             id: response.id,
             email: response.email,
-            name: response.name,
-            role: response.role,
-            avatarUrl: response.avatarUrl,
+            firstName: "", // We'll parse from name
+            lastName: "",  // We'll parse from name
+            role: DomainUserRole(rawValue: response.role) ?? .student,
+            isActive: response.isActive,
+            profileImageUrl: response.avatar,
+            phoneNumber: nil,
+            department: response.department,
+            position: nil,
+            lastLoginAt: currentUser?.lastLoginAt,
             createdAt: response.createdAt,
-            updatedAt: response.updatedAt,
-            lastLoginAt: currentUser?.lastLoginAt
+            updatedAt: response.updatedAt
         )
+        
+        // Parse name into firstName and lastName
+        let nameComponents = response.name.split(separator: " ")
+        if nameComponents.count >= 2 {
+            domainUser.firstName = String(nameComponents[0])
+            domainUser.lastName = nameComponents.dropFirst().joined(separator: " ")
+        } else if !nameComponents.isEmpty {
+            domainUser.firstName = String(nameComponents[0])
+        }
         
         // Update state
         currentUser = domainUser
@@ -152,13 +181,14 @@ final class AuthService: ObservableObject {
 
     // MARK: - Refresh Token
     func refreshTokenIfNeeded() async throws {
-        guard tokenManager.hasValidTokens,
-              let refreshToken = tokenManager.getRefreshToken() else {
+        guard tokenManager.hasValidTokens(),
+              let refreshToken = tokenManager.refreshToken else {
             throw APIError.unauthorized
         }
         
-        let endpoint = AuthEndpoint.refresh(token: refreshToken)
-        let response: AuthResponse = try await apiClient.request(endpoint)
+        let refreshRequest = RefreshTokenRequest(refreshToken: refreshToken)
+        let endpoint = AuthEndpoint.refreshToken(request: refreshRequest)
+        let response: RefreshTokenResponse = try await apiClient.request(endpoint)
         
         // Save new tokens
         tokenManager.saveTokens(
@@ -238,7 +268,7 @@ extension TokenManager {
     }
     
     var isAuthenticated: Bool {
-        return hasValidTokens
+        return hasValidTokens()
     }
 }
 

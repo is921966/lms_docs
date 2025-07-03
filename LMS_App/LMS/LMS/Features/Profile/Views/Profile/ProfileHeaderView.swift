@@ -23,17 +23,19 @@ struct ProfileHeaderView: View {
             // User info
             if let user = user {
                 VStack(spacing: 5) {
-                    Text("\(user.firstName) \(user.lastName)")
+                    Text(user.name)
                         .font(.title2)
                         .fontWeight(.semibold)
 
-                    Text(user.position ?? "Сотрудник")
+                    Text(user.role.capitalized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 
-                    Text(user.department ?? "")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    if let department = user.department {
+                        Text(department)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
 
                 // Email
@@ -60,8 +62,14 @@ struct ProfileHeaderView: View {
 
     private var initials: String {
         guard let user = user else { return "?" }
-        let firstInitial = user.firstName.prefix(1)
-        let lastInitial = user.lastName.prefix(1)
-        return "\(firstInitial)\(lastInitial)"
+        let nameComponents = user.name.split(separator: " ")
+        if nameComponents.count >= 2 {
+            let firstInitial = nameComponents[0].prefix(1)
+            let lastInitial = nameComponents[1].prefix(1)
+            return "\(firstInitial)\(lastInitial)"
+        } else if !nameComponents.isEmpty {
+            return String(nameComponents[0].prefix(2))
+        }
+        return "?"
     }
 }

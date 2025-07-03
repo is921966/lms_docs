@@ -228,24 +228,35 @@ public struct AuthMapper {
     public static func mapAuthError(_ error: Error) -> String {
         if let networkError = error as? NetworkError {
             switch networkError {
-            case .unauthorized:
-                return "Invalid email or password"
-            case .serverError(let statusCode, _):
-                if statusCode == 403 {
+            case .serverError(let statusCode):
+                if statusCode == 401 {
+                    return "Invalid email or password"
+                } else if statusCode == 403 {
                     return "Account is disabled or suspended"
                 } else if statusCode == 404 {
                     return "User account not found"
                 }
                 return "Server error. Please try again"
-            case .unknown(let error):
-                if (error as NSError).code == NSURLErrorTimedOut {
-                    return "Login request timed out. Please try again"
-                }
+            case .noData:
+                return "No response from server. Please try again"
+            case .decodingError:
+                return "Invalid server response. Please try again"
+            case .invalidURL:
+                return "Invalid server configuration. Please contact support"
+            case .unknown:
                 return "Login failed. Please try again"
-            case .noInternetConnection:
+            }
+        }
+        
+        // Check for URLError
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet:
                 return "No internet connection. Please check your network"
+            case .timedOut:
+                return "Login request timed out. Please try again"
             default:
-                return "Login failed. Please try again"
+                return "Network error. Please try again"
             }
         }
         
