@@ -337,6 +337,14 @@
       "end_time": "2025-07-03T07:57:14.536354",
       "duration_hours": 0.08,
       "duration_formatted": "5м"
+    },
+    "day_129": {
+      "calendar_day": 129,
+      "project_day": 214,
+      "sprint_number": 43,
+      "day_in_sprint": 4,
+      "start_time": "2025-07-03T08:00:41.268696",
+      "date": "2025-07-03"
     }
   },
   "sprints": {
