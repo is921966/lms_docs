@@ -421,6 +421,17 @@
       "sprint_number": 45,
       "day_in_sprint": 1,
       "start_time": "2025-07-03T09:29:16.839906",
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T09:40:19.172530",
+      "duration_hours": 0.18,
+      "duration_formatted": "11м"
+    },
+    "day_137": {
+      "calendar_day": 137,
+      "project_day": 222,
+      "sprint_number": 45,
+      "day_in_sprint": 2,
+      "start_time": "2025-07-03T11:19:31.274826",
       "date": "2025-07-03"
     }
   },
