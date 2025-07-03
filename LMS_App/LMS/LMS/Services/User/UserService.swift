@@ -56,10 +56,6 @@ final class UserService: UserServiceProtocol {
     }
 }
 
-// MARK: - EmptyResponse
-
-struct EmptyResponse: Decodable {}
-
 // MARK: - MockUserService
 
 final class MockUserService: UserServiceProtocol {

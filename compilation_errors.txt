@@ -1,0 +1,1 @@
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/User/UserService.swift:61:8: error: invalid redeclaration of 'EmptyResponse'

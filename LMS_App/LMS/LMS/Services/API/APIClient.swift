@@ -271,9 +271,4 @@ struct APIConfig {
     #endif
 }
 
-/// Error response from API
-struct ErrorResponse: Decodable {
-    let message: String
-    let code: String?
-    let details: [String: String]?
-} 
+ 

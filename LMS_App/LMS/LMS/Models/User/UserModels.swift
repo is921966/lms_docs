@@ -37,5 +37,6 @@ struct UpdateProfileRequest: Encodable {
 
 struct UsersResponse: Decodable {
     let users: [UserResponse]
-    let pagination: PaginationResponse
-} 
+    let pagination: PaginationInfo
+}
+

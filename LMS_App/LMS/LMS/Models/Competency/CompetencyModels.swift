@@ -43,7 +43,7 @@ struct CompetencyAssignmentRequest: Encodable {
 
 struct CompetenciesResponse: Decodable {
     let competencies: [CompetencyResponse]
-    let pagination: PaginationResponse
+    let pagination: PaginationInfo
 }
 
 struct CompetencyResponse: Decodable {
@@ -91,15 +91,5 @@ struct CompetencyAssessmentResponse: Decodable {
     let comments: String?
 }
 
-// MARK: - Pagination
 
-struct PaginationResponse: Decodable {
-    let page: Int
-    let limit: Int
-    let total: Int
-    let totalPages: Int
-}
-
-// MARK: - Empty Response
-
-struct EmptyResponse: Decodable {} 
+ 
