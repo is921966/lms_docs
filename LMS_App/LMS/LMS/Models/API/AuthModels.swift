@@ -25,3 +25,8 @@ struct RefreshTokenResponse: Decodable {
     let refreshToken: String
     let expiresIn: Int
 }
+
+// MARK: - Backward Compatibility
+
+/// Alias for LoginResponse to maintain backward compatibility
+typealias AuthResponse = LoginResponse

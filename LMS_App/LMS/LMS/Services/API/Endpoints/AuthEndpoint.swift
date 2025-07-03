@@ -8,6 +8,13 @@ enum AuthEndpoint: APIEndpoint {
     case logout
     case getCurrentUser
     
+    // MARK: - Backward Compatibility
+    
+    /// Create refresh endpoint (backward compatibility)
+    static func refresh(token: String) -> AuthEndpoint {
+        return .refreshToken(request: RefreshTokenRequest(refreshToken: token))
+    }
+    
     var path: String {
         switch self {
         case .login:

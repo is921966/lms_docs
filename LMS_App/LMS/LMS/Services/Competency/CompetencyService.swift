@@ -153,7 +153,7 @@ final class MockCompetencyService: CompetencyServiceProtocol {
         
         return CompetenciesResponse(
             competencies: pageCompetencies,
-            pagination: PaginationResponse(
+            pagination: PaginationInfo(
                 page: page,
                 limit: limit,
                 total: filteredCompetencies.count,

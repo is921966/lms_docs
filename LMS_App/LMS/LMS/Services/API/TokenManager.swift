@@ -47,6 +47,24 @@ final class TokenManager {
         return accessToken != nil && refreshToken != nil
     }
     
+    // MARK: - Backward Compatibility Methods
+    
+    /// Get access token (backward compatibility)
+    func getAccessToken() -> String? {
+        return accessToken
+    }
+    
+    /// Get refresh token (backward compatibility)
+    func getRefreshToken() -> String? {
+        return refreshToken
+    }
+    
+    /// User ID property for backward compatibility
+    var userId: String? {
+        get { return UserDefaults.standard.string(forKey: "currentUserId") }
+        set { UserDefaults.standard.set(newValue, forKey: "currentUserId") }
+    }
+    
     // MARK: - Private Methods
     
     private func saveToken(_ token: String, for key: String) {

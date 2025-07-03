@@ -72,7 +72,7 @@ final class MockUserService: UserServiceProtocol {
         
         return UsersResponse(
             users: pageUsers,
-            pagination: PaginationResponse(
+            pagination: PaginationInfo(
                 page: page,
                 limit: limit,
                 total: mockUsers.count,
@@ -185,7 +185,7 @@ final class MockUserService: UserServiceProtocol {
         
         return UsersResponse(
             users: filteredUsers,
-            pagination: PaginationResponse(
+            pagination: PaginationInfo(
                 page: 1,
                 limit: filteredUsers.count,
                 total: filteredUsers.count,

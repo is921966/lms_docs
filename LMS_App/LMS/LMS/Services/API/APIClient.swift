@@ -57,7 +57,7 @@ final class APIClient {
             
             // Check for token expiration
             if httpResponse.statusCode == 401 && endpoint.requiresAuth {
-                try await refreshTokenAndRetry(endpoint)
+                return try await refreshTokenAndRetry(endpoint)
             }
             
             // Handle response
