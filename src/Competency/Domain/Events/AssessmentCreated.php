@@ -4,23 +4,44 @@ declare(strict_types=1);
 
 namespace Competency\Domain\Events;
 
-use Competency\Domain\ValueObjects\CompetencyId;
-use Competency\Domain\ValueObjects\CompetencyLevel;
-use Competency\Domain\ValueObjects\AssessmentScore;
-use User\Domain\ValueObjects\UserId;
+use Common\Interfaces\DomainEventInterface;
+use Competency\Domain\ValueObjects\AssessmentId;
+use Competency\Domain\ValueObjects\UserCompetencyId;
 
-final class AssessmentCreated
+final class AssessmentCreated implements DomainEventInterface
 {
     public function __construct(
-        public readonly string $assessmentId,
-        public readonly CompetencyId $competencyId,
-        public readonly UserId $userId,
-        public readonly UserId $assessorId,
-        public readonly CompetencyLevel $level,
-        public readonly AssessmentScore $score,
-        public readonly ?string $comment,
-        public readonly \DateTimeImmutable $assessedAt,
+        public readonly AssessmentId $assessmentId,
+        public readonly UserCompetencyId $userCompetencyId,
+        public readonly string $assessmentType,
+        public readonly array $questions,
         public readonly \DateTimeImmutable $occurredAt = new \DateTimeImmutable()
     ) {
     }
-} 
+    
+    public function getEventName(): string
+    {
+        return 'assessment.created';
+    }
+    
+    public function getAggregateId(): string
+    {
+        return $this->assessmentId->getValue();
+    }
+    
+    public function getOccurredAt(): \DateTimeImmutable
+    {
+        return $this->occurredAt;
+    }
+    
+    public function toArray(): array
+    {
+        return [
+            'assessmentId' => $this->assessmentId->getValue(),
+            'userCompetencyId' => $this->userCompetencyId->getValue(),
+            'assessmentType' => $this->assessmentType,
+            'questions' => $this->questions,
+            'occurredAt' => $this->occurredAt->format(\DateTimeInterface::ATOM),
+        ];
+    }
+}

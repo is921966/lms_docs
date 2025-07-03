@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Competency\Domain;
 
+use Competency\Domain\ValueObjects\AssessmentId;
 use Competency\Domain\CompetencyAssessment;
 use Competency\Domain\ValueObjects\AssessmentScore;
 use Competency\Domain\ValueObjects\CompetencyId;

@@ -70,7 +70,9 @@
             "Auth\\": "src/Auth/",
             "Competency\\": "src/Competency/",
             "Learning\\": "src/Learning/",
-            "Program\\": "src/Program/"
+            "Program\\": "src/Program/",
+            "Notification\\": "src/Notification/",
+            "ApiGateway\\": "src/ApiGateway/"
         },
         "files": [
             "src/Common/Helpers/functions.php"

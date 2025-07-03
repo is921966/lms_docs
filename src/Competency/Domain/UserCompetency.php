@@ -10,12 +10,14 @@ use Competency\Domain\Events\UserCompetencyProgressUpdated;
 use Competency\Domain\Events\TargetLevelSet;
 use Competency\Domain\ValueObjects\CompetencyId;
 use Competency\Domain\ValueObjects\CompetencyLevel;
+use Competency\Domain\ValueObjects\UserCompetencyId;
 use User\Domain\ValueObjects\UserId;
 
 class UserCompetency
 {
     use HasDomainEvents;
     
+    private UserCompetencyId $id;
     private UserId $userId;
     private CompetencyId $competencyId;
     private CompetencyLevel $currentLevel;
@@ -23,12 +25,14 @@ class UserCompetency
     private \DateTimeImmutable $lastUpdated;
     
     private function __construct(
+        UserCompetencyId $id,
         UserId $userId,
         CompetencyId $competencyId,
         CompetencyLevel $currentLevel,
         ?CompetencyLevel $targetLevel = null,
         \DateTimeImmutable $lastUpdated = new \DateTimeImmutable()
     ) {
+        $this->id = $id;
         $this->userId = $userId;
         $this->competencyId = $competencyId;
         $this->currentLevel = $currentLevel;
@@ -42,7 +46,10 @@ class UserCompetency
         CompetencyLevel $currentLevel,
         ?CompetencyLevel $targetLevel = null
     ): self {
+        $id = UserCompetencyId::generate();
+        
         $userCompetency = new self(
+            $id,
             $userId,
             $competencyId,
             $currentLevel,
@@ -50,10 +57,11 @@ class UserCompetency
         );
         
         $userCompetency->recordDomainEvent(new UserCompetencyCreated(
+            $id,
             $userId,
             $competencyId,
-            $currentLevel,
-            $targetLevel
+            $currentLevel->getValue(),
+            $targetLevel?->getValue()
         ));
         
         return $userCompetency;
@@ -66,7 +74,10 @@ class UserCompetency
         \DateTimeImmutable $lastUpdated,
         ?CompetencyLevel $targetLevel = null
     ): self {
+        $id = UserCompetencyId::generate();
+        
         $userCompetency = new self(
+            $id,
             $userId,
             $competencyId,
             $currentLevel,
@@ -75,10 +86,11 @@ class UserCompetency
         );
         
         $userCompetency->recordDomainEvent(new UserCompetencyCreated(
+            $id,
             $userId,
             $competencyId,
-            $currentLevel,
-            $targetLevel
+            $currentLevel->getValue(),
+            $targetLevel?->getValue()
         ));
         
         return $userCompetency;
@@ -93,6 +105,7 @@ class UserCompetency
         $this->targetLevel = $targetLevel;
         
         $this->recordDomainEvent(new TargetLevelSet(
+            $this->id,
             $this->userId,
             $this->competencyId,
             $targetLevel
@@ -111,10 +124,9 @@ class UserCompetency
         $this->lastUpdated = new \DateTimeImmutable();
         
         $this->recordDomainEvent(new UserCompetencyProgressUpdated(
-            $this->userId,
-            $this->competencyId,
-            $oldLevel,
-            $newLevel,
+            $this->id,
+            $oldLevel->getValue(),
+            $newLevel->getValue(),
             $this->getProgressPercentage()
         ));
     }
@@ -176,6 +188,11 @@ class UserCompetency
         return (int) $diff->days;
     }
     
+    public function getId(): UserCompetencyId
+    {
+        return $this->id;
+    }
+    
     public function getUserId(): UserId
     {
         return $this->userId;
@@ -200,4 +217,4 @@ class UserCompetency
     {
         return $this->lastUpdated;
     }
-} 
+}

@@ -1,0 +1,409 @@
+openapi: 3.0.0
+info:
+  title: LMS Notification API
+  description: API для управления уведомлениями в системе обучения
+  version: 1.0.0
+  
+servers:
+  - url: https://api.lms.example.com
+    description: Production server
+  - url: http://localhost:8000
+    description: Development server
+
+paths:
+  /api/v1/notifications:
+    post:
+      summary: Отправить уведомление
+      description: Создает и отправляет новое уведомление пользователю
+      operationId: sendNotification
+      tags:
+        - Notifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendNotificationRequest'
+      responses:
+        '201':
+          description: Уведомление успешно создано и отправлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+          
+  /api/v1/notifications/bulk:
+    post:
+      summary: Массовая отправка уведомлений
+      description: Отправляет одинаковое уведомление нескольким пользователям
+      operationId: sendBulkNotifications
+      tags:
+        - Notifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkNotificationRequest'
+      responses:
+        '200':
+          description: Результаты массовой отправки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkNotificationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          
+  /api/v1/users/{userId}/notifications:
+    get:
+      summary: Получить уведомления пользователя
+      description: Возвращает список уведомлений для указанного пользователя
+      operationId: getUserNotifications
+      tags:
+        - Notifications
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Список уведомлений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          
+  /api/v1/notifications/{notificationId}/read:
+    put:
+      summary: Отметить уведомление как прочитанное
+      description: Изменяет статус уведомления на "прочитано"
+      operationId: markNotificationAsRead
+      tags:
+        - Notifications
+      parameters:
+        - $ref: '#/components/parameters/NotificationId'
+      responses:
+        '200':
+          description: Уведомление отмечено как прочитанное
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Notification marked as read"
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+  /api/v1/users/{userId}/notifications/read:
+    put:
+      summary: Отметить все уведомления как прочитанные
+      description: Изменяет статус всех уведомлений пользователя на "прочитано"
+      operationId: markAllNotificationsAsRead
+      tags:
+        - Notifications
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Все уведомления отмечены как прочитанные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "All notifications marked as read"
+                    
+  /api/v1/users/{userId}/notifications/unread/count:
+    get:
+      summary: Получить количество непрочитанных уведомлений
+      description: Возвращает количество непрочитанных уведомлений пользователя
+      operationId: getUnreadNotificationCount
+      tags:
+        - Notifications
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Количество непрочитанных уведомлений
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        example: 5
+
+components:
+  parameters:
+    UserId:
+      name: userId
+      in: path
+      required: true
+      description: UUID пользователя
+      schema:
+        type: string
+        format: uuid
+        
+    NotificationId:
+      name: notificationId
+      in: path
+      required: true
+      description: UUID уведомления
+      schema:
+        type: string
+        format: uuid
+        
+    Limit:
+      name: limit
+      in: query
+      description: Максимальное количество записей
+      schema:
+        type: integer
+        default: 50
+        minimum: 1
+        maximum: 100
+        
+    Offset:
+      name: offset
+      in: query
+      description: Смещение для пагинации
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+        
+  schemas:
+    SendNotificationRequest:
+      type: object
+      required:
+        - recipientId
+        - type
+        - channel
+        - subject
+        - content
+        - priority
+      properties:
+        recipientId:
+          type: string
+          format: uuid
+          description: UUID получателя уведомления
+        type:
+          type: string
+          enum: [course_assigned, course_completed, deadline_reminder, system_announcement]
+          description: Тип уведомления
+        channel:
+          type: string
+          enum: [email, push, sms, in_app]
+          description: Канал доставки
+        subject:
+          type: string
+          maxLength: 255
+          description: Тема уведомления
+        content:
+          type: string
+          description: Содержание уведомления
+        priority:
+          type: string
+          enum: [low, medium, high]
+          description: Приоритет уведомления
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Дополнительные данные
+          
+    BulkNotificationRequest:
+      type: object
+      required:
+        - recipientIds
+        - type
+        - channel
+        - subject
+        - content
+        - priority
+      properties:
+        recipientIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Список UUID получателей
+        type:
+          type: string
+          enum: [course_assigned, course_completed, deadline_reminder, system_announcement]
+        channel:
+          type: string
+          enum: [email, push, sms, in_app]
+        subject:
+          type: string
+          maxLength: 255
+        content:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high]
+        metadata:
+          type: object
+          additionalProperties: true
+          
+    NotificationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Notification'
+          
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        recipientId:
+          type: string
+          format: uuid
+        type:
+          type: string
+        channel:
+          type: string
+        subject:
+          type: string
+        content:
+          type: string
+        priority:
+          type: string
+        status:
+          type: string
+          enum: [pending, sent, delivered, read, failed]
+        metadata:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        sentAt:
+          type: string
+          format: date-time
+          nullable: true
+        deliveredAt:
+          type: string
+          format: date-time
+          nullable: true
+        readAt:
+          type: string
+          format: date-time
+          nullable: true
+        failureReason:
+          type: string
+          nullable: true
+          
+    NotificationListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        meta:
+          type: object
+          properties:
+            count:
+              type: integer
+            total:
+              type: integer
+            offset:
+              type: integer
+              
+    BulkNotificationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                type: object
+                properties:
+                  recipientId:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [sent, failed]
+                  notificationId:
+                    type: string
+                    format: uuid
+                    nullable: true
+                  error:
+                    type: string
+                    nullable: true
+            total:
+              type: integer
+            successful:
+              type: integer
+            failed:
+              type: integer
+              
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Validation failed"
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+            
+  responses:
+    BadRequest:
+      description: Неверный запрос
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+            
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+            
+    ValidationError:
+      description: Ошибка валидации
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse' 

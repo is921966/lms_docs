@@ -1,0 +1,30 @@
+# Notification routes
+notification_send:
+    path: /api/v1/notifications
+    controller: Notification\Http\Controllers\NotificationController::send
+    methods: POST
+
+notification_send_bulk:
+    path: /api/v1/notifications/bulk
+    controller: Notification\Http\Controllers\NotificationController::sendBulk
+    methods: POST
+
+notification_user_list:
+    path: /api/v1/users/{userId}/notifications
+    controller: Notification\Http\Controllers\NotificationController::getUserNotifications
+    methods: GET
+
+notification_mark_read:
+    path: /api/v1/notifications/{notificationId}/read
+    controller: Notification\Http\Controllers\NotificationController::markAsRead
+    methods: PUT
+
+notification_mark_all_read:
+    path: /api/v1/users/{userId}/notifications/read
+    controller: Notification\Http\Controllers\NotificationController::markAllAsRead
+    methods: PUT
+
+notification_unread_count:
+    path: /api/v1/users/{userId}/notifications/unread/count
+    controller: Notification\Http\Controllers\NotificationController::getUnreadCount
+    methods: GET 
