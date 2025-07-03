@@ -2,148 +2,213 @@
 
 ## Описание
 
-API Gateway служит единой точкой входа для всех микросервисов LMS системы. Обеспечивает:
-- Аутентификацию и авторизацию через JWT
-- Маршрутизацию запросов к соответствующим сервисам
-- Rate limiting и защиту от DDoS
-- Агрегацию ответов от нескольких сервисов
-- Кеширование и оптимизацию производительности
+API Gateway - единая точка входа для всех запросов к микросервисам LMS. Обеспечивает централизованную аутентификацию, авторизацию, rate limiting и маршрутизацию запросов.
 
 ## Архитектура
 
-```
-Client Request
-     ↓
-API Gateway
-     ├── Authentication (JWT)
-     ├── Authorization (Roles/Permissions)
-     ├── Rate Limiting
-     ├── Request Routing
-     └── Response Aggregation
-            ↓
-     Microservices
-     ├── User Service
-     ├── Learning Service
-     ├── Program Service
-     ├── Competency Service
-     └── Notification Service
-```
+### Domain Layer
 
-## Основные компоненты
+#### Value Objects
+- `JwtToken` - JWT токены (access и refresh)
+- `RateLimitKey` - ключи для rate limiting
+- `RateLimitResult` - результат проверки rate limit
+- `HttpMethod` - HTTP методы (GET, POST, PUT, DELETE и т.д.)
+- `ServiceEndpoint` - конечная точка микросервиса
 
-### 1. Authentication Middleware
-- Проверка JWT токенов
-- Refresh token механизм
-- Blacklist для отозванных токенов
+#### Exceptions
+- `InvalidTokenException` - ошибки валидации токенов
+- `RateLimitExceededException` - превышен лимит запросов
+- `RouteNotFoundException` - маршрут не найден
+- `ServiceNotFoundException` - сервис не найден
 
-### 2. Authorization Middleware
-- Role-based access control (RBAC)
-- Permission checking
-- Resource-level authorization
+#### Services (Interfaces)
+- `JwtServiceInterface` - работа с JWT токенами
+- `RateLimiterInterface` - rate limiting
+- `ServiceRouterInterface` - маршрутизация к сервисам
 
-### 3. Rate Limiter
-- Per-user rate limiting
-- IP-based rate limiting
-- Configurable limits per endpoint
+### Application Layer
 
-### 4. Request Router
-- Dynamic routing based on service registry
-- Load balancing
-- Circuit breaker pattern
+#### Middleware
+- `AuthenticationMiddleware` - проверка JWT токенов
+- `RateLimitMiddleware` - ограничение количества запросов
 
-### 5. Response Aggregator
-- Parallel service calls
-- Response merging
-- Error handling and fallbacks
+### Infrastructure Layer
 
-## Конфигурация
+#### JWT Implementation
+- `FirebaseJwtService` - реализация JWT через Firebase JWT library
+  - Генерация access и refresh токенов
+  - Валидация токенов
+  - Обновление токенов
+  - Blacklist механизм
 
-```yaml
-# config/api_gateway.yaml
-api_gateway:
-    jwt:
-        secret_key: '%env(JWT_SECRET_KEY)%'
-        ttl: 3600 # 1 hour
-        refresh_ttl: 604800 # 1 week
-    
-    rate_limiting:
-        default_limit: 100
-        window: 60 # seconds
-        
-    services:
-        user:
-            base_url: '%env(USER_SERVICE_URL)%'
-            timeout: 5
-        learning:
-            base_url: '%env(LEARNING_SERVICE_URL)%'
-            timeout: 10
-        # ... other services
-```
+#### Rate Limiter
+- `InMemoryRateLimiter` - in-memory реализация rate limiting
+  - Token bucket алгоритм
+  - Настраиваемые лимиты и окна
+  - Поддержка разных типов ключей
 
-## API Endpoints
+#### Router
+- `ServiceRouter` - маршрутизация запросов к микросервисам
+  - Паттерн-матчинг для URL
+  - Поддержка параметров в путях
+  - Динамическая регистрация сервисов
 
-### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/refresh` - Refresh JWT token
-- `POST /api/auth/logout` - Logout and invalidate token
+### HTTP Layer
 
-### Service Proxies
-- `/api/users/*` → User Service
-- `/api/learning/*` → Learning Service
-- `/api/programs/*` → Program Service
-- `/api/competencies/*` → Competency Service
-- `/api/notifications/*` → Notification Service
+#### Controllers
+- `GatewayController` - основной прокси-контроллер
+  - Маршрутизация всех запросов
+  - Обработка ошибок
+  - Форвардинг заголовков
+  
+- `AuthController` - аутентификация
+  - `/login` - вход в систему
+  - `/logout` - выход из системы
+  - `/refresh` - обновление токена
+  - `/me` - информация о текущем пользователе
 
 ## Использование
 
-### Пример запроса
+### Конфигурация
+
+```php
+// config/api-gateway.php
+return [
+    'jwt' => [
+        'secret' => env('JWT_SECRET'),
+        'algorithm' => 'HS256',
+        'access_ttl' => 3600, // 1 hour
+        'refresh_ttl' => 604800 // 1 week
+    ],
+    
+    'rate_limit' => [
+        'default_limit' => 60,
+        'window_seconds' => 60
+    ],
+    
+    'services' => [
+        'user' => env('USER_SERVICE_URL', 'http://user-service:8080'),
+        'auth' => env('AUTH_SERVICE_URL', 'http://auth-service:8081'),
+        'competency' => env('COMPETENCY_SERVICE_URL', 'http://competency-service:8082'),
+        'learning' => env('LEARNING_SERVICE_URL', 'http://learning-service:8083'),
+        'program' => env('PROGRAM_SERVICE_URL', 'http://program-service:8084'),
+        'notification' => env('NOTIFICATION_SERVICE_URL', 'http://notification-service:8085')
+    ]
+];
+```
+
+### Маршруты
+
+```php
+// routes/api-gateway.php
+
+// Public routes
+Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
+Route::post('/api/v1/auth/refresh', [AuthController::class, 'refresh']);
+
+// Protected routes
+Route::middleware(['auth.jwt', 'rate.limit'])->group(function () {
+    Route::post('/api/v1/auth/logout', [AuthController::class, 'logout']);
+    Route::get('/api/v1/auth/me', [AuthController::class, 'me']);
+    
+    // All other requests proxied through gateway
+    Route::any('{any}', [GatewayController::class, 'proxy'])->where('any', '.*');
+});
+```
+
+### Примеры запросов
+
+#### Аутентификация
 ```bash
 # Login
-curl -X POST http://api.lms.local/api/auth/login \
+curl -X POST http://api.example.com/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com", "password": "password"}'
 
-# Use JWT token for authenticated requests
-curl -X GET http://api.lms.local/api/users/profile \
-  -H "Authorization: Bearer <jwt_token>"
+# Response
+{
+  "data": {
+    "user": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "email": "user@example.com",
+      "role": "user"
+    },
+    "token": {
+      "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+      "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+      "token_type": "Bearer",
+      "expires_in": 3600
+    }
+  }
+}
 ```
 
-### Пример агрегированного запроса
+#### Использование токена
 ```bash
-# Get user dashboard (aggregates data from multiple services)
-curl -X GET http://api.lms.local/api/dashboard \
-  -H "Authorization: Bearer <jwt_token>"
+# Get users
+curl -X GET http://api.example.com/api/v1/users \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc..."
 
-# Response includes:
-# - User profile (User Service)
-# - Enrolled courses (Learning Service)
-# - Active programs (Program Service)
-# - Recent notifications (Notification Service)
+# Create course
+curl -X POST http://api.example.com/api/v1/courses \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc..." \
+  -H "Content-Type: application/json" \
+  -d '{"title": "New Course", "description": "Course description"}'
 ```
 
 ## Тестирование
 
+### Unit тесты
 ```bash
-# Unit tests
-./test-quick.sh tests/Unit/ApiGateway/
+# Domain layer
+./test-quick.sh tests/Unit/ApiGateway/Domain/
 
-# Integration tests
-./test-quick.sh tests/Integration/ApiGateway/
+# Application layer
+./test-quick.sh tests/Unit/ApiGateway/Application/
 
-# Load tests
-./scripts/load-test-api-gateway.sh
+# Infrastructure layer
+./test-quick.sh tests/Unit/ApiGateway/Infrastructure/
 ```
 
-## Мониторинг
+### Integration тесты
+```bash
+./test-quick.sh tests/Integration/ApiGateway/
+```
 
-- Prometheus metrics на `/metrics`
-- Health check на `/health`
-- Readiness check на `/ready`
+## Безопасность
 
-## Security
+1. **JWT токены**
+   - Используйте сильный секретный ключ
+   - Храните refresh токены безопасно
+   - Реализуйте blacklist для отозванных токенов
 
-- JWT токены подписываются с использованием RS256
-- Все внешние запросы проходят через HTTPS
-- Rate limiting предотвращает brute force атаки
-- CORS настроен для разрешенных доменов
-- SQL injection защита через параметризованные запросы 
+2. **Rate Limiting**
+   - Настройте лимиты в соответствии с нагрузкой
+   - Используйте разные лимиты для разных endpoints
+   - Мониторьте превышения лимитов
+
+3. **HTTPS**
+   - Всегда используйте HTTPS в production
+   - Проверяйте SSL сертификаты микросервисов
+
+## Production рекомендации
+
+1. **JWT Service**
+   - Используйте Redis для blacklist токенов
+   - Реализуйте ротацию ключей
+   - Логируйте подозрительную активность
+
+2. **Rate Limiter**
+   - Используйте Redis вместо in-memory
+   - Настройте алерты для аномальной активности
+   - Реализуйте whitelist для доверенных IP
+
+3. **Service Router**
+   - Используйте service discovery (Consul, etcd)
+   - Реализуйте health checks
+   - Настройте circuit breakers
+
+4. **Мониторинг**
+   - Отслеживайте latency всех сервисов
+   - Мониторьте rate limit violations
+   - Настройте алерты для 5xx ошибок 
