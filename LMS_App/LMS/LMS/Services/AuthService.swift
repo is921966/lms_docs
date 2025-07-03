@@ -70,7 +70,7 @@ final class AuthService: ObservableObject {
             )
             
             // Convert to domain user
-            let domainUser = DomainUser(
+            var domainUser = DomainUser(
                 id: response.user.id,
                 email: response.user.email,
                 firstName: "", // We'll parse from name
@@ -142,7 +142,7 @@ final class AuthService: ObservableObject {
         let response: UserResponse = try await apiClient.request(endpoint)
         
         // Convert to domain user
-        let domainUser = DomainUser(
+        var domainUser = DomainUser(
             id: response.id,
             email: response.email,
             firstName: "", // We'll parse from name

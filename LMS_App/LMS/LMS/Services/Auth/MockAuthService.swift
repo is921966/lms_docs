@@ -22,23 +22,20 @@ class MockAuthService: ObservableObject {
         error = nil
 
         // Simulate network delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-            self?.isLoading = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            self.isLoading = false
 
             // Create mock user
             let mockUser = UserResponse(
                 id: "mock_user_123",
                 email: asAdmin ? "admin@tsum.ru" : "student@tsum.ru",
-                firstName: asAdmin ? "Админ" : "Иван",
-                lastName: asAdmin ? "Админов" : "Иванов",
-                middleName: nil,
-                position: asAdmin ? "Администратор" : "Продавец-консультант",
+                name: asAdmin ? "Админ Админов" : "Иван Иванов",
+                role: asAdmin ? "admin" : "student",
                 department: "IT",
+                isActive: true,
                 avatar: nil,
-                roles: asAdmin ? ["admin", "student"] : ["student"],
-                permissions: asAdmin ? ["manage_users", "access_courses"] : [],
-                isApproved: true,
-                registrationDate: nil
+                createdAt: Date(),
+                updatedAt: Date()
             )
 
             // Save mock tokens
@@ -49,9 +46,9 @@ class MockAuthService: ObservableObject {
             TokenManager.shared.userId = mockUser.id
 
             // Update state
-            self?.currentUser = mockUser
-            self?.isAuthenticated = true
-            self?.isApprovedByAdmin = asAdmin // Admins are auto-approved
+            self.currentUser = mockUser
+            self.isAuthenticated = true
+            self.isApprovedByAdmin = asAdmin // Admins are auto-approved
 
             print("Mock login successful as \(asAdmin ? "Admin" : "Student")")
         }
@@ -68,14 +65,14 @@ class MockAuthService: ObservableObject {
 
         isLoading = true
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            self?.isLoading = false
-            self?.isApprovedByAdmin = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.isLoading = false
+            self.isApprovedByAdmin = true
 
             // Update user permissions
-            if var user = self?.currentUser {
-                user.permissions.append("access_courses")
-                self?.currentUser = user
+            if var user = self.currentUser {
+                // Permissions are derived from role, no need to update
+                self.currentUser = user
             }
 
             print("User approved by admin (mock)")
@@ -93,16 +90,13 @@ class MockAuthService: ObservableObject {
                 currentUser = UserResponse(
                     id: userId,
                     email: isAdmin ? "admin@tsum.ru" : "student@tsum.ru",
-                    firstName: isAdmin ? "Админ" : "Иван",
-                    lastName: isAdmin ? "Админов" : "Иванов",
-                    middleName: nil,
-                    position: isAdmin ? "Администратор" : "Студент",
+                    name: isAdmin ? "Админ Админов" : "Иван Иванов",
+                    role: isAdmin ? "admin" : "student",
                     department: "IT",
+                    isActive: true,
                     avatar: nil,
-                    roles: isAdmin ? ["admin", "student"] : ["student"],
-                    permissions: isAdmin ? ["manage_users", "access_courses"] : ["access_courses"],
-                    isApproved: true,
-                    registrationDate: nil
+                    createdAt: Date(),
+                    updatedAt: Date()
                 )
                 isApprovedByAdmin = true
             }
@@ -124,72 +118,57 @@ class MockAuthService: ObservableObject {
             UserResponse(
                 id: "user_1",
                 email: "ivanov@tsum.ru",
-                firstName: "Иван",
-                lastName: "Иванов",
-                middleName: "Петрович",
-                position: "Продавец",
+                name: "Иван Петрович Иванов",
+                role: "student",
                 department: "Отдел продаж",
+                isActive: true,
                 avatar: nil,
-                roles: ["student"],
-                permissions: ["access_courses"],
-                isApproved: true,
-                registrationDate: nil
+                createdAt: Date(),
+                updatedAt: Date()
             ),
             UserResponse(
                 id: "user_2",
                 email: "petrova@tsum.ru",
-                firstName: "Мария",
-                lastName: "Петрова",
-                middleName: nil,
-                position: "Кассир",
+                name: "Мария Петрова",
+                role: "student",
                 department: "Операционный отдел",
+                isActive: true,
                 avatar: nil,
-                roles: ["student"],
-                permissions: ["access_courses"],
-                isApproved: true,
-                registrationDate: nil
+                createdAt: Date(),
+                updatedAt: Date()
             ),
             UserResponse(
                 id: "user_3",
                 email: "sidorov@tsum.ru",
-                firstName: "Алексей",
-                lastName: "Сидоров",
-                middleName: nil,
-                position: "Мерчандайзер",
+                name: "Алексей Сидоров",
+                role: "student",
                 department: "Отдел маркетинга",
+                isActive: true,
                 avatar: nil,
-                roles: ["student"],
-                permissions: ["access_courses"],
-                isApproved: true,
-                registrationDate: nil
+                createdAt: Date(),
+                updatedAt: Date()
             ),
             UserResponse(
                 id: "manager_1",
                 email: "smirnov@tsum.ru",
-                firstName: "Сергей",
-                lastName: "Смирнов",
-                middleName: nil,
-                position: "Руководитель отдела",
+                name: "Сергей Смирнов",
+                role: "manager",
                 department: "Отдел продаж",
+                isActive: true,
                 avatar: nil,
-                roles: ["manager"],
-                permissions: ["manage_users", "access_courses"],
-                isApproved: true,
-                registrationDate: nil
+                createdAt: Date(),
+                updatedAt: Date()
             ),
             UserResponse(
                 id: "admin_1",
                 email: "admin@tsum.ru",
-                firstName: "Админ",
-                lastName: "Админов",
-                middleName: nil,
-                position: "Администратор",
+                name: "Админ Админов",
+                role: "admin",
                 department: "IT",
+                isActive: true,
                 avatar: nil,
-                roles: ["admin"],
-                permissions: ["manage_users", "access_courses", "manage_system"],
-                isApproved: true,
-                registrationDate: nil
+                createdAt: Date(),
+                updatedAt: Date()
             )
         ]
     }

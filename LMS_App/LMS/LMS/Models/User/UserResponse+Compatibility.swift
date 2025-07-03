@@ -13,6 +13,11 @@ extension UserResponse {
     
     // MARK: - Name Compatibility
     
+    /// Full name for display
+    var fullName: String {
+        return name
+    }
+    
     /// First name extracted from full name
     var firstName: String {
         let components = name.split(separator: " ")
@@ -92,4 +97,24 @@ extension UserResponse {
     var isStudent: Bool {
         return role.lowercased() == "student"
     }
+    
+    /// Position (derived from role or department)
+    var position: String? {
+        switch role.lowercased() {
+        case "admin":
+            return "Администратор"
+        case "manager":
+            return "Руководитель отдела"
+        case "student":
+            return "Сотрудник"
+        default:
+            return department
+        }
+    }
+}
+
+// MARK: - Identifiable Conformance
+
+extension UserResponse: Identifiable {
+    // id property already exists in UserResponse
 } 
