@@ -293,6 +293,17 @@
       "end_time": "2025-07-03T07:16:31.370064",
       "duration_hours": 0.46,
       "duration_formatted": "27м"
+    },
+    "day_125": {
+      "calendar_day": 125,
+      "project_day": 210,
+      "sprint_number": 42,
+      "day_in_sprint": 5,
+      "start_time": "2025-07-03T07:18:59.380216",
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T07:24:27.040701",
+      "duration_hours": 0.09,
+      "duration_formatted": "5м"
     }
   },
   "sprints": {
@@ -340,6 +351,11 @@
       "sprint_number": 41,
       "start_time": "2025-07-02T16:56:17.433454",
       "start_date": "2025-07-02"
+    },
+    "sprint_42": {
+      "sprint_number": 42,
+      "end_time": "2025-07-03T07:24:27.040701",
+      "end_date": "2025-07-03"
     }
   },
   "project_start": "2025-06-21T09:00:00",
