@@ -270,10 +270,9 @@ final class UserResponseTests: XCTestCase {
         )
         
         // When/Then
-        // Note: Current implementation doesn't trim whitespace
-        // This test documents current behavior
-        XCTAssertEqual(user.firstName, "")
-        XCTAssertEqual(user.lastName, " John   Doe  ")
+        // The split function should handle spaces properly
+        XCTAssertEqual(user.firstName, "John")
+        XCTAssertEqual(user.lastName, "Doe")
         XCTAssertEqual(user.fullName, "  John   Doe  ")
     }
     

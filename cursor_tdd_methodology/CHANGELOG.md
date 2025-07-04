@@ -5,6 +5,22 @@ All notable changes to the TDD Methodology will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.10] - 2025-07-05
+
+### Added
+- **CRITICAL**: Mandatory rule to create project_time_registry record as first step of each day
+- New section "🚨 ПЕРВЫЙ ШАГ КАЖДОГО ДНЯ - СОЗДАНИЕ ЗАПИСИ В БД" in documentation
+- Warning: БЕЗ ЗАПИСИ В БД = ДЕНЬ НЕ СУЩЕСТВУЕТ!
+
+### Changed
+- Updated `.cursorrules` to version 1.8.10
+- Updated `productmanager.mdc` to version 1.4.2
+- Enhanced day start procedures
+
+### Fixed
+- Calendar date drift issue when DB record is not created at day start
+- Day 146 record corrected with proper date (2025-07-05) and sprint info
+
 ## [1.8.4] - 2025-07-01
 
 ### Fixed

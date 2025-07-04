@@ -213,6 +213,20 @@ class UserListViewModelTests: XCTestCase {
         // Then
         XCTAssertFalse(result)
         XCTAssertNotNil(viewModel.errorMessage)
+        
+        // Verify that the error message contains "Ошибка валидации"
+        XCTAssertTrue(viewModel.errorMessage?.contains("Ошибка валидации") ?? false)
+        
+        // The error message should contain validation details
+        // It could contain email format error and/or first name error
+        let errorMessage = viewModel.errorMessage ?? ""
+        XCTAssertTrue(
+            errorMessage.contains("Email format is invalid") || 
+            errorMessage.contains("First name cannot be empty") ||
+            errorMessage.contains("валидации"),
+            "Error message should contain validation details"
+        )
+        
         XCTAssertTrue(viewModel.showError)
     }
     
@@ -612,6 +626,16 @@ class MockUserRepository: DomainUserRepositoryProtocol {
     }
     
     func createUser(_ createDTO: CreateUserDTO) async throws -> DomainUser {
+        // Perform validation first
+        if !createDTO.isValid() {
+            throw RepositoryError.validationError(createDTO.validationErrors())
+        }
+        
+        // Check if email is already taken
+        if let _ = try await findByEmail(createDTO.email) {
+            throw RepositoryError.invalidData("Email \(createDTO.email) is already taken")
+        }
+        
         let newUser = DomainUser(
             id: UUID().uuidString,
             email: createDTO.email,

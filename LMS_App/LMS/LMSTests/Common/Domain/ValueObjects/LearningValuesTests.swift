@@ -37,7 +37,7 @@ final class LearningValuesTests: XCTestCase {
         XCTAssertEqual(progress2?.value, 50.0)
         
         let progress3 = CourseProgress.fraction(0.333)
-        XCTAssertEqual(progress3?.value, 33.3)
+        XCTAssertEqual(progress3?.value ?? 0, 33.3, accuracy: 0.01)
     }
     
     func testCourseProgressFormatting() {

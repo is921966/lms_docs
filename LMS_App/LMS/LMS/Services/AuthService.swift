@@ -247,6 +247,16 @@ final class AuthService: ObservableObject {
         // Post notification
         NotificationCenter.default.post(name: .userDidLogout, object: nil)
     }
+    
+    // MARK: - Testing Support
+    
+    /// Reset all state for testing purposes
+    /// Only use this method in tests to ensure clean state
+    func resetForTesting() {
+        clearAuthState()
+        // Force re-check of authentication status to ensure clean state
+        checkAuthenticationStatus()
+    }
 }
 
 // MARK: - TokenManager Extension

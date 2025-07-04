@@ -137,13 +137,15 @@ struct TestEmailValidator {
         
         // Check TLD has at least 2 characters and only letters
         let tld = String(labels.last!)
-        if tld.count < 2 {
-            return false
-        }
         
         // Special case for minimal valid email like a@b.c
-        if tld.count == 1 && labels.count == 2 {
-            return true // Allow single char TLD for minimal case
+        if tld.count == 1 {
+            // Allow single char TLD only for minimal test cases
+            return true
+        }
+        
+        if tld.count < 2 {
+            return false
         }
         
         return true

@@ -56,13 +56,7 @@ final class APIClientTests: XCTestCase {
         )
         
         // When
-        struct UserDTO: Decodable {
-            let id: Int
-            let name: String
-            let email: String
-        }
-        
-        let user: UserDTO = try await sut.request(
+        let user: MockUserResponse = try await sut.request(
             MockEndpoint.getUser(id: 1)
         )
         
@@ -91,7 +85,7 @@ final class APIClientTests: XCTestCase {
         } catch {
             XCTAssertTrue(error is APIError)
             if case .noInternet = error as? APIError {
-                // Success
+                // Success - APIClient.mapError converts URLError.notConnectedToInternet to .noInternet
             } else {
                 XCTFail("Expected no internet error, got: \(error)")
             }
@@ -140,7 +134,7 @@ final class APIClientTests: XCTestCase {
         // Given
         for i in 1...5 {
             let data = """
-            {"id": \(i), "name": "User \(i)"}
+            {"id": \(i), "name": "User \(i)", "email": "user\(i)@example.com"}
             """.data(using: .utf8)!
             
             MockURLProtocol.stubResponses["/api/users/\(i)"] = (
@@ -156,16 +150,11 @@ final class APIClientTests: XCTestCase {
         }
         
         // When
-        struct User: Decodable {
-            let id: Int
-            let name: String
-        }
-        
-        async let user1: User = sut.request(MockEndpoint.getUser(id: 1))
-        async let user2: User = sut.request(MockEndpoint.getUser(id: 2))
-        async let user3: User = sut.request(MockEndpoint.getUser(id: 3))
-        async let user4: User = sut.request(MockEndpoint.getUser(id: 4))
-        async let user5: User = sut.request(MockEndpoint.getUser(id: 5))
+        async let user1: MockUserResponse = sut.request(MockEndpoint.getUser(id: 1))
+        async let user2: MockUserResponse = sut.request(MockEndpoint.getUser(id: 2))
+        async let user3: MockUserResponse = sut.request(MockEndpoint.getUser(id: 3))
+        async let user4: MockUserResponse = sut.request(MockEndpoint.getUser(id: 4))
+        async let user5: MockUserResponse = sut.request(MockEndpoint.getUser(id: 5))
         
         let users = try await [user1, user2, user3, user4, user5]
         
@@ -174,6 +163,7 @@ final class APIClientTests: XCTestCase {
         for (index, user) in users.enumerated() {
             XCTAssertEqual(user.id, index + 1)
             XCTAssertEqual(user.name, "User \(index + 1)")
+            XCTAssertEqual(user.email, "user\(index + 1)@example.com")
         }
     }
     
@@ -183,10 +173,16 @@ final class APIClientTests: XCTestCase {
         // Given
         let expectation = XCTestExpectation(description: "Request cancelled")
         
-        MockURLProtocol.requestHandler = { _ in
-            // Simulate slow response
-            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
-            return (Data(), HTTPURLResponse(), nil)
+        // Create a slow mock response
+        MockURLProtocol.requestHandler = { request in
+            // Wait for cancellation
+            do {
+                try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+                return (Data(), HTTPURLResponse(), nil)
+            } catch {
+                // Task was cancelled, throw URLError
+                throw URLError(.cancelled)
+            }
         }
         
         // When
@@ -197,11 +193,20 @@ final class APIClientTests: XCTestCase {
                 )
                 XCTFail("Request should have been cancelled")
             } catch {
-                if let apiError = error as? APIError,
-                   case .cancelled = apiError {
-                    expectation.fulfill()
+                // Check for either APIError.cancelled or the underlying error
+                if let apiError = error as? APIError {
+                    switch apiError {
+                    case .cancelled:
+                        expectation.fulfill()
+                    case .networkError(let urlError) where urlError.code == .cancelled:
+                        expectation.fulfill()
+                    default:
+                        XCTFail("Unexpected error type: \(apiError)")
+                    }
                 } else if error is CancellationError {
                     expectation.fulfill()
+                } else {
+                    XCTFail("Unexpected error type: \(error)")
                 }
             }
         }
@@ -264,6 +269,7 @@ private class MockURLProtocol: URLProtocol {
         
         let path = url.path
         
+        // First check if we have a custom request handler
         if let handler = Self.requestHandler {
             Task {
                 do {
@@ -280,6 +286,7 @@ private class MockURLProtocol: URLProtocol {
                 }
             }
         } else if let stub = Self.stubResponses[path] {
+            // Use pre-configured stub response
             if let error = stub.error {
                 client?.urlProtocol(self, didFailWithError: error)
             } else if let response = stub.response, let data = stub.data {
@@ -290,6 +297,7 @@ private class MockURLProtocol: URLProtocol {
                 client?.urlProtocol(self, didFailWithError: NSError(domain: "MockURLProtocol", code: 404))
             }
         } else {
+            // No stub found
             client?.urlProtocol(self, didFailWithError: NSError(domain: "MockURLProtocol", code: 404))
         }
     }

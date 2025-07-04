@@ -20,20 +20,20 @@ final class AuthServiceDTOTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        // Clear any existing state
-        TokenManager.shared.clearTokens()
-        UserDefaults.standard.removeObject(forKey: "currentUser")
-        
         // Get AuthService instance
         authService = AuthService.shared
+        
+        // Reset to clean state
+        authService.resetForTesting()
         
         cancellables = Set<AnyCancellable>()
     }
     
     override func tearDown() {
         cancellables = nil
-        TokenManager.shared.clearTokens()
-        UserDefaults.standard.removeObject(forKey: "currentUser")
+        
+        // Reset to clean state
+        authService.resetForTesting()
         
         super.tearDown()
     }
@@ -41,7 +41,10 @@ final class AuthServiceDTOTests: XCTestCase {
     // MARK: - Authentication State Tests
     
     func testInitialAuthenticationState() {
-        // Given/When - fresh AuthService
+        // Given - State is already cleared in setUp
+        
+        // When - Check current state
+        // AuthService was reset in setUp and should have clean state
         
         // Then
         XCTAssertFalse(authService.isAuthenticated)
