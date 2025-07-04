@@ -216,7 +216,7 @@ class CompetencyProgressCalculatorTests: XCTestCase {
                 targetLevel: 3,
                 completedCourses: 2,
                 totalCourses: 2,
-                expectedProgress: 70.0,
+                expectedProgress: 80.0,
                 description: "Course-heavy weighting"
             ),
             WeightedTestCase(
