@@ -476,6 +476,12 @@ def main():
             print(f"📅 Date: {info['calendar_date']}")
             print(f"🏃 Sprint: {info['sprint_number']}, Day {info['sprint_day']}")
             print(f"📌 Status: {info['status']}")
+            if info.get('daily_report_filename'):
+                print(f"📄 Report filename: {info['daily_report_filename']}")
+            if info.get('start_time'):
+                print(f"🚀 Started: {info['start_time']}")
+            if info.get('end_time'):
+                print(f"✅ Ended: {info['end_time']}")
             if info.get('duration_minutes'):
                 print(f"⏱️ Duration: {info['duration_minutes']/60:.1f} hours")
             if info.get('commits_count'):
@@ -483,6 +489,8 @@ def main():
             if info.get('tests_passed') and info.get('tests_total'):
                 pass_rate = info['tests_passed'] / info['tests_total'] * 100
                 print(f"✅ Tests: {info['tests_passed']}/{info['tests_total']} ({pass_rate:.1f}%)")
+            if info.get('notes'):
+                print(f"📝 Notes: {info['notes']}")
         else:
             print(f"❌ No information found for day {args.day}")
     
