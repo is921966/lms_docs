@@ -52,8 +52,10 @@ extension UserResponse {
             return ["manage_users", "manage_courses", "manage_tests", "view_analytics", "access_courses"]
         case "manager":
             return ["view_analytics", "manage_team", "access_courses"]
+        case "instructor":
+            return ["create_courses", "grade_students", "view_courses", "access_courses"]
         case "student":
-            return ["access_courses", "view_progress"]
+            return ["view_courses", "enroll_courses", "access_courses", "view_progress"]
         default:
             return []
         }

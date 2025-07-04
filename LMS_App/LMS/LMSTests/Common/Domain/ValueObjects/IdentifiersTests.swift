@@ -24,9 +24,9 @@ final class IdentifiersTests: XCTestCase {
         XCTAssertNil(CourseId(""))
         XCTAssertNil(CourseId("123")) // Missing prefix
         XCTAssertNil(CourseId("LESSON_123")) // Wrong prefix
-        XCTAssertNil(CourseId("COURSE_")) // Too short after prefix
+        XCTAssertNil(CourseId("COURSE")) // Too short (no content after prefix)
         XCTAssertNil(CourseId("COURSE_abc@123")) // Invalid character
-        XCTAssertNil(CourseId("COURSE_" + String(repeating: "a", 50))) // Too long
+        XCTAssertNil(CourseId("COURSE_" + String(repeating: "a", count: 50))) // Too long
     }
     
     func testCourseIdGeneration() {
@@ -63,7 +63,7 @@ final class IdentifiersTests: XCTestCase {
         
         // Invalid IDs
         XCTAssertNil(LessonId("COURSE_123")) // Wrong prefix
-        XCTAssertNil(LessonId("LESSON_")) // Too short
+        XCTAssertNil(LessonId("LESSON")) // Too short (no content after prefix)
     }
     
     func testLessonIdGeneration() {
@@ -82,7 +82,7 @@ final class IdentifiersTests: XCTestCase {
         
         // Invalid IDs
         XCTAssertNil(TestId("QUIZ_123")) // Wrong prefix
-        XCTAssertNil(TestId("TEST_")) // Too short
+        XCTAssertNil(TestId("TEST")) // Too short (no content after prefix)
     }
     
     func testTestIdGeneration() {
@@ -101,7 +101,7 @@ final class IdentifiersTests: XCTestCase {
         
         // Invalid IDs
         XCTAssertNil(UserId("STUDENT_123")) // Wrong prefix
-        XCTAssertNil(UserId("USER_")) // Too short
+        XCTAssertNil(UserId("USER")) // Too short (no content after prefix)
     }
     
     func testUserIdGeneration() {
@@ -120,7 +120,7 @@ final class IdentifiersTests: XCTestCase {
         
         // Invalid IDs
         XCTAssertNil(CompetencyId("SKILL_123")) // Wrong prefix
-        XCTAssertNil(CompetencyId("COMP_")) // Too short
+        XCTAssertNil(CompetencyId("COMP")) // Too short (no content after prefix)
     }
     
     func testCompetencyIdGeneration() {
@@ -139,7 +139,7 @@ final class IdentifiersTests: XCTestCase {
         
         // Invalid IDs
         XCTAssertNil(PositionId("POSITION_123")) // Wrong prefix
-        XCTAssertNil(PositionId("POS_")) // Too short
+        XCTAssertNil(PositionId("POS")) // Too short (no content after prefix)
     }
     
     func testPositionIdGeneration() {

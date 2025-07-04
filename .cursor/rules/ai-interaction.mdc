@@ -1,401 +1,484 @@
-# AI Interaction and Security Rules for LMS Project
+---
+description:
+globs:
+alwaysApply: false
+---
+# AI Pair Programming Guidelines
 
-## AI Usage Guidelines
+## Core Philosophy
 
-### When to Use AI Assistance
-AI should be used for:
-- **Code generation** - Boilerplate, repetitive patterns
-- **Problem solving** - Algorithm suggestions, optimization
-- **Documentation** - API docs, code comments
-- **Code review** - Finding bugs, suggesting improvements
-- **Learning** - Understanding new concepts, best practices
-- **Refactoring** - Improving code structure
-- **Testing** - Generating test cases
+Treat AI (Claude/Cursor) as your pair programming partner - an experienced developer who:
+- Knows patterns and best practices
+- Can suggest improvements
+- Needs clear context and constraints
+- Should be questioned and verified
 
-### When NOT to Use AI
-AI should NOT be used for:
-- **Security-critical code** - Authentication, encryption
-- **Business logic** - Core algorithms unique to your business
-- **Sensitive data handling** - PII, financial data processing
-- **Legal/Compliance code** - Without human verification
-- **Production credentials** - Never share real secrets
+**ВАЖНО**: AI не заменяет человека. Всегда сохраняйте за инженером роль окончательного решения и проверки качества кода.
 
-## Data Security and Privacy
+## Security and Data Protection
 
-### Information to NEVER Share with AI
+### Protect Sensitive Information
+**НЕ ПЕРЕДАВАЙТЕ** модели конфиденциальный или коммерчески тайный код без необходимости:
+- ❌ Пароли, API ключи, токены
+- ❌ Личные данные пользователей
+- ❌ Proprietary алгоритмы
+- ❌ Конфиденциальная бизнес-логика
+- ❌ Production endpoints и credentials
+
+### Data Anonymization
+Перед отправкой кода в AI:
 ```swift
-// ❌ NEVER share these with AI:
+// ❌ Bad - exposing real data
+let apiKey = "sk-1234567890abcdef"
+let userEmail = "john.doe@company.com"
+let dbPassword = "MySecurePass123!"
 
-// 1. Real API keys
-let apiKey = "sk-proj-real-api-key-xxxxx" // ❌ NEVER
-
-// 2. Production URLs
-let baseURL = "https://api.production.company.com" // ❌ NEVER
-
-// 3. Real user data
-let userData = [
-    "email": "john.doe@realcompany.com", // ❌ NEVER
-    "ssn": "123-45-6789" // ❌ NEVER
-]
-
-// 4. Database credentials
-let dbConnection = "postgresql://prod_user:real_pass@prod.db.com" // ❌ NEVER
-
-// 5. Private keys or certificates
-let privateKey = "-----BEGIN RSA PRIVATE KEY-----..." // ❌ NEVER
-
-// 6. Internal documentation
-let internalDocs = "Company confidential process..." // ❌ NEVER
+// ✅ Good - anonymized
+let apiKey = "YOUR_API_KEY_HERE"
+let userEmail = "user@example.com"
+let dbPassword = "DATABASE_PASSWORD"
 ```
 
-### Safe Alternatives
-```swift
-// ✅ Use these instead:
-
-// 1. Mock API keys
-let apiKey = "mock-api-key-for-testing" // ✅ SAFE
-
-// 2. Local/mock URLs
-let baseURL = "https://api.example.com" // ✅ SAFE
-
-// 3. Fake user data
-let userData = [
-    "email": "test@example.com", // ✅ SAFE
-    "ssn": "000-00-0000" // ✅ SAFE
-]
-
-// 4. Generic connection strings
-let dbConnection = "postgresql://user:pass@localhost/testdb" // ✅ SAFE
-
-// 5. Placeholder keys
-let privateKey = "mock-private-key-placeholder" // ✅ SAFE
-
-// 6. Generic documentation
-let publicDocs = "Standard REST API implementation" // ✅ SAFE
-```
-
-## Code Anonymization Techniques
-
-### Before Sharing Code
-```swift
-// Original (with sensitive data)
-class UserService {
-    private let apiEndpoint = "https://api.tsumuniversity.ru/v2"
-    private let apiKey = "TSM-2024-PROD-KEY-X9Y8Z7"
-    
-    func authenticateUser(email: String, password: String) {
-        // Company-specific authentication logic
-        let hash = TsumCustomHasher.hash(password, salt: "tsm2024")
-        // ...
-    }
-}
-
-// Anonymized (safe to share)
-class UserService {
-    private let apiEndpoint = "https://api.example.com/v1"
-    private let apiKey = ProcessInfo.processInfo.environment["API_KEY"] ?? ""
-    
-    func authenticateUser(email: String, password: String) {
-        // Standard authentication logic
-        let hash = SHA256.hash(data: password.data(using: .utf8)!)
-        // ...
-    }
-}
-```
-
-### Data Anonymization Script
-```swift
-// Utilities/Anonymizer.swift
-struct Anonymizer {
-    static func anonymizeEmail(_ email: String) -> String {
-        let components = email.split(separator: "@")
-        guard components.count == 2 else { return "user@example.com" }
-        
-        let username = String(components[0].prefix(2)) + "***"
-        return "\(username)@example.com"
-    }
-    
-    static func anonymizeURL(_ url: String) -> String {
-        return url
-            .replacingOccurrences(of: #"https?://[^/]+"#, with: "https://api.example.com", options: .regularExpression)
-            .replacingOccurrences(of: #"/v\d+"#, with: "/v1", options: .regularExpression)
-    }
-    
-    static func anonymizeAPIKey(_ key: String) -> String {
-        return "mock-api-key-\(key.count)-chars"
-    }
-}
-```
-
-## Prompt Engineering Best Practices
-
-### Effective Prompts
-```markdown
-# GOOD Prompt Example
-"Create a Swift function that validates email format using regex. 
-Requirements:
-- Should return Bool
-- Handle edge cases (empty string, special characters)
-- Include unit tests
-- Follow Swift naming conventions
-- Add documentation comments"
-
-# BAD Prompt Example
-"Make email validation" // Too vague
-```
-
-### Context Providing
-```markdown
-# Providing Context
-"I'm building an iOS app using SwiftUI and Clean Architecture.
-Current structure:
-- Domain layer with entities
-- Application layer with use cases
-- Presentation layer with MVVM
-- Using Combine for reactive programming
-
-Task: Create a login view model that:
-1. Validates input
-2. Calls authentication use case
-3. Handles loading states
-4. Provides error messages"
-```
-
-## AI Code Review Process
-
-### Structured Review Request
-```markdown
-# Code Review Request Template
-
-## Code to Review:
-```swift
-[paste your code here]
-```
-
-## Review Focus:
-- [ ] Architecture compliance
-- [ ] Performance optimization
-- [ ] Security vulnerabilities
-- [ ] Error handling
-- [ ] Test coverage
-
-## Context:
-- Framework: SwiftUI
-- Architecture: Clean Architecture
-- Testing: XCTest with Quick/Nimble
-
-## Specific Questions:
-1. Is the error handling comprehensive?
-2. Are there any memory leaks?
-3. Does this follow SOLID principles?
-```
-
-## Security Validation Process
-
-### AI-Generated Code Validation
-```swift
-// Security/AICodeValidator.swift
-struct AICodeValidator {
-    enum ValidationError: Error {
-        case hardcodedCredentials
-        case insecureNetworking
-        case sqlInjectionRisk
-        case insufficientValidation
-        case memoryLeak
-    }
-    
-    static func validate(_ code: String) throws {
-        // Check for hardcoded credentials
-        let credentialPatterns = [
-            #"api[_-]?key\s*=\s*"[^"]*""#,
-            #"password\s*=\s*"[^"]*""#,
-            #"secret\s*=\s*"[^"]*""#,
-            #"token\s*=\s*"[^"]*""#
-        ]
-        
-        for pattern in credentialPatterns {
-            if code.range(of: pattern, options: .regularExpression) != nil {
-                throw ValidationError.hardcodedCredentials
-            }
-        }
-        
-        // Check for HTTP usage
-        if code.contains("http://") && !code.contains("localhost") {
-            throw ValidationError.insecureNetworking
-        }
-        
-        // Check for SQL injection risks
-        if code.contains("SELECT * FROM") && code.contains("\\(") {
-            throw ValidationError.sqlInjectionRisk
-        }
-        
-        // Check for force unwrapping
-        if code.contains("!") && !code.contains("!= ") {
-            print("Warning: Force unwrapping detected")
-        }
-    }
-}
-```
-
-## AI Tool Configuration
-
-### Cursor Settings
-```json
-{
-  "ai.model": "gpt-4",
-  "ai.temperature": 0.3,
-  "ai.maxTokens": 2000,
-  "ai.includeContext": true,
-  "ai.anonymizeData": true,
-  "ai.securityCheck": true,
-  "ai.codeReview": {
-    "enabled": true,
-    "autoSuggest": false,
-    "includeTests": true
-  }
-}
-```
-
-### Pre-commit Hook for AI Code
-```bash
-#!/bin/bash
-# .git/hooks/pre-commit-ai
-
-# Check for potential AI-generated code markers
-if git diff --cached --name-only | xargs grep -l "AI-generated\|Generated by\|Copilot" > /dev/null; then
-    echo "⚠️  AI-generated code detected. Running security validation..."
-    
-    # Run security checks
-    swift run AICodeValidator
-    
-    if [ $? -ne 0 ]; then
-        echo "❌ Security validation failed. Please review AI-generated code."
-        exit 1
-    fi
-fi
-```
+### Safe Practices
+1. Используйте environment variables для secrets
+2. Анонимизируйте реальные данные
+3. Замените production URLs на примеры
+4. Удалите комментарии с sensitive информацией
+5. Проверяйте git history перед sharing
 
 ## Responsible AI Usage
 
-### Attribution
-```swift
-// When using AI-generated code, always attribute:
+### Trust but Verify
+**НЕ ДОВЕРЯЙТЕ СЛЕПО** - модель может ошибаться или "галлюцинировать":
+1. **Проверяйте каждый фрагмент кода** через тесты
+2. **Запускайте статические анализаторы** на AI-код
+3. **Просматривайте логику** на соответствие требованиям
+4. **Тестируйте edge cases** - AI часто их пропускает
 
-/// LoginViewModel implementation
-/// 
-/// This code was partially generated with AI assistance and has been:
-/// - Reviewed for security vulnerabilities
-/// - Tested with comprehensive unit tests
-/// - Modified to meet project standards
-/// - Validated against architecture guidelines
-///
-/// Last human review: 2024-03-15
-/// Reviewer: John Doe
+### AI Code Validation Process
+```bash
+# 1. Generate code with AI
+# 2. Run immediate checks
+./scripts/validate-ai-code.sh generated_file.swift
+
+# Validation script includes:
+- SwiftLint check
+- Compile check
+- Unit test run
+- Security scan
+- Performance analysis
 ```
 
-### Continuous Learning
+## Effective AI Interaction Protocol
+
+### 1. Context is King
+Always provide:
+- Current file/module context
+- Related tests
+- Architecture constraints
+- Business requirements
+- Error messages or test failures
+
+Example:
+```
+"I'm working on the LoginViewModel in the Presentation layer.
+It needs to call LoginUserUseCase from Application layer.
+Here's the failing test: [paste test]
+The error is: [paste error]"
+```
+
+### 2. Configure AI for Your Standards
+Настройте AI под стандарты проекта:
+```
+"Use Swift 5.9, SwiftUI, follow Clean Architecture.
+Apply our naming conventions: ViewModels end with 'ViewModel'.
+Use async/await for all asynchronous code.
+Follow our error handling pattern with AppError enum."
+```
+
+### 3. Iterative Development
+Work in small increments:
+- One test at a time
+- One function at a time
+- Immediate verification
+- Quick feedback loops
+
+❌ BAD: "Create the entire authentication module"
+✅ GOOD: "Create a test for email validation in LoginViewModel"
+
+### 4. Test-First with AI
+```
+You: "I need to add password reset. First, let's write the test."
+AI: [Generates test]
+You: [Run test - RED]
+You: "Test fails as expected. Now minimal implementation."
+AI: [Generates code]
+You: [Run test - GREEN]
+You: "Great! Can you suggest any refactoring?"
+AI: [Suggests improvements]
+```
+
+## AI Prompting Patterns
+
+### The Specification Pattern
+```
+Task: [What you want to accomplish]
+Context: [Current state, constraints]
+Requirements: [Specific needs]
+Examples: [If applicable]
+Output: [Expected format/structure]
+```
+
+Example:
+```
+Task: Add email validation to LoginViewModel
+Context: Using Clean Architecture, email validation is a Domain concern
+Requirements: 
+- RFC 5322 compliant
+- Show inline error message
+- Disable login button for invalid email
+Examples: "user@company.com" ✓, "invalid.email" ✗
+Output: Swift code with tests
+```
+
+### The Debug Pattern
+```
+Problem: [What's not working]
+Expected: [What should happen]
+Actual: [What's happening]
+Code: [Relevant code snippet]
+Error: [Full error message]
+What I've tried: [Previous attempts]
+```
+
+### The Refactoring Pattern
+```
+Current code: [Paste code]
+Issues: [What you want to improve]
+Constraints: [What must not change]
+Goals: [Performance, readability, etc.]
+```
+
+## AI Code Review Checklist
+
+When asking AI to review code:
+
 ```markdown
-# AI Learning Log
+Please review this code for:
+1. Architecture compliance (Clean Architecture)
+2. SOLID principles
+3. Swift best practices
+4. Test coverage gaps
+5. Performance issues
+6. Security concerns
+7. Potential bugs
 
-## Date: 2024-03-15
-### Prompt Used:
-"Create a thread-safe cache implementation with LRU eviction"
+Code:
+[paste code]
 
-### AI Response Summary:
-- Provided NSCache-based implementation
-- Suggested actor-based alternative
-- Included thread safety considerations
+Context:
+[describe where this fits in the system]
+```
 
-### Modifications Made:
-1. Changed from NSCache to custom implementation
-2. Added telemetry for cache hits/misses
-3. Implemented configurable eviction policies
+## Handling AI Suggestions
 
-### Lessons Learned:
-- AI tends to suggest NSCache for all caching needs
-- Custom implementations often needed for specific requirements
-- Always verify thread safety claims with tests
+### Trust but Verify
+1. **Understand** the suggestion before applying
+2. **Test** immediately after applying
+3. **Question** if something seems off
+4. **Adjust** based on your context
+
+### Common AI Pitfalls to Watch
+
+#### 1. Over-Engineering
+AI might suggest overly complex solutions.
+```swift
+// AI suggestion (over-engineered)
+protocol EmailValidatorProtocol {
+    func validate(_ email: String) -> Bool
+}
+
+class RegexEmailValidator: EmailValidatorProtocol {
+    private let regex: NSRegularExpression
+    
+    init() throws {
+        regex = try NSRegularExpression(pattern: "...")
+    }
+    
+    func validate(_ email: String) -> Bool {
+        // Complex implementation
+    }
+}
+
+// Better (for simple cases)
+extension String {
+    var isValidEmail: Bool {
+        contains("@") && contains(".")  // Often sufficient for MVP
+    }
+}
+```
+
+#### 2. Missing Context
+AI doesn't know your specific business rules without being told.
+```
+❌ "Create user validation"
+✅ "Create user validation. Business rules:
+    - Email must be company domain (@company.com)
+    - Password min 8 chars with 1 number
+    - Username must be unique in system"
+```
+
+#### 3. Inconsistent Patterns
+AI might mix patterns if not constrained.
+```
+"Follow our existing pattern:
+- ViewModels use @Published for state
+- All async functions use async/await (not callbacks)
+- Errors are AppError enum cases"
+```
+
+#### 4. Security Vulnerabilities
+AI может предложить небезопасный код:
+```swift
+// ❌ AI might suggest (insecure)
+let password = UserDefaults.standard.string(forKey: "password")
+
+// ✅ Correct approach
+let password = try Keychain.shared.getString("password")
+```
+
+## Tracking AI Contributions
+
+### Document AI Usage
+Документируйте, где и как AI использовался:
+```swift
+// MARK: - AI Generated Code
+// Generated by: Claude
+// Date: 2024-01-15
+// Prompt: "Create email validation with RFC 5322 compliance"
+// Reviewed by: @username
+// Changes: Added nil check, fixed regex pattern
+```
+
+### Pull Request Documentation
+В описании PR указывайте:
+```markdown
+## AI Assistance
+- [ ] Parts of this code were generated with AI
+- [ ] AI-generated code has been reviewed and tested
+- [ ] Security scan performed on AI suggestions
+
+### AI-Generated Components:
+- `EmailValidator.swift` - validation logic
+- `LoginViewModelTests.swift` - test cases
+```
+
+### Commit History
+Делайте частые коммиты при работе с AI:
+```bash
+# Good practice
+git add EmailValidator.swift
+git commit -m "feat(auth): add email validator - AI generated core logic"
+
+git add EmailValidatorTests.swift
+git commit -m "test(auth): add email validator tests - AI assisted"
+
+git add EmailValidator.swift
+git commit -m "refactor(auth): improve email regex - manual review fixes"
+```
+
+## Collaborative Workflows
+
+### Feature Development Flow
+1. **Discuss approach** with AI
+2. **Generate BDD scenarios** together
+3. **Write tests** incrementally
+4. **Implement** with AI assistance
+5. **Refactor** based on AI suggestions
+6. **Document** with AI help
+
+### Debugging Flow
+1. **Describe the bug** clearly
+2. **Share relevant code** and errors
+3. **Hypothesize** causes together
+4. **Test hypotheses** systematically
+5. **Implement fix** with verification
+
+### Learning Flow
+1. **Ask for explanations** of suggestions
+2. **Request alternatives** to understand options
+3. **Discuss trade-offs** of different approaches
+4. **Learn patterns** from AI examples
+
+## Prompt Templates
+
+### New Feature
+```
+I need to implement [FEATURE NAME].
+
+User Story:
+As a [USER TYPE]
+I want [ACTION]
+So that [BENEFIT]
+
+Acceptance Criteria:
+- [CRITERION 1]
+- [CRITERION 2]
+
+Technical Context:
+- Layer: [Domain/Application/Presentation/Infrastructure]
+- Related modules: [LIST]
+- Constraints: [ANY LIMITATIONS]
+
+Security Requirements:
+- [Any sensitive data handling]
+- [Authentication/Authorization needs]
+
+Let's start with the BDD scenarios.
+```
+
+### Bug Fix
+```
+Bug: [DESCRIPTION]
+
+Steps to Reproduce:
+1. [STEP 1]
+2. [STEP 2]
+
+Expected: [WHAT SHOULD HAPPEN]
+Actual: [WHAT HAPPENS]
+
+Relevant Code:
+[CODE SNIPPET - anonymized]
+
+Error/Log:
+[ERROR MESSAGE]
+
+Environment:
+- iOS Version: [VERSION]
+- Device: [DEVICE]
+
+Security Impact: [None/Low/Medium/High]
+```
+
+### Code Improvement
+```
+I'd like to improve this code:
+[CODE - with sensitive data removed]
+
+Goals:
+- [GOAL 1, e.g., "Better testability"]
+- [GOAL 2, e.g., "Clearer intent"]
+
+Constraints:
+- [CONSTRAINT 1, e.g., "Keep public API same"]
+- [CONSTRAINT 2, e.g., "Maintain performance"]
+
+Security Considerations:
+- [Any security aspects to maintain/improve]
+```
+
+## AI Pair Programming Best Practices
+
+### DO:
+✅ Provide clear, specific context
+✅ Work incrementally
+✅ Verify AI suggestions with tests
+✅ Ask for explanations when unclear
+✅ Share error messages completely
+✅ Describe business requirements
+✅ Request multiple alternatives
+✅ Use AI for code review
+✅ Anonymize sensitive data
+✅ Document AI contributions
+✅ Review security implications
+
+### DON'T:
+❌ Accept code without understanding
+❌ Skip tests because "AI wrote it"
+❌ Assume AI knows your business domain
+❌ Use vague requests
+❌ Ignore AI suggestions without consideration
+❌ Let AI drive without direction
+❌ Trust AI blindly for security-critical code
+❌ Share production credentials
+❌ Expose customer data
+❌ Commit AI code without review
+
+## Measuring AI Effectiveness
+
+Track these metrics to improve AI collaboration:
+
+```yaml
+ai_collaboration_metrics:
+  first_suggestion_success_rate: 75%  # How often first suggestion works
+  clarification_rounds: 1.5           # Average Q&A before solution
+  time_to_solution: 15min            # Average for feature completion
+  test_pass_rate: 90%                # Tests pass after AI generation
+  refactoring_acceptance: 60%         # How often you use AI refactoring
+  security_issues_caught: 95%         # Security problems found in review
+  code_review_time_saved: 40%         # Efficiency improvement
+```
+
+## Advanced AI Techniques
+
+### 1. Chain of Thought
+Ask AI to explain reasoning:
+```
+"Walk me through how you would implement password reset, 
+explaining each architectural decision and security consideration."
+```
+
+### 2. Role Playing
+Give AI a specific perspective:
+```
+"As a security expert, review this authentication code 
+for potential vulnerabilities."
+```
+
+### 3. Rubber Duck Debugging
+Explain your problem to AI:
+```
+"Let me explain what I'm trying to do and where I'm stuck...
+[detailed explanation]
+What am I missing?"
+```
+
+### 4. Comparative Analysis
+Get multiple solutions:
+```
+"Show me three different ways to implement this cache:
+1. Simple in-memory
+2. With persistence
+3. With expiration
+Compare the trade-offs and security implications."
+```
+
+### 5. Test Generation Focus
+```
+"Generate comprehensive tests for this function,
+including:
+- Happy path
+- Edge cases
+- Error conditions
+- Security vulnerabilities
+- Performance boundaries"
 ```
 
 ## Emergency Procedures
 
 ### If Sensitive Data Was Shared
-1. **Immediately** rotate any exposed credentials
-2. **Document** what was exposed and when
-3. **Notify** security team
-4. **Review** logs for any unauthorized access
-5. **Update** security training for team
+1. Immediately rotate any exposed credentials
+2. Review AI service's data retention policy
+3. Document the incident
+4. Update security protocols
+5. Inform security team if required
 
-### Incident Report Template
-```markdown
-# AI Security Incident Report
+### If AI Generates Insecure Code
+1. Do not commit the code
+2. Document the security issue
+3. Report to AI service provider
+4. Share with team as learning example
+5. Update prompts to prevent recurrence
 
-**Date:** 2024-03-15
-**Reporter:** John Doe
-**Severity:** High/Medium/Low
-
-## What Happened:
-[Description of what sensitive data was shared]
-
-## Root Cause:
-[Why the data was shared - lack of awareness, accident, etc.]
-
-## Impact Assessment:
-- [ ] Credentials exposed
-- [ ] Internal URLs exposed
-- [ ] User data exposed
-- [ ] Business logic exposed
-
-## Remediation Steps:
-1. [Step taken to fix]
-2. [Additional security measures]
-
-## Prevention:
-[How to prevent this in future]
-```
-
-## Best Practices Summary
-
-### DO ✅
-- Anonymize all data before sharing
-- Use environment variables for secrets
-- Review AI-generated code thoroughly
-- Test all AI suggestions
-- Document AI usage
-- Learn from AI interactions
-- Share generic patterns, not specifics
-
-### DON'T ❌
-- Share production credentials
-- Expose internal URLs or IPs
-- Share proprietary algorithms
-- Trust AI blindly
-- Skip security reviews
-- Share customer data
-- Ignore AI limitations
-
-## AI Integration Testing
-
-### Test AI-Generated Code
-```swift
-class AIGeneratedCodeTests: XCTestCase {
-    func testAIGeneratedFunction() {
-        // Always test AI-generated code
-        measure {
-            // Performance test
-        }
-        
-        // Edge cases
-        XCTAssertNoThrow(aiFunction(nil))
-        XCTAssertThrows(aiFunction(invalidInput))
-        
-        // Security
-        XCTAssertFalse(containsHardcodedSecrets(aiFunction))
-        
-        // Memory
-        trackForMemoryLeaks(aiFunction)
-    }
-}
-```
-
-Remember: AI is a powerful tool, but it requires responsible usage. Always prioritize security and privacy over convenience. 
+Remember: AI is a powerful tool, but you are the architect. Use AI to amplify your capabilities, not replace your judgment. Always prioritize security, quality, and understanding over speed.

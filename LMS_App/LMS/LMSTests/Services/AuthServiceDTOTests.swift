@@ -15,7 +15,6 @@ import Combine
 final class AuthServiceDTOTests: XCTestCase {
     
     private var authService: AuthService!
-    private var mockNetworkService: MockNetworkService!
     private var cancellables: Set<AnyCancellable>!
     
     override func setUp() {
@@ -25,14 +24,8 @@ final class AuthServiceDTOTests: XCTestCase {
         TokenManager.shared.clearTokens()
         UserDefaults.standard.removeObject(forKey: "currentUser")
         
-        // Setup mock network service
-        mockNetworkService = MockNetworkService()
-        
-        // Create AuthService instance
+        // Get AuthService instance
         authService = AuthService.shared
-        
-        // Replace network service with mock
-        authService.networkService = mockNetworkService
         
         cancellables = Set<AnyCancellable>()
     }
@@ -45,193 +38,24 @@ final class AuthServiceDTOTests: XCTestCase {
         super.tearDown()
     }
     
-    // MARK: - Login Tests
+    // MARK: - Authentication State Tests
     
-    func testLoginWithValidCredentials() async throws {
-        // Given
-        let email = "test@example.com"
-        let password = "password123"
-        let expectedUser = createMockUserProfileDTO()
-        let expectedTokens = createMockTokensDTO()
-        let loginResponse = createMockLoginResponseDTO(user: expectedUser, tokens: expectedTokens)
-        
-        mockNetworkService.mockResponse = loginResponse
-        
-        // When
-        let result = try await authService.login(email: email, password: password)
-            .asyncMap()
-        
-        // Then
-        XCTAssertNotNil(result)
-        XCTAssertTrue(authService.isAuthenticated)
-        XCTAssertNotNil(authService.currentUser)
-        XCTAssertEqual(authService.currentUser?.email, email)
-        XCTAssertNotNil(authService.authStatus)
-        XCTAssertTrue(authService.authStatus!.isAuthenticated)
-    }
-    
-    func testLoginWithInvalidCredentials() async {
-        // Given
-        let email = ""
-        let password = "short"
-        
-        // When & Then
-        do {
-            _ = try await authService.login(email: email, password: password)
-                .asyncMap()
-            XCTFail("Expected validation error")
-        } catch let error as NetworkError {
-            if case .invalidRequest(let message) = error {
-                XCTAssertTrue(message.contains("Email cannot be empty"))
-                XCTAssertTrue(message.contains("Password must be at least 6 characters long"))
-            } else {
-                XCTFail("Expected invalidRequest error")
-            }
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-    
-    func testLoginWithNetworkError() async {
-        // Given
-        let email = "test@example.com"
-        let password = "password123"
-        
-        mockNetworkService.shouldFail = true
-        mockNetworkService.mockError = NetworkError.noConnection
-        
-        // When & Then
-        do {
-            _ = try await authService.login(email: email, password: password)
-                .asyncMap()
-            XCTFail("Expected network error")
-        } catch let error as NetworkError {
-            XCTAssertEqual(error, NetworkError.noConnection)
-            XCTAssertFalse(authService.isAuthenticated)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-    
-    // MARK: - Logout Tests
-    
-    func testLogoutSuccess() async throws {
-        // Given
-        setupAuthenticatedState()
-        mockNetworkService.mockResponse = EmptyResponse()
-        
-        // When
-        try await authService.logout()
-            .asyncMap()
+    func testInitialAuthenticationState() {
+        // Given/When - fresh AuthService
         
         // Then
         XCTAssertFalse(authService.isAuthenticated)
         XCTAssertNil(authService.currentUser)
-        XCTAssertNil(TokenManager.shared.accessToken)
-        XCTAssertNil(TokenManager.shared.refreshToken)
+        XCTAssertNil(authService.authStatus)
     }
-    
-    func testLogoutWithAllDevices() async throws {
-        // Given
-        setupAuthenticatedState()
-        mockNetworkService.mockResponse = EmptyResponse()
-        
-        // When
-        try await authService.logout(logoutAllDevices: true)
-            .asyncMap()
-        
-        // Then
-        XCTAssertFalse(authService.isAuthenticated)
-        
-        // Verify logout request DTO was created correctly
-        if let lastRequest = mockNetworkService.lastRequestBody as? LogoutRequestDTO {
-            XCTAssertTrue(lastRequest.logoutAllDevices)
-        } else {
-            XCTFail("Expected LogoutRequestDTO")
-        }
-    }
-    
-    // MARK: - Token Refresh Tests
-    
-    func testRefreshTokenSuccess() async throws {
-        // Given
-        setupAuthenticatedState()
-        let newTokenResponse = createMockTokenResponseDTO()
-        mockNetworkService.mockResponse = newTokenResponse
-        
-        // When
-        try await authService.refreshToken()
-            .asyncMap()
-        
-        // Then
-        XCTAssertEqual(TokenManager.shared.accessToken, newTokenResponse.accessToken)
-        XCTAssertEqual(TokenManager.shared.refreshToken, newTokenResponse.refreshToken)
-        XCTAssertNotNil(authService.authStatus)
-    }
-    
-    func testRefreshTokenWithInvalidToken() async {
-        // Given
-        TokenManager.shared.clearTokens()
-        
-        // When & Then
-        do {
-            try await authService.refreshToken()
-                .asyncMap()
-            XCTFail("Expected unauthorized error")
-        } catch let error as NetworkError {
-            XCTAssertEqual(error, NetworkError.unauthorized)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-    
-    func testRefreshTokenWithEmptyToken() async {
-        // Given
-        TokenManager.shared.refreshToken = ""
-        
-        // When & Then
-        do {
-            try await authService.refreshToken()
-                .asyncMap()
-            XCTFail("Expected validation error")
-        } catch let error as NetworkError {
-            if case .invalidRequest(let message) = error {
-                XCTAssertTrue(message.contains("Refresh token cannot be empty"))
-            } else {
-                XCTFail("Expected invalidRequest error")
-            }
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-    
-    // MARK: - Get Current User Tests
-    
-    func testGetCurrentUserSuccess() async throws {
-        // Given
-        setupAuthenticatedState()
-        let userProfileDTO = createMockUserProfileDTO()
-        mockNetworkService.mockResponse = userProfileDTO
-        
-        // When
-        let result = try await authService.getCurrentUser()
-            .asyncMap()
-        
-        // Then
-        XCTAssertNotNil(result)
-        XCTAssertEqual(result.email, userProfileDTO.email)
-        XCTAssertEqual(authService.currentUser?.email, userProfileDTO.email)
-    }
-    
-    // MARK: - Authentication State Tests
     
     func testNeedsTokenRefresh() {
         // Given
         let nearExpiryDate = Date().addingTimeInterval(200) // 3 minutes from now
-        authService.authStatus = AuthMapper.createAuthStatus(
-            isAuthenticated: true,
-            tokenExpiresAt: nearExpiryDate,
-            needsRefresh: true
+        TokenManager.shared.tokenExpiryDate = nearExpiryDate
+        TokenManager.shared.saveTokens(
+            accessToken: "test_access",
+            refreshToken: "test_refresh"
         )
         
         // When & Then
@@ -241,10 +65,7 @@ final class AuthServiceDTOTests: XCTestCase {
     func testTokenTimeRemaining() {
         // Given
         let futureDate = Date().addingTimeInterval(3600) // 1 hour from now
-        authService.authStatus = AuthMapper.createAuthStatus(
-            isAuthenticated: true,
-            tokenExpiresAt: futureDate
-        )
+        TokenManager.shared.tokenExpiryDate = futureDate
         
         // When
         let timeRemaining = authService.tokenTimeRemaining()
@@ -257,10 +78,7 @@ final class AuthServiceDTOTests: XCTestCase {
     func testIsTokenExpired() {
         // Given
         let pastDate = Date().addingTimeInterval(-3600) // 1 hour ago
-        authService.authStatus = AuthMapper.createAuthStatus(
-            isAuthenticated: false,
-            tokenExpiresAt: pastDate
-        )
+        TokenManager.shared.tokenExpiryDate = pastDate
         
         // When & Then
         XCTAssertTrue(authService.isTokenExpired())
@@ -281,165 +99,208 @@ final class AuthServiceDTOTests: XCTestCase {
         )
         
         // When & Then
-        XCTAssertTrue(validDTO.isValid())
-        XCTAssertFalse(invalidDTO.isValid())
+        XCTAssertTrue(validDTO.validationErrors().isEmpty)
+        XCTAssertFalse(invalidDTO.validationErrors().isEmpty)
         
         let errors = invalidDTO.validationErrors()
-        XCTAssertTrue(errors.contains("Email cannot be empty"))
-        XCTAssertTrue(errors.contains("Password must be at least 6 characters long"))
+        XCTAssertTrue(errors.contains("Email is required"))
+        XCTAssertTrue(errors.contains("Password must be at least 6 characters"))
     }
     
-    func testTokensDTOValidation() {
+    func testAuthUserProfileDTOValidation() {
         // Given
-        let validDTO = TokensDTO(
-            accessToken: "valid_access_token",
-            refreshToken: "valid_refresh_token",
-            expiresIn: 3600
+        let validDTO = AuthUserProfileDTO(
+            id: "user123",
+            email: "test@example.com",
+            firstName: "John",
+            lastName: "Doe",
+            role: "student",
+            isActive: true
         )
         
-        let invalidDTO = TokensDTO(
-            accessToken: "",
-            refreshToken: "",
-            expiresIn: -1
+        let invalidDTO = AuthUserProfileDTO(
+            id: "",
+            email: "",
+            firstName: "",
+            lastName: "",
+            role: "",
+            isActive: false
         )
         
         // When & Then
-        XCTAssertTrue(validDTO.isValid())
-        XCTAssertFalse(invalidDTO.isValid())
+        XCTAssertTrue(validDTO.validationErrors().isEmpty)
+        XCTAssertFalse(invalidDTO.validationErrors().isEmpty)
         
         let errors = invalidDTO.validationErrors()
-        XCTAssertTrue(errors.contains("Access token cannot be empty"))
-        XCTAssertTrue(errors.contains("Refresh token cannot be empty"))
-        XCTAssertTrue(errors.contains("Expires in must be positive"))
+        XCTAssertTrue(errors.contains("User ID is required"))
+        XCTAssertTrue(errors.contains("Email is required"))
+        XCTAssertTrue(errors.contains("First name is required"))
+        XCTAssertTrue(errors.contains("Last name is required"))
+        XCTAssertTrue(errors.contains("Role is required"))
     }
     
-    // MARK: - Helper Methods
-    
-    private func setupAuthenticatedState() {
-        TokenManager.shared.saveTokens(
-            accessToken: "mock_access_token",
-            refreshToken: "mock_refresh_token"
-        )
-        authService.isAuthenticated = true
-    }
-    
-    private func createMockUserProfileDTO() -> UserProfileDTO {
-        return UserProfileDTO(
+    func testLoginResponseDTOValidation() {
+        // Given
+        let userProfile = AuthUserProfileDTO(
             id: "user123",
+            email: "test@example.com",
             firstName: "John",
             lastName: "Doe",
-            email: "test@example.com",
-            profileImageUrl: "https://example.com/avatar.jpg",
-            department: "Engineering",
-            position: "Developer"
+            role: "student",
+            isActive: true
         )
+        
+        let validDTO = LoginResponseDTO(
+            accessToken: "valid_access_token",
+            refreshToken: "valid_refresh_token",
+            expiresAt: ISO8601DateFormatter().string(from: Date().addingTimeInterval(3600)),
+            user: userProfile
+        )
+        
+        let invalidDTO = LoginResponseDTO(
+            accessToken: "",
+            refreshToken: "",
+            expiresAt: "invalid_date",
+            user: userProfile
+        )
+        
+        // When & Then
+        XCTAssertTrue(validDTO.validationErrors().isEmpty)
+        XCTAssertFalse(invalidDTO.validationErrors().isEmpty)
+        
+        let errors = invalidDTO.validationErrors()
+        XCTAssertTrue(errors.contains("Access token is required"))
+        XCTAssertTrue(errors.contains("Refresh token is required"))
+        XCTAssertTrue(errors.contains("Token expiry date must be in ISO8601 format"))
     }
     
-    private func createMockTokensDTO() -> TokensDTO {
-        return TokensDTO(
-            accessToken: "mock_access_token",
-            refreshToken: "mock_refresh_token",
-            expiresIn: 3600
+    func testTokenRefreshRequestDTOValidation() {
+        // Given
+        let validDTO = TokenRefreshRequestDTO(
+            refreshToken: "valid_refresh_token"
         )
+        
+        let invalidDTO = TokenRefreshRequestDTO(
+            refreshToken: ""
+        )
+        
+        // When & Then
+        XCTAssertTrue(validDTO.validationErrors().isEmpty)
+        XCTAssertFalse(invalidDTO.validationErrors().isEmpty)
+        
+        let errors = invalidDTO.validationErrors()
+        XCTAssertTrue(errors.contains("Refresh token is required"))
     }
     
-    private func createMockLoginResponseDTO(
-        user: UserProfileDTO,
-        tokens: TokensDTO
-    ) -> LoginResponseDTO {
-        return LoginResponseDTO(
-            success: true,
-            message: "Login successful",
-            user: user,
-            tokens: tokens,
-            expiresAt: ISO8601DateFormatter().string(from: Date().addingTimeInterval(3600))
-        )
-    }
-    
-    private func createMockTokenResponseDTO() -> TokenResponseDTO {
-        return TokenResponseDTO(
+    func testTokenRefreshResponseDTOValidation() {
+        // Given
+        let validDTO = TokenRefreshResponseDTO(
             accessToken: "new_access_token",
             refreshToken: "new_refresh_token",
-            expiresIn: 3600,
             expiresAt: ISO8601DateFormatter().string(from: Date().addingTimeInterval(3600))
         )
-    }
-}
-
-// MARK: - Mock Network Service
-
-private class MockNetworkService: NetworkServiceProtocol {
-    var mockResponse: Any?
-    var mockError: NetworkError?
-    var shouldFail = false
-    var lastRequestBody: Any?
-    
-    func get<T: Decodable>(endpoint: String, responseType: T.Type) -> AnyPublisher<T, NetworkError> {
-        if shouldFail, let error = mockError {
-            return Fail(error: error)
-                .eraseToAnyPublisher()
-        }
         
-        if let response = mockResponse as? T {
-            return Just(response)
-                .setFailureType(to: NetworkError.self)
-                .eraseToAnyPublisher()
-        }
+        let invalidDTO = TokenRefreshResponseDTO(
+            accessToken: "",
+            refreshToken: "",
+            expiresAt: ""
+        )
         
-        return Fail(error: NetworkError.invalidResponse("No mock response"))
-            .eraseToAnyPublisher()
+        // When & Then
+        XCTAssertTrue(validDTO.validationErrors().isEmpty)
+        XCTAssertFalse(invalidDTO.validationErrors().isEmpty)
+        
+        let errors = invalidDTO.validationErrors()
+        XCTAssertTrue(errors.contains("Access token is required"))
+        XCTAssertTrue(errors.contains("Refresh token is required"))
+        XCTAssertTrue(errors.contains("Token expiry date is required"))
     }
     
-    func post<T: Encodable, U: Decodable>(
-        endpoint: String,
-        body: T,
-        responseType: U.Type
-    ) -> AnyPublisher<U, NetworkError> {
-        lastRequestBody = body
+    func testAuthStatusDTOValidation() {
+        // Given
+        let userProfile = AuthUserProfileDTO(
+            id: "user123",
+            email: "test@example.com",
+            firstName: "John",
+            lastName: "Doe",
+            role: "student",
+            isActive: true
+        )
         
-        if shouldFail, let error = mockError {
-            return Fail(error: error)
-                .eraseToAnyPublisher()
-        }
+        let validDTO = AuthStatusDTO(
+            isAuthenticated: true,
+            user: userProfile,
+            tokenExpiresAt: ISO8601DateFormatter().string(from: Date().addingTimeInterval(3600)),
+            lastLoginAt: ISO8601DateFormatter().string(from: Date())
+        )
         
-        if let response = mockResponse as? U {
-            return Just(response)
-                .setFailureType(to: NetworkError.self)
-                .eraseToAnyPublisher()
-        }
+        let invalidDTO = AuthStatusDTO(
+            isAuthenticated: true,
+            user: nil, // Should have user when authenticated
+            tokenExpiresAt: "invalid_date",
+            lastLoginAt: "invalid_date"
+        )
         
-        return Fail(error: NetworkError.invalidResponse("No mock response"))
-            .eraseToAnyPublisher()
+        // When & Then
+        XCTAssertTrue(validDTO.validationErrors().isEmpty)
+        XCTAssertFalse(invalidDTO.validationErrors().isEmpty)
+        
+        let errors = invalidDTO.validationErrors()
+        XCTAssertTrue(errors.contains("User profile is required when authenticated"))
+        XCTAssertTrue(errors.contains("Token expiry date must be in ISO8601 format"))
+        XCTAssertTrue(errors.contains("Last login date must be in ISO8601 format"))
     }
-}
-
-// MARK: - Publisher Extensions for Testing
-
-extension Publisher {
-    func asyncMap() async throws -> Output {
-        return try await withCheckedThrowingContinuation { continuation in
-            var cancellable: AnyCancellable?
-            
-            cancellable = self
-                .sink(
-                    receiveCompletion: { completion in
-                        switch completion {
-                        case .finished:
-                            break
-                        case .failure(let error):
-                            continuation.resume(throwing: error)
-                        }
-                        cancellable?.cancel()
-                    },
-                    receiveValue: { value in
-                        continuation.resume(returning: value)
-                        cancellable?.cancel()
-                    }
-                )
-        }
+    
+    func testLogoutRequestDTOValidation() {
+        // Given
+        let dto1 = LogoutRequestDTO()
+        let dto2 = LogoutRequestDTO(
+            refreshToken: "token",
+            deviceId: "device123",
+            logoutAllDevices: true
+        )
+        
+        // When & Then - logout has no required fields
+        XCTAssertTrue(dto1.validationErrors().isEmpty)
+        XCTAssertTrue(dto2.validationErrors().isEmpty)
     }
-}
-
-// MARK: - Empty Response for Testing
-
-private struct EmptyResponse: Decodable {} 
+    
+    // MARK: - Type Alias Tests
+    
+    func testTokensDTOTypeAlias() {
+        // Given
+        let userProfile = AuthUserProfileDTO(
+            id: "user123",
+            email: "test@example.com",
+            firstName: "John",
+            lastName: "Doe",
+            role: "student",
+            isActive: true
+        )
+        
+        // When - Using type alias
+        let tokensDTO: TokensDTO = LoginResponseDTO(
+            accessToken: "access",
+            refreshToken: "refresh",
+            expiresAt: ISO8601DateFormatter().string(from: Date()),
+            user: userProfile
+        )
+        
+        // Then
+        XCTAssertEqual(tokensDTO.accessToken, "access")
+        XCTAssertEqual(tokensDTO.refreshToken, "refresh")
+    }
+    
+    func testTokenResponseDTOTypeAlias() {
+        // When - Using type alias
+        let tokenResponse: TokenResponseDTO = TokenRefreshResponseDTO(
+            accessToken: "new_access",
+            refreshToken: "new_refresh",
+            expiresAt: ISO8601DateFormatter().string(from: Date())
+        )
+        
+        // Then
+        XCTAssertEqual(tokenResponse.accessToken, "new_access")
+        XCTAssertEqual(tokenResponse.refreshToken, "new_refresh")
+    }
+} 

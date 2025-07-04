@@ -1,0 +1,10 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -scheme LMS -destination generic/platform=iOS test "-only-testing:LMSTests" CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= COMPILER_INDEX_STORE_ENABLE=NO
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = 
+    CODE_SIGNING_REQUIRED = NO
+    COMPILER_INDEX_STORE_ENABLE = NO
+
+2025-07-04 12:20:26.466 xcodebuild[28441:52148193] Writing error result bundle to /var/folders/8m/gz8y23yj5czcm055zw7bzx600000gn/T/ResultBundle_2025-04-07_12-20-0026.xcresult
+xcodebuild: error: Failed to build project LMS with scheme LMS.: Cannot test target “LMSTests” on “Any iOS Device”: Tests must be run on a concrete device

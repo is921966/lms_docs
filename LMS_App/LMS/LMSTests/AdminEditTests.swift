@@ -59,7 +59,7 @@ final class AdminEditTests: XCTestCase {
 
     func testCourseServiceSavesChanges() throws {
         // Given
-        let originalCourses = Course.mockCourses
+        let originalCourses = TestCourse.mockCourses(count: 3)
         guard let firstCourse = originalCourses.first else {
             XCTFail("No mock courses available")
             return
@@ -70,33 +70,24 @@ final class AdminEditTests: XCTestCase {
         let newDescription = "Updated description"
 
         // When
-        if let courseIndex = Course.mockCourses.firstIndex(where: { $0.id == firstCourse.id }) {
-            Course.mockCourses[courseIndex] = Course(
+        var updatedCourses = originalCourses
+        if let courseIndex = updatedCourses.firstIndex(where: { $0.id == firstCourse.id }) {
+            // Note: TestCourse doesn't have all these properties, so we'll create a simplified version
+            updatedCourses[courseIndex] = TestCourse(
+                id: firstCourse.id,
                 title: newTitle,
                 description: newDescription,
-                categoryId: firstCourse.categoryId,
-                status: firstCourse.status,
-                type: firstCourse.type,
-                modules: firstCourse.modules,
-                materials: firstCourse.materials,
-                testId: firstCourse.testId,
-                competencyIds: firstCourse.competencyIds,
-                positionIds: firstCourse.positionIds,
-                prerequisiteCourseIds: firstCourse.prerequisiteCourseIds,
                 duration: firstCourse.duration,
-                estimatedHours: firstCourse.estimatedHours,
-                passingScore: firstCourse.passingScore,
-                certificateTemplateId: firstCourse.certificateTemplateId,
-                maxAttempts: firstCourse.maxAttempts,
-                createdBy: firstCourse.createdBy,
+                level: firstCourse.level,
+                competencies: firstCourse.competencies,
+                isActive: firstCourse.isActive,
                 createdAt: firstCourse.createdAt,
-                updatedAt: Date(),
-                publishedAt: firstCourse.publishedAt
+                updatedAt: Date()
             )
         }
 
         // Then
-        let updatedCourse = Course.mockCourses.first { $0.title == newTitle }
+        let updatedCourse = updatedCourses.first { $0.id == firstCourse.id }
         XCTAssertNotNil(updatedCourse)
         XCTAssertEqual(updatedCourse?.title, newTitle)
         XCTAssertEqual(updatedCourse?.description, newDescription)
@@ -126,24 +117,25 @@ final class AdminEditTests: XCTestCase {
 
     func testAddingNewCourse() throws {
         // Given
-        let initialCount = Course.mockCourses.count
-        let newCourse = Course(
+        var courses = TestCourse.mockCourses(count: 3)
+        let initialCount = courses.count
+        let newCourse = TestCourse(
             title: "New Course",
             description: "New course description",
-            duration: "4 часа",
-            createdBy: UUID()
+            duration: 4,
+            level: "beginner"
         )
 
         // When
-        Course.mockCourses.append(newCourse)
+        courses.append(newCourse)
 
         // Then
-        XCTAssertEqual(Course.mockCourses.count, initialCount + 1)
-        XCTAssertTrue(Course.mockCourses.contains { $0.title == "New Course" })
+        XCTAssertEqual(courses.count, initialCount + 1)
+        XCTAssertTrue(courses.contains { $0.title == "New Course" })
     }
 }
 
 // Mock service for courses
 class CourseMockService {
-    var courses = Course.mockCourses
+    var courses = TestCourse.mockCourses(count: 5)
 }

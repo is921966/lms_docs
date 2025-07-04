@@ -76,45 +76,45 @@ final class LearningValuesTests: XCTestCase {
     // MARK: - CompetencyLevel Tests
     
     func testCompetencyLevelOrdering() {
-        XCTAssertTrue(CompetencyLevel.expert.isHigherThan(.advanced))
-        XCTAssertTrue(CompetencyLevel.advanced.isHigherThan(.intermediate))
-        XCTAssertTrue(CompetencyLevel.intermediate.isHigherThan(.beginner))
-        XCTAssertTrue(CompetencyLevel.beginner.isHigherThan(.novice))
+        XCTAssertTrue(CompetencyLevelValue.expert.isHigherThan(.advanced))
+        XCTAssertTrue(CompetencyLevelValue.advanced.isHigherThan(.intermediate))
+        XCTAssertTrue(CompetencyLevelValue.intermediate.isHigherThan(.beginner))
+        XCTAssertTrue(CompetencyLevelValue.beginner.isHigherThan(.novice))
         
-        XCTAssertFalse(CompetencyLevel.novice.isHigherThan(.beginner))
-        XCTAssertFalse(CompetencyLevel.intermediate.isHigherThan(.intermediate))
+        XCTAssertFalse(CompetencyLevelValue.novice.isHigherThan(.beginner))
+        XCTAssertFalse(CompetencyLevelValue.intermediate.isHigherThan(.intermediate))
     }
     
     func testCompetencyLevelNumericValues() {
-        XCTAssertEqual(CompetencyLevel.novice.numericValue, 1)
-        XCTAssertEqual(CompetencyLevel.beginner.numericValue, 2)
-        XCTAssertEqual(CompetencyLevel.intermediate.numericValue, 3)
-        XCTAssertEqual(CompetencyLevel.advanced.numericValue, 4)
-        XCTAssertEqual(CompetencyLevel.expert.numericValue, 5)
+        XCTAssertEqual(CompetencyLevelValue.novice.numericValue, 1)
+        XCTAssertEqual(CompetencyLevelValue.beginner.numericValue, 2)
+        XCTAssertEqual(CompetencyLevelValue.intermediate.numericValue, 3)
+        XCTAssertEqual(CompetencyLevelValue.advanced.numericValue, 4)
+        XCTAssertEqual(CompetencyLevelValue.expert.numericValue, 5)
     }
     
     func testCompetencyLevelProgression() {
-        XCTAssertEqual(CompetencyLevel.novice.nextLevel, .beginner)
-        XCTAssertEqual(CompetencyLevel.beginner.nextLevel, .intermediate)
-        XCTAssertEqual(CompetencyLevel.intermediate.nextLevel, .advanced)
-        XCTAssertEqual(CompetencyLevel.advanced.nextLevel, .expert)
-        XCTAssertNil(CompetencyLevel.expert.nextLevel)
+        XCTAssertEqual(CompetencyLevelValue.novice.nextLevel, .beginner)
+        XCTAssertEqual(CompetencyLevelValue.beginner.nextLevel, .intermediate)
+        XCTAssertEqual(CompetencyLevelValue.intermediate.nextLevel, .advanced)
+        XCTAssertEqual(CompetencyLevelValue.advanced.nextLevel, .expert)
+        XCTAssertNil(CompetencyLevelValue.expert.nextLevel)
     }
     
     func testCompetencyLevelDisplayNames() {
-        XCTAssertEqual(CompetencyLevel.novice.displayName, "Новичок")
-        XCTAssertEqual(CompetencyLevel.beginner.displayName, "Начинающий")
-        XCTAssertEqual(CompetencyLevel.intermediate.displayName, "Средний")
-        XCTAssertEqual(CompetencyLevel.advanced.displayName, "Продвинутый")
-        XCTAssertEqual(CompetencyLevel.expert.displayName, "Эксперт")
+        XCTAssertEqual(CompetencyLevelValue.novice.displayName, "Новичок")
+        XCTAssertEqual(CompetencyLevelValue.beginner.displayName, "Начинающий")
+        XCTAssertEqual(CompetencyLevelValue.intermediate.displayName, "Средний")
+        XCTAssertEqual(CompetencyLevelValue.advanced.displayName, "Продвинутый")
+        XCTAssertEqual(CompetencyLevelValue.expert.displayName, "Эксперт")
     }
     
     func testCompetencyLevelRequiredProgress() {
-        XCTAssertEqual(CompetencyLevel.novice.requiredProgress, 0.0)
-        XCTAssertEqual(CompetencyLevel.beginner.requiredProgress, 20.0)
-        XCTAssertEqual(CompetencyLevel.intermediate.requiredProgress, 40.0)
-        XCTAssertEqual(CompetencyLevel.advanced.requiredProgress, 70.0)
-        XCTAssertEqual(CompetencyLevel.expert.requiredProgress, 90.0)
+        XCTAssertEqual(CompetencyLevelValue.novice.requiredProgress, 0.0)
+        XCTAssertEqual(CompetencyLevelValue.beginner.requiredProgress, 20.0)
+        XCTAssertEqual(CompetencyLevelValue.intermediate.requiredProgress, 40.0)
+        XCTAssertEqual(CompetencyLevelValue.advanced.requiredProgress, 70.0)
+        XCTAssertEqual(CompetencyLevelValue.expert.requiredProgress, 90.0)
     }
     
     // MARK: - CourseDuration Tests

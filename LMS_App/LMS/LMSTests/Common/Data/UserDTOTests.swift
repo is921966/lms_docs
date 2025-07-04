@@ -220,65 +220,65 @@ final class UserDTOTests: XCTestCase {
         XCTAssertTrue(errors.contains("Last name cannot be empty"))
     }
     
-    // MARK: - UserMapper Tests
+    // MARK: - DomainUserMapper Tests
     
-    func testUserMapperDomainToDTO() {
-        let domain = createValidUser()
+    func testDomainUserMapperDomainToDTO() {
+        let domain = createValidDomainUser()
         
-        let dto = UserMapper.toDTO(from: domain)
+        let dto = DomainUserMapper.toDTO(from: domain)
         
         XCTAssertNotNil(dto)
-        XCTAssertEqual(dto?.id, domain.id?.value)
-        XCTAssertEqual(dto?.email, domain.email?.value)
+        XCTAssertEqual(dto?.id, domain.id)
+        XCTAssertEqual(dto?.email, domain.email)
         XCTAssertEqual(dto?.firstName, domain.firstName)
         XCTAssertEqual(dto?.lastName, domain.lastName)
         XCTAssertEqual(dto?.role, domain.role.rawValue)
         XCTAssertEqual(dto?.isActive, domain.isActive)
     }
     
-    func testUserMapperDTOToDomain() {
+    func testDomainUserMapperDTOToDomain() {
         let dto = createValidUserDTO()
         
-        let domain = UserMapper.toDomain(from: dto)
+        let domain = DomainUserMapper.toDomain(from: dto)
         
         XCTAssertNotNil(domain)
-        XCTAssertEqual(domain?.id?.value, dto.id)
-        XCTAssertEqual(domain?.email?.value, dto.email)
+        XCTAssertEqual(domain?.id, dto.id)
+        XCTAssertEqual(domain?.email, dto.email)
         XCTAssertEqual(domain?.firstName, dto.firstName)
         XCTAssertEqual(domain?.lastName, dto.lastName)
         XCTAssertEqual(domain?.role.rawValue, dto.role)
         XCTAssertEqual(domain?.isActive, dto.isActive)
     }
     
-    func testUserMapperRoundTrip() {
-        let originalDomain = createValidUser()
+    func testDomainUserMapperRoundTrip() {
+        let originalDomain = createValidDomainUser()
         
         // Domain -> DTO -> Domain
-        guard let dto = UserMapper.toDTO(from: originalDomain),
-              let convertedDomain = UserMapper.toDomain(from: dto) else {
+        guard let dto = DomainUserMapper.toDTO(from: originalDomain),
+              let convertedDomain = DomainUserMapper.toDomain(from: dto) else {
             XCTFail("Mapping failed")
             return
         }
         
         // Check key properties are preserved
-        XCTAssertEqual(originalDomain.id?.value, convertedDomain.id?.value)
-        XCTAssertEqual(originalDomain.email?.value, convertedDomain.email?.value)
+        XCTAssertEqual(originalDomain.id, convertedDomain.id)
+        XCTAssertEqual(originalDomain.email, convertedDomain.email)
         XCTAssertEqual(originalDomain.firstName, convertedDomain.firstName)
         XCTAssertEqual(originalDomain.lastName, convertedDomain.lastName)
         XCTAssertEqual(originalDomain.role, convertedDomain.role)
     }
     
-    func testUserMapperCollectionMapping() {
-        let domains = [createValidUser(), createValidUser()]
+    func testDomainUserMapperCollectionMapping() {
+        let domains = [createValidDomainUser(), createValidDomainUser()]
         
-        let dtos = UserMapper.toDTOs(from: domains)
-        let convertedDomains = UserMapper.toDomains(from: dtos)
+        let dtos = DomainUserMapper.toDTOs(from: domains)
+        let convertedDomains = DomainUserMapper.toDomains(from: dtos)
         
         XCTAssertEqual(dtos.count, domains.count)
         XCTAssertEqual(convertedDomains.count, domains.count)
     }
     
-    func testUserMapperSafeMapping() {
+    func testDomainUserMapperSafeMapping() {
         let validDTO = createValidUserDTO()
         let invalidDTO = UserDTO(
             id: "",
@@ -291,24 +291,23 @@ final class UserDTOTests: XCTestCase {
         )
         
         let dtos = [validDTO, invalidDTO]
-        let (users, errors) = UserMapper.safeToDomains(from: dtos)
+        let (users, errors) = DomainUserMapper.safeToDomains(from: dtos)
         
-        XCTAssertEqual(users.count, 0) // Valid DTO will also fail due to invalid value objects
-        XCTAssertEqual(errors.count, 2)
+        XCTAssertEqual(users.count, 1) // Only valid DTO will convert
+        XCTAssertEqual(errors.count, 1) // Invalid DTO will fail
     }
     
     // MARK: - Profile Mapper Tests
     
     func testUserProfileMapper() {
-        let domain = createValidUser()
+        let domain = createValidDomainUser()
         
         let profileDTO = UserProfileMapper.toProfileDTO(from: domain)
         
-        XCTAssertNotNil(profileDTO)
-        XCTAssertEqual(profileDTO?.id, domain.id?.value)
-        XCTAssertEqual(profileDTO?.firstName, domain.firstName)
-        XCTAssertEqual(profileDTO?.lastName, domain.lastName)
-        XCTAssertEqual(profileDTO?.email, domain.email?.value)
+        XCTAssertEqual(profileDTO.id, domain.id)
+        XCTAssertEqual(profileDTO.firstName, domain.firstName)
+        XCTAssertEqual(profileDTO.lastName, domain.lastName)
+        XCTAssertEqual(profileDTO.email, domain.email)
     }
     
     // MARK: - Create User Mapper Tests
@@ -322,12 +321,12 @@ final class UserDTOTests: XCTestCase {
             phoneNumber: "+79991234567"
         )
         
-        let userId = UserId.generate()
+        let userId = UUID().uuidString
         let domain = CreateUserMapper.toDomain(from: createDTO, withId: userId)
         
         XCTAssertNotNil(domain)
-        XCTAssertEqual(domain?.id?.value, userId.value)
-        XCTAssertEqual(domain?.email?.value, createDTO.email)
+        XCTAssertEqual(domain?.id, userId)
+        XCTAssertEqual(domain?.email, createDTO.email)
         XCTAssertEqual(domain?.firstName, createDTO.firstName)
         XCTAssertEqual(domain?.lastName, createDTO.lastName)
         XCTAssertEqual(domain?.role.rawValue, createDTO.role)
@@ -337,7 +336,7 @@ final class UserDTOTests: XCTestCase {
     // MARK: - Update User Mapper Tests
     
     func testUpdateUserMapper() {
-        var domain = createValidUser()
+        var domain = createValidDomainUser()
         let updateDTO = UpdateUserDTO(
             firstName: "Updated",
             lastName: "Name",
@@ -349,11 +348,11 @@ final class UserDTOTests: XCTestCase {
         XCTAssertTrue(hasChanges)
         XCTAssertEqual(domain.firstName, "Updated")
         XCTAssertEqual(domain.lastName, "Name")
-        XCTAssertEqual(domain.phoneNumber?.value, "+79999999999")
+        XCTAssertEqual(domain.phoneNumber, "+79999999999")
     }
     
     func testUpdateUserMapperNoChanges() {
-        var domain = createValidUser()
+        var domain = createValidDomainUser()
         let updateDTO = UpdateUserDTO()
         
         let hasChanges = UpdateUserMapper.applyUpdate(to: &domain, from: updateDTO)
@@ -383,16 +382,16 @@ final class UserDTOTests: XCTestCase {
         )
     }
     
-    private func createValidUser() -> User {
-        return User(
-            id: UserId("USER_123456789"),
-            email: Email("test@example.com"),
+    private func createValidDomainUser() -> DomainUser {
+        return DomainUser(
+            id: "USER_123456789",
+            email: "test@example.com",
             firstName: "John",
             lastName: "Doe",
             role: .student,
             isActive: true,
-            profileImageUrl: URLValue("https://example.com/avatar.jpg"),
-            phoneNumber: PhoneNumber("+79991234567"),
+            profileImageUrl: "https://example.com/avatar.jpg",
+            phoneNumber: "+79991234567",
             department: "Engineering",
             position: "Developer"
         )

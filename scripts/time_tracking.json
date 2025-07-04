@@ -411,9 +411,9 @@
       "day_in_sprint": 5,
       "start_time": "2025-07-03T09:22:29.688685",
       "date": "2025-07-03",
-      "end_time": "2025-07-03T09:28:01.894214",
-      "duration_hours": 0.09,
-      "duration_formatted": "5м"
+      "end_time": "2025-07-03T18:07:59.335987",
+      "duration_hours": 8.76,
+      "duration_formatted": "8ч 45м"
     },
     "day_136": {
       "calendar_day": 136,
@@ -436,6 +436,33 @@
       "end_time": "2025-07-03T11:23:51.156746",
       "duration_hours": 0.07,
       "duration_formatted": "4м"
+    },
+    "day_140": {
+      "calendar_day": 140,
+      "project_day": 225,
+      "sprint_number": 45,
+      "day_in_sprint": 5,
+      "start_time": "2025-07-04T12:05:32.851136",
+      "date": "2025-07-04"
+    },
+    "day_141": {
+      "calendar_day": 141,
+      "project_day": 226,
+      "sprint_number": 46,
+      "day_in_sprint": 1,
+      "start_time": "2025-07-04T12:20:01.917792",
+      "date": "2025-07-04",
+      "end_time": "2025-07-04T12:27:34.672806",
+      "duration_hours": 0.13,
+      "duration_formatted": "7м"
+    },
+    "day_142": {
+      "calendar_day": 142,
+      "project_day": 227,
+      "sprint_number": 46,
+      "day_in_sprint": 2,
+      "start_time": "2025-07-04T12:30:21.904859",
+      "date": "2025-07-04"
     }
   },
   "sprints": {
@@ -503,16 +530,21 @@
       "sprint_number": 44,
       "start_time": "2025-07-03T08:19:11.405346",
       "start_date": "2025-07-03",
-      "end_time": "2025-07-03T09:28:01.894214",
+      "end_time": "2025-07-03T18:07:59.335987",
       "end_date": "2025-07-03",
-      "duration_hours": 1.15,
-      "duration_formatted": "1ч 8м",
-      "duration_days": 0.05
+      "duration_hours": 9.81,
+      "duration_formatted": "9ч 48м",
+      "duration_days": 0.41
     },
     "sprint_45": {
       "sprint_number": 45,
       "start_time": "2025-07-03T09:29:16.839906",
       "start_date": "2025-07-03"
+    },
+    "sprint_46": {
+      "sprint_number": 46,
+      "start_time": "2025-07-04T12:20:01.917792",
+      "start_date": "2025-07-04"
     }
   },
   "project_start": "2025-06-21T09:00:00",
