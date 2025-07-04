@@ -473,7 +473,10 @@
       "sprint_number": 46,
       "day_in_sprint": 3,
       "start_time": "2025-07-04T12:40:24.632966",
-      "date": "2025-07-04"
+      "date": "2025-07-04",
+      "end_time": "2025-07-04T12:49:30.327758",
+      "duration_hours": 0.15,
+      "duration_formatted": "9м"
     }
   },
   "sprints": {

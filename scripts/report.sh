@@ -543,4 +543,218 @@ case "${1:-help}" in
         echo "  $0 sprint-completion 16   # Отчет о завершении спринта 16"
         echo "  $0 project-stats          # Общая статистика проекта"
         ;;
-esac 
+esac
+
+# Database integration functions
+function db_sync_day() {
+    local day=$1
+    local status=${2:-"started"}
+    
+    # Синхронизируем с базой данных если доступна
+    if command -v psql &> /dev/null; then
+        python3 scripts/project_time_db.py $status $day 2>/dev/null || true
+    fi
+}
+
+function db_update_metrics() {
+    local day=$1
+    local metrics_json=$2
+    
+    # Обновляем метрики в БД если доступна
+    if command -v psql &> /dev/null && [ -f "scripts/project_time_db.py" ]; then
+        python3 scripts/project_time_db.py update-metrics $day "$metrics_json" 2>/dev/null || true
+    fi
+}
+
+# Start a new work day
+function start_day() {
+    local day=${1:-$(get_current_day)}
+    local current_time=$(date '+%Y-%m-%d %H:%M:%S')
+    
+    echo "⏰ Starting work day $day at $current_time"
+    
+    # Update JSON tracking
+    update_tracking_file() {
+        local json_file="$TRACKING_FILE"
+        local temp_file="${json_file}.tmp"
+        
+        # Create or update the tracking entry
+        if [ -f "$json_file" ]; then
+            jq --arg day "day_$day" \
+               --arg time "$current_time" \
+               --arg sprint "$CURRENT_SPRINT" \
+               --arg sprint_day "$CURRENT_DAY" \
+               '.days[$day] = {
+                    "start_time": $time,
+                    "status": "in_progress",
+                    "sprint": ($sprint | tonumber),
+                    "sprint_day": ($sprint_day | tonumber)
+                }' "$json_file" > "$temp_file" && mv "$temp_file" "$json_file"
+        else
+            echo "{\"days\": {\"day_$day\": {\"start_time\": \"$current_time\", \"status\": \"in_progress\", \"sprint\": $CURRENT_SPRINT, \"sprint_day\": $CURRENT_DAY}}}" > "$json_file"
+        fi
+    }
+    
+    update_tracking_file
+    
+    # Синхронизируем с БД
+    db_sync_day $day "start"
+    
+    echo "✅ Day $day started successfully"
+    echo "📊 Sprint: $CURRENT_SPRINT, Day: $CURRENT_DAY"
+}
+
+# End work day
+function end_day() {
+    local day=${1:-$(get_current_day)}
+    local current_time=$(date '+%Y-%m-%d %H:%M:%S')
+    
+    echo "🏁 Ending work day $day at $current_time"
+    
+    # Get start time from tracking file
+    local start_time=$(jq -r ".days.day_$day.start_time // empty" "$TRACKING_FILE" 2>/dev/null)
+    
+    if [ -z "$start_time" ]; then
+        echo "⚠️  Warning: No start time found for day $day"
+        start_time=$current_time
+    fi
+    
+    # Calculate duration
+    local duration_seconds=$(($(date -d "$current_time" +%s) - $(date -d "$start_time" +%s)))
+    local duration_hours=$(echo "scale=2; $duration_seconds / 3600" | bc)
+    
+    # Update tracking file
+    update_tracking_file() {
+        local json_file="$TRACKING_FILE"
+        local temp_file="${json_file}.tmp"
+        
+        jq --arg day "day_$day" \
+           --arg end_time "$current_time" \
+           --arg duration "$duration_hours" \
+           '.days[$day].end_time = $end_time | 
+            .days[$day].duration_hours = ($duration | tonumber) |
+            .days[$day].status = "completed"' "$json_file" > "$temp_file" && mv "$temp_file" "$json_file"
+    }
+    
+    update_tracking_file
+    
+    # Синхронизируем с БД
+    db_sync_day $day "end"
+    
+    echo "✅ Day $day completed"
+    echo "⏱️  Duration: $duration_hours hours"
+    
+    # Create completion report
+    create_daily_completion_report $day
+}
+
+# Create daily completion report with DB integration
+function create_daily_completion_report() {
+    local day=$1
+    local date=$(get_date_for_day $day)
+    local formatted_date=$(date -d "$date" +%Y%m%d 2>/dev/null || date +%Y%m%d)
+    local filename="DAY_${day}_COMPLETION_REPORT_${formatted_date}.md"
+    local filepath="$DAILY_DIR/$filename"
+    
+    echo "📝 Creating daily completion report: $filename"
+    
+    # Get metrics from daily summary
+    local summary_file="$DAILY_DIR/DAY_${day}_SUMMARY_${formatted_date}.md"
+    local metrics=""
+    
+    if [ -f "$summary_file" ]; then
+        # Extract metrics from summary using more flexible patterns
+        local files_changed=$(grep -E "файл(а|ов)? изменен" "$summary_file" | grep -oE "[0-9]+" | head -1 || echo "0")
+        local tests_fixed=$(grep -E "(Исправлено|исправлен(о|ы)?).*(тест|test)" "$summary_file" | grep -oE "[0-9]+" | head -1 || echo "0")
+        local coverage=$(grep -E "покрыти[ея].*[0-9]+%" "$summary_file" | grep -oE "[0-9]+" | tail -1 || echo "0")
+        local time_spent=$(grep -E "(Время работы|затрачено).*[0-9]+ (минут|час)" "$summary_file" | grep -oE "[0-9]+" | head -1 || echo "0")
+        
+        # More flexible extraction for different metric formats
+        local code_lines=$(grep -E "(строк|классов)/час" "$summary_file" | grep -oE "[0-9]+" | head -1 || echo "0")
+        local test_rate=$(grep -E "тестов/час" "$summary_file" | grep -oE "[0-9]+" | head -1 || echo "0")
+        
+        metrics=$(cat <<EOF
+        
+### 📊 Метрики дня:
+- Файлов изменено: $files_changed
+- Тестов исправлено: $tests_fixed  
+- Покрытие тестами: $coverage%
+- Время работы: $time_spent минут
+
+### 🚀 Эффективность:
+- Скорость кода: $code_lines единиц/час
+- Скорость тестов: $test_rate тестов/час
+EOF
+)
+    fi
+    
+    # Get tracking info
+    local tracking_info=$(jq -r ".days.day_$day // empty" "$TRACKING_FILE" 2>/dev/null)
+    local start_time=$(echo "$tracking_info" | jq -r '.start_time // "N/A"')
+    local end_time=$(echo "$tracking_info" | jq -r '.end_time // "N/A"') 
+    local duration=$(echo "$tracking_info" | jq -r '.duration_hours // "0"')
+    
+    # Обновляем метрики в БД
+    if [ -n "$files_changed" ] && [ -n "$tests_fixed" ]; then
+        local metrics_json=$(cat <<EOF
+{
+    "files_changed": $files_changed,
+    "tests_fixed": $tests_fixed,
+    "test_coverage_percent": $coverage,
+    "actual_work_time": $time_spent
+}
+EOF
+)
+        db_update_metrics $day "$metrics_json"
+    fi
+    
+    # Create report
+    cat > "$filepath" << EOF
+# Отчет о завершении дня $day
+
+## 📅 Информация
+- **Дата**: $date
+- **День проекта**: $day
+- **Календарный день**: $(calculate_calendar_day)
+
+## ⏰ Время работы
+- **Начало**: $start_time
+- **Завершение**: $end_time
+- **Продолжительность**: $duration часов
+
+$metrics
+
+## 📝 Основные достижения
+$(get_achievements_from_summary $day)
+
+## 🔄 Статус
+✅ День завершен
+
+---
+*Отчет сгенерирован автоматически системой отслеживания времени*
+EOF
+    
+    echo "✅ Completion report created: $filepath"
+    
+    # Обновляем путь к отчету в БД
+    if [ -f "scripts/project_time_db.py" ]; then
+        python3 scripts/project_time_db.py update-report $day --completion "$filepath" 2>/dev/null || true
+    fi
+}
+
+# Initialize database on first run
+function init_db_if_needed() {
+    if [ -f "scripts/project_time_db.py" ] && [ -f "database/migrations/020_create_project_time_registry.sql" ]; then
+        # Check if psycopg2 is installed
+        if ! python3 -c "import psycopg2" 2>/dev/null; then
+            echo "⚠️  Installing psycopg2 for database support..."
+            pip3 install psycopg2-binary --user 2>/dev/null || true
+        fi
+        
+        # Try to initialize database (will fail silently if already exists)
+        python3 scripts/project_time_db.py init 2>/dev/null || true
+    fi
+}
+
+# Call init on script load
+init_db_if_needed 
