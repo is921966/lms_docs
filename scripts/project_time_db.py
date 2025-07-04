@@ -105,16 +105,15 @@ class ProjectTimeDB:
                 if record:
                     return dict(record)
                 
-                # Create new record with correct calendar date
-                calendar_date = self.get_calendar_date_for_project_day(project_day)
+                # Create new record without calendar_date (will be set when day starts)
                 sprint_number, sprint_day = self.calculate_sprint_info(project_day)
                 
                 cursor.execute("""
                     INSERT INTO project_time_registry 
-                    (project_day, calendar_date, sprint_number, sprint_day, status)
-                    VALUES (%s, %s, %s, %s, 'planned')
+                    (project_day, sprint_number, sprint_day, status)
+                    VALUES (%s, %s, %s, 'planned')
                     RETURNING *
-                """, (project_day, calendar_date, sprint_number, sprint_day))
+                """, (project_day, sprint_number, sprint_day))
                 
                 conn.commit()
                 return dict(cursor.fetchone())
@@ -131,13 +130,17 @@ class ProjectTimeDB:
         
         with self.get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                current_timestamp = datetime.now()
+                current_date = current_timestamp.date()
+                
                 cursor.execute("""
                     UPDATE project_time_registry 
                     SET status = 'started', 
-                        start_time = CURRENT_TIMESTAMP
+                        start_time = CURRENT_TIMESTAMP,
+                        calendar_date = %s
                     WHERE project_day = %s
                     RETURNING *
-                """, (project_day,))
+                """, (current_date, project_day))
                 
                 conn.commit()
                 return dict(cursor.fetchone())
