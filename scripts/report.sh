@@ -30,26 +30,47 @@ get_time_info() {
 
 # Функция для начала дня
 start_day() {
-    local day_number="$1"
+    local day=${1:-$(get_current_day)}
+    local current_time=$(date '+%Y-%m-%d %H:%M:%S')
     
-    echo "🚀 Начинаем день разработки..."
+    echo "⏰ Starting work day $day at $current_time"
     
-    # Запускаем отслеживание времени
-    local time_info
-    if [[ -n "$day_number" ]]; then
-        time_info=$(get_time_info "start-day" "$day_number")
-    else
-        time_info=$(get_time_info "start-day")
+    # Update JSON tracking
+    update_tracking_file() {
+        local json_file="$TRACKING_FILE"
+        local temp_file="${json_file}.tmp"
+        
+        # Create or update the tracking entry
+        if [ -f "$json_file" ]; then
+            jq --arg day "day_$day" \
+               --arg time "$current_time" \
+               --arg sprint "$CURRENT_SPRINT" \
+               --arg sprint_day "$CURRENT_DAY" \
+               '.days[$day] = {
+                    "start_time": $time,
+                    "status": "in_progress",
+                    "sprint": ($sprint | tonumber),
+                    "sprint_day": ($sprint_day | tonumber)
+                }' "$json_file" > "$temp_file" && mv "$temp_file" "$json_file"
+        else
+            echo "{\"days\": {\"day_$day\": {\"start_time\": \"$current_time\", \"status\": \"in_progress\", \"sprint\": $CURRENT_SPRINT, \"sprint_day\": $CURRENT_DAY}}}" > "$json_file"
+        fi
+    }
+    
+    update_tracking_file
+    
+    # Синхронизируем с БД и получаем имя файла отчета
+    local report_filename=""
+    if [ -f "scripts/project_time_db.py" ]; then
+        # Начинаем день и получаем имя файла из БД
+        report_filename=$(python3 scripts/project_time_db.py start $day 2>/dev/null | grep "Report filename:" | cut -d' ' -f3)
     fi
     
-    echo "$time_info"
+    echo "✅ Day $day started successfully"
+    echo "📊 Sprint: $CURRENT_SPRINT, Day: $CURRENT_DAY"
     
-    # Получаем информацию о дне для создания отчета
-    local day_info=$(get_time_info "day-info")
-    if [[ -n "$day_info" ]]; then
-        echo ""
-        echo "📊 Информация о дне:"
-        echo "$day_info"
+    if [ -n "$report_filename" ]; then
+        echo "📝 Daily report filename: $report_filename"
     fi
 }
 
@@ -453,6 +474,25 @@ EOF
     echo "✅ Отчет о завершении спринта создан: $report_path"
 }
 
+# Get report filename from database
+get_report_filename() {
+    local day=$1
+    local filename=""
+    
+    if [ -f "scripts/project_time_db.py" ]; then
+        filename=$(python3 scripts/project_time_db.py get-filename $day 2>/dev/null || echo "")
+    fi
+    
+    # Fallback to default naming if DB not available
+    if [ -z "$filename" ]; then
+        local date=$(python3 scripts/project-time.py | grep "Календарная дата:" | awk '{print $3}' || date +%Y-%m-%d)
+        local formatted_date=$(echo $date | tr -d '-')
+        filename="DAY_${day}_SUMMARY_${formatted_date}.md"
+    fi
+    
+    echo "$filename"
+}
+
 # Основная логика скрипта
 case "${1:-help}" in
     "start-day")
@@ -477,8 +517,23 @@ case "${1:-help}" in
         get_time_info "project-stats"
         ;;
     "daily-create")
-        # Существующая функциональность
-        python3 "$SCRIPT_DIR/generate_report_name.py" daily
+        # Get current day
+        current_day=$(python3 scripts/project-time.py | grep "Условный день:" | grep -oE "[0-9]+" || echo "146")
+        
+        # Get filename from database
+        filename=$(get_report_filename $current_day)
+        echo "📝 Creating daily report: $filename"
+        echo "📁 Location: $REPORTS_DIR/daily/$filename"
+        
+        # Create report file if needed
+        filepath="$REPORTS_DIR/daily/$filename"
+        if [ ! -f "$filepath" ]; then
+            # Create basic template
+            touch "$filepath"
+            echo "✅ Created empty report file: $filename"
+        else
+            echo "ℹ️  Report file already exists: $filename"
+        fi
         ;;
     "sprint")
         # Существующая функциональность  
@@ -597,11 +652,19 @@ function start_day() {
     
     update_tracking_file
     
-    # Синхронизируем с БД
-    db_sync_day $day "start"
+    # Синхронизируем с БД и получаем имя файла отчета
+    local report_filename=""
+    if [ -f "scripts/project_time_db.py" ]; then
+        # Начинаем день и получаем имя файла из БД
+        report_filename=$(python3 scripts/project_time_db.py start $day 2>/dev/null | grep "Report filename:" | cut -d' ' -f3)
+    fi
     
     echo "✅ Day $day started successfully"
     echo "📊 Sprint: $CURRENT_SPRINT, Day: $CURRENT_DAY"
+    
+    if [ -n "$report_filename" ]; then
+        echo "📝 Daily report filename: $report_filename"
+    fi
 }
 
 # End work day
@@ -758,3 +821,5 @@ function init_db_if_needed() {
 
 # Call init on script load
 init_db_if_needed 
+
+# Create daily completion report with DB integration 

@@ -1,5 +1,11 @@
 # LMS - Learning Management System
 
+[![iOS CI](https://github.com/[USERNAME]/lms_docs/actions/workflows/ios-ci.yml/badge.svg)](https://github.com/[USERNAME]/lms_docs/actions/workflows/ios-ci.yml)
+[![codecov](https://codecov.io/gh/[USERNAME]/lms_docs/branch/main/graph/badge.svg)](https://codecov.io/gh/[USERNAME]/lms_docs)
+[![Swift Version](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
+[![Platform](https://img.shields.io/badge/platform-iOS%2018.5+-blue.svg)](https://developer.apple.com/ios/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 **ЦУМ: Корпоративный университет**
 
 [![Build Status](https://img.shields.io/badge/build-pending-yellow)](https://github.com/yourusername/lms)

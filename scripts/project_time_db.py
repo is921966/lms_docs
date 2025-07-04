@@ -126,24 +126,48 @@ class ProjectTimeDB:
     
     def start_day(self, project_day: int) -> Dict:
         """Start a new work day"""
-        record = self.get_or_create_day(project_day)
-        
         with self.get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                current_timestamp = datetime.now()
-                current_date = current_timestamp.date()
-                
+                # Check if day already exists
                 cursor.execute("""
-                    UPDATE project_time_registry 
-                    SET status = 'started', 
-                        start_time = CURRENT_TIMESTAMP,
-                        calendar_date = %s
+                    SELECT project_day, start_time, daily_report_filename 
+                    FROM project_time_registry 
                     WHERE project_day = %s
-                    RETURNING *
-                """, (current_date, project_day))
+                """, (project_day,))
+                existing = cursor.fetchone()
+                
+                sprint_number, sprint_day = self.calculate_sprint_info(project_day)
+                current_timestamp = datetime.now()
+                
+                if existing:
+                    # Update existing record
+                    cursor.execute("""
+                        UPDATE project_time_registry 
+                        SET status = 'started', 
+                            start_time = CURRENT_TIMESTAMP,
+                            calendar_date = CURRENT_DATE,
+                            sprint_number = %s,
+                            sprint_day = %s
+                        WHERE project_day = %s
+                        RETURNING *
+                    """, (sprint_number, sprint_day, project_day))
+                else:
+                    # Create new record
+                    cursor.execute("""
+                        INSERT INTO project_time_registry 
+                        (project_day, sprint_number, sprint_day, start_time, calendar_date, status)
+                        VALUES (%s, %s, %s, CURRENT_TIMESTAMP, CURRENT_DATE, 'started')
+                        RETURNING *
+                    """, (project_day, sprint_number, sprint_day))
                 
                 conn.commit()
-                return dict(cursor.fetchone())
+                result = dict(cursor.fetchone())
+                
+                # Print report filename if available
+                if result.get('daily_report_filename'):
+                    print(f"Report filename: {result['daily_report_filename']}")
+                
+                return result
     
     def end_day(self, project_day: int, metrics: Optional[Dict] = None) -> Dict:
         """End work day and update metrics"""
@@ -404,6 +428,26 @@ class ProjectTimeDB:
                 
                 print(f"✅ Exported {len(export_data)} records to {output_file}")
 
+    def get_filename(self, project_day: Optional[int] = None) -> Optional[str]:
+        """Get daily report filename for a day"""
+        if project_day is None:
+            project_day = self.get_current_day()
+            
+        with self.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT daily_report_filename 
+                    FROM project_time_registry 
+                    WHERE project_day = %s
+                """, (project_day,))
+                result = cursor.fetchone()
+                
+                if result and result[0]:
+                    return result[0]
+                else:
+                    # Generate default filename if not in DB
+                    return f"DAY_{project_day}_SUMMARY_{datetime.now().strftime('%Y%m%d')}.md"
+
 
 def main():
     """CLI interface for database management"""
@@ -438,6 +482,11 @@ def main():
     
     # Project stats
     stats_parser = subparsers.add_parser('stats', help='Show project statistics')
+    
+    # Get filename
+    get_filename_parser = subparsers.add_parser('get-filename', help='Get daily report filename')
+    get_filename_parser.add_argument('day', type=int, nargs='?', 
+                                    help='Project day number (uses current if not specified)')
     
     args = parser.parse_args()
     
@@ -509,6 +558,11 @@ def main():
         print(f"📋 Tasks completed: {stats['total_tasks_completed']}")
         if stats['avg_test_coverage']:
             print(f"📊 Average test coverage: {stats['avg_test_coverage']:.1f}%")
+    
+    elif args.command == 'get-filename':
+        day = args.day or db.get_current_day()
+        filename = db.get_filename(day)
+        print(filename)
     
     else:
         parser.print_help()
