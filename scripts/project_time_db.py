@@ -13,6 +13,7 @@ from datetime import datetime, date, timedelta
 from typing import Dict, List, Optional, Tuple
 import argparse
 from contextlib import contextmanager
+from pathlib import Path
 
 # Database configuration
 DB_CONFIG = {
@@ -30,6 +31,43 @@ class ProjectTimeDB:
     
     def __init__(self, config: Dict[str, str] = DB_CONFIG):
         self.config = config
+        self.project_root = Path(__file__).parent.parent
+        self.time_config_file = self.project_root / '.project-time.json'
+        self._load_time_config()
+        
+    def _load_time_config(self):
+        """Load time configuration with day mappings"""
+        self.time_config = {
+            'project_start': '2025-06-21',
+            'current_conditional_day': 1,
+            'day_mapping': {}
+        }
+        
+        if self.time_config_file.exists():
+            with open(self.time_config_file, 'r') as f:
+                self.time_config = json.load(f)
+    
+    def get_calendar_date_for_project_day(self, project_day: int) -> date:
+        """Get calendar date for a given project day using mapping or calculation"""
+        # Check if we have a mapping for this day
+        day_str = str(project_day)
+        if day_str in self.time_config.get('day_mapping', {}):
+            date_str = self.time_config['day_mapping'][day_str]
+            return datetime.strptime(date_str, '%Y-%m-%d').date()
+        
+        # Otherwise, look for the nearest mapped day and calculate from there
+        mapped_days = {int(k): v for k, v in self.time_config.get('day_mapping', {}).items()}
+        if mapped_days:
+            # Find the closest mapped day
+            closest_day = min(mapped_days.keys(), key=lambda x: abs(x - project_day))
+            closest_date = datetime.strptime(mapped_days[closest_day], '%Y-%m-%d').date()
+            
+            # Calculate the difference and apply it
+            day_diff = project_day - closest_day
+            return closest_date + timedelta(days=day_diff)
+        
+        # Fallback to simple calculation from project start
+        return PROJECT_START_DATE + timedelta(days=project_day - 1)
         
     @contextmanager
     def get_connection(self):
@@ -67,8 +105,8 @@ class ProjectTimeDB:
                 if record:
                     return dict(record)
                 
-                # Create new record
-                calendar_date = PROJECT_START_DATE + timedelta(days=project_day - 1)
+                # Create new record with correct calendar date
+                calendar_date = self.get_calendar_date_for_project_day(project_day)
                 sprint_number, sprint_day = self.calculate_sprint_info(project_day)
                 
                 cursor.execute("""
@@ -260,21 +298,79 @@ class ProjectTimeDB:
                 if 'duration_hours' in day_data:
                     updates['duration_minutes'] = int(float(day_data['duration_hours']) * 60)
                 
-                # Sprint info
-                if 'sprint' in day_data:
-                    updates['sprint_number'] = day_data['sprint']
-                if 'sprint_day' in day_data:
-                    updates['sprint_day'] = day_data['sprint_day']
+                # Sprint info (use our calculation, not the JSON one)
+                sprint_number, sprint_day = self.calculate_sprint_info(project_day)
+                updates['sprint_number'] = sprint_number
+                updates['sprint_day'] = sprint_day
+                
+                # Update calendar date if needed
+                calendar_date = self.get_calendar_date_for_project_day(project_day)
+                updates['calendar_date'] = calendar_date
                 
                 # Apply updates
                 if updates:
-                    self.update_day_info(project_day, **updates)
+                    # Build update query
+                    update_fields = []
+                    values = []
+                    for key, value in updates.items():
+                        if key != 'calendar_date':  # Skip calendar_date for now
+                            update_fields.append(f"{key} = %s")
+                            values.append(value)
+                    
+                    if update_fields:
+                        values.append(project_day)
+                        sql = f"""
+                            UPDATE project_time_registry 
+                            SET {', '.join(update_fields)}
+                            WHERE project_day = %s
+                        """
+                        
+                        with self.get_connection() as conn:
+                            with conn.cursor() as cursor:
+                                cursor.execute(sql, values)
+                                conn.commit()
+                    
+                    # Update calendar date separately
+                    with self.get_connection() as conn:
+                        with conn.cursor() as cursor:
+                            cursor.execute("""
+                                UPDATE project_time_registry 
+                                SET calendar_date = %s
+                                WHERE project_day = %s
+                            """, (calendar_date, project_day))
+                            conn.commit()
+                    
                     migrated += 1
                     
             except Exception as e:
                 print(f"❌ Error migrating {day_str}: {e}")
         
         print(f"✅ Migrated {migrated} days from JSON")
+    
+    def fix_calendar_dates(self):
+        """Fix all calendar dates based on .project-time.json mapping"""
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                # Get all records
+                cursor.execute("SELECT project_day FROM project_time_registry ORDER BY project_day")
+                days = cursor.fetchall()
+                
+                fixed = 0
+                for record in days:
+                    project_day = record['project_day']
+                    correct_date = self.get_calendar_date_for_project_day(project_day)
+                    
+                    cursor.execute("""
+                        UPDATE project_time_registry 
+                        SET calendar_date = %s 
+                        WHERE project_day = %s AND calendar_date != %s
+                    """, (correct_date, project_day, correct_date))
+                    
+                    if cursor.rowcount > 0:
+                        fixed += 1
+                
+                conn.commit()
+                print(f"✅ Fixed calendar dates for {fixed} days")
     
     def export_to_json(self, output_file: str = "project_time_export.json"):
         """Export database to JSON for backup"""
@@ -318,6 +414,9 @@ def main():
     migrate_parser = subparsers.add_parser('migrate', help='Migrate from time_tracking.json')
     migrate_parser.add_argument('--file', default='scripts/time_tracking.json', help='JSON file to migrate from')
     
+    # Fix calendar dates
+    fix_parser = subparsers.add_parser('fix-dates', help='Fix calendar dates based on .project-time.json')
+    
     # Start day
     start_parser = subparsers.add_parser('start', help='Start work day')
     start_parser.add_argument('day', type=int, help='Project day number')
@@ -350,6 +449,9 @@ def main():
     
     elif args.command == 'migrate':
         db.migrate_from_json(args.file)
+    
+    elif args.command == 'fix-dates':
+        db.fix_calendar_dates()
     
     elif args.command == 'start':
         result = db.start_day(args.day)
