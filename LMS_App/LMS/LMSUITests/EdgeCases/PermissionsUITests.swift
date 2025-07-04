@@ -73,7 +73,7 @@ final class PermissionsUITests: XCTestCase {
         app.segmentedControls.buttons["Моя команда"].tap()
 
         // Verify team data is loaded
-        XCTAssertTrue(!app.tables["teamReportsTable"].cells.isEmpty)
+        XCTAssertTrue(app.tables["teamReportsTable"].cells.count > 0)
     }
 
     func testStudentCannotSeeTeamAnalytics() {

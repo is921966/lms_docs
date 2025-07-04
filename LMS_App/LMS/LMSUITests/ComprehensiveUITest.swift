@@ -192,14 +192,14 @@ final class ComprehensiveUITest: XCTestCase {
                 // Переключаем туда-сюда
                 let initialValue = switchElement.value as? String ?? "0"
                 switchElement.tap()
-                sleep(0.5)
+                sleep(1)
                 
                 let newValue = switchElement.value as? String ?? "0"
                 XCTAssertNotEqual(initialValue, newValue, "Переключатель '\(label)' должен изменить состояние")
                 
                 // Возвращаем обратно
                 switchElement.tap()
-                sleep(0.5)
+                sleep(1)
             }
         }
         

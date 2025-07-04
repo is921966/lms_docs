@@ -23,7 +23,7 @@ class CourseMaterialsUITests: XCTestCase {
 
         // Выбор первого курса для редактирования
         let coursesTable = app.tables
-        XCTAssertTrue(!coursesTable.cells.isEmpty, "Нет курсов для редактирования")
+        XCTAssertTrue(coursesTable.cells.count > 0, "Нет курсов для редактирования")
         coursesTable.cells.element(boundBy: 0).tap()
 
         // Проверка наличия кнопки "Управление материалами"
@@ -166,7 +166,7 @@ class CourseMaterialsUITests: XCTestCase {
         app.collectionViews.buttons["Управление курсами"].tap()
 
         let coursesTable = app.tables
-        if !coursesTable.cells.isEmpty {
+        if coursesTable.cells.count > 0 {
             coursesTable.cells.element(boundBy: 0).tap()
             app.buttons["Управление материалами"].tap()
         }
@@ -182,7 +182,7 @@ class CourseMaterialsUITests: XCTestCase {
 
         // Заполняем URL в зависимости от типа
         let urlFields = app.textFields.matching(NSPredicate(format: "label CONTAINS 'URL'"))
-        if !urlFields.isEmpty {
+        if urlFields.count > 0 {
             let urlField = urlFields.element(boundBy: 0)
             urlField.tap()
             urlField.typeText("https://example.com/\(type.lowercased())")

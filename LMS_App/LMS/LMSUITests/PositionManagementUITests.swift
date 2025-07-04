@@ -133,7 +133,7 @@ final class PositionManagementUITests: XCTestCase {
         app.buttons["Добавить"].tap()
 
         // Verify requirement added
-        XCTAssertTrue(!app.collectionViews.cells.isEmpty)
+        XCTAssertTrue(app.collectionViews.cells.count > 0)
     }
 
     func testPositionHierarchy() throws {

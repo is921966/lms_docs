@@ -28,9 +28,9 @@ final class SimpleSmokeTest: XCTestCase {
         sleep(3)
 
         // Проверяем наличие любых элементов UI
-        let elementExists = !app.buttons.isEmpty ||
-                           !app.staticTexts.isEmpty ||
-                           !app.images.isEmpty
+        let elementExists = app.buttons.count > 0 ||
+                           app.staticTexts.count > 0 ||
+                           app.images.count > 0
 
         XCTAssertTrue(elementExists, "Должны быть видны UI элементы")
 

@@ -131,7 +131,7 @@ final class TestTakingUITests: UITestBase {
 
         // Answer first question
         let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
-        if !answerOptions.isEmpty {
+        if answerOptions.count > 0 {
             answerOptions.element(boundBy: 0).tap()
         }
 
@@ -255,7 +255,7 @@ final class TestTakingUITests: UITestBase {
 
         // Answer only first question
         let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
-        if !answerOptions.isEmpty {
+        if answerOptions.count > 0 {
             answerOptions.element(boundBy: 0).tap()
         }
 
@@ -270,7 +270,7 @@ final class TestTakingUITests: UITestBase {
         // Should show warning
         let alert = app.alerts.firstMatch
         waitForElement(alert)
-        XCTAssertTrue(alert.label.contains("не ответили") || !alert.staticTexts.matching(NSPredicate(format: "label CONTAINS 'вопрос'")).isEmpty)
+                    XCTAssertTrue(alert.label.contains("не ответили") || alert.staticTexts.matching(NSPredicate(format: "label CONTAINS 'вопрос'")).count > 0)
 
         takeScreenshot(name: "Unanswered_Questions_Warning")
 
@@ -293,7 +293,7 @@ final class TestTakingUITests: UITestBase {
 
         // Answer a question
         let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
-        if !answerOptions.isEmpty {
+        if answerOptions.count > 0 {
             answerOptions.element(boundBy: 0).tap()
         }
 
@@ -355,7 +355,7 @@ final class TestTakingUITests: UITestBase {
         repeat {
             // Answer current question
             let answerOptions = app.buttons.matching(identifier: AccessibilityIdentifiers.Tests.answerOption)
-            if !answerOptions.isEmpty {
+            if answerOptions.count > 0 {
                 let firstAnswer = answerOptions.element(boundBy: 0)
                 if !firstAnswer.isSelected {
                     firstAnswer.tap()

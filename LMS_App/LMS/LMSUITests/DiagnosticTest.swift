@@ -47,14 +47,14 @@ final class DiagnosticTest: XCTestCase {
 
         print("\n--- Navigation Bars ---")
         print("Navigation bars count: \(app.navigationBars.count)")
-        if !app.navigationBars.isEmpty {
+        if app.navigationBars.count > 0 {
             let navBar = app.navigationBars.firstMatch
             print("First nav bar title: '\(navBar.identifier)'")
         }
 
         print("\n--- Alerts ---")
         print("Alerts count: \(app.alerts.count)")
-        if !app.alerts.isEmpty {
+        if app.alerts.count > 0 {
             let alert = app.alerts.firstMatch
             print("Alert title: '\(alert.label)'")
         }

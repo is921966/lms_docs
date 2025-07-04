@@ -28,9 +28,9 @@ final class AdaptedUITests: XCTestCase {
         takeScreenshot("01_App_Launch")
 
         // Проверяем наличие UI элементов
-        let hasUI = !app.buttons.isEmpty ||
-                   !app.staticTexts.isEmpty ||
-                   !app.tabBars.isEmpty
+        let hasUI = app.buttons.count > 0 ||
+                   app.staticTexts.count > 0 ||
+                   app.tabBars.count > 0
 
         XCTAssertTrue(hasUI, "App should have UI elements")
     }
@@ -109,7 +109,7 @@ final class AdaptedUITests: XCTestCase {
             }
         }
 
-        XCTAssertFalse(foundTabs.isEmpty, "Should find at least one tab")
+        XCTAssertTrue(foundTabs.count > 0, "Should find at least one tab")
     }
 
     // MARK: - Learning Tests
@@ -125,8 +125,8 @@ final class AdaptedUITests: XCTestCase {
             takeScreenshot("05_Learning_Tab")
 
             // Проверяем наличие контента
-            let hasContent = !app.scrollViews.isEmpty ||
-                           !app.collectionViews.isEmpty ||
+            let hasContent = app.scrollViews.count > 0 ||
+                           app.collectionViews.count > 0 ||
                            app.buttons.count > 2
 
             XCTAssertTrue(hasContent, "Learning tab should have content")
@@ -134,7 +134,7 @@ final class AdaptedUITests: XCTestCase {
             // Пробуем найти курс
             if app.scrollViews.firstMatch.exists {
                 let scrollView = app.scrollViews.firstMatch
-                if !scrollView.buttons.isEmpty {
+                if scrollView.buttons.count > 0 {
                     XCTAssertTrue(true, "Found courses in scroll view")
                 }
             }
@@ -155,7 +155,7 @@ final class AdaptedUITests: XCTestCase {
             takeScreenshot("06_Course_Detail")
 
             // Проверяем что перешли на другой экран
-            let changedScreen = !app.navigationBars.isEmpty ||
+            let changedScreen = app.navigationBars.count > 0 ||
                               app.buttons["Начать обучение"].exists ||
                               app.buttons["Продолжить обучение"].exists ||
                               app.staticTexts["О курсе"].exists
@@ -177,7 +177,7 @@ final class AdaptedUITests: XCTestCase {
 
             // Проверяем элементы профиля
             let hasProfileContent = app.staticTexts.count > 3 ||
-                                  !app.images.isEmpty
+                                  app.images.count > 0
 
             XCTAssertTrue(hasProfileContent, "Profile should have content")
         }
@@ -196,7 +196,7 @@ final class AdaptedUITests: XCTestCase {
 
             // Проверяем наличие опций
             let hasOptions = app.buttons.count > 2 ||
-                           !app.cells.isEmpty
+                           app.cells.count > 0
 
             XCTAssertTrue(hasOptions, "More tab should have options")
 
@@ -266,14 +266,14 @@ final class AdaptedUITests: XCTestCase {
         // Пробуем разные способы найти кнопку курса
         if app.scrollViews.firstMatch.exists {
             let scrollView = app.scrollViews.firstMatch
-            if !scrollView.buttons.isEmpty {
+            if scrollView.buttons.count > 0 {
                 return scrollView.buttons.firstMatch
             }
         }
 
         if app.collectionViews.firstMatch.exists {
             let collection = app.collectionViews.firstMatch
-            if !collection.buttons.isEmpty {
+            if collection.buttons.count > 0 {
                 return collection.buttons.firstMatch
             }
         }

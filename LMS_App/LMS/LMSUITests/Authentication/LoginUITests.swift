@@ -214,7 +214,7 @@ final class LoginUITests: UITestBase {
         emailField.typeText("test")
 
         // Verify keyboard is shown
-        XCTAssertTrue(!app.keyboards.isEmpty)
+        XCTAssertTrue(app.keyboards.count > 0)
 
         // Tap login button
         loginButton.tap()
