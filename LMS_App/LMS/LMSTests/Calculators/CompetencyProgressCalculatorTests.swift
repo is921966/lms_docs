@@ -286,29 +286,36 @@ class CompetencyProgressCalculatorTests: XCTestCase {
     }
 
     func testBasicProgressCalculation() {
+        let calculator = TestCompetencyProgressCalculator()
+        
         // Test 0%
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateProgress(completed: 0, total: 10), 0.0)
+        XCTAssertEqual(calculator.calculateProgress(completed: 0, total: 10), 0.0)
         
         // Test 50%
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateProgress(completed: 5, total: 10), 50.0)
+        XCTAssertEqual(calculator.calculateProgress(completed: 5, total: 10), 50.0)
         
         // Test 100%
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateProgress(completed: 10, total: 10), 100.0)
+        XCTAssertEqual(calculator.calculateProgress(completed: 10, total: 10), 100.0)
     }
 
     func testProgressWithZeroTotal() {
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateProgress(completed: 5, total: 0), 0.0)
+        let calculator = TestCompetencyProgressCalculator()
+        XCTAssertEqual(calculator.calculateProgress(completed: 5, total: 0), 0.0)
     }
 
     func testProgressBoundaries() {
+        let calculator = TestCompetencyProgressCalculator()
+        
         // Should not exceed 100%
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateProgress(completed: 15, total: 10), 100.0)
+        XCTAssertEqual(calculator.calculateProgress(completed: 15, total: 10), 100.0)
         
         // Should not go below 0%
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateProgress(completed: -5, total: 10), 0.0)
+        XCTAssertEqual(calculator.calculateProgress(completed: -5, total: 10), 0.0)
     }
 
     func testWeightedProgressCalculationWithItems() {
+        let calculator = TestCompetencyProgressCalculator()
+        
         let items: [(completed: Bool, weight: Double)] = [
             (completed: true, weight: 1.0),
             (completed: false, weight: 2.0),
@@ -316,16 +323,20 @@ class CompetencyProgressCalculatorTests: XCTestCase {
             (completed: false, weight: 4.0),
             (completed: true, weight: 5.0)
         ]
-        let progress = TestCompetencyProgressCalculator.calculateWeightedProgress(items: items)
+        let progress = calculator.calculateWeightedProgress(items: items)
         XCTAssertEqual(progress, 60.0, accuracy: 0.01) // (1+3+5)/(1+2+3+4+5) = 9/15 = 60%
     }
 
     func testWeightedProgressCalculationWithZeroItems() {
+        let calculator = TestCompetencyProgressCalculator()
+        
         let items: [(completed: Bool, weight: Double)] = []
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateWeightedProgress(items: items), 0.0)
+        XCTAssertEqual(calculator.calculateWeightedProgress(items: items), 0.0)
     }
 
     func testWeightedProgressCalculationWithMixedItems() {
+        let calculator = TestCompetencyProgressCalculator()
+        
         let items: [(completed: Bool, weight: Double)] = [
             (completed: true, weight: 10.0),
             (completed: true, weight: 20.0),
@@ -333,37 +344,41 @@ class CompetencyProgressCalculatorTests: XCTestCase {
             (completed: true, weight: 25.0),
             (completed: false, weight: 30.0)
         ]
-        let progress = TestCompetencyProgressCalculator.calculateWeightedProgress(items: items)
+        let progress = calculator.calculateWeightedProgress(items: items)
         XCTAssertEqual(progress, 55.0, accuracy: 0.01) // (10+20+25)/(10+20+15+25+30) = 55/100 = 55%
     }
 
     func testLevelCalculation() {
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 0), "beginner")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 10), "beginner")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 19.9), "beginner")
+        let calculator = TestCompetencyProgressCalculator()
+        
+        XCTAssertEqual(calculator.calculateLevel(progress: 0), "beginner")
+        XCTAssertEqual(calculator.calculateLevel(progress: 10), "beginner")
+        XCTAssertEqual(calculator.calculateLevel(progress: 19.9), "beginner")
 
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 20), "elementary")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 30), "elementary")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 39.9), "elementary")
+        XCTAssertEqual(calculator.calculateLevel(progress: 20), "elementary")
+        XCTAssertEqual(calculator.calculateLevel(progress: 30), "elementary")
+        XCTAssertEqual(calculator.calculateLevel(progress: 39.9), "elementary")
 
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 40), "intermediate")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 50), "intermediate")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 59.9), "intermediate")
+        XCTAssertEqual(calculator.calculateLevel(progress: 40), "intermediate")
+        XCTAssertEqual(calculator.calculateLevel(progress: 50), "intermediate")
+        XCTAssertEqual(calculator.calculateLevel(progress: 59.9), "intermediate")
 
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 60), "advanced")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 70), "advanced")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 79.9), "advanced")
+        XCTAssertEqual(calculator.calculateLevel(progress: 60), "advanced")
+        XCTAssertEqual(calculator.calculateLevel(progress: 70), "advanced")
+        XCTAssertEqual(calculator.calculateLevel(progress: 79.9), "advanced")
 
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 80), "expert")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 90), "expert")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 100), "expert")
+        XCTAssertEqual(calculator.calculateLevel(progress: 80), "expert")
+        XCTAssertEqual(calculator.calculateLevel(progress: 90), "expert")
+        XCTAssertEqual(calculator.calculateLevel(progress: 100), "expert")
 
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: -10), "unknown")
-        XCTAssertEqual(TestCompetencyProgressCalculator.calculateLevel(progress: 110), "unknown")
+        XCTAssertEqual(calculator.calculateLevel(progress: -10), "unknown")
+        XCTAssertEqual(calculator.calculateLevel(progress: 110), "unknown")
     }
 
     func testTimeEstimation() {
-        let estimate = TestCompetencyProgressCalculator.estimateTimeToComplete(
+        let calculator = TestCompetencyProgressCalculator()
+        
+        let estimate = calculator.estimateTimeToComplete(
             totalItems: 10,
             completedItems: 5,
             averageTimePerItem: 2.0

@@ -12,14 +12,14 @@ import Foundation
 class TestCompetencyProgressCalculator {
     
     // Calculate progress percentage based on completed vs total items
-    static func calculateProgress(completed: Int, total: Int) -> Double {
+    func calculateProgress(completed: Int, total: Int) -> Double {
         guard total > 0 else { return 0.0 }
         let progress = Double(completed) / Double(total) * 100.0
         return min(max(progress, 0.0), 100.0) // Ensure between 0-100
     }
     
     // Calculate weighted progress based on item importance
-    static func calculateWeightedProgress(items: [(completed: Bool, weight: Double)]) -> Double {
+    func calculateWeightedProgress(items: [(completed: Bool, weight: Double)]) -> Double {
         let totalWeight = items.reduce(0.0) { $0 + $1.weight }
         guard totalWeight > 0 else { return 0.0 }
         
@@ -31,7 +31,7 @@ class TestCompetencyProgressCalculator {
     }
     
     // Calculate level based on progress
-    static func calculateLevel(progress: Double) -> String {
+    func calculateLevel(progress: Double) -> String {
         switch progress {
         case 0..<20:
             return "beginner"
@@ -49,7 +49,7 @@ class TestCompetencyProgressCalculator {
     }
     
     // Calculate estimated time to complete
-    static func estimateTimeToComplete(
+    func estimateTimeToComplete(
         totalItems: Int,
         completedItems: Int,
         averageTimePerItem: TimeInterval
