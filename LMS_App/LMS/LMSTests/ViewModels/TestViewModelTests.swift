@@ -2,7 +2,7 @@
 //  TestViewModelTests.swift
 //  LMSTests
 //
-//  Created on 09/07/2025.
+//  Created on 06/07/2025.
 //
 
 import XCTest
@@ -11,465 +11,483 @@ import Combine
 
 @MainActor
 final class TestViewModelTests: XCTestCase {
-    private var sut: TestViewModel!
-    private var cancellables: Set<AnyCancellable>!
     
-    override func setUp() async throws {
-        try await super.setUp()
-        sut = TestViewModel()
-        cancellables = Set<AnyCancellable>()
+    var viewModel: TestViewModel!
+    var cancellables: Set<AnyCancellable> = []
+    
+    override func setUp() {
+        super.setUp()
+        viewModel = TestViewModel()
+        cancellables = []
     }
     
-    override func tearDown() async throws {
-        cancellables = nil
-        sut.cleanup()
-        sut = nil
-        try await super.tearDown()
+    override func tearDown() {
+        viewModel.cleanup()
+        viewModel = nil
+        cancellables.removeAll()
+        super.tearDown()
     }
     
     // MARK: - Initialization Tests
     
-    func testInitialization() {
-        // Check initial state
-        XCTAssertEqual(sut.searchText, "")
-        XCTAssertNil(sut.selectedType)
-        XCTAssertNil(sut.selectedDifficulty)
-        XCTAssertNil(sut.selectedStatus)
-        XCTAssertFalse(sut.showOnlyAvailable)
-        XCTAssertNil(sut.selectedTest)
-        XCTAssertNil(sut.currentAttempt)
-        XCTAssertNil(sut.currentQuestion)
-        XCTAssertNil(sut.timer)
-        XCTAssertEqual(sut.selectedFilter, "Все")
-        XCTAssertEqual(sut.sortOption, .dateCreated)
-        XCTAssertFalse(sut.isAscending)
+    func testInitialState() {
+        XCTAssertNil(viewModel.selectedTest)
+        XCTAssertNil(viewModel.currentAttempt)
+        XCTAssertNil(viewModel.currentQuestion)
+        XCTAssertNil(viewModel.timer)
+        XCTAssertEqual(viewModel.searchText, "")
+        XCTAssertNil(viewModel.selectedType)
+        XCTAssertNil(viewModel.selectedDifficulty)
+        XCTAssertNil(viewModel.selectedStatus)
+        XCTAssertFalse(viewModel.showOnlyAvailable)
+        XCTAssertEqual(viewModel.selectedFilter, "Все")
+        XCTAssertEqual(viewModel.sortOption, .dateCreated)
+        XCTAssertFalse(viewModel.isAscending)
+        XCTAssertTrue(viewModel.assignedTests.isEmpty)
+        XCTAssertTrue(viewModel.completedTests.isEmpty)
+        XCTAssertTrue(viewModel.practiceTests.isEmpty)
     }
     
     // MARK: - Filtering Tests
     
     func testSearchFiltering() {
         // Given
-        sut.searchText = "iOS"
+        let test1 = Test.mockQuiz()
+        let test2 = Test.mockExam()
+        TestMockService.shared.tests = [test1, test2]
         
         // When
-        let filtered = sut.filteredTests
+        viewModel.searchText = "Quiz"
         
         // Then
-        XCTAssertTrue(filtered.allSatisfy { test in
-            test.title.localizedCaseInsensitiveContains("iOS") ||
-            test.description.localizedCaseInsensitiveContains("iOS")
-        })
+        XCTAssertEqual(viewModel.filteredTests.count, 1)
+        XCTAssertEqual(viewModel.filteredTests.first?.title, test1.title)
     }
     
     func testTypeFiltering() {
         // Given
-        sut.selectedType = .assessment
+        let quiz = Test.mockQuiz()
+        let exam = Test.mockExam()
+        TestMockService.shared.tests = [quiz, exam]
         
         // When
-        let filtered = sut.filteredTests
+        viewModel.selectedType = .quiz
         
         // Then
-        XCTAssertTrue(filtered.allSatisfy { $0.type == .assessment })
+        XCTAssertEqual(viewModel.filteredTests.count, 1)
+        XCTAssertEqual(viewModel.filteredTests.first?.type, .quiz)
     }
     
     func testDifficultyFiltering() {
         // Given
-        sut.selectedDifficulty = .easy
+        var easyTest = Test.mockQuiz()
+        easyTest.difficulty = .easy
+        var hardTest = Test.mockQuiz()
+        hardTest.difficulty = .hard
+        TestMockService.shared.tests = [easyTest, hardTest]
         
         // When
-        let filtered = sut.filteredTests
+        viewModel.selectedDifficulty = .easy
         
         // Then
-        XCTAssertTrue(filtered.allSatisfy { $0.difficulty == .easy })
+        XCTAssertEqual(viewModel.filteredTests.count, 1)
+        XCTAssertEqual(viewModel.filteredTests.first?.difficulty, .easy)
     }
     
     func testStatusFiltering() {
         // Given
-        sut.selectedStatus = .published
+        var draftTest = Test.mockQuiz()
+        draftTest.status = .draft
+        var publishedTest = Test.mockQuiz()
+        publishedTest.status = .published
+        TestMockService.shared.tests = [draftTest, publishedTest]
         
         // When
-        let filtered = sut.filteredTests
+        viewModel.selectedStatus = .published
         
         // Then
-        XCTAssertTrue(filtered.allSatisfy { $0.status == .published })
+        XCTAssertEqual(viewModel.filteredTests.count, 1)
+        XCTAssertEqual(viewModel.filteredTests.first?.status, .published)
     }
     
-    func testAvailableFiltering() {
+    func testShowOnlyAvailableFiltering() {
         // Given
-        sut.showOnlyAvailable = true
+        var availableTest = Test.mockQuiz()
+        availableTest.isPublished = true
+        var unavailableTest = Test.mockQuiz()
+        unavailableTest.isPublished = false
+        TestMockService.shared.tests = [availableTest, unavailableTest]
         
         // When
-        let filtered = sut.filteredTests
+        viewModel.showOnlyAvailable = true
         
         // Then
-        XCTAssertTrue(filtered.allSatisfy { $0.isPublished && $0.canBeTaken })
+        XCTAssertEqual(viewModel.filteredTests.count, 1)
+        XCTAssertTrue(viewModel.filteredTests.first?.isPublished ?? false)
     }
     
     func testCombinedFiltering() {
         // Given
-        sut.selectedType = .quiz
-        sut.selectedDifficulty = .medium
-        sut.showOnlyAvailable = true
+        var test1 = Test.mockQuiz()
+        test1.difficulty = .easy
+        test1.status = .published
+        
+        var test2 = Test.mockQuiz()
+        test2.difficulty = .hard
+        test2.status = .published
+        
+        var test3 = Test.mockExam()
+        test3.difficulty = .easy
+        test3.status = .draft
+        
+        TestMockService.shared.tests = [test1, test2, test3]
         
         // When
-        let filtered = sut.filteredTests
+        viewModel.selectedType = .quiz
+        viewModel.selectedDifficulty = .easy
+        viewModel.selectedStatus = .published
         
         // Then
-        XCTAssertTrue(filtered.allSatisfy { test in
-            test.type == .quiz &&
-            test.difficulty == .medium &&
-            test.isPublished &&
-            test.canBeTaken
-        })
-    }
-    
-    // MARK: - Grouping Tests
-    
-    func testTestsGroupedByType() {
-        // When
-        let grouped = sut.testsGroupedByType
-        
-        // Then
-        for (type, tests) in grouped {
-            XCTAssertTrue(tests.allSatisfy { $0.type == type })
-        }
+        XCTAssertEqual(viewModel.filteredTests.count, 1)
+        XCTAssertEqual(viewModel.filteredTests.first?.id, test1.id)
     }
     
     // MARK: - Test Management Tests
     
     func testSelectTest() {
         // Given
-        let mockTest = createMockTest()
+        let test = Test.mockQuiz()
         
         // When
-        sut.selectTest(mockTest)
+        viewModel.selectTest(test)
         
         // Then
-        XCTAssertEqual(sut.selectedTest?.id, mockTest.id)
+        XCTAssertEqual(viewModel.selectedTest?.id, test.id)
     }
     
     func testAddTest() {
         // Given
-        let newTest = createMockTest()
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = []
         
         // When
-        sut.addTest(newTest)
+        viewModel.addTest(test)
         
         // Then
-        // Should add test to service
-        XCTAssertTrue(sut.filteredTests.contains { $0.id == newTest.id })
+        XCTAssertEqual(TestMockService.shared.tests.count, 1)
+        XCTAssertEqual(TestMockService.shared.tests.first?.id, test.id)
     }
+    
+    // MARK: - Test Execution Tests
     
     func testStartTest() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
         
         // When
-        sut.startTest(mockTest)
+        viewModel.startTest(test)
         
         // Then
-        XCTAssertNotNil(sut.currentAttempt)
-        XCTAssertEqual(sut.currentAttempt?.testId, mockTest.id)
-        XCTAssertNotNil(sut.currentQuestion)
-        XCTAssertNotNil(sut.timer)
+        XCTAssertNotNil(viewModel.currentAttempt)
+        XCTAssertNotNil(viewModel.currentQuestion)
+        XCTAssertEqual(viewModel.currentAttempt?.testId, test.id)
+        XCTAssertEqual(viewModel.currentAttempt?.userId, viewModel.currentUserId)
+        XCTAssertNotNil(viewModel.timer)
+    }
+    
+    func testStartTestWithMaxAttemptsReached() {
+        // Given
+        var test = Test.mockQuiz()
+        test.attemptsAllowed = 1
+        TestMockService.shared.tests = [test]
+        
+        // Create existing attempt
+        _ = TestMockService.shared.startTest(testId: test.id, userId: viewModel.currentUserId)
+        _ = TestMockService.shared.submitTest(attemptId: TestMockService.shared.attempts.first!.id)
+        
+        // When
+        viewModel.startTest(test)
+        
+        // Then
+        XCTAssertNil(viewModel.currentAttempt)
+        XCTAssertNil(viewModel.currentQuestion)
     }
     
     func testResumeTest() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
-        sut.startTest(mockTest)
-        guard let attempt = sut.currentAttempt else {
-            XCTFail("No current attempt")
-            return
-        }
-        
-        // Clear current state
-        sut.currentAttempt = nil
-        sut.currentQuestion = nil
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        let attempt = TestMockService.shared.startTest(testId: test.id, userId: viewModel.currentUserId)!
         
         // When
-        sut.resumeTest(attempt)
+        viewModel.resumeTest(attempt)
         
         // Then
-        XCTAssertNotNil(sut.currentAttempt)
-        XCTAssertEqual(sut.currentAttempt?.id, attempt.id)
-        XCTAssertNotNil(sut.currentQuestion)
-        XCTAssertNotNil(sut.timer)
+        XCTAssertEqual(viewModel.currentAttempt?.id, attempt.id)
+        XCTAssertNotNil(viewModel.currentQuestion)
+        XCTAssertNotNil(viewModel.timer)
     }
     
-    // MARK: - Question Navigation Tests
+    // MARK: - Navigation Tests
     
     func testNextQuestion() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
-        sut.startTest(mockTest)
-        let firstQuestionId = sut.currentQuestion?.id
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        viewModel.startTest(test)
+        let firstQuestionId = viewModel.currentQuestion?.id
         
         // When
-        sut.nextQuestion()
+        viewModel.nextQuestion()
         
         // Then
-        XCTAssertNotEqual(sut.currentQuestion?.id, firstQuestionId)
-        XCTAssertEqual(sut.currentQuestionIndex, 1)
+        XCTAssertNotEqual(viewModel.currentQuestion?.id, firstQuestionId)
+        XCTAssertEqual(viewModel.currentQuestionIndex, 1)
     }
     
     func testPreviousQuestion() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
-        sut.startTest(mockTest)
-        sut.nextQuestion() // Go to second question
-        let secondQuestionId = sut.currentQuestion?.id
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        viewModel.startTest(test)
+        viewModel.nextQuestion()
+        let secondQuestionId = viewModel.currentQuestion?.id
         
         // When
-        sut.previousQuestion()
+        viewModel.previousQuestion()
         
         // Then
-        XCTAssertNotEqual(sut.currentQuestion?.id, secondQuestionId)
-        XCTAssertEqual(sut.currentQuestionIndex, 0)
+        XCTAssertNotEqual(viewModel.currentQuestion?.id, secondQuestionId)
+        XCTAssertEqual(viewModel.currentQuestionIndex, 0)
     }
     
     func testGoToQuestion() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
-        sut.startTest(mockTest)
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        viewModel.startTest(test)
         
         // When
-        sut.goToQuestion(at: 2)
+        viewModel.goToQuestion(at: 2)
         
         // Then
-        XCTAssertEqual(sut.currentQuestionIndex, 2)
+        XCTAssertEqual(viewModel.currentQuestionIndex, 2)
     }
     
     func testIsLastQuestion() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
-        sut.startTest(mockTest)
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        viewModel.startTest(test)
         
-        // When - go to last question
-        while sut.hasNextQuestion {
-            sut.nextQuestion()
+        // When
+        while viewModel.hasNextQuestion {
+            viewModel.nextQuestion()
         }
         
         // Then
-        XCTAssertTrue(sut.isLastQuestion)
-        XCTAssertFalse(sut.hasNextQuestion)
+        XCTAssertTrue(viewModel.isLastQuestion)
+        XCTAssertFalse(viewModel.hasNextQuestion)
     }
     
     // MARK: - Answer Management Tests
     
     func testSaveCurrentAnswer() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
-        sut.startTest(mockTest)
-        
-        guard let questionId = sut.currentQuestion?.id,
-              let firstOption = sut.currentQuestion?.options.first else {
-            XCTFail("No current question or options")
-            return
-        }
-        
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        viewModel.startTest(test)
         let answer = UserAnswer(
-            questionId: questionId,
-            selectedOptionIds: [firstOption.id],
+            questionId: viewModel.currentQuestion!.id,
+            selectedOptions: [0],
             textAnswer: nil
         )
         
         // When
-        sut.saveCurrentAnswer(answer)
+        viewModel.saveCurrentAnswer(answer)
         
         // Then
-        let savedAnswer = sut.getCurrentAnswer()
+        let savedAnswer = viewModel.getCurrentAnswer()
         XCTAssertNotNil(savedAnswer)
-        XCTAssertEqual(savedAnswer?.questionId, questionId)
-        XCTAssertEqual(savedAnswer?.selectedOptionIds, [firstOption.id])
+        XCTAssertEqual(savedAnswer?.questionId, answer.questionId)
+        XCTAssertEqual(savedAnswer?.selectedOptions, answer.selectedOptions)
     }
     
     func testMarkUnmarkQuestion() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
-        sut.startTest(mockTest)
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        viewModel.startTest(test)
         
-        // When - mark
-        sut.markCurrentQuestion()
-        
-        // Then
-        XCTAssertTrue(sut.isCurrentQuestionMarked())
-        
-        // When - unmark
-        sut.unmarkCurrentQuestion()
+        // When - Mark
+        viewModel.markCurrentQuestion()
         
         // Then
-        XCTAssertFalse(sut.isCurrentQuestionMarked())
+        XCTAssertTrue(viewModel.isCurrentQuestionMarked())
+        
+        // When - Unmark
+        viewModel.unmarkCurrentQuestion()
+        
+        // Then
+        XCTAssertFalse(viewModel.isCurrentQuestionMarked())
     }
     
     // MARK: - Test Submission Tests
     
     func testSubmitTest() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
-        sut.startTest(mockTest)
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        viewModel.startTest(test)
         
-        // Answer some questions
-        if let questionId = sut.currentQuestion?.id,
-           let firstOption = sut.currentQuestion?.options.first {
+        // Answer all questions
+        for i in 0..<test.questions.count {
             let answer = UserAnswer(
-                questionId: questionId,
-                selectedOptionIds: [firstOption.id],
+                questionId: test.questions[i].id,
+                selectedOptions: [0],
                 textAnswer: nil
             )
-            sut.saveCurrentAnswer(answer)
+            viewModel.saveCurrentAnswer(answer)
+            if viewModel.hasNextQuestion {
+                viewModel.nextQuestion()
+            }
         }
         
         // When
-        sut.submitTest()
+        viewModel.submitTest()
         
         // Then
-        XCTAssertNil(sut.currentAttempt)
-        XCTAssertNil(sut.currentQuestion)
-        XCTAssertNil(sut.timer)
+        XCTAssertNil(viewModel.currentAttempt)
+        XCTAssertNil(viewModel.currentQuestion)
+        XCTAssertNil(viewModel.timer)
+    }
+    
+    // MARK: - Timer Tests
+    
+    func testTimerExpiration() {
+        // Given
+        var test = Test.mockQuiz()
+        test.timeLimit = 1 // 1 second
+        TestMockService.shared.tests = [test]
+        viewModel.startTest(test)
+        
+        let expectation = XCTestExpectation(description: "Timer expiration")
+        
+        // Then
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            XCTAssertNil(self.viewModel.currentAttempt)
+            XCTAssertNil(self.viewModel.timer)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 3)
     }
     
     // MARK: - Statistics Tests
     
     func testGetTestStatistics() {
         // Given
-        let mockTest = createMockTest()
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        
+        // Create some results
+        for _ in 0..<3 {
+            let attempt = TestMockService.shared.startTest(testId: test.id, userId: viewModel.currentUserId)!
+            _ = TestMockService.shared.submitTest(attemptId: attempt.id)
+        }
         
         // When
-        let stats = sut.getTestStatistics(mockTest)
+        let stats = viewModel.getTestStatistics(test)
         
         // Then
-        XCTAssertGreaterThanOrEqual(stats.attempts, 0)
-        XCTAssertGreaterThanOrEqual(stats.avgScore, 0)
-        XCTAssertLessThanOrEqual(stats.avgScore, 100)
+        XCTAssertEqual(stats.attempts, 3)
+        XCTAssertGreaterThan(stats.avgScore, 0)
         XCTAssertGreaterThanOrEqual(stats.passRate, 0)
         XCTAssertLessThanOrEqual(stats.passRate, 1)
     }
     
     func testCanRetakeTest() {
-        // Given - test with limited attempts
-        let limitedTest = Test(
-            title: "Limited Test",
-            description: "Test with limited attempts",
-            type: .exam,
-            attemptsAllowed: 3,
-            createdBy: "test-user"
-        )
+        // Given
+        var test = Test.mockQuiz()
+        test.attemptsAllowed = 2
+        TestMockService.shared.tests = [test]
         
-        // When/Then - should allow retake initially
-        XCTAssertTrue(sut.canRetakeTest(limitedTest))
+        // When - No attempts
+        XCTAssertTrue(viewModel.canRetakeTest(test))
         
-        // Given - test with unlimited attempts
-        let unlimitedTest = Test(
-            title: "Unlimited Test",
-            description: "Test with unlimited attempts",
-            type: .practice,
-            attemptsAllowed: nil,
-            createdBy: "test-user"
-        )
+        // Create one attempt
+        let attempt = TestMockService.shared.startTest(testId: test.id, userId: viewModel.currentUserId)!
+        _ = TestMockService.shared.submitTest(attemptId: attempt.id)
         
-        // When/Then - should always allow retake
-        XCTAssertTrue(sut.canRetakeTest(unlimitedTest))
+        // When - One attempt
+        XCTAssertTrue(viewModel.canRetakeTest(test))
+        
+        // Create second attempt
+        let attempt2 = TestMockService.shared.startTest(testId: test.id, userId: viewModel.currentUserId)!
+        _ = TestMockService.shared.submitTest(attemptId: attempt2.id)
+        
+        // When - Max attempts reached
+        XCTAssertFalse(viewModel.canRetakeTest(test))
     }
     
     // MARK: - Student Methods Tests
     
     func testLoadTests() {
+        // Given
+        let publishedTest = Test.mockQuiz()
+        var draftTest = Test.mockQuiz()
+        draftTest.status = .draft
+        var practiceTest = Test.mockExam()
+        practiceTest.type = .practice
+        
+        TestMockService.shared.tests = [publishedTest, draftTest, practiceTest]
+        
         // When
-        sut.loadTests()
+        viewModel.loadTests()
         
         // Then
-        // Should categorize tests correctly
-        XCTAssertTrue(sut.assignedTests.allSatisfy { test in
-            test.status == .published && test.canBeTaken
-        })
+        XCTAssertFalse(viewModel.assignedTests.isEmpty)
+        XCTAssertTrue(viewModel.completedTests.isEmpty) // No completed tests yet
+        XCTAssertEqual(viewModel.practiceTests.count, 1)
+        XCTAssertEqual(viewModel.practiceTests.first?.type, .practice)
+    }
+    
+    // MARK: - Computed Properties Tests
+    
+    func testTestsGroupedByType() {
+        // Given
+        let quiz = Test.mockQuiz()
+        let exam = Test.mockExam()
+        var practice = Test.mockQuiz()
+        practice.type = .practice
         
-        XCTAssertTrue(sut.practiceTests.allSatisfy { test in
-            test.type == .practice && test.status == .published
-        })
+        TestMockService.shared.tests = [quiz, exam, practice]
+        
+        // When
+        let grouped = viewModel.testsGroupedByType
+        
+        // Then
+        XCTAssertEqual(grouped.count, 3)
+        XCTAssertEqual(grouped[.quiz]?.count, 1)
+        XCTAssertEqual(grouped[.exam]?.count, 1)
+        XCTAssertEqual(grouped[.practice]?.count, 1)
     }
     
     func testUserResults() {
-        // When
-        let results = sut.userResults
-        
-        // Then
-        XCTAssertNotNil(results)
-        // All results should belong to current user
-        XCTAssertTrue(results.allSatisfy { $0.userId == sut.currentUserId })
-    }
-    
-    // MARK: - Cleanup Tests
-    
-    func testCleanup() {
         // Given
-        let mockTest = createMockTestWithQuestions()
-        sut.addTest(mockTest) // Add test to service first
-        sut.startTest(mockTest)
+        let test = Test.mockQuiz()
+        TestMockService.shared.tests = [test]
+        
+        // Create and submit attempt
+        let attempt = TestMockService.shared.startTest(testId: test.id, userId: viewModel.currentUserId)!
+        _ = TestMockService.shared.submitTest(attemptId: attempt.id)
         
         // When
-        sut.cleanup()
+        let results = viewModel.userResults
         
         // Then
-        XCTAssertNil(sut.timer)
-    }
-    
-    // MARK: - Helper Methods
-    
-    private func createMockTest() -> Test {
-        Test(
-            title: "Mock Test",
-            description: "Test for unit testing",
-            type: .quiz,
-            status: .published,
-            difficulty: .medium,
-            timeLimit: 30,
-            attemptsAllowed: 3,
-            passingScore: 70,
-            createdBy: "test-user"
-        )
-    }
-    
-    private func createMockTestWithQuestions() -> Test {
-        var test = createMockTest()
-        
-        test.questions = [
-            Question(
-                text: "Question 1",
-                type: .singleChoice,
-                points: 10,
-                options: [
-                    AnswerOption(text: "Option A", isCorrect: true),
-                    AnswerOption(text: "Option B", isCorrect: false)
-                ]
-            ),
-            Question(
-                text: "Question 2",
-                type: .multipleChoice,
-                points: 20,
-                options: [
-                    AnswerOption(text: "Option A", isCorrect: true),
-                    AnswerOption(text: "Option B", isCorrect: true),
-                    AnswerOption(text: "Option C", isCorrect: false)
-                ]
-            ),
-            Question(
-                text: "Question 3",
-                type: .essay,
-                points: 30,
-                acceptedAnswers: ["Expected answer"]
-            )
-        ]
-        
-        return test
+        XCTAssertFalse(results.isEmpty)
+        XCTAssertEqual(results.first?.userId, viewModel.currentUserId)
     }
 } 

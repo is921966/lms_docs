@@ -2,438 +2,526 @@
 //  AnalyticsViewModelTests.swift
 //  LMSTests
 //
-//  Created on 09/07/2025.
+//  Created on 06/07/2025.
 //
 
 import XCTest
 import Combine
 @testable import LMS
 
+// Mock Analytics Service
+class MockAnalyticsService: AnalyticsServiceProtocol {
+    var mockSummary: AnalyticsSummary?
+    var mockUserPerformance: UserPerformance?
+    var mockCourseStatistics: [CourseStatistics] = []
+    var mockCompetencyProgress: [CompetencyProgress] = []
+    var trackedEvents: [AnalyticsData] = []
+    
+    func getAnalyticsSummary(for period: AnalyticsPeriod) -> AnalyticsSummary {
+        return mockSummary ?? AnalyticsSummary(
+            period: period,
+            totalUsers: 100,
+            activeUsers: 75,
+            completedCourses: 150,
+            totalLearningHours: 1200,
+            averageScore: 85.5,
+            topPerformers: [],
+            popularCourses: []
+        )
+    }
+    
+    func getUserPerformance(userId: String, period: AnalyticsPeriod) -> UserPerformance {
+        return mockUserPerformance ?? UserPerformance(
+            userId: userId,
+            userName: "Test User",
+            rank: 1,
+            totalScore: 950,
+            completedCourses: 10,
+            learningHours: 120,
+            lastActivityDate: Date()
+        )
+    }
+    
+    func getCourseStatistics(period: AnalyticsPeriod) -> [CourseStatistics] {
+        return mockCourseStatistics.isEmpty ? [
+            CourseStatistics(
+                courseId: "course1",
+                courseName: "iOS Development",
+                enrolledCount: 50,
+                completedCount: 35,
+                averageScore: 87.5,
+                averageCompletionTime: 15
+            )
+        ] : mockCourseStatistics
+    }
+    
+    func getCompetencyProgress(period: AnalyticsPeriod) -> [CompetencyProgress] {
+        return mockCompetencyProgress.isEmpty ? [
+            CompetencyProgress(
+                competencyId: "comp1",
+                competencyName: "Swift",
+                progressPercentage: 75,
+                usersCount: 30
+            )
+        ] : mockCompetencyProgress
+    }
+    
+    func trackEvent(_ data: AnalyticsData) {
+        trackedEvents.append(data)
+    }
+}
+
 final class AnalyticsViewModelTests: XCTestCase {
-    private var sut: AnalyticsViewModel!
-    private var mockService: MockAnalyticsService!
-    private var cancellables: Set<AnyCancellable>!
+    
+    var viewModel: AnalyticsViewModel!
+    var mockService: MockAnalyticsService!
+    var cancellables: Set<AnyCancellable> = []
     
     override func setUp() {
         super.setUp()
         mockService = MockAnalyticsService()
-        sut = AnalyticsViewModel(service: mockService)
-        cancellables = Set<AnyCancellable>()
+        viewModel = AnalyticsViewModel(service: mockService)
+        cancellables = []
     }
     
     override func tearDown() {
-        cancellables = nil
-        sut = nil
+        viewModel = nil
         mockService = nil
+        cancellables.removeAll()
         super.tearDown()
     }
     
     // MARK: - Initialization Tests
     
-    func testInitialization() {
-        // Check initial state
-        XCTAssertEqual(sut.selectedPeriod, .month)
-        XCTAssertNotNil(sut.analyticsSummary)
-        XCTAssertNotNil(sut.userPerformance)
-        XCTAssertFalse(sut.courseStatistics.isEmpty)
-        XCTAssertFalse(sut.competencyProgress.isEmpty)
-        XCTAssertFalse(sut.isLoading)
-        XCTAssertNil(sut.errorMessage)
-        XCTAssertNil(sut.selectedDepartment)
-        XCTAssertNil(sut.selectedPosition)
-        XCTAssertNil(sut.selectedCourse)
+    func testInitialState() {
+        XCTAssertEqual(viewModel.selectedPeriod, .month)
+        XCTAssertNotNil(viewModel.analyticsSummary)
+        XCTAssertNotNil(viewModel.userPerformance)
+        XCTAssertFalse(viewModel.courseStatistics.isEmpty)
+        XCTAssertFalse(viewModel.competencyProgress.isEmpty)
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertNil(viewModel.errorMessage)
+        XCTAssertNil(viewModel.selectedDepartment)
+        XCTAssertNil(viewModel.selectedPosition)
+        XCTAssertNil(viewModel.selectedCourse)
     }
     
-    func testInitialDataLoad() {
-        // Verify that data is loaded on init
-        XCTAssertNotNil(sut.analyticsSummary)
-        XCTAssertGreaterThan(sut.courseStatistics.count, 0)
-        XCTAssertTrue(mockService.getAnalyticsSummaryCalled)
-        XCTAssertTrue(mockService.getUserPerformanceCalled)
-        XCTAssertTrue(mockService.getCourseStatisticsCalled)
-        XCTAssertTrue(mockService.getCompetencyProgressCalled)
+    func testLoadAnalyticsOnInit() {
+        // Given - mock service with custom data
+        let customSummary = AnalyticsSummary(
+            period: .month,
+            totalUsers: 200,
+            activeUsers: 150,
+            completedCourses: 300,
+            totalLearningHours: 2400,
+            averageScore: 90.0,
+            topPerformers: [],
+            popularCourses: []
+        )
+        mockService.mockSummary = customSummary
+        
+        // When - create new view model
+        let vm = AnalyticsViewModel(service: mockService)
+        
+        // Then
+        XCTAssertEqual(vm.analyticsSummary?.totalUsers, 200)
+        XCTAssertEqual(vm.analyticsSummary?.activeUsers, 150)
     }
     
-    // MARK: - Period Tests
+    // MARK: - Period Change Tests
     
     func testChangePeriod() {
-        // Reset mock service flags
-        mockService.reset()
+        // When
+        viewModel.changePeriod(.week)
         
-        // Change period
-        sut.changePeriod(.week)
-        
-        // Verify period changed and data reloaded
-        XCTAssertEqual(sut.selectedPeriod, .week)
-        XCTAssertTrue(mockService.getAnalyticsSummaryCalled)
-        XCTAssertTrue(mockService.getUserPerformanceCalled)
-        XCTAssertTrue(mockService.getCourseStatisticsCalled)
-        XCTAssertTrue(mockService.getCompetencyProgressCalled)
+        // Then
+        XCTAssertEqual(viewModel.selectedPeriod, .week)
+        XCTAssertNotNil(viewModel.analyticsSummary)
     }
     
-    func testLoadAnalytics() {
-        // Reset mock service
-        mockService.reset()
+    func testChangePeriodReloadsData() {
+        // Given
+        let expectation = XCTestExpectation(description: "Data reloaded")
+        var loadCount = 0
         
-        // Trigger load
-        sut.loadAnalytics()
+        viewModel.$analyticsSummary
+            .sink { _ in
+                loadCount += 1
+                if loadCount > 1 {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
         
-        // Verify all service methods called
-        XCTAssertTrue(mockService.getAnalyticsSummaryCalled)
-        XCTAssertTrue(mockService.getUserPerformanceCalled)
-        XCTAssertTrue(mockService.getCourseStatisticsCalled)
-        XCTAssertTrue(mockService.getCompetencyProgressCalled)
-        XCTAssertFalse(sut.isLoading)
-        XCTAssertNil(sut.errorMessage)
+        // When
+        viewModel.changePeriod(.day)
+        
+        // Then
+        wait(for: [expectation], timeout: 1)
+        XCTAssertEqual(viewModel.selectedPeriod, .day)
     }
     
     // MARK: - Event Tracking Tests
     
     func testTrackEvent() {
-        // Track an event
-        let metrics = ["score": 85.0, "time": 120.0]
-        let metadata = ["courseId": "course-1", "section": "intro"]
+        // Given
+        let metrics = ["score": 95.0, "duration": 120.0]
+        let metadata = ["courseId": "course1", "module": "module3"]
         
-        sut.trackEvent(type: .courseProgress, metrics: metrics, metadata: metadata)
+        // When
+        viewModel.trackEvent(type: .courseCompleted, metrics: metrics, metadata: metadata)
         
-        // Verify event was tracked
-        XCTAssertTrue(mockService.trackEventCalled)
-        XCTAssertEqual(mockService.lastTrackedEvent?.type, .courseProgress)
-        XCTAssertEqual(mockService.lastTrackedEvent?.metrics["score"], 85.0)
-        XCTAssertEqual(mockService.lastTrackedEvent?.metadata["courseId"], "course-1")
+        // Then
+        XCTAssertEqual(mockService.trackedEvents.count, 1)
+        XCTAssertEqual(mockService.trackedEvents.first?.type, .courseCompleted)
+        XCTAssertEqual(mockService.trackedEvents.first?.metrics["score"], 95.0)
+        XCTAssertEqual(mockService.trackedEvents.first?.metadata["courseId"], "course1")
     }
     
-    // MARK: - Filtering Tests
+    func testTrackMultipleEvents() {
+        // When
+        viewModel.trackEvent(type: .courseStarted, metrics: [:])
+        viewModel.trackEvent(type: .testCompleted, metrics: ["score": 85.0])
+        viewModel.trackEvent(type: .moduleCompleted, metrics: ["progress": 100.0])
+        
+        // Then
+        XCTAssertEqual(mockService.trackedEvents.count, 3)
+        XCTAssertEqual(mockService.trackedEvents[0].type, .courseStarted)
+        XCTAssertEqual(mockService.trackedEvents[1].type, .testCompleted)
+        XCTAssertEqual(mockService.trackedEvents[2].type, .moduleCompleted)
+    }
+    
+    // MARK: - Filtered Data Tests
     
     func testFilteredCourseStatistics() {
-        // Without filter, should return all
-        XCTAssertEqual(sut.filteredCourseStatistics.count, sut.courseStatistics.count)
+        // Given
+        mockService.mockCourseStatistics = [
+            CourseStatistics(
+                courseId: "course1",
+                courseName: "Course 1",
+                enrolledCount: 10,
+                completedCount: 5,
+                averageScore: 80,
+                averageCompletionTime: 10
+            ),
+            CourseStatistics(
+                courseId: "course2",
+                courseName: "Course 2",
+                enrolledCount: 20,
+                completedCount: 15,
+                averageScore: 85,
+                averageCompletionTime: 12
+            )
+        ]
+        viewModel.loadAnalytics()
         
-        // Apply filter
-        if let firstCourse = sut.courseStatistics.first {
-            sut.selectedCourse = firstCourse.courseId
-            
-            // Should only return matching courses
-            let filtered = sut.filteredCourseStatistics
-            XCTAssertTrue(filtered.allSatisfy { $0.courseId == firstCourse.courseId })
-        }
+        // When - no filter
+        XCTAssertEqual(viewModel.filteredCourseStatistics.count, 2)
+        
+        // When - filter by course
+        viewModel.selectedCourse = "course1"
+        
+        // Then
+        XCTAssertEqual(viewModel.filteredCourseStatistics.count, 1)
+        XCTAssertEqual(viewModel.filteredCourseStatistics.first?.courseId, "course1")
     }
     
     func testTopPerformers() {
-        // Should return top performers from summary
-        let performers = sut.topPerformers
+        // Given
+        let performers = [
+            UserPerformance(
+                userId: "user1",
+                userName: "User 1",
+                rank: 1,
+                totalScore: 1000,
+                completedCourses: 15,
+                learningHours: 150,
+                lastActivityDate: Date()
+            )
+        ]
+        mockService.mockSummary = AnalyticsSummary(
+            period: .month,
+            totalUsers: 100,
+            activeUsers: 75,
+            completedCourses: 150,
+            totalLearningHours: 1200,
+            averageScore: 85.5,
+            topPerformers: performers,
+            popularCourses: []
+        )
+        viewModel.loadAnalytics()
         
-        if let summary = sut.analyticsSummary {
-            XCTAssertEqual(performers.count, summary.topPerformers.count)
-            XCTAssertEqual(performers.first?.userId, summary.topPerformers.first?.userId)
-        }
+        // Then
+        XCTAssertEqual(viewModel.topPerformers.count, 1)
+        XCTAssertEqual(viewModel.topPerformers.first?.userName, "User 1")
     }
     
     func testPopularCourses() {
-        // Should return popular courses from summary
-        let popular = sut.popularCourses
+        // Given
+        let courses = [
+            CourseStatistics(
+                courseId: "popular1",
+                courseName: "Popular Course",
+                enrolledCount: 100,
+                completedCount: 80,
+                averageScore: 90,
+                averageCompletionTime: 10
+            )
+        ]
+        mockService.mockSummary = AnalyticsSummary(
+            period: .month,
+            totalUsers: 100,
+            activeUsers: 75,
+            completedCourses: 150,
+            totalLearningHours: 1200,
+            averageScore: 85.5,
+            topPerformers: [],
+            popularCourses: courses
+        )
+        viewModel.loadAnalytics()
         
-        if let summary = sut.analyticsSummary {
-            XCTAssertEqual(popular.count, summary.popularCourses.count)
-            XCTAssertEqual(popular.first?.courseId, summary.popularCourses.first?.courseId)
-        }
+        // Then
+        XCTAssertEqual(viewModel.popularCourses.count, 1)
+        XCTAssertEqual(viewModel.popularCourses.first?.courseName, "Popular Course")
     }
     
     // MARK: - Chart Data Tests
     
     func testLearningProgressChartData() {
-        // Test for different periods
-        let periods: [AnalyticsPeriod] = [.day, .week, .month]
+        // When - Day period
+        viewModel.selectedPeriod = .day
+        let dayData = viewModel.learningProgressChartData
         
-        for period in periods {
-            sut.changePeriod(period)
-            let data = sut.learningProgressChartData
-            
-            XCTAssertGreaterThan(data.count, 0)
-            
-            switch period {
-            case .day:
-                XCTAssertEqual(data.count, 24) // 24 hours
-            case .week:
-                XCTAssertEqual(data.count, 7) // 7 days
-            case .month:
-                XCTAssertEqual(data.count, 4) // 4 weeks
-            default:
-                break
-            }
-            
-            // All values should be non-negative
-            XCTAssertTrue(data.allSatisfy { $0.value >= 0 })
-        }
+        // Then
+        XCTAssertEqual(dayData.count, 24) // 24 hours
+        XCTAssertTrue(dayData.allSatisfy { $0.value >= 0 && $0.value <= 20 })
+        
+        // When - Week period
+        viewModel.selectedPeriod = .week
+        let weekData = viewModel.learningProgressChartData
+        
+        // Then
+        XCTAssertEqual(weekData.count, 7) // 7 days
+        XCTAssertTrue(weekData.allSatisfy { $0.value >= 40 && $0.value <= 100 })
+        
+        // When - Month period
+        viewModel.selectedPeriod = .month
+        let monthData = viewModel.learningProgressChartData
+        
+        // Then
+        XCTAssertEqual(monthData.count, 4) // 4 weeks
+        XCTAssertTrue(monthData.allSatisfy { $0.value >= 80 && $0.value <= 120 })
     }
     
     func testCompetencyGrowthChartData() {
-        let data = sut.competencyGrowthChartData
+        // Given
+        mockService.mockCompetencyProgress = [
+            CompetencyProgress(
+                competencyId: "comp1",
+                competencyName: "Swift",
+                progressPercentage: 75,
+                usersCount: 30
+            ),
+            CompetencyProgress(
+                competencyId: "comp2",
+                competencyName: "UIKit",
+                progressPercentage: 65,
+                usersCount: 25
+            )
+        ]
+        viewModel.loadAnalytics()
         
-        // Should have data for each competency progress
-        XCTAssertEqual(data.count, sut.competencyProgress.count)
+        // When
+        let chartData = viewModel.competencyGrowthChartData
         
-        // Verify labels match competency names
-        for (index, dataPoint) in data.enumerated() {
-            XCTAssertEqual(dataPoint.label, sut.competencyProgress[index].competencyName)
-            XCTAssertEqual(dataPoint.value, sut.competencyProgress[index].progressPercentage)
-        }
+        // Then
+        XCTAssertEqual(chartData.count, 2)
+        XCTAssertEqual(chartData[0].label, "Swift")
+        XCTAssertEqual(chartData[0].value, 75)
+        XCTAssertEqual(chartData[1].label, "UIKit")
+        XCTAssertEqual(chartData[1].value, 65)
     }
     
     func testTestScoresChartData() {
-        // Test for week
-        sut.changePeriod(.week)
-        var data = sut.testScoresChartData
-        XCTAssertEqual(data.count, 7)
-        XCTAssertTrue(data.allSatisfy { $0.value >= 0 })
+        // When - Week period
+        viewModel.selectedPeriod = .week
+        let weekData = viewModel.testScoresChartData
         
-        // Test for month
-        sut.changePeriod(.month)
-        data = sut.testScoresChartData
-        XCTAssertEqual(data.count, 4)
-        XCTAssertTrue(data.allSatisfy { $0.value >= 0 })
+        // Then
+        XCTAssertEqual(weekData.count, 7)
+        XCTAssertTrue(weekData.allSatisfy { $0.value >= 70 && $0.value <= 95 })
+        
+        // When - Month period
+        viewModel.selectedPeriod = .month
+        let monthData = viewModel.testScoresChartData
+        
+        // Then
+        XCTAssertEqual(monthData.count, 4)
+        XCTAssertTrue(monthData.allSatisfy { $0.value >= 75 && $0.value <= 92 })
     }
     
     // MARK: - Statistics Tests
     
     func testTotalLearningHours() {
-        // Should format hours correctly
-        let hours = sut.totalLearningHours
+        // Given
+        mockService.mockSummary = AnalyticsSummary(
+            period: .month,
+            totalUsers: 100,
+            activeUsers: 75,
+            completedCourses: 150,
+            totalLearningHours: 1234.5,
+            averageScore: 85.5,
+            topPerformers: [],
+            popularCourses: []
+        )
+        viewModel.loadAnalytics()
         
-        if let summary = sut.analyticsSummary {
-            let expected = String(format: "%.0f", summary.totalLearningHours)
-            XCTAssertEqual(hours, expected)
-        }
+        // Then
+        XCTAssertEqual(viewModel.totalLearningHours, "1234")
     }
     
     func testAverageScore() {
-        // Should format score as percentage
-        let score = sut.averageScore
+        // Given
+        mockService.mockSummary = AnalyticsSummary(
+            period: .month,
+            totalUsers: 100,
+            activeUsers: 75,
+            completedCourses: 150,
+            totalLearningHours: 1200,
+            averageScore: 87.35,
+            topPerformers: [],
+            popularCourses: []
+        )
+        viewModel.loadAnalytics()
         
-        if let summary = sut.analyticsSummary {
-            let expected = String(format: "%.1f%%", summary.averageScore)
-            XCTAssertEqual(score, expected)
-        }
+        // Then
+        XCTAssertEqual(viewModel.averageScore, "87.4%")
     }
     
     func testActiveUsersPercentage() {
-        let percentage = sut.activeUsersPercentage
+        // Given
+        mockService.mockSummary = AnalyticsSummary(
+            period: .month,
+            totalUsers: 200,
+            activeUsers: 150,
+            completedCourses: 150,
+            totalLearningHours: 1200,
+            averageScore: 85.5,
+            topPerformers: [],
+            popularCourses: []
+        )
+        viewModel.loadAnalytics()
         
-        if let summary = sut.analyticsSummary {
-            let expected = Double(summary.activeUsers) / Double(summary.totalUsers) * 100
-            XCTAssertEqual(percentage, expected, accuracy: 0.01)
-        }
+        // Then
+        XCTAssertEqual(viewModel.activeUsersPercentage, 75.0)
     }
     
     func testCompletionRate() {
-        let rate = sut.completionRate
+        // Given
+        mockService.mockCourseStatistics = [
+            CourseStatistics(
+                courseId: "course1",
+                courseName: "Course 1",
+                enrolledCount: 100,
+                completedCount: 80,
+                averageScore: 80,
+                averageCompletionTime: 10
+            ),
+            CourseStatistics(
+                courseId: "course2",
+                courseName: "Course 2",
+                enrolledCount: 50,
+                completedCount: 30,
+                averageScore: 85,
+                averageCompletionTime: 12
+            )
+        ]
+        viewModel.loadAnalytics()
         
-        // Should be between 0 and 100
-        XCTAssertGreaterThanOrEqual(rate, 0)
-        XCTAssertLessThanOrEqual(rate, 100)
+        // Then
+        let expectedRate = (80.0 + 30.0) / (100.0 + 50.0) * 100
+        XCTAssertEqual(viewModel.completionRate, expectedRate, accuracy: 0.01)
+    }
+    
+    func testCompletionRateWithNoEnrollments() {
+        // Given
+        mockService.mockCourseStatistics = []
+        viewModel.loadAnalytics()
         
-        // Manual calculation
-        let totalEnrolled = sut.courseStatistics.reduce(0) { $0 + $1.enrolledCount }
-        let totalCompleted = sut.courseStatistics.reduce(0) { $0 + $1.completedCount }
-        
-        if totalEnrolled > 0 {
-            let expected = Double(totalCompleted) / Double(totalEnrolled) * 100
-            XCTAssertEqual(rate, expected, accuracy: 0.01)
-        } else {
-            XCTAssertEqual(rate, 0)
-        }
+        // Then
+        XCTAssertEqual(viewModel.completionRate, 0)
     }
     
     // MARK: - Export Tests
     
     func testExportDashboard() {
-        let url = sut.exportDashboard()
+        // When
+        let fileURL = viewModel.exportDashboard()
         
-        // Should return a valid URL
-        XCTAssertNotNil(url)
+        // Then
+        XCTAssertNotNil(fileURL)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL!.path))
         
-        if let url = url {
-            // File should exist
-            XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
-            
-            // Should be HTML file
-            XCTAssertTrue(url.pathExtension == "html")
-            
-            // Read content
-            if let content = try? String(contentsOf: url) {
-                // Should contain basic HTML structure
-                XCTAssertTrue(content.contains("<html>"))
-                XCTAssertTrue(content.contains("</html>"))
-                XCTAssertTrue(content.contains(sut.selectedPeriod.rawValue))
-                
-                // Should contain metrics
-                if let summary = sut.analyticsSummary {
-                    XCTAssertTrue(content.contains("\(summary.activeUsers)"))
-                    XCTAssertTrue(content.contains("\(summary.completedCourses)"))
-                }
-            }
-            
-            // Cleanup
-            try? FileManager.default.removeItem(at: url)
-        }
-    }
-}
-
-// MARK: - Mock Analytics Service
-
-class MockAnalyticsService: AnalyticsServiceProtocol {
-    var getAnalyticsSummaryCalled = false
-    var getUserPerformanceCalled = false
-    var getCourseStatisticsCalled = false
-    var getCompetencyProgressCalled = false
-    var trackEventCalled = false
-    
-    var lastTrackedEvent: AnalyticsData?
-    
-    func reset() {
-        getAnalyticsSummaryCalled = false
-        getUserPerformanceCalled = false
-        getCourseStatisticsCalled = false
-        getCompetencyProgressCalled = false
-        trackEventCalled = false
-        lastTrackedEvent = nil
+        // Cleanup
+        try? FileManager.default.removeItem(at: fileURL!)
     }
     
-    func getAnalyticsSummary(for period: AnalyticsPeriod) -> AnalyticsSummary {
-        getAnalyticsSummaryCalled = true
-        
-        return AnalyticsSummary(
-            period: period,
-            startDate: Date().addingTimeInterval(-Double(period.days) * 24 * 3600),
-            endDate: Date(),
+    func testExportDashboardContent() {
+        // Given
+        mockService.mockSummary = AnalyticsSummary(
+            period: .month,
             totalUsers: 100,
             activeUsers: 75,
             completedCourses: 150,
-            averageScore: 82.3,
-            totalLearningHours: 1250.5,
+            totalLearningHours: 1200,
+            averageScore: 85.5,
             topPerformers: [
                 UserPerformance(
-                    userId: "user-1",
-                    userName: "Test User 1",
-                    avatar: nil,
-                    totalScore: 950,
-                    completedCourses: 8,
-                    averageTestScore: 92.5,
-                    learningHours: 120,
+                    userId: "user1",
+                    userName: "Top User",
                     rank: 1,
-                    badges: ["star", "trophy", "crown"],
-                    trend: .improving
+                    totalScore: 1000,
+                    completedCourses: 20,
+                    learningHours: 200,
+                    lastActivityDate: Date()
                 )
             ],
-            popularCourses: [
-                CourseStatistics(
-                    courseId: "course-1",
-                    courseName: "Test Course",
-                    enrolledCount: 50,
-                    completedCount: 30,
-                    averageProgress: 0.6,
-                    averageScore: 85.0,
-                    averageTimeToComplete: 10.5,
-                    satisfactionRating: 4.5
-                )
-            ],
-            competencyProgress: [
-                CompetencyProgress(
-                    competencyId: "comp-1",
-                    competencyName: "iOS Development",
-                    usersCount: 50,
-                    averageLevel: 3.5,
-                    targetLevel: 4.0,
-                    progressPercentage: 87.5
-                )
-            ]
+            popularCourses: []
         )
-    }
-    
-    func getUserPerformance(userId: String, period: AnalyticsPeriod) -> UserPerformance? {
-        getUserPerformanceCalled = true
+        viewModel.loadAnalytics()
         
-        return UserPerformance(
-            userId: userId,
-            userName: "Current User",
-            avatar: nil,
-            totalScore: 850,
-            completedCourses: 5,
-            averageTestScore: 87.5,
-            learningHours: 80,
-            rank: 3,
-            badges: ["star"],
-            trend: .stable
-        )
-    }
-    
-    func getCourseStatistics(period: AnalyticsPeriod) -> [CourseStatistics] {
-        getCourseStatisticsCalled = true
+        // When
+        let fileURL = viewModel.exportDashboard()
         
-        return [
-            CourseStatistics(
-                courseId: "course-1",
-                courseName: "iOS Development",
-                enrolledCount: 50,
-                completedCount: 30,
-                averageProgress: 0.6,
-                averageScore: 85.0,
-                averageTimeToComplete: 10.5,
-                satisfactionRating: 4.5
-            ),
-            CourseStatistics(
-                courseId: "course-2",
-                courseName: "Swift Basics",
-                enrolledCount: 80,
-                completedCount: 60,
-                averageProgress: 0.75,
-                averageScore: 90.0,
-                averageTimeToComplete: 5.0,
-                satisfactionRating: 4.7
-            )
-        ]
-    }
-    
-    func getCompetencyProgress(period: AnalyticsPeriod) -> [CompetencyProgress] {
-        getCompetencyProgressCalled = true
+        // Then
+        XCTAssertNotNil(fileURL)
         
-        return [
-            CompetencyProgress(
-                competencyId: "comp-1",
-                competencyName: "iOS Development",
-                usersCount: 50,
-                averageLevel: 3.5,
-                targetLevel: 4.0,
-                progressPercentage: 87.5
-            ),
-            CompetencyProgress(
-                competencyId: "comp-2",
-                competencyName: "Team Work",
-                usersCount: 40,
-                averageLevel: 3.0,
-                targetLevel: 4.0,
-                progressPercentage: 75.0
-            )
-        ]
+        if let url = fileURL,
+           let content = try? String(contentsOf: url) {
+            XCTAssertTrue(content.contains("75")) // Active users
+            XCTAssertTrue(content.contains("150")) // Completed courses
+            XCTAssertTrue(content.contains("85.5%")) // Average score
+            XCTAssertTrue(content.contains("Top User")) // Top performer
+            
+            // Cleanup
+            try? FileManager.default.removeItem(at: url)
+        } else {
+            XCTFail("Could not read exported file")
+        }
     }
     
-    func trackEvent(_ event: AnalyticsData) {
-        trackEventCalled = true
-        lastTrackedEvent = event
-    }
+    // MARK: - Edge Cases
     
-    // Missing protocol methods
-    func generateReport(_ report: Report) -> AnyPublisher<Report, Error> {
-        Future<Report, Error> { promise in
-            promise(.success(report))
-        }.eraseToAnyPublisher()
-    }
-    
-    func getReports(for userId: String) -> [Report] {
-        []
-    }
-    
-    func exportReport(_ report: Report, format: ReportFormat) -> URL? {
-        nil
+    func testNilAnalyticsSummary() {
+        // Given
+        mockService.mockSummary = nil
+        viewModel.loadAnalytics()
+        
+        // Then
+        XCTAssertEqual(viewModel.totalLearningHours, "0")
+        XCTAssertEqual(viewModel.averageScore, "0%")
+        XCTAssertEqual(viewModel.activeUsersPercentage, 0)
+        XCTAssertTrue(viewModel.topPerformers.isEmpty)
+        XCTAssertTrue(viewModel.popularCourses.isEmpty)
     }
 } 
