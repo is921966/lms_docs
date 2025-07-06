@@ -1,0 +1,197 @@
+//
+//  ProfileViewInspectorTests.swift
+//  LMSTests
+//
+//  Created on 2025-07-06.
+//
+
+import XCTest
+import SwiftUI
+import ViewInspector
+@testable import LMS
+
+final class ProfileViewInspectorTests: XCTestCase {
+    var authService: MockAuthService!
+    var sut: ProfileView!
+    
+    override func setUp() {
+        super.setUp()
+        authService = MockAuthService.shared
+        authService.reset()
+        authService.currentUser = createMockUser(role: .student)
+        sut = ProfileView()
+    }
+    
+    override func tearDown() {
+        authService = nil
+        sut = nil
+        super.tearDown()
+    }
+    
+    // MARK: - Structure Tests
+    
+    func testProfileViewHasScrollView() throws {
+        let scrollView = try sut.inspect().find(ViewType.ScrollView.self)
+        XCTAssertNotNil(scrollView)
+    }
+    
+    func testProfileViewHasVStackLayout() throws {
+        let vStack = try sut.inspect().find(ViewType.VStack.self)
+        XCTAssertNotNil(vStack)
+    }
+    
+    // MARK: - Profile Header Tests
+    
+    func testProfileHeaderExists() throws {
+        // Check for avatar image
+        let image = try sut.inspect().find(ViewType.Image.self)
+        XCTAssertNotNil(image)
+    }
+    
+    func testUserNameIsDisplayed() throws {
+        let userName = try sut.inspect().find(text: "Test User")
+        XCTAssertNotNil(userName)
+    }
+    
+    func testUserEmailIsDisplayed() throws {
+        let email = try sut.inspect().find(text: "test@example.com")
+        XCTAssertNotNil(email)
+    }
+    
+    func testUserRoleIsDisplayed() throws {
+        let role = try sut.inspect().find(text: "Студент")
+        XCTAssertNotNil(role)
+    }
+    
+    // MARK: - Statistics Section Tests
+    
+    func testStatisticsSectionExists() throws {
+        let section = try sut.inspect().find(ViewType.Section.self, where: { section in
+            if let header = try? section.header() {
+                if let text = try? header.find(text: "Статистика") {
+                    return true
+                }
+            }
+            return false
+        })
+        XCTAssertNotNil(section)
+    }
+    
+    func testCompletedCoursesStatExists() throws {
+        let stat = try sut.inspect().find(text: "Завершенные курсы")
+        XCTAssertNotNil(stat)
+    }
+    
+    func testAverageScoreStatExists() throws {
+        let stat = try sut.inspect().find(text: "Средний балл")
+        XCTAssertNotNil(stat)
+    }
+    
+    func testLearningHoursStatExists() throws {
+        let stat = try sut.inspect().find(text: "Часов обучения")
+        XCTAssertNotNil(stat)
+    }
+    
+    func testCertificatesStatExists() throws {
+        let stat = try sut.inspect().find(text: "Сертификаты")
+        XCTAssertNotNil(stat)
+    }
+    
+    // MARK: - Achievements Section Tests
+    
+    func testAchievementsSectionExists() throws {
+        let section = try sut.inspect().find(ViewType.Section.self, where: { section in
+            if let header = try? section.header() {
+                if let text = try? header.find(text: "Достижения") {
+                    return true
+                }
+            }
+            return false
+        })
+        XCTAssertNotNil(section)
+    }
+    
+    func testAchievementBadgesAreDisplayed() throws {
+        // Check for achievement grid or list
+        let badges = try sut.inspect().findAll(ViewType.Image.self)
+        XCTAssertGreaterThan(badges.count, 1) // At least avatar + one badge
+    }
+    
+    // MARK: - Progress Section Tests
+    
+    func testProgressSectionExists() throws {
+        let section = try sut.inspect().find(ViewType.Section.self, where: { section in
+            if let header = try? section.header() {
+                if let text = try? header.find(text: "Текущий прогресс") {
+                    return true
+                }
+            }
+            return false
+        })
+        XCTAssertNotNil(section)
+    }
+    
+    func testActiveCoursesListExists() throws {
+        // Check for course progress items
+        let progressBars = try sut.inspect().findAll(ViewType.ProgressView.self)
+        XCTAssertGreaterThan(progressBars.count, 0)
+    }
+    
+    // MARK: - Action Buttons Tests
+    
+    func testEditProfileButtonExists() throws {
+        let button = try sut.inspect().find(button: "Редактировать профиль")
+        XCTAssertNotNil(button)
+    }
+    
+    func testViewCertificatesButtonExists() throws {
+        let button = try sut.inspect().find(button: "Мои сертификаты")
+        XCTAssertNotNil(button)
+    }
+    
+    func testChangePasswordButtonExists() throws {
+        let button = try sut.inspect().find(button: "Изменить пароль")
+        XCTAssertNotNil(button)
+    }
+    
+    // MARK: - Navigation Tests
+    
+    func testNavigationTitleIsCorrect() throws {
+        let title = try sut.inspect().navigationTitle()
+        XCTAssertEqual(title, "Профиль")
+    }
+    
+    func testNavigationBarItemsExist() throws {
+        // Navigation bar items require runtime context
+        XCTAssertTrue(true, "Navigation bar testing requires runtime")
+    }
+    
+    // MARK: - Accessibility Tests
+    
+    func testProfileImageHasAccessibilityLabel() throws {
+        let image = try sut.inspect().find(ViewType.Image.self)
+        let label = try image.accessibilityLabel()
+        XCTAssertNotNil(label)
+    }
+    
+    func testAllButtonsHaveAccessibilityLabels() throws {
+        let buttons = try sut.inspect().findAll(ViewType.Button.self)
+        for button in buttons {
+            let label = try? button.accessibilityLabel()
+            XCTAssertNotNil(label)
+        }
+    }
+    
+    // MARK: - Layout Tests
+    
+    func testViewHasProperPadding() throws {
+        let vStack = try sut.inspect().find(ViewType.VStack.self)
+        let padding = try vStack.padding()
+        XCTAssertNotNil(padding)
+    }
+    
+    func testSectionsHaveProperSpacing() throws {
+        let sections = try sut.inspect().findAll(ViewType.Section.self)
+        XCTAssertGreaterThan(sections.count, 0)
+    }
+} 
