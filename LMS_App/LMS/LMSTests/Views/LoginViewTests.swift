@@ -7,16 +7,17 @@ import XCTest
 import SwiftUI
 @testable import LMS
 
-class LoginViewTests: XCTestCase {
+final class LoginViewTests: XCTestCase {
     
     var loginView: LoginView!
     var mockAuthService: MockAuthService!
     
     override func setUp() {
         super.setUp()
-        mockAuthService = MockAuthService()
-        // Note: We can't directly inject AuthService into LoginView as it uses singleton
-        // These tests will focus on testable logic
+        mockAuthService = MockAuthService.shared
+        mockAuthService.logout() // Reset state
+        // LoginView uses shared instance internally
+        loginView = LoginView()
     }
     
     override func tearDown() {

@@ -59,6 +59,13 @@ class MockAuthService: ObservableObject {
         mockLogin(asAdmin: isAdmin)
     }
 
+    // MARK: - Login method for tests
+    func login(email: String, password: String) {
+        // For tests - simulate login based on email
+        let isAdmin = email.contains("admin")
+        mockLogin(asAdmin: isAdmin)
+    }
+
     // MARK: - Mock Approve
     func mockApprove() {
         guard isAuthenticated && !isApprovedByAdmin else { return }

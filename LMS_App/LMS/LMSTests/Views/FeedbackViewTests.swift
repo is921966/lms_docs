@@ -156,9 +156,9 @@ class FeedbackViewTests: XCTestCase {
     }
 }
 
-// MARK: - FeedbackModel Tests
+// MARK: - FeedbackType Tests
 
-class FeedbackModelTests: XCTestCase {
+class FeedbackTypeTests: XCTestCase {
     
     func testFeedbackModel_Initialization() {
         let model = FeedbackModel(

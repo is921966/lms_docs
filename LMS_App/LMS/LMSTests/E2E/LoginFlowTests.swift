@@ -141,6 +141,18 @@ class LoginFlowTests: XCTestCase {
         
         // In real app, would verify navigation to main TabView
     }
+    
+    func testBasicLoginFlow() {
+        // When - user enters credentials and logs in
+        let email = "test@example.com"
+        let password = "password123"
+        
+        authService.mockLogin(asAdmin: false)
+        
+        // Then
+        XCTAssertTrue(authService.isAuthenticated)
+        XCTAssertNotNil(authService.currentUser)
+    }
 }
 
 // MARK: - Login UI Flow Tests

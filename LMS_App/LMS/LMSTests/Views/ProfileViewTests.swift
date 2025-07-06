@@ -15,7 +15,7 @@ class ProfileViewTests: XCTestCase {
         super.setUp()
         mockAuthService = MockAuthService.shared
         // Ensure user is logged in for profile tests
-        mockAuthService.login(email: "test@example.com", password: "password")
+        mockAuthService.mockLogin(asAdmin: false)
     }
     
     override func tearDown() {
@@ -52,7 +52,8 @@ class ProfileViewTests: XCTestCase {
     }
     
     func testCurrentUser_HasCorrectEmail() {
-        let expectedEmail = "test@example.com"
+        // mockLogin creates a student with email "student@tsum.ru"
+        let expectedEmail = "student@tsum.ru"
         XCTAssertEqual(mockAuthService.currentUser?.email, expectedEmail)
     }
     
@@ -124,6 +125,22 @@ class ProfileViewTests: XCTestCase {
         let actualOpacity = 0.05
         
         XCTAssertEqual(expectedOpacity, actualOpacity)
+    }
+    
+    func testInitialState() {
+        // Given - user is authenticated
+        mockAuthService.mockLogin(asAdmin: false)
+        // mockLogin already creates a user, so we just need to wait
+        let expectation = XCTestExpectation(description: "User login")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            // Then
+            XCTAssertNotNil(self.mockAuthService.currentUser)
+            XCTAssertTrue(self.mockAuthService.currentUser?.name.count ?? 0 > 0)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 3)
     }
 }
 

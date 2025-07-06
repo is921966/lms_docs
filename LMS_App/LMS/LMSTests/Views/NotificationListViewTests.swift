@@ -73,16 +73,26 @@ class NotificationListViewTests: XCTestCase {
     func testFilteredNotifications_NoFilter() {
         // Add test notifications
         let notification1 = Notification(
+            id: "1",
+            type: .courseAssigned,
             title: "Test 1",
             message: "Message 1",
-            type: .courseAssigned,
-            priority: .normal
+            createdAt: Date(),
+            isRead: false,
+            priority: .medium,
+            actionUrl: nil,
+            metadata: nil
         )
         let notification2 = Notification(
+            id: "2",
+            type: .testReminder,
             title: "Test 2",
             message: "Message 2",
-            type: .testReminder,
-            priority: .high
+            createdAt: Date(),
+            isRead: false,
+            priority: .high,
+            actionUrl: nil,
+            metadata: nil
         )
         
         notificationService.notifications = [notification1, notification2]
@@ -95,16 +105,26 @@ class NotificationListViewTests: XCTestCase {
     func testFilteredNotifications_WithFilter() {
         // Add test notifications
         let notification1 = Notification(
+            id: "3",
+            type: .courseAssigned,
             title: "Course",
             message: "New course",
-            type: .courseAssigned,
-            priority: .normal
+            createdAt: Date(),
+            isRead: false,
+            priority: .medium,
+            actionUrl: nil,
+            metadata: nil
         )
         let notification2 = Notification(
+            id: "4",
+            type: .testReminder,
             title: "Test",
             message: "Test reminder",
-            type: .testReminder,
-            priority: .high
+            createdAt: Date(),
+            isRead: false,
+            priority: .high,
+            actionUrl: nil,
+            metadata: nil
         )
         
         notificationService.notifications = [notification1, notification2]
@@ -187,10 +207,15 @@ class NotificationRowTests: XCTestCase {
     
     func testNotificationRow_UnreadIndicator() {
         let notification = Notification(
+            id: "5",
+            type: .courseAssigned,
             title: "Test",
             message: "Test message",
-            type: .courseAssigned,
-            priority: .normal
+            createdAt: Date(),
+            isRead: false,
+            priority: .medium,
+            actionUrl: nil,
+            metadata: nil
         )
         
         // New notification should be unread
@@ -199,10 +224,15 @@ class NotificationRowTests: XCTestCase {
     
     func testNotificationRow_ReadState() {
         var notification = Notification(
+            id: "6",
+            type: .courseAssigned,
             title: "Test",
             message: "Test message",
-            type: .courseAssigned,
-            priority: .normal
+            createdAt: Date(),
+            isRead: false,
+            priority: .medium,
+            actionUrl: nil,
+            metadata: nil
         )
         notification.isRead = true
         
@@ -211,13 +241,18 @@ class NotificationRowTests: XCTestCase {
     
     func testNotificationRow_HighPriorityLabel() {
         let notification = Notification(
+            id: "7",
+            type: .testReminder,
             title: "Urgent",
             message: "High priority",
-            type: .testReminder,
-            priority: .high
+            createdAt: Date(),
+            isRead: false,
+            priority: .high,
+            actionUrl: nil,
+            metadata: nil
         )
         
-        XCTAssertEqual(notification.priority, .high)
+        XCTAssertEqual(notification.priority, NotificationPriority.high)
         XCTAssertFalse(notification.isRead)
     }
     
@@ -244,6 +279,41 @@ class NotificationRowTests: XCTestCase {
     func testHighPriorityLabel_Icon() {
         let expectedIcon = "exclamationmark.circle.fill"
         XCTAssertEqual(expectedIcon, "exclamationmark.circle.fill")
+    }
+    
+    func testNotificationRow_UnreadStyle() {
+        let notification = Notification(
+            id: "1",
+            type: .courseAssigned,
+            title: "Test",
+            message: "Test message",
+            createdAt: Date(),
+            isRead: false,
+            priority: .medium,
+            actionUrl: nil,
+            metadata: nil
+        )
+        
+        // Unread notifications should have blue background
+        XCTAssertFalse(notification.isRead)
+        XCTAssertEqual(notification.priority, NotificationPriority.medium)
+    }
+    
+    func testNotificationRow_ReadStyle() {
+        let notification = Notification(
+            id: "2",
+            type: .system,
+            title: "Test",
+            message: "Test message",
+            createdAt: Date(),
+            isRead: true,
+            priority: .low,
+            actionUrl: nil,
+            metadata: nil
+        )
+        
+        // Read notifications should have gray background
+        XCTAssertTrue(notification.isRead)
     }
 }
 

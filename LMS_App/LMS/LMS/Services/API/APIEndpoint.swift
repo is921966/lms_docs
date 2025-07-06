@@ -43,7 +43,7 @@ enum HTTPMethod: String {
 
 // MARK: - API Errors
 
-enum APIError: LocalizedError {
+enum APIError: LocalizedError, Equatable {
     case invalidURL
     case invalidResponse
     case noInternet
@@ -53,6 +53,7 @@ enum APIError: LocalizedError {
     case forbidden
     case notFound
     case rateLimitExceeded
+    case invalidCredentials
     case serverError(statusCode: Int)
     case networkError(URLError)
     case decodingError(Error)
@@ -79,6 +80,8 @@ enum APIError: LocalizedError {
             return "Resource not found"
         case .rateLimitExceeded:
             return "Too many requests. Please try again later"
+        case .invalidCredentials:
+            return "Invalid email or password"
         case .serverError(let code):
             return "Server error (\(code))"
         case .networkError(let error):
@@ -89,6 +92,34 @@ enum APIError: LocalizedError {
             return message
         case .unknown(let code):
             return "Unknown error (\(code))"
+        }
+    }
+    
+    static func == (lhs: APIError, rhs: APIError) -> Bool {
+        switch (lhs, rhs) {
+        case (.invalidURL, .invalidURL),
+             (.invalidResponse, .invalidResponse),
+             (.noInternet, .noInternet),
+             (.timeout, .timeout),
+             (.cancelled, .cancelled),
+             (.unauthorized, .unauthorized),
+             (.forbidden, .forbidden),
+             (.notFound, .notFound),
+             (.rateLimitExceeded, .rateLimitExceeded),
+             (.invalidCredentials, .invalidCredentials):
+            return true
+        case (.serverError(let lCode), .serverError(let rCode)):
+            return lCode == rCode
+        case (.networkError(let lError), .networkError(let rError)):
+            return lError.code == rError.code
+        case (.decodingError, .decodingError):
+            return true
+        case (.custom(let lMsg), .custom(let rMsg)):
+            return lMsg == rMsg
+        case (.unknown(let lCode), .unknown(let rCode)):
+            return lCode == rCode
+        default:
+            return false
         }
     }
 }
