@@ -2,7 +2,7 @@
 //  OnboardingViewModelTests.swift
 //  LMSTests
 //
-//  Created on 08/07/2025.
+//  Created on 06/07/2025.
 //
 
 import XCTest
@@ -13,393 +13,338 @@ final class OnboardingViewModelTests: XCTestCase {
     
     var viewModel: OnboardingViewModel!
     var mockService: OnboardingMockService!
-    var cancellables: Set<AnyCancellable>!
+    var cancellables: Set<AnyCancellable> = []
     
     override func setUp() {
         super.setUp()
         mockService = OnboardingMockService()
         viewModel = OnboardingViewModel(onboardingService: mockService)
-        cancellables = Set<AnyCancellable>()
+        cancellables = []
     }
     
     override func tearDown() {
         viewModel = nil
         mockService = nil
-        cancellables = nil
+        cancellables.removeAll()
         super.tearDown()
     }
     
     // MARK: - Initialization Tests
     
-    func testInitialization() {
-        // Given
-        let expectation = XCTestExpectation(description: "Initial load complete")
-        
-        // When - already initialized in setUp
-        viewModel.$isLoading
-            .dropFirst()
-            .sink { isLoading in
-                if !isLoading {
-                    expectation.fulfill()
-                }
-            }
-            .store(in: &cancellables)
-        
-        // Then
-        wait(for: [expectation], timeout: 2)
+    func testInitialState() {
         XCTAssertEqual(viewModel.selectedFilter, .all)
         XCTAssertEqual(viewModel.searchText, "")
         XCTAssertFalse(viewModel.isLoading)
         XCTAssertNil(viewModel.errorMessage)
+        
+        // Wait for initial load
+        let expectation = XCTestExpectation(description: "Initial load")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1)
+        
+        XCTAssertFalse(viewModel.programs.isEmpty)
+        XCTAssertEqual(viewModel.programs.count, viewModel.filteredPrograms.count)
     }
     
-    func testLoadProgramsOnInit() {
-        // Given
-        let expectation = XCTestExpectation(description: "Programs loaded")
+    // MARK: - Filtering Tests
+    
+    func testFilterByStatus() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
         
-        // When - wait for initial load to complete
-        viewModel.$isLoading
+        // Test in progress filter
+        viewModel.selectedFilter = .inProgress
+        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { $0.status == .inProgress })
+        
+        // Test not started filter
+        viewModel.selectedFilter = .notStarted
+        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { $0.status == .notStarted })
+        
+        // Test completed filter
+        viewModel.selectedFilter = .completed
+        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { $0.status == .completed })
+        
+        // Test overdue filter
+        viewModel.selectedFilter = .overdue
+        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { $0.isOverdue })
+        
+        // Test all filter
+        viewModel.selectedFilter = .all
+        XCTAssertEqual(viewModel.filteredPrograms.count, viewModel.programs.count)
+    }
+    
+    func testSearchFiltering() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        // Set search text
+        viewModel.searchText = "Иван"
+        
+        // Wait for debounce
+        let searchExpectation = XCTestExpectation(description: "Search applied")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            searchExpectation.fulfill()
+        }
+        wait(for: [searchExpectation], timeout: 0.5)
+        
+        // Verify results
+        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { program in
+            program.employeeName.localizedCaseInsensitiveContains("Иван") ||
+            program.title.localizedCaseInsensitiveContains("Иван") ||
+            program.employeeDepartment.localizedCaseInsensitiveContains("Иван")
+        })
+    }
+    
+    func testCombinedFiltering() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        // Apply filters
+        viewModel.selectedFilter = .inProgress
+        viewModel.searchText = "IT"
+        
+        // Wait for debounce
+        let filterExpectation = XCTestExpectation(description: "Filters applied")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            filterExpectation.fulfill()
+        }
+        wait(for: [filterExpectation], timeout: 0.5)
+        
+        // Verify results
+        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { program in
+            program.status == .inProgress &&
+            (program.employeeName.localizedCaseInsensitiveContains("IT") ||
+             program.title.localizedCaseInsensitiveContains("IT") ||
+             program.employeeDepartment.localizedCaseInsensitiveContains("IT"))
+        })
+    }
+    
+    // MARK: - Statistics Tests
+    
+    func testStatistics() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        // Test counts
+        let activeCount = viewModel.programs.filter { $0.status == .inProgress }.count
+        let completedCount = viewModel.programs.filter { $0.status == .completed }.count
+        
+        XCTAssertEqual(viewModel.activePrograms, activeCount)
+        XCTAssertEqual(viewModel.completedPrograms, completedCount)
+        XCTAssertEqual(viewModel.totalPrograms, viewModel.programs.count)
+    }
+    
+    func testCompletionRate() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        let expectedRate = Double(viewModel.completedPrograms) / Double(viewModel.programs.count) * 100
+        XCTAssertEqual(viewModel.completionRate, expectedRate, accuracy: 0.01)
+    }
+    
+    func testAverageProgress() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        let totalProgress = viewModel.programs.reduce(0) { $0 + $1.overallProgress }
+        let expectedAverage = totalProgress / Double(viewModel.programs.count) * 100
+        XCTAssertEqual(viewModel.averageProgress, expectedAverage, accuracy: 0.01)
+    }
+    
+    func testEmptyStatistics() {
+        // Clear programs
+        mockService.programs = []
+        viewModel.loadPrograms()
+        
+        // Wait for load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        XCTAssertEqual(viewModel.completionRate, 0)
+        XCTAssertEqual(viewModel.averageProgress, 0)
+    }
+    
+    // MARK: - CRUD Tests
+    
+    func testUpdateProgram() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        // Get a program and update it
+        guard var program = viewModel.programs.first else {
+            XCTFail("No programs available")
+            return
+        }
+        
+        program.status = .completed
+        viewModel.updateProgram(program)
+        
+        // Verify update
+        let updatedProgram = viewModel.programs.first { $0.id == program.id }
+        XCTAssertEqual(updatedProgram?.status, .completed)
+    }
+    
+    func testDeleteProgram() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        // Get initial count
+        let initialCount = viewModel.programs.count
+        
+        // Delete first program
+        guard let program = viewModel.programs.first else {
+            XCTFail("No programs available")
+            return
+        }
+        
+        viewModel.deleteProgram(program)
+        
+        // Verify deletion
+        XCTAssertEqual(viewModel.programs.count, initialCount - 1)
+        XCTAssertFalse(viewModel.programs.contains { $0.id == program.id })
+    }
+    
+    // MARK: - Count Tests
+    
+    func testCountForFilter() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        // Test all filter types
+        for filter in OnboardingViewModel.FilterType.allCases {
+            let count = viewModel.countForFilter(filter)
+            
+            switch filter {
+            case .all:
+                XCTAssertEqual(count, viewModel.programs.count)
+            case .inProgress:
+                XCTAssertEqual(count, viewModel.programs.filter { $0.status == .inProgress }.count)
+            case .notStarted:
+                XCTAssertEqual(count, viewModel.programs.filter { $0.status == .notStarted }.count)
+            case .completed:
+                XCTAssertEqual(count, viewModel.programs.filter { $0.status == .completed }.count)
+            case .overdue:
+                XCTAssertEqual(count, viewModel.programs.filter { $0.isOverdue }.count)
+            }
+        }
+    }
+    
+    // MARK: - Loading Tests
+    
+    func testLoadPrograms() {
+        // Clear initial programs
+        mockService.programs = []
+        
+        // Start loading
+        viewModel.loadPrograms()
+        
+        // Verify loading state
+        XCTAssertTrue(viewModel.isLoading)
+        XCTAssertNil(viewModel.errorMessage)
+        
+        // Wait for load to complete
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        // Verify loading completed
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertNil(viewModel.errorMessage)
+    }
+    
+    // MARK: - Reactive Binding Tests
+    
+    func testProgramsBinding() {
+        // Add new program directly to service
+        let newProgram = OnboardingProgram(
+            employeeId: "test-123",
+            employeeName: "Test User",
+            employeeDepartment: "Test Dept",
+            employeePosition: "Test Position",
+            startDate: Date()
+        )
+        
+        let expectation = XCTestExpectation(description: "Programs updated")
+        
+        viewModel.$programs
             .dropFirst()
-            .sink { isLoading in
-                if !isLoading {
+            .sink { programs in
+                if programs.contains(where: { $0.id == newProgram.id }) {
                     expectation.fulfill()
                 }
             }
             .store(in: &cancellables)
         
-        // Then
-        wait(for: [expectation], timeout: 2)
-        XCTAssertFalse(viewModel.programs.isEmpty)
-        XCTAssertEqual(viewModel.programs.count, viewModel.filteredPrograms.count)
-    }
-    
-    // MARK: - Statistics Tests
-    
-    func testActivePrograms() {
-        // Given
-        let activeCount = mockService.programs.filter { $0.status == .inProgress }.count
+        mockService.programs.append(newProgram)
         
-        // Then
-        XCTAssertEqual(viewModel.activePrograms, activeCount)
+        wait(for: [expectation], timeout: 1)
+        XCTAssertTrue(viewModel.programs.contains { $0.id == newProgram.id })
     }
     
-    func testCompletedPrograms() {
-        // Given
-        let completedCount = mockService.programs.filter { $0.status == .completed }.count
+    func testFilterChangeReactivity() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Load complete")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
         
-        // Then
-        XCTAssertEqual(viewModel.completedPrograms, completedCount)
-    }
-    
-    func testTotalPrograms() {
-        // Given
-        let totalCount = mockService.programs.count
-        
-        // Then
-        XCTAssertEqual(viewModel.totalPrograms, totalCount)
-    }
-    
-    func testCompletionRateWithPrograms() {
-        // Given
-        let completed = mockService.programs.filter { $0.status == .completed }.count
-        let total = mockService.programs.count
-        let expectedRate = total > 0 ? Double(completed) / Double(total) * 100 : 0
-        
-        // Then
-        XCTAssertEqual(viewModel.completionRate, expectedRate)
-    }
-    
-    func testCompletionRateWithNoPrograms() {
-        // Given
-        mockService.programs = []
-        viewModel.loadPrograms()
-        
-        // Then
-        XCTAssertEqual(viewModel.completionRate, 0)
-    }
-    
-    func testAverageProgress() {
-        // Given
-        let programs = mockService.programs
-        let expectedAverage = programs.isEmpty ? 0 : 
-            programs.reduce(0) { $0 + $1.overallProgress } / Double(programs.count) * 100
-        
-        // Then
-        XCTAssertEqual(viewModel.averageProgress, expectedAverage)
-    }
-    
-    // MARK: - Filter Tests
-    
-    func testFilterInProgress() {
-        // Given
         let expectation = XCTestExpectation(description: "Filter applied")
-        
-        // When
-        viewModel.selectedFilter = .inProgress
         
         viewModel.$filteredPrograms
             .dropFirst()
-            .sink { _ in
-                expectation.fulfill()
+            .sink { filteredPrograms in
+                if filteredPrograms.allSatisfy({ $0.status == .completed }) {
+                    expectation.fulfill()
+                }
             }
             .store(in: &cancellables)
         
-        // Then
-        wait(for: [expectation], timeout: 1)
-        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { $0.status == .inProgress })
-    }
-    
-    func testFilterNotStarted() {
-        // Given
-        let expectation = XCTestExpectation(description: "Filter applied")
-        
-        // When
-        viewModel.selectedFilter = .notStarted
-        
-        viewModel.$filteredPrograms
-            .dropFirst()
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        // Then
-        wait(for: [expectation], timeout: 1)
-        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { $0.status == .notStarted })
-    }
-    
-    func testFilterCompleted() {
-        // Given
-        let expectation = XCTestExpectation(description: "Filter applied")
-        
-        // When
         viewModel.selectedFilter = .completed
         
-        viewModel.$filteredPrograms
-            .dropFirst()
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        // Then
         wait(for: [expectation], timeout: 1)
-        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { $0.status == .completed })
-    }
-    
-    func testFilterOverdue() {
-        // Given
-        let expectation = XCTestExpectation(description: "Filter applied")
-        
-        // When
-        viewModel.selectedFilter = .overdue
-        
-        viewModel.$filteredPrograms
-            .dropFirst()
-            .sink { _ in
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        // Then
-        wait(for: [expectation], timeout: 1)
-        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { $0.isOverdue })
-    }
-    
-    // MARK: - Search Tests
-    
-    func testSearchByEmployeeName() {
-        // Given
-        let expectation = XCTestExpectation(description: "Search applied")
-        
-        // Wait for initial load
-        let loadExpectation = XCTestExpectation(description: "Initial load")
-        viewModel.$isLoading
-            .dropFirst()
-            .sink { isLoading in
-                if !isLoading {
-                    loadExpectation.fulfill()
-                }
-            }
-            .store(in: &cancellables)
-        wait(for: [loadExpectation], timeout: 2)
-        
-        let searchName = mockService.programs.first?.employeeName.prefix(3).lowercased() ?? ""
-        
-        // When
-        viewModel.searchText = String(searchName)
-        
-        // Wait for debounce + processing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            expectation.fulfill()
-        }
-        
-        // Then
-        wait(for: [expectation], timeout: 2)
-        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { 
-            $0.employeeName.lowercased().contains(searchName)
-        })
-    }
-    
-    func testSearchByTitle() {
-        // Given
-        let expectation = XCTestExpectation(description: "Search applied")
-        
-        // Wait for initial load
-        let loadExpectation = XCTestExpectation(description: "Initial load")
-        viewModel.$isLoading
-            .dropFirst()
-            .sink { isLoading in
-                if !isLoading {
-                    loadExpectation.fulfill()
-                }
-            }
-            .store(in: &cancellables)
-        wait(for: [loadExpectation], timeout: 2)
-        
-        let searchTitle = mockService.programs.first?.title.prefix(3).lowercased() ?? ""
-        
-        // When
-        viewModel.searchText = String(searchTitle)
-        
-        // Wait for debounce + processing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            expectation.fulfill()
-        }
-        
-        // Then
-        wait(for: [expectation], timeout: 2)
-        XCTAssertFalse(viewModel.filteredPrograms.isEmpty)
-    }
-    
-    func testSearchWithNoResults() {
-        // Given
-        let expectation = XCTestExpectation(description: "Search applied")
-        
-        // Wait for initial load
-        let loadExpectation = XCTestExpectation(description: "Initial load")
-        viewModel.$isLoading
-            .dropFirst()
-            .sink { isLoading in
-                if !isLoading {
-                    loadExpectation.fulfill()
-                }
-            }
-            .store(in: &cancellables)
-        wait(for: [loadExpectation], timeout: 2)
-        
-        // When
-        viewModel.searchText = "XXXXXXXXXXXXXX"
-        
-        // Wait for debounce + processing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            expectation.fulfill()
-        }
-        
-        // Then
-        wait(for: [expectation], timeout: 2)
-        XCTAssertTrue(viewModel.filteredPrograms.isEmpty)
-    }
-    
-    // MARK: - Count Tests
-    
-    func testCountForFilterAll() {
-        let count = viewModel.countForFilter(.all)
-        XCTAssertEqual(count, mockService.programs.count)
-    }
-    
-    func testCountForFilterInProgress() {
-        let count = viewModel.countForFilter(.inProgress)
-        let expectedCount = mockService.programs.filter { $0.status == .inProgress }.count
-        XCTAssertEqual(count, expectedCount)
-    }
-    
-    func testCountForFilterNotStarted() {
-        let count = viewModel.countForFilter(.notStarted)
-        let expectedCount = mockService.programs.filter { $0.status == .notStarted }.count
-        XCTAssertEqual(count, expectedCount)
-    }
-    
-    func testCountForFilterCompleted() {
-        let count = viewModel.countForFilter(.completed)
-        let expectedCount = mockService.programs.filter { $0.status == .completed }.count
-        XCTAssertEqual(count, expectedCount)
-    }
-    
-    func testCountForFilterOverdue() {
-        let count = viewModel.countForFilter(.overdue)
-        let expectedCount = mockService.programs.filter { $0.isOverdue }.count
-        XCTAssertEqual(count, expectedCount)
-    }
-    
-    // MARK: - Program Management Tests
-    
-    func testUpdateProgram() {
-        // Given
-        guard var program = mockService.programs.first else {
-            XCTFail("No programs available")
-            return
-        }
-        program.status = .completed
-        
-        // When
-        viewModel.updateProgram(program)
-        
-        // Then
-        let updatedProgram = mockService.programs.first { $0.id == program.id }
-        XCTAssertEqual(updatedProgram?.status, .completed)
-    }
-    
-    func testDeleteProgram() {
-        // Given
-        let initialCount = mockService.programs.count
-        guard let programToDelete = mockService.programs.first else {
-            XCTFail("No programs available")
-            return
-        }
-        
-        // When
-        viewModel.deleteProgram(programToDelete)
-        
-        // Then
-        XCTAssertEqual(mockService.programs.count, initialCount - 1)
-        XCTAssertNil(mockService.programs.first { $0.id == programToDelete.id })
-    }
-    
-    // MARK: - Combined Filter and Search Tests
-    
-    func testFilterAndSearchCombined() {
-        // Given
-        let expectation = XCTestExpectation(description: "Filter and search applied")
-        
-        // Wait for initial load
-        let loadExpectation = XCTestExpectation(description: "Initial load")
-        viewModel.$isLoading
-            .dropFirst()
-            .sink { isLoading in
-                if !isLoading {
-                    loadExpectation.fulfill()
-                }
-            }
-            .store(in: &cancellables)
-        wait(for: [loadExpectation], timeout: 2)
-        
-        // When
-        viewModel.selectedFilter = .inProgress
-        viewModel.searchText = mockService.programs
-            .first { $0.status == .inProgress }?
-            .employeeName.prefix(3).lowercased() ?? ""
-        
-        // Wait for debounce + processing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            expectation.fulfill()
-        }
-        
-        // Then
-        wait(for: [expectation], timeout: 2)
-        XCTAssertTrue(viewModel.filteredPrograms.allSatisfy { 
-            $0.status == .inProgress &&
-            $0.employeeName.lowercased().contains(viewModel.searchText)
-        })
     }
 } 

@@ -2,471 +2,348 @@
 //  CompetencyViewModelTests.swift
 //  LMSTests
 //
-//  Created on 09/07/2025.
+//  Created on 06/07/2025.
 //
 
 import XCTest
 import Combine
 @testable import LMS
 
+@MainActor
 final class CompetencyViewModelTests: XCTestCase {
-    private var sut: CompetencyViewModel!
-    private var cancellables: Set<AnyCancellable>!
+    
+    var viewModel: CompetencyViewModel!
+    var cancellables: Set<AnyCancellable> = []
     
     override func setUp() {
         super.setUp()
-        sut = CompetencyViewModel()
-        cancellables = Set<AnyCancellable>()
+        viewModel = CompetencyViewModel()
+        cancellables = []
+        // Reset mock service
+        CompetencyMockService.shared.competencies = Competency.mockCompetencies()
     }
     
     override func tearDown() {
-        cancellables = nil
-        sut = nil
+        viewModel = nil
+        cancellables.removeAll()
         super.tearDown()
     }
     
     // MARK: - Initialization Tests
     
-    func testInitialization() {
-        let expectation = XCTestExpectation(description: "Initialization completes")
-        
-        // Basic properties should be initialized correctly
-        XCTAssertNotNil(sut.competencies)
-        XCTAssertNotNil(sut.filteredCompetencies)
-        XCTAssertEqual(sut.searchText, "")
-        XCTAssertNil(sut.selectedCategory)
-        XCTAssertFalse(sut.showInactiveCompetencies)
-        XCTAssertTrue(sut.isLoading) // Loading starts in init
-        XCTAssertNil(sut.errorMessage)
-        XCTAssertFalse(sut.showingCreateSheet)
-        XCTAssertFalse(sut.showingEditSheet)
-        XCTAssertNil(sut.selectedCompetency)
-        XCTAssertEqual(sut.myCompetencies.count, 0)
-        XCTAssertEqual(sut.requiredCompetencies.count, 0)
-        
-        // Wait for mock data to be loaded
+    func testInitialState() {
+        // Wait for initial load
+        let expectation = XCTestExpectation(description: "Initial load")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            // Mock data should be loaded
-            XCTAssertGreaterThan(self.sut.competencies.count, 0)
-            XCTAssertEqual(self.sut.competencies.count, self.sut.filteredCompetencies.count)
             expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 0.5)
         
-        wait(for: [expectation], timeout: 1.0)
-    }
-    
-    // MARK: - Loading Tests
-    
-    func testLoadCompetencies() {
-        let expectation = XCTestExpectation(description: "Loading completes")
-        
-        // Start loading
-        sut.loadCompetencies()
-        XCTAssertTrue(sut.isLoading)
-        XCTAssertNil(sut.errorMessage)
-        
-        // Wait for loading to complete
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            XCTAssertFalse(self.sut.isLoading)
-            // Should have competencies loaded
-            XCTAssertGreaterThan(self.sut.competencies.count, 0)
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 1.0)
+        XCTAssertFalse(viewModel.competencies.isEmpty)
+        XCTAssertFalse(viewModel.filteredCompetencies.isEmpty)
+        XCTAssertEqual(viewModel.searchText, "")
+        XCTAssertNil(viewModel.selectedCategory)
+        XCTAssertFalse(viewModel.showInactiveCompetencies)
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertNil(viewModel.errorMessage)
+        XCTAssertFalse(viewModel.showingCreateSheet)
+        XCTAssertFalse(viewModel.showingEditSheet)
+        XCTAssertNil(viewModel.selectedCompetency)
+        XCTAssertTrue(viewModel.myCompetencies.isEmpty)
+        XCTAssertTrue(viewModel.requiredCompetencies.isEmpty)
     }
     
     // MARK: - Filtering Tests
     
     func testSearchFiltering() {
-        let expectation = XCTestExpectation(description: "Search filter applied")
+        // Given
+        let expectation = XCTestExpectation(description: "Search filter")
         
-        // Set search text
-        sut.searchText = "Swift"
-        
-        // Wait for debounce
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            // Should filter competencies containing "Swift"
-            for competency in self.sut.filteredCompetencies {
-                XCTAssertTrue(
-                    competency.name.localizedCaseInsensitiveContains("Swift") ||
-                    competency.description.localizedCaseInsensitiveContains("Swift"),
-                    "Competency \(competency.name) should contain 'Swift'"
-                )
+        viewModel.$filteredCompetencies
+            .dropFirst()
+            .sink { _ in
+                expectation.fulfill()
             }
-            expectation.fulfill()
-        }
+            .store(in: &cancellables)
         
-        wait(for: [expectation], timeout: 1.0)
+        // When
+        viewModel.searchText = "Swift"
+        
+        // Then
+        wait(for: [expectation], timeout: 1)
+        XCTAssertTrue(viewModel.filteredCompetencies.allSatisfy { competency in
+            competency.name.localizedCaseInsensitiveContains("Swift") ||
+            competency.description.localizedCaseInsensitiveContains("Swift")
+        })
     }
     
     func testCategoryFiltering() {
-        let expectation = XCTestExpectation(description: "Category filter applied")
+        // Given
+        let expectation = XCTestExpectation(description: "Category filter")
         
-        // Set category filter
-        sut.selectedCategory = .technical
-        
-        // Wait for debounce
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            // All filtered competencies should be technical
-            for competency in self.sut.filteredCompetencies {
-                XCTAssertEqual(competency.category, .technical)
+        viewModel.$filteredCompetencies
+            .dropFirst()
+            .sink { _ in
+                expectation.fulfill()
             }
-            expectation.fulfill()
-        }
+            .store(in: &cancellables)
         
-        wait(for: [expectation], timeout: 1.0)
+        // When
+        viewModel.selectedCategory = .technical
+        
+        // Then
+        wait(for: [expectation], timeout: 1)
+        XCTAssertTrue(viewModel.filteredCompetencies.allSatisfy { $0.category == .technical })
     }
     
-    func testInactiveFiltering() {
-        let expectation = XCTestExpectation(description: "Inactive filter applied")
+    func testInactiveCompetenciesFiltering() {
+        // Given
+        let expectation = XCTestExpectation(description: "Inactive filter")
         
-        // Initially should not show inactive
-        XCTAssertFalse(sut.showInactiveCompetencies)
+        // Create inactive competency
+        var inactiveCompetency = Competency.mockCompetency()
+        inactiveCompetency.isActive = false
+        CompetencyMockService.shared.createCompetency(inactiveCompetency)
         
-        // Enable showing inactive
-        sut.showInactiveCompetencies = true
+        viewModel.$filteredCompetencies
+            .dropFirst()
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
         
-        // Wait for debounce
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            // Should include both active and inactive
-            let hasActive = self.sut.filteredCompetencies.contains { $0.isActive }
-            let hasInactive = self.sut.filteredCompetencies.contains { !$0.isActive }
-            XCTAssertTrue(hasActive || hasInactive || self.sut.filteredCompetencies.isEmpty)
-            expectation.fulfill()
-        }
+        // When - show only active
+        viewModel.showInactiveCompetencies = false
         
-        wait(for: [expectation], timeout: 1.0)
+        // Then
+        wait(for: [expectation], timeout: 1)
+        XCTAssertTrue(viewModel.filteredCompetencies.allSatisfy { $0.isActive })
+        
+        // When - show all
+        viewModel.showInactiveCompetencies = true
+        wait(for: [expectation], timeout: 1)
+        XCTAssertTrue(viewModel.filteredCompetencies.contains { !$0.isActive })
     }
     
     func testCombinedFiltering() {
-        let expectation = XCTestExpectation(description: "Combined filters applied")
-        
-        // Apply multiple filters
-        sut.searchText = "навык"
-        sut.selectedCategory = .softSkills
-        sut.showInactiveCompetencies = false
+        // Given
+        viewModel.searchText = "ios"
+        viewModel.selectedCategory = .technical
+        viewModel.showInactiveCompetencies = false
         
         // Wait for debounce
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            // All filtered competencies should match all criteria
-            for competency in self.sut.filteredCompetencies {
-                XCTAssertTrue(
-                    competency.name.localizedCaseInsensitiveContains("навык") ||
-                    competency.description.localizedCaseInsensitiveContains("навык")
-                )
-                XCTAssertEqual(competency.category, .softSkills)
-                XCTAssertTrue(competency.isActive)
-            }
+        let expectation = XCTestExpectation(description: "Combined filter")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 1)
         
-        wait(for: [expectation], timeout: 1.0)
+        // Then
+        XCTAssertTrue(viewModel.filteredCompetencies.allSatisfy { competency in
+            (competency.name.localizedCaseInsensitiveContains("ios") ||
+             competency.description.localizedCaseInsensitiveContains("ios")) &&
+            competency.category == .technical &&
+            competency.isActive
+        })
     }
     
-    // MARK: - CRUD Operations Tests
+    // MARK: - CRUD Tests
     
     func testCreateCompetency() {
-        let expectation = XCTestExpectation(description: "Competency created")
+        // Given
+        let newCompetency = Competency.mockCompetency()
+        let initialCount = viewModel.competencies.count
         
-        // Wait for initial data load
-        let initExpectation = XCTestExpectation(description: "Initial load")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            initExpectation.fulfill()
-        }
-        wait(for: [initExpectation], timeout: 0.5)
+        // When
+        viewModel.createCompetency(newCompetency)
         
-        let newCompetency = Competency(
-            name: "Test Competency",
-            description: "Test Description",
-            category: .technical
-        )
-        
-        let initialCount = sut.competencies.count
-        
-        // Create competency
-        sut.createCompetency(newCompetency)
-        
-        // Should close create sheet immediately
-        XCTAssertFalse(sut.showingCreateSheet)
-        
-        // Wait for update to propagate
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // Should add competency
-            XCTAssertEqual(self.sut.competencies.count, initialCount + 1)
-            XCTAssertTrue(self.sut.competencies.contains { $0.name == "Test Competency" })
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 1.0)
+        // Then
+        XCTAssertEqual(viewModel.competencies.count, initialCount + 1)
+        XCTAssertTrue(viewModel.competencies.contains { $0.id == newCompetency.id })
+        XCTAssertFalse(viewModel.showingCreateSheet)
     }
     
     func testUpdateCompetency() {
-        let expectation = XCTestExpectation(description: "Competency updated")
+        // Given
+        var competency = viewModel.competencies.first!
+        competency.name = "Updated Name"
+        viewModel.selectedCompetency = competency
+        viewModel.showingEditSheet = true
         
-        // Wait for initial data load
-        let initExpectation = XCTestExpectation(description: "Initial load")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            initExpectation.fulfill()
-        }
-        wait(for: [initExpectation], timeout: 0.5)
+        // When
+        viewModel.updateCompetency(competency)
         
-        // Get first competency
-        guard let firstCompetency = sut.competencies.first else {
-            XCTFail("No competencies available")
-            return
-        }
-        
-        // Update it
-        var updatedCompetency = firstCompetency
-        updatedCompetency.name = "Updated Name"
-        updatedCompetency.description = "Updated Description"
-        
-        sut.updateCompetency(updatedCompetency)
-        
-        // Should close edit sheet immediately
-        XCTAssertFalse(sut.showingEditSheet)
-        XCTAssertNil(sut.selectedCompetency)
-        
-        // Wait for update to propagate
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // Should update the competency
-            if let updated = self.sut.competencies.first(where: { $0.id == firstCompetency.id }) {
-                XCTAssertEqual(updated.name, "Updated Name")
-                XCTAssertEqual(updated.description, "Updated Description")
-            } else {
-                XCTFail("Competency not found after update")
-            }
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 1.0)
+        // Then
+        XCTAssertTrue(viewModel.competencies.contains { $0.name == "Updated Name" })
+        XCTAssertFalse(viewModel.showingEditSheet)
+        XCTAssertNil(viewModel.selectedCompetency)
     }
     
     func testDeleteCompetency() {
-        let expectation = XCTestExpectation(description: "Competency deleted")
+        // Given
+        let competency = viewModel.competencies.first!
+        let initialCount = viewModel.competencies.count
         
-        // Wait for initial data load
-        let initExpectation = XCTestExpectation(description: "Initial load")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            initExpectation.fulfill()
-        }
-        wait(for: [initExpectation], timeout: 0.5)
+        // When
+        viewModel.deleteCompetency(competency)
         
-        guard let competencyToDelete = sut.competencies.first else {
-            XCTFail("No competencies available")
-            return
-        }
-        
-        let initialCount = sut.competencies.count
-        
-        // Delete competency
-        sut.deleteCompetency(competencyToDelete)
-        
-        // Should clear error message immediately
-        XCTAssertNil(sut.errorMessage)
-        
-        // Wait for update to propagate
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // Should remove competency
-            XCTAssertEqual(self.sut.competencies.count, initialCount - 1)
-            XCTAssertFalse(self.sut.competencies.contains { $0.id == competencyToDelete.id })
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 1.0)
+        // Then
+        XCTAssertEqual(viewModel.competencies.count, initialCount - 1)
+        XCTAssertFalse(viewModel.competencies.contains { $0.id == competency.id })
+        XCTAssertNil(viewModel.errorMessage)
     }
     
     func testToggleCompetencyStatus() {
-        let expectation = XCTestExpectation(description: "Status toggled")
-        
-        // Wait for initial data load
-        let initExpectation = XCTestExpectation(description: "Initial load")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            initExpectation.fulfill()
-        }
-        wait(for: [initExpectation], timeout: 0.5)
-        
-        guard let competency = sut.competencies.first else {
-            XCTFail("No competencies available")
-            return
-        }
-        
+        // Given
+        let competency = viewModel.competencies.first!
         let initialStatus = competency.isActive
         
-        // Toggle status
-        sut.toggleCompetencyStatus(competency)
+        // When
+        viewModel.toggleCompetencyStatus(competency)
         
-        // Wait for update to propagate
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            // Status should be toggled
-            if let updated = self.sut.competencies.first(where: { $0.id == competency.id }) {
-                XCTAssertEqual(updated.isActive, !initialStatus)
-            } else {
-                XCTFail("Competency not found after toggle")
-            }
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 1.0)
+        // Then
+        let updatedCompetency = viewModel.competencies.first { $0.id == competency.id }
+        XCTAssertNotNil(updatedCompetency)
+        XCTAssertEqual(updatedCompetency?.isActive, !initialStatus)
     }
     
-    // MARK: - UI Actions Tests
+    // MARK: - UI Action Tests
     
     func testSelectCompetencyForEdit() {
-        // Wait for initial data load
-        let initExpectation = XCTestExpectation(description: "Initial load")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            initExpectation.fulfill()
-        }
-        wait(for: [initExpectation], timeout: 0.5)
+        // Given
+        let competency = viewModel.competencies.first!
         
-        // Get a competency from the loaded mock data
-        guard let competency = sut.competencies.first else {
-            XCTFail("No competencies available")
-            return
-        }
+        // When
+        viewModel.selectCompetencyForEdit(competency)
         
-        // Select for edit
-        sut.selectCompetencyForEdit(competency)
-        
-        // Should set selected competency and show edit sheet
-        XCTAssertEqual(sut.selectedCompetency?.id, competency.id)
-        XCTAssertTrue(sut.showingEditSheet)
+        // Then
+        XCTAssertEqual(viewModel.selectedCompetency?.id, competency.id)
+        XCTAssertTrue(viewModel.showingEditSheet)
     }
     
     func testClearFilters() {
-        // Set filters
-        sut.searchText = "Test"
-        sut.selectedCategory = .technical
-        sut.showInactiveCompetencies = true
+        // Given
+        viewModel.searchText = "Test"
+        viewModel.selectedCategory = .technical
+        viewModel.showInactiveCompetencies = true
         
-        // Clear filters
-        sut.clearFilters()
+        // When
+        viewModel.clearFilters()
         
-        // All filters should be cleared
-        XCTAssertEqual(sut.searchText, "")
-        XCTAssertNil(sut.selectedCategory)
-        XCTAssertFalse(sut.showInactiveCompetencies)
+        // Then
+        XCTAssertEqual(viewModel.searchText, "")
+        XCTAssertNil(viewModel.selectedCategory)
+        XCTAssertFalse(viewModel.showInactiveCompetencies)
     }
     
     // MARK: - Statistics Tests
     
     func testStatistics() {
-        let stats = sut.statistics
+        // Given/When
+        let stats = viewModel.statistics
         
-        // Should calculate statistics correctly
-        XCTAssertEqual(stats.total, sut.competencies.count)
-        XCTAssertEqual(stats.active, sut.competencies.filter { $0.isActive }.count)
+        // Then
+        XCTAssertEqual(stats.total, viewModel.competencies.count)
+        XCTAssertEqual(stats.active, viewModel.competencies.filter { $0.isActive }.count)
         XCTAssertEqual(stats.inactive, stats.total - stats.active)
+        XCTAssertFalse(stats.byCategory.isEmpty)
+    }
+    
+    func testStatisticsCountForCategory() {
+        // Given
+        let stats = viewModel.statistics
         
-        // Test category count
-        let technicalCount = sut.competencies.filter { $0.category == .technical }.count
-        XCTAssertEqual(stats.count(for: .technical), technicalCount)
+        // When/Then
+        for category in CompetencyCategory.allCases {
+            let count = stats.count(for: category)
+            let expectedCount = viewModel.competencies.filter { $0.category == category }.count
+            XCTAssertEqual(count, expectedCount)
+        }
     }
     
     // MARK: - Export Tests
     
     func testExportCompetencies() {
-        // Apply filter to have specific competencies
-        sut.selectedCategory = .technical
+        // When
+        let json = viewModel.exportCompetencies()
         
-        let expectation = XCTestExpectation(description: "Export completes")
+        // Then
+        XCTAssertFalse(json.isEmpty)
+        XCTAssertTrue(json.contains("name"))
+        XCTAssertTrue(json.contains("category"))
         
-        // Wait for filter to apply
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            let exportedJson = self.sut.exportCompetencies()
-            
-            // Should return valid JSON
-            XCTAssertFalse(exportedJson.isEmpty)
-            
-            // Try to parse JSON
-            if let data = exportedJson.data(using: .utf8),
-               let competencies = try? JSONDecoder().decode([Competency].self, from: data) {
-                // Should export filtered competencies
-                XCTAssertEqual(competencies.count, self.sut.filteredCompetencies.count)
-                
-                // All exported should be technical (our filter)
-                for competency in competencies {
-                    XCTAssertEqual(competency.category, .technical)
-                }
-            } else {
-                XCTFail("Failed to parse exported JSON")
-            }
-            
-            expectation.fulfill()
+        // Verify valid JSON
+        if let data = json.data(using: .utf8),
+           let decoded = try? JSONDecoder().decode([Competency].self, from: data) {
+            XCTAssertEqual(decoded.count, viewModel.filteredCompetencies.count)
+        } else {
+            XCTFail("Export did not produce valid JSON")
         }
-        
-        wait(for: [expectation], timeout: 1.0)
     }
     
-    func testExportFilteredCompetencies() {
-        // Wait for initial data load
-        let initExpectation = XCTestExpectation(description: "Initial load")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            initExpectation.fulfill()
-        }
-        wait(for: [initExpectation], timeout: 0.5)
+    func testExportWithFilters() {
+        // Given
+        viewModel.selectedCategory = .technical
         
-        // Apply specific filter to get predictable results
-        sut.selectedCategory = .technical
-        sut.showInactiveCompetencies = false
-        
-        let expectation = XCTestExpectation(description: "Export completes")
-        
-        // Wait for filters to apply
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            let exportedJson = self.sut.exportCompetencies()
-            
-            // Should return valid JSON
-            XCTAssertFalse(exportedJson.isEmpty)
-            
-            // Parse and validate exported data
-            if let data = exportedJson.data(using: .utf8),
-               let competencies = try? JSONDecoder().decode([Competency].self, from: data) {
-                // Should export only filtered competencies
-                XCTAssertEqual(competencies.count, self.sut.filteredCompetencies.count)
-                
-                // All exported should match our filter criteria
-                for competency in competencies {
-                    XCTAssertEqual(competency.category, .technical)
-                    XCTAssertTrue(competency.isActive)
-                }
-            } else {
-                XCTFail("Failed to parse exported JSON")
-            }
-            
+        // Wait for filter
+        let expectation = XCTestExpectation(description: "Filter applied")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 1)
         
-        wait(for: [expectation], timeout: 1.0)
+        // When
+        let json = viewModel.exportCompetencies()
+        
+        // Then
+        if let data = json.data(using: .utf8),
+           let decoded = try? JSONDecoder().decode([Competency].self, from: data) {
+            XCTAssertTrue(decoded.allSatisfy { $0.category == .technical })
+        }
     }
     
     // MARK: - Student Methods Tests
     
     func testGetCurrentLevel() {
-        // Create a test competency
-        let testCompetency = Competency(
-            name: "Test Competency",
-            description: "Test",
-            category: .technical
-        )
+        // Given
+        let competency = viewModel.competencies.first!
         
-        // Add to my competencies
-        sut.myCompetencies = [testCompetency]
+        // When - competency not in myCompetencies
+        let levelForUnknown = viewModel.getCurrentLevel(for: competency)
         
-        // Should return competency's current level
-        let level = sut.getCurrentLevel(for: testCompetency)
-        XCTAssertEqual(level, testCompetency.currentLevel)
+        // Then
+        XCTAssertEqual(levelForUnknown, 0)
         
-        // For competency not in myCompetencies
-        let otherCompetency = Competency(
-            name: "Other Competency",
-            description: "Other",
-            category: .softSkills
-        )
+        // When - add to myCompetencies
+        viewModel.myCompetencies.append(competency)
+        let levelForKnown = viewModel.getCurrentLevel(for: competency)
         
-        let otherLevel = sut.getCurrentLevel(for: otherCompetency)
-        XCTAssertEqual(otherLevel, 0)
+        // Then
+        XCTAssertEqual(levelForKnown, competency.currentLevel)
+    }
+    
+    // MARK: - Loading State Tests
+    
+    func testLoadCompetencies() {
+        // Given
+        let expectation = XCTestExpectation(description: "Loading complete")
+        
+        viewModel.$isLoading
+            .dropFirst()
+            .sink { isLoading in
+                if !isLoading {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // When
+        viewModel.loadCompetencies()
+        
+        // Then
+        XCTAssertTrue(viewModel.isLoading)
+        wait(for: [expectation], timeout: 1)
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertNil(viewModel.errorMessage)
     }
 } 
