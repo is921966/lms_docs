@@ -10,19 +10,19 @@ final class UserResponseTests: XCTestCase {
         id: String = "test",
         email: String = "test@example.com",
         name: String = "Test User",
-        role: String = "user",
+        role: UserRole = .student,
         department: String? = nil,
         isActive: Bool = true,
-        avatar: String? = nil
+        avatarURL: String? = nil
     ) -> UserResponse {
         return UserResponse(
             id: id,
             email: email,
             name: name,
             role: role,
+            avatarURL: avatarURL,
             department: department,
             isActive: isActive,
-            avatar: avatar,
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -65,7 +65,7 @@ final class UserResponseTests: XCTestCase {
         XCTAssertEqual(user.id, "123")
         XCTAssertEqual(user.email, "test@example.com")
         XCTAssertEqual(user.name, "Test User")
-        XCTAssertEqual(user.role, "admin")
+        XCTAssertEqual(user.role, .admin)
         XCTAssertEqual(user.department, "IT")
         XCTAssertTrue(user.isActive)
         XCTAssertEqual(user.avatar, "https://example.com/avatar.jpg")
@@ -94,7 +94,7 @@ final class UserResponseTests: XCTestCase {
         XCTAssertEqual(user.id, "456")
         XCTAssertEqual(user.email, "minimal@example.com")
         XCTAssertEqual(user.name, "Minimal User")
-        XCTAssertEqual(user.role, "student")
+        XCTAssertEqual(user.role, .student)
         XCTAssertNil(user.department)
         XCTAssertNil(user.avatar)
         XCTAssertFalse(user.isActive)
@@ -108,7 +108,7 @@ final class UserResponseTests: XCTestCase {
             id: "789",
             email: "john.doe@example.com",
             name: "John Doe",
-            role: "user"
+            role: .student
         )
         
         // When/Then
@@ -123,7 +123,7 @@ final class UserResponseTests: XCTestCase {
             id: "999",
             email: "admin@example.com",
             name: "Admin",
-            role: "admin"
+            role: .admin
         )
         
         // When/Then
@@ -138,7 +138,7 @@ final class UserResponseTests: XCTestCase {
             id: "111",
             email: "complex@example.com",
             name: "John Paul Jones Smith",
-            role: "user"
+            role: .student
         )
         
         // When/Then
@@ -151,7 +151,7 @@ final class UserResponseTests: XCTestCase {
     
     func testRolePermissionMapping() {
         // Test Admin
-        let admin = createUser(id: "1", email: "admin@test.com", name: "Admin", role: "admin")
+        let admin = createUser(id: "1", email: "admin@test.com", name: "Admin", role: .admin)
         XCTAssertEqual(admin.roles, ["admin"])
         XCTAssertTrue(admin.permissions.contains("manage_users"))
         XCTAssertTrue(admin.permissions.contains("manage_courses"))
@@ -160,7 +160,7 @@ final class UserResponseTests: XCTestCase {
         XCTAssertFalse(admin.isStudent)
         
         // Test Student
-        let student = createUser(id: "2", email: "student@test.com", name: "Student", role: "student")
+        let student = createUser(id: "2", email: "student@test.com", name: "Student", role: .student)
         XCTAssertEqual(student.roles, ["student"])
         XCTAssertTrue(student.permissions.contains("view_courses"))
         XCTAssertTrue(student.permissions.contains("enroll_courses"))
@@ -168,7 +168,7 @@ final class UserResponseTests: XCTestCase {
         XCTAssertTrue(student.isStudent)
         
         // Test Instructor
-        let instructor = createUser(id: "3", email: "instructor@test.com", name: "Instructor", role: "instructor")
+        let instructor = createUser(id: "3", email: "instructor@test.com", name: "Instructor", role: .instructor)
         XCTAssertEqual(instructor.roles, ["instructor"])
         XCTAssertTrue(instructor.permissions.contains("create_courses"))
         XCTAssertTrue(instructor.permissions.contains("grade_students"))
@@ -177,7 +177,7 @@ final class UserResponseTests: XCTestCase {
     }
     
     func testHasRoleMethod() {
-        let user = createUser(id: "1", email: "test@test.com", name: "Test", role: "admin")
+        let user = createUser(id: "1", email: "test@test.com", name: "Test", role: .admin)
         
         XCTAssertTrue(user.hasRole("admin"))
         XCTAssertFalse(user.hasRole("student"))
@@ -186,13 +186,13 @@ final class UserResponseTests: XCTestCase {
     }
     
     func testHasPermissionMethod() {
-        let admin = createUser(id: "1", email: "admin@test.com", name: "Admin", role: "admin")
+        let admin = createUser(id: "1", email: "admin@test.com", name: "Admin", role: .admin)
         
         XCTAssertTrue(admin.hasPermission("manage_users"))
         XCTAssertTrue(admin.hasPermission("view_analytics"))
         XCTAssertFalse(admin.hasPermission("nonexistent_permission"))
         
-        let student = createUser(id: "2", email: "student@test.com", name: "Student", role: "student")
+        let student = createUser(id: "2", email: "student@test.com", name: "Student", role: .student)
         XCTAssertTrue(student.hasPermission("view_courses"))
         XCTAssertFalse(student.hasPermission("manage_users"))
     }
@@ -206,7 +206,7 @@ final class UserResponseTests: XCTestCase {
             "id": "null-test",
             "email": "null@test.com",
             "name": "Null Test",
-            "role": "user",
+            "role": "student",
             "isActive": true,
             "department": null,
             "avatar": null,
@@ -224,7 +224,7 @@ final class UserResponseTests: XCTestCase {
         XCTAssertEqual(user.id, "null-test")
         XCTAssertEqual(user.email, "null@test.com")
         XCTAssertEqual(user.name, "Null Test")
-        XCTAssertEqual(user.role, "user")
+        XCTAssertEqual(user.role, .student)
         XCTAssertNil(user.department)
         XCTAssertNil(user.avatar)
         XCTAssertTrue(user.isActive)
@@ -234,9 +234,9 @@ final class UserResponseTests: XCTestCase {
     
     func testIdentifiableConformance() {
         // Given
-        let user1 = createUser(id: "123", email: "user1@test.com", name: "User 1", role: "user")
-        let user2 = createUser(id: "456", email: "user2@test.com", name: "User 2", role: "user")
-        let user3 = createUser(id: "123", email: "user3@test.com", name: "User 3", role: "admin")
+        let user1 = createUser(id: "123", email: "user1@test.com", name: "User 1", role: .student)
+        let user2 = createUser(id: "456", email: "user2@test.com", name: "User 2", role: .student)
+        let user3 = createUser(id: "123", email: "user3@test.com", name: "User 3", role: .admin)
         
         // When/Then
         XCTAssertEqual(user1.id, "123")
@@ -252,7 +252,7 @@ final class UserResponseTests: XCTestCase {
     
     func testEmptyNameHandling() {
         // Given
-        let user = createUser(id: "empty", email: "empty@test.com", name: "", role: "user")
+        let user = createUser(id: "empty", email: "empty@test.com", name: "", role: .student)
         
         // When/Then
         XCTAssertEqual(user.firstName, "")
@@ -266,7 +266,7 @@ final class UserResponseTests: XCTestCase {
             id: "space",
             email: "space@test.com",
             name: "  John   Doe  ",
-            role: "user"
+            role: .student
         )
         
         // When/Then
@@ -284,7 +284,7 @@ final class UserResponseTests: XCTestCase {
             id: "compat",
             email: "compat@test.com",
             name: "Compatible User",
-            role: "admin"
+            role: .admin
         )
         
         // When - old code would access these properties

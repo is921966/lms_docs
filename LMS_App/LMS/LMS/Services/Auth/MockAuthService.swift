@@ -3,7 +3,8 @@ import Foundation
 import SwiftUI
 
 // MARK: - MockAuthService
-class MockAuthService: ObservableObject {
+@MainActor
+class MockAuthService: ObservableObject, AuthServiceProtocol {
     static let shared = MockAuthService()
 
     @Published private(set) var currentUser: UserResponse?
@@ -11,6 +12,11 @@ class MockAuthService: ObservableObject {
     @Published private(set) var isApprovedByAdmin = false
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
+    
+    // Test helpers
+    var shouldFail = false
+    var authError: Error?
+    var hasRefreshedToken = false
 
     private init() {
         checkAuthenticationStatus()
@@ -30,10 +36,11 @@ class MockAuthService: ObservableObject {
                 id: "mock_user_123",
                 email: asAdmin ? "admin@tsum.ru" : "student@tsum.ru",
                 name: asAdmin ? "Админ Админов" : "Иван Иванов",
-                role: asAdmin ? "admin" : "student",
+                role: asAdmin ? .admin : .student,
+                firstName: asAdmin ? "Админ" : "Иван",
+                lastName: asAdmin ? "Админов" : "Иванов",
                 department: "IT",
                 isActive: true,
-                avatar: nil,
                 createdAt: Date(),
                 updatedAt: Date()
             )
@@ -59,11 +66,98 @@ class MockAuthService: ObservableObject {
         mockLogin(asAdmin: isAdmin)
     }
 
-    // MARK: - Login method for tests
-    func login(email: String, password: String) {
+    // MARK: - Login method for tests (AuthServiceProtocol)
+    func login(email: String, password: String) async throws -> LoginResponse {
+        // For testing: check if we should fail
+        if shouldFail {
+            if let error = authError {
+                throw error
+            } else {
+                throw APIError.invalidCredentials
+            }
+        }
+        
         // For tests - simulate login based on email
-        let isAdmin = email.contains("admin")
-        mockLogin(asAdmin: isAdmin)
+        let role: UserRole
+        if email.contains("superadmin") {
+            role = .superAdmin
+        } else if email.contains("admin") {
+            role = .admin
+        } else if email.contains("instructor") {
+            role = .instructor
+        } else if email.contains("manager") {
+            role = .manager
+        } else {
+            role = .student
+        }
+        
+        let mockUser = UserResponse(
+            id: "mock_user_\(UUID().uuidString)",
+            email: email,
+            name: "Test User",
+            role: role,
+            firstName: "Test",
+            lastName: "User",
+            department: "IT",
+            isActive: true,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+        
+        let accessToken = "mock_access_token_\(UUID().uuidString)"
+        let refreshToken = "mock_refresh_token_\(UUID().uuidString)"
+        let expiresIn = 3600
+        
+        // Save tokens and update state
+        TokenManager.shared.saveTokens(
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            expiresIn: expiresIn
+        )
+        TokenManager.shared.userId = mockUser.id
+        
+        self.currentUser = mockUser
+        self.isAuthenticated = true
+        self.isApprovedByAdmin = (role == .admin || role == .superAdmin)
+        
+        return LoginResponse(
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            user: mockUser,
+            expiresIn: expiresIn
+        )
+    }
+    
+    // MARK: - Refresh Token (AuthServiceProtocol)
+    func refreshToken() async throws -> String {
+        // For testing: mark that token was refreshed
+        hasRefreshedToken = true
+        
+        // Mock implementation - just return a new token
+        return "mock_access_token_\(UUID().uuidString)"
+    }
+    
+    // MARK: - Get Current User (AuthServiceProtocol)
+    func getCurrentUser() async throws -> UserResponse {
+        guard let user = currentUser else {
+            throw APIError.unauthorized
+        }
+        return user
+    }
+    
+    // MARK: - Update Profile (AuthServiceProtocol)
+    func updateProfile(firstName: String, lastName: String) async throws -> UserResponse {
+        guard var user = currentUser else {
+            throw APIError.unauthorized
+        }
+        
+        user.firstName = firstName
+        user.lastName = lastName
+        user.name = "\(firstName) \(lastName)"
+        user.updatedAt = Date()
+        
+        self.currentUser = user
+        return user
     }
 
     // MARK: - Mock Approve
@@ -98,10 +192,11 @@ class MockAuthService: ObservableObject {
                     id: userId,
                     email: isAdmin ? "admin@tsum.ru" : "student@tsum.ru",
                     name: isAdmin ? "Админ Админов" : "Иван Иванов",
-                    role: isAdmin ? "admin" : "student",
+                    role: isAdmin ? .admin : .student,
+                    firstName: isAdmin ? "Админ" : "Иван",
+                    lastName: isAdmin ? "Админов" : "Иванов",
                     department: "IT",
                     isActive: true,
-                    avatar: nil,
                     createdAt: Date(),
                     updatedAt: Date()
                 )
@@ -111,7 +206,7 @@ class MockAuthService: ObservableObject {
     }
 
     // MARK: - Logout
-    func logout() {
+    func logout() async throws {
         TokenManager.shared.clearTokens()
         currentUser = nil
         isAuthenticated = false
@@ -126,10 +221,12 @@ class MockAuthService: ObservableObject {
                 id: "user_1",
                 email: "ivanov@tsum.ru",
                 name: "Иван Петрович Иванов",
-                role: "student",
+                role: .student,
+                firstName: "Иван",
+                lastName: "Иванов",
+                middleName: "Петрович",
                 department: "Отдел продаж",
                 isActive: true,
-                avatar: nil,
                 createdAt: Date(),
                 updatedAt: Date()
             ),
@@ -137,10 +234,11 @@ class MockAuthService: ObservableObject {
                 id: "user_2",
                 email: "petrova@tsum.ru",
                 name: "Мария Петрова",
-                role: "student",
+                role: .student,
+                firstName: "Мария",
+                lastName: "Петрова",
                 department: "Операционный отдел",
                 isActive: true,
-                avatar: nil,
                 createdAt: Date(),
                 updatedAt: Date()
             ),
@@ -148,10 +246,11 @@ class MockAuthService: ObservableObject {
                 id: "user_3",
                 email: "sidorov@tsum.ru",
                 name: "Алексей Сидоров",
-                role: "student",
+                role: .student,
+                firstName: "Алексей",
+                lastName: "Сидоров",
                 department: "Отдел маркетинга",
                 isActive: true,
-                avatar: nil,
                 createdAt: Date(),
                 updatedAt: Date()
             ),
@@ -159,10 +258,11 @@ class MockAuthService: ObservableObject {
                 id: "manager_1",
                 email: "smirnov@tsum.ru",
                 name: "Сергей Смирнов",
-                role: "manager",
+                role: .manager,
+                firstName: "Сергей",
+                lastName: "Смирнов",
                 department: "Отдел продаж",
                 isActive: true,
-                avatar: nil,
                 createdAt: Date(),
                 updatedAt: Date()
             ),
@@ -170,14 +270,37 @@ class MockAuthService: ObservableObject {
                 id: "admin_1",
                 email: "admin@tsum.ru",
                 name: "Админ Админов",
-                role: "admin",
+                role: .admin,
+                firstName: "Админ",
+                lastName: "Админов",
                 department: "IT",
                 isActive: true,
-                avatar: nil,
                 createdAt: Date(),
                 updatedAt: Date()
             )
         ]
+    }
+
+    // MARK: - Test Helpers
+    
+    /// Reset authentication state for tests
+    func resetForTesting() {
+        TokenManager.shared.clearTokens()
+        currentUser = nil
+        isAuthenticated = false
+        isApprovedByAdmin = false
+        error = nil
+        shouldFail = false
+        authError = nil
+        hasRefreshedToken = false
+    }
+    
+    /// Set authenticated state for tests
+    func setAuthenticatedForTesting(user: UserResponse) {
+        self.currentUser = user
+        self.isAuthenticated = true
+        self.isApprovedByAdmin = (user.role == .admin || user.role == .superAdmin)
+        TokenManager.shared.userId = user.id
     }
 }
 

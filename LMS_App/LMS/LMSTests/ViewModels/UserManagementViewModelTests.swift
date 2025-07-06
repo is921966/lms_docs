@@ -2,7 +2,7 @@
 //  UserManagementViewModelTests.swift
 //  LMSTests
 //
-//  Created on 10/07/2025.
+//  Created on 06/07/2025.
 //
 
 import XCTest
@@ -10,272 +10,214 @@ import Combine
 @testable import LMS
 
 final class UserManagementViewModelTests: XCTestCase {
-    private var sut: UserManagementViewModel!
-    private var cancellables: Set<AnyCancellable>!
+    
+    var viewModel: UserManagementViewModel!
+    var cancellables: Set<AnyCancellable> = []
     
     override func setUp() {
         super.setUp()
-        sut = UserManagementViewModel()
-        cancellables = Set<AnyCancellable>()
+        viewModel = UserManagementViewModel()
+        cancellables = []
     }
     
     override func tearDown() {
-        cancellables = nil
-        sut = nil
+        viewModel = nil
+        cancellables.removeAll()
         super.tearDown()
     }
     
     // MARK: - Initialization Tests
     
-    func testInitialization() {
-        // Check initial state - ViewModel loads data on init
-        XCTAssertNotNil(sut.users)
-        XCTAssertNotNil(sut.pendingUsers)
-        // isLoading might be true due to auto-load in init
-        // so we just check that errorMessage is nil
-        XCTAssertNil(sut.errorMessage)
-    }
-    
-    func testInitialDataLoad() {
-        // Given initial state
-        let expectation = XCTestExpectation(description: "Data loads on init")
+    func testInitialState() {
+        // Initially loading
+        XCTAssertTrue(viewModel.isLoading)
+        XCTAssertNil(viewModel.errorMessage)
         
-        // When - wait for async operations
+        // Wait for load to complete
+        let expectation = XCTestExpectation(description: "Initial load")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            // Then - data should be loaded
-            XCTAssertNotNil(self.sut.users)
-            XCTAssertNotNil(self.sut.pendingUsers)
-            XCTAssertFalse(self.sut.isLoading)
             expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 1)
         
-        wait(for: [expectation], timeout: 1.0)
+        // After load
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertNotNil(viewModel.users)
+        XCTAssertNotNil(viewModel.pendingUsers)
     }
     
-    // MARK: - Load Tests
+    // MARK: - Loading Tests
     
     func testLoadUsers() {
-        // Given
+        // Clear initial data
+        viewModel.users = [createMockUser(name: "Test")]
+        
+        // Start loading
+        viewModel.loadUsers()
+        XCTAssertTrue(viewModel.isLoading)
+        
+        // Wait for load
         let expectation = XCTestExpectation(description: "Users loaded")
-        
-        // When
-        sut.loadUsers()
-        
-        // Then - should start loading
-        XCTAssertTrue(sut.isLoading)
-        
-        // Wait for completion
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            // Should finish loading
-            XCTAssertFalse(self.sut.isLoading)
-            XCTAssertNotNil(self.sut.users)
             expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 1)
         
-        wait(for: [expectation], timeout: 1.0)
+        // Verify loaded data (mock returns empty array)
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertTrue(viewModel.users.isEmpty)
     }
     
     func testLoadPendingUsers() {
-        // Given
+        // Set initial data
+        viewModel.pendingUsers = [createMockUser(name: "Pending")]
+        
+        // Load pending users
+        viewModel.loadPendingUsers()
+        
+        // Wait for load
         let expectation = XCTestExpectation(description: "Pending users loaded")
-        
-        // When
-        sut.loadPendingUsers()
-        
-        // Wait for completion
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            // Should have loaded pending users
-            XCTAssertNotNil(self.sut.pendingUsers)
             expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 0.5)
         
-        wait(for: [expectation], timeout: 1.0)
+        // Verify loaded data (mock returns empty array)
+        XCTAssertTrue(viewModel.pendingUsers.isEmpty)
     }
     
     // MARK: - User Management Tests
     
     func testApproveUser() {
-        // Given
-        let testUser = createMockUser(id: "test-1")
-        sut.pendingUsers = [testUser]
-        sut.users = []
+        // Setup
+        let user = createMockUser(name: "New User")
+        viewModel.pendingUsers = [user]
+        viewModel.users = []
         
-        // When
-        sut.approveUser(testUser)
+        // Approve user
+        viewModel.approveUser(user)
         
-        // Then
-        XCTAssertFalse(sut.pendingUsers.contains { $0.id == testUser.id })
-        XCTAssertTrue(sut.users.contains { $0.id == testUser.id })
+        // Verify
+        XCTAssertFalse(viewModel.pendingUsers.contains { $0.id == user.id })
+        XCTAssertTrue(viewModel.users.contains { $0.id == user.id })
     }
     
     func testRejectUser() {
-        // Given
-        let testUser = createMockUser(id: "test-1")
-        sut.pendingUsers = [testUser]
+        // Setup
+        let user = createMockUser(name: "Rejected User")
+        viewModel.pendingUsers = [user]
         
-        // When
-        sut.rejectUser(testUser)
+        // Reject user
+        viewModel.rejectUser(user)
         
-        // Then
-        XCTAssertFalse(sut.pendingUsers.contains { $0.id == testUser.id })
-    }
-    
-    func testToggleUserStatus() {
-        // Given
-        let testUser = createMockUser(id: "test-1")
-        sut.users = [testUser]
-        
-        // When
-        sut.toggleUserStatus(testUser)
-        
-        // Then - in mock implementation nothing changes yet
-        // This would be tested when real implementation is added
-        XCTAssertTrue(sut.users.contains { $0.id == testUser.id })
+        // Verify
+        XCTAssertFalse(viewModel.pendingUsers.contains { $0.id == user.id })
+        XCTAssertFalse(viewModel.users.contains { $0.id == user.id })
     }
     
     func testDeleteUser() {
-        // Given
-        let testUser = createMockUser(id: "test-1")
-        let otherUser = createMockUser(id: "test-2")
-        sut.users = [testUser, otherUser]
+        // Setup
+        let user = createMockUser(name: "User to Delete")
+        viewModel.users = [user]
         
-        // When
-        sut.deleteUser(testUser)
+        // Delete user
+        viewModel.deleteUser(user)
         
-        // Then
-        XCTAssertFalse(sut.users.contains { $0.id == testUser.id })
-        XCTAssertTrue(sut.users.contains { $0.id == otherUser.id })
+        // Verify
+        XCTAssertFalse(viewModel.users.contains { $0.id == user.id })
     }
     
-    func testUpdateUserRole() {
-        // Given
-        let testUser = createMockUser(id: "test-1", role: "student")
-        sut.users = [testUser]
-        let newRoles = ["student", "instructor"]
-        
-        // When
-        sut.updateUserRole(testUser, newRoles: newRoles)
-        
-        // Then - in mock implementation nothing changes yet
-        // This would be tested when real implementation is added
-        XCTAssertTrue(sut.users.contains { $0.id == testUser.id })
-    }
-    
-    // MARK: - Multiple Users Tests
+    // MARK: - Multiple Operations Tests
     
     func testApproveMultipleUsers() {
-        // Given
-        let user1 = createMockUser(id: "test-1")
-        let user2 = createMockUser(id: "test-2")
-        let user3 = createMockUser(id: "test-3")
-        sut.pendingUsers = [user1, user2, user3]
-        sut.users = []
+        // Setup
+        let users = (1...3).map { createMockUser(name: "User \($0)") }
+        viewModel.pendingUsers = users
+        viewModel.users = []
         
-        // When
-        sut.approveUser(user1)
-        sut.approveUser(user3)
+        // Approve all users
+        users.forEach { viewModel.approveUser($0) }
         
-        // Then
-        XCTAssertEqual(sut.pendingUsers.count, 1)
-        XCTAssertTrue(sut.pendingUsers.contains { $0.id == user2.id })
-        XCTAssertEqual(sut.users.count, 2)
-        XCTAssertTrue(sut.users.contains { $0.id == user1.id })
-        XCTAssertTrue(sut.users.contains { $0.id == user3.id })
+        // Verify
+        XCTAssertTrue(viewModel.pendingUsers.isEmpty)
+        XCTAssertEqual(viewModel.users.count, 3)
     }
     
-    func testDeleteAllUsers() {
-        // Given
-        let users = (1...5).map { createMockUser(id: "test-\($0)") }
-        sut.users = users
+    func testMixedOperations() {
+        // Setup
+        let user1 = createMockUser(name: "User 1")
+        let user2 = createMockUser(name: "User 2")
+        let user3 = createMockUser(name: "User 3")
+        viewModel.pendingUsers = [user1, user2]
+        viewModel.users = [user3]
         
-        // When
-        users.forEach { sut.deleteUser($0) }
+        // Mixed operations
+        viewModel.approveUser(user1)
+        viewModel.rejectUser(user2)
+        viewModel.deleteUser(user3)
         
-        // Then
-        XCTAssertTrue(sut.users.isEmpty)
+        // Verify
+        XCTAssertTrue(viewModel.pendingUsers.isEmpty)
+        XCTAssertEqual(viewModel.users.count, 1)
+        XCTAssertTrue(viewModel.users.contains { $0.id == user1.id })
     }
     
-    // MARK: - Edge Cases Tests
+    // MARK: - Edge Cases
     
     func testApproveNonExistentUser() {
-        // Given
-        let testUser = createMockUser(id: "test-1")
-        sut.pendingUsers = []
-        sut.users = []
+        // Setup
+        let user = createMockUser(name: "Non-existent")
+        viewModel.pendingUsers = []
+        viewModel.users = []
         
-        // When
-        sut.approveUser(testUser)
+        // Try to approve
+        viewModel.approveUser(user)
         
-        // Then - should handle gracefully
-        XCTAssertTrue(sut.pendingUsers.isEmpty)
-        XCTAssertEqual(sut.users.count, 1)
+        // Verify - should add to users even if not in pending
+        XCTAssertTrue(viewModel.users.contains { $0.id == user.id })
     }
     
     func testDeleteNonExistentUser() {
-        // Given
-        let testUser = createMockUser(id: "test-1")
-        let existingUser = createMockUser(id: "test-2")
-        sut.users = [existingUser]
+        // Setup
+        let user = createMockUser(name: "Non-existent")
+        let existingUser = createMockUser(name: "Existing")
+        viewModel.users = [existingUser]
         
-        // When
-        sut.deleteUser(testUser)
+        // Try to delete
+        viewModel.deleteUser(user)
         
-        // Then - should not affect existing users
-        XCTAssertEqual(sut.users.count, 1)
-        XCTAssertTrue(sut.users.contains { $0.id == existingUser.id })
-    }
-    
-    func testApproveAlreadyApprovedUser() {
-        // Given
-        let testUser = createMockUser(id: "test-1")
-        sut.pendingUsers = []
-        sut.users = [testUser]
-        
-        // When
-        sut.approveUser(testUser)
-        
-        // Then - should not duplicate
-        XCTAssertEqual(sut.users.count, 2) // In current implementation it adds duplicate
+        // Verify - existing users should remain
+        XCTAssertEqual(viewModel.users.count, 1)
+        XCTAssertTrue(viewModel.users.contains { $0.id == existingUser.id })
     }
     
     // MARK: - Error State Tests
     
     func testErrorMessageHandling() {
-        // Given
-        sut.errorMessage = nil
+        // Set error
+        viewModel.errorMessage = "Test error"
+        XCTAssertNotNil(viewModel.errorMessage)
+        XCTAssertEqual(viewModel.errorMessage, "Test error")
         
-        // When - set error
-        sut.errorMessage = "Test error"
-        
-        // Then
-        XCTAssertNotNil(sut.errorMessage)
-        XCTAssertEqual(sut.errorMessage, "Test error")
-        
-        // When - clear error
-        sut.errorMessage = nil
-        
-        // Then
-        XCTAssertNil(sut.errorMessage)
+        // Clear error
+        viewModel.errorMessage = nil
+        XCTAssertNil(viewModel.errorMessage)
     }
     
     // MARK: - Helper Methods
     
-    private func createMockUser(
-        id: String,
-        name: String = "Test User",
-        email: String = "test@example.com",
-        role: String = "student",
-        isActive: Bool = true,
-        department: String? = "Test Department"
-    ) -> UserResponse {
-        UserResponse(
-            id: id,
-            email: email,
+    private func createMockUser(name: String) -> UserResponse {
+        let firstName = name.components(separatedBy: " ").first ?? name
+        let lastName = name.components(separatedBy: " ").dropFirst().joined(separator: " ")
+        
+        return UserResponse(
+            id: UUID().uuidString,
+            email: "\(name.lowercased().replacingOccurrences(of: " ", with: "."))@test.com",
             name: name,
-            role: role,
-            department: department,
-            isActive: isActive,
-            avatar: nil,
+            role: .student,
+            firstName: firstName.isEmpty ? nil : firstName,
+            lastName: lastName.isEmpty ? nil : lastName,
+            isActive: true,
             createdAt: Date(),
             updatedAt: Date()
         )

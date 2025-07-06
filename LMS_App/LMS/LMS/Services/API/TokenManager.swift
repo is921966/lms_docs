@@ -28,18 +28,40 @@ final class TokenManager {
         return getToken(for: refreshTokenKey)
     }
     
+    var tokenExpiryDate: Date? {
+        get {
+            guard let interval = UserDefaults.standard.object(forKey: "tokenExpiryDate") as? TimeInterval else {
+                return nil
+            }
+            return Date(timeIntervalSince1970: interval)
+        }
+        set {
+            if let date = newValue {
+                UserDefaults.standard.set(date.timeIntervalSince1970, forKey: "tokenExpiryDate")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "tokenExpiryDate")
+            }
+        }
+    }
+    
     // MARK: - Public Methods
     
     /// Сохраняет токены в Keychain
-    func saveTokens(accessToken: String, refreshToken: String) {
+    func saveTokens(accessToken: String, refreshToken: String, expiresIn: Int? = nil) {
         saveToken(accessToken, for: accessTokenKey)
         saveToken(refreshToken, for: refreshTokenKey)
+        
+        // Save expiry date if provided
+        if let expiresIn = expiresIn {
+            tokenExpiryDate = Date().addingTimeInterval(TimeInterval(expiresIn))
+        }
     }
     
     /// Удаляет все токены
     func clearTokens() {
         deleteToken(for: accessTokenKey)
         deleteToken(for: refreshTokenKey)
+        tokenExpiryDate = nil
     }
     
     /// Проверяет, есть ли сохраненные токены

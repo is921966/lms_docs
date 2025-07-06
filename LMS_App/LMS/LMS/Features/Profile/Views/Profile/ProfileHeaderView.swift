@@ -27,7 +27,7 @@ struct ProfileHeaderView: View {
                         .font(.title2)
                         .fontWeight(.semibold)
 
-                    Text(user.role.capitalized)
+                    Text(user.role.displayName)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 

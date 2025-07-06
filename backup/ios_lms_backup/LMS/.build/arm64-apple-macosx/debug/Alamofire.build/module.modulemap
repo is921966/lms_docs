@@ -1,0 +1,4 @@
+module Alamofire {
+    header "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Alamofire-Swift.h"
+    requires objc
+}

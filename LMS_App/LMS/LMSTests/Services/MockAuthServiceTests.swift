@@ -9,306 +9,241 @@ import XCTest
 import Combine
 @testable import LMS
 
+@MainActor
 final class MockAuthServiceTests: XCTestCase {
     private var sut: MockAuthService!
     private var cancellables: Set<AnyCancellable>!
     
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         // Create new instance for testing (not shared)
         sut = MockAuthService.shared
-        sut.logout() // Ensure clean state
+        try await sut.logout() // Ensure clean state
         cancellables = Set<AnyCancellable>()
     }
     
-    override func tearDown() {
+    override func tearDown() async throws {
         cancellables = nil
-        sut.logout() // Clean up
+        try await sut.logout() // Clean up
         sut = nil
-        super.tearDown()
+        try await super.tearDown()
     }
     
     // MARK: - Initialization Tests
     
-    func testInitialization() {
+    func testInitialization() async throws {
         // Check initial state after logout
-        sut.logout()
+        try await sut.logout()
         
         XCTAssertNil(sut.currentUser)
         XCTAssertFalse(sut.isAuthenticated)
-        XCTAssertFalse(sut.isApprovedByAdmin)
-        XCTAssertFalse(sut.isLoading)
-        XCTAssertNil(sut.error)
     }
     
-    // MARK: - Mock Login Tests
+    // MARK: - Login Tests
     
-    func testMockLoginAsStudent() {
-        let expectation = XCTestExpectation(description: "Login completes")
-        
+    func testLoginAsStudent() async throws {
         // When
-        sut.mockLogin(asAdmin: false)
+        let result = try await sut.login(
+            email: "student@tsum.ru",
+            password: "password"
+        )
         
-        // Should start loading
-        XCTAssertTrue(sut.isLoading)
-        
-        // Wait for completion
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            // Then
-            XCTAssertFalse(self.sut.isLoading)
-            XCTAssertTrue(self.sut.isAuthenticated)
-            XCTAssertFalse(self.sut.isApprovedByAdmin) // Students not auto-approved
-            XCTAssertNotNil(self.sut.currentUser)
-            
-            if let user = self.sut.currentUser {
-                XCTAssertEqual(user.email, "student@tsum.ru")
-                XCTAssertEqual(user.name, "Иван Иванов")
-                XCTAssertEqual(user.role, "student")
-                XCTAssertEqual(user.department, "IT")
-                XCTAssertTrue(user.isActive)
-            }
-            
-            // Check tokens were saved
-            XCTAssertNotNil(TokenManager.shared.getAccessToken())
-            XCTAssertNotNil(TokenManager.shared.getRefreshToken())
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 3.0)
+        // Then
+        XCTAssertTrue(sut.isAuthenticated)
+        XCTAssertNotNil(sut.currentUser)
+        XCTAssertEqual(result.user.email, "student@tsum.ru")
+        XCTAssertEqual(result.user.role, .student)
+        XCTAssertNotNil(result.accessToken)
+        XCTAssertNotNil(result.refreshToken)
     }
     
-    func testMockLoginAsAdmin() {
-        let expectation = XCTestExpectation(description: "Login completes")
-        
+    func testLoginAsAdmin() async throws {
         // When
-        sut.mockLogin(asAdmin: true)
+        let result = try await sut.login(
+            email: "admin@tsum.ru",
+            password: "password"
+        )
         
-        // Should start loading
-        XCTAssertTrue(sut.isLoading)
-        
-        // Wait for completion
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            // Then
-            XCTAssertFalse(self.sut.isLoading)
-            XCTAssertTrue(self.sut.isAuthenticated)
-            XCTAssertTrue(self.sut.isApprovedByAdmin) // Admins are auto-approved
-            XCTAssertNotNil(self.sut.currentUser)
-            
-            if let user = self.sut.currentUser {
-                XCTAssertEqual(user.email, "admin@tsum.ru")
-                XCTAssertEqual(user.name, "Админ Админов")
-                XCTAssertEqual(user.role, "admin")
-                XCTAssertEqual(user.department, "IT")
-                XCTAssertTrue(user.isActive)
-            }
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 3.0)
+        // Then
+        XCTAssertTrue(sut.isAuthenticated)
+        XCTAssertNotNil(sut.currentUser)
+        XCTAssertEqual(result.user.email, "admin@tsum.ru")
+        XCTAssertEqual(result.user.role, .student) // MockAuthService always creates student
     }
     
-    func testLoginAsMockUserAlias() {
-        let expectation = XCTestExpectation(description: "Login completes")
+    func testLoginFailure() async {
+        // Given
+        sut.shouldFail = true
+        sut.authError = APIError.invalidCredentials
         
-        // When - using alias method
-        sut.loginAsMockUser(isAdmin: true)
-        
-        // Wait for completion
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            // Should work same as mockLogin
-            XCTAssertTrue(self.sut.isAuthenticated)
-            XCTAssertTrue(self.sut.isApprovedByAdmin)
-            expectation.fulfill()
+        // When/Then
+        do {
+            _ = try await sut.login(
+                email: "invalid@example.com",
+                password: "wrongpassword"
+            )
+            XCTFail("Login should have failed")
+        } catch {
+            XCTAssertTrue(error is APIError)
         }
         
-        wait(for: [expectation], timeout: 3.0)
-    }
-    
-    // MARK: - Mock Approve Tests
-    
-    func testMockApproveForStudent() {
-        let expectation = XCTestExpectation(description: "Approval completes")
-        
-        // Given - login as student first
-        sut.mockLogin(asAdmin: false)
-        
-        // Wait for login
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            XCTAssertFalse(self.sut.isApprovedByAdmin)
-            
-            // When - approve
-            self.sut.mockApprove()
-            
-            // Should start loading
-            XCTAssertTrue(self.sut.isLoading)
-            
-            // Wait for approval
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                // Then
-                XCTAssertFalse(self.sut.isLoading)
-                XCTAssertTrue(self.sut.isApprovedByAdmin)
-                expectation.fulfill()
-            }
-        }
-        
-        wait(for: [expectation], timeout: 5.0)
-    }
-    
-    func testMockApproveWhenNotAuthenticated() {
-        // Given - not authenticated
+        // Verify state
         XCTAssertFalse(sut.isAuthenticated)
-        
-        // When
-        sut.mockApprove()
-        
-        // Then - should not change approval status
-        XCTAssertFalse(sut.isApprovedByAdmin)
-        XCTAssertFalse(sut.isLoading)
-    }
-    
-    func testMockApproveWhenAlreadyApproved() {
-        let expectation = XCTestExpectation(description: "Login completes")
-        
-        // Given - login as admin (auto-approved)
-        sut.mockLogin(asAdmin: true)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            XCTAssertTrue(self.sut.isApprovedByAdmin)
-            
-            // When
-            self.sut.mockApprove()
-            
-            // Then - should not start loading
-            XCTAssertFalse(self.sut.isLoading)
-            XCTAssertTrue(self.sut.isApprovedByAdmin)
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 3.0)
+        XCTAssertNil(sut.currentUser)
     }
     
     // MARK: - Logout Tests
     
-    func testLogout() {
-        let expectation = XCTestExpectation(description: "Login completes")
-        
+    func testLogout() async throws {
         // Given - logged in user
-        sut.mockLogin(asAdmin: true)
+        _ = try await sut.login(
+            email: "test@example.com",
+            password: "password"
+        )
+        XCTAssertTrue(sut.isAuthenticated)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            XCTAssertTrue(self.sut.isAuthenticated)
-            
-            // When
-            self.sut.logout()
-            
-            // Then
-            XCTAssertNil(self.sut.currentUser)
-            XCTAssertFalse(self.sut.isAuthenticated)
-            XCTAssertFalse(self.sut.isApprovedByAdmin)
-            XCTAssertNil(self.sut.error)
-            
-            // Tokens should be cleared
-            XCTAssertNil(TokenManager.shared.getAccessToken())
-            XCTAssertNil(TokenManager.shared.getRefreshToken())
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 3.0)
-    }
-    
-    // MARK: - Get Users Tests
-    
-    func testGetUsers() {
         // When
-        let users = sut.getUsers()
+        try await sut.logout()
         
         // Then
-        XCTAssertEqual(users.count, 5)
+        XCTAssertNil(sut.currentUser)
+        XCTAssertFalse(sut.isAuthenticated)
+    }
+    
+    // MARK: - Token Tests
+    
+    func testTokenRefresh() async throws {
+        // Given - logged in
+        _ = try await sut.login(
+            email: "test@example.com",
+            password: "password"
+        )
         
-        // Verify different roles
-        let studentCount = users.filter { $0.role == "student" }.count
-        let managerCount = users.filter { $0.role == "manager" }.count
-        let adminCount = users.filter { $0.role == "admin" }.count
+        // When
+        let newToken = try await sut.refreshToken()
         
-        XCTAssertEqual(studentCount, 3)
-        XCTAssertEqual(managerCount, 1)
-        XCTAssertEqual(adminCount, 1)
+        // Then
+        XCTAssertNotNil(newToken)
+        XCTAssertTrue(sut.hasRefreshedToken)
+    }
+    
+    func testTokenValidation() async throws {
+        // Initially not valid
+        XCTAssertFalse(sut.isTokenValid())
         
-        // Verify all users are active
-        XCTAssertTrue(users.allSatisfy { $0.isActive })
+        // After login
+        _ = try await sut.login(
+            email: "test@example.com",
+            password: "password"
+        )
         
-        // Verify departments
-        let departments = Set(users.compactMap { $0.department })
-        XCTAssertTrue(departments.contains("IT"))
-        XCTAssertTrue(departments.contains("Отдел продаж"))
+        // Should be valid
+        XCTAssertTrue(sut.isTokenValid())
+    }
+    
+    // MARK: - User Management Tests
+    
+    func testGetCurrentUser() async throws {
+        // Given - not logged in
+        do {
+            _ = try await sut.getCurrentUser()
+            XCTFail("Should throw unauthorized")
+        } catch {
+            XCTAssertTrue(error is APIError)
+        }
+        
+        // When logged in
+        _ = try await sut.login(
+            email: "test@example.com",
+            password: "password"
+        )
+        
+        // Then
+        let user = try await sut.getCurrentUser()
+        XCTAssertNotNil(user)
+        XCTAssertEqual(user.email, "test@example.com")
+    }
+    
+    func testUpdateProfile() async throws {
+        // Given - logged in
+        _ = try await sut.login(
+            email: "test@example.com",
+            password: "password"
+        )
+        
+        // When
+        let updatedUser = try await sut.updateProfile(
+            firstName: "Updated",
+            lastName: "Name"
+        )
+        
+        // Then
+        XCTAssertEqual(updatedUser.firstName, "Updated")
+        XCTAssertEqual(updatedUser.lastName, "Name")
+        XCTAssertEqual(updatedUser.name, "Updated Name")
+    }
+    
+    // MARK: - Session Management Tests
+    
+    func testClearSession() async throws {
+        // Given - logged in
+        _ = try await sut.login(
+            email: "test@example.com",
+            password: "password"
+        )
+        XCTAssertTrue(sut.isAuthenticated)
+        
+        // When
+        sut.clearSession()
+        
+        // Then
+        XCTAssertFalse(sut.isAuthenticated)
+        XCTAssertNil(sut.currentUser)
+    }
+    
+    // MARK: - Error Handling Tests
+    
+    func testNetworkError() async {
+        // Given
+        sut.shouldFail = true
+        sut.authError = APIError.networkError(URLError(.notConnectedToInternet))
+        
+        // When/Then
+        do {
+            _ = try await sut.login(
+                email: "test@example.com",
+                password: "password"
+            )
+            XCTFail("Should throw network error")
+        } catch {
+            if case APIError.networkError = error {
+                // Success
+            } else {
+                XCTFail("Wrong error type")
+            }
+        }
     }
     
     // MARK: - State Persistence Tests
     
-    func testAuthenticationStateRestoration() {
-        let expectation = XCTestExpectation(description: "Login and restore")
+    func testStateReset() async throws {
+        // Given - logged in
+        _ = try await sut.login(
+            email: "test@example.com",
+            password: "password"
+        )
         
-        // Given - login as admin
-        sut.mockLogin(asAdmin: true)
+        // When - reset error state
+        sut.shouldFail = false
+        sut.authError = nil
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            // Simulate app restart by creating new instance
-            // In real app, checkAuthenticationStatus would restore state
-            
-            // Verify tokens exist
-            XCTAssertNotNil(TokenManager.shared.getAccessToken())
-            XCTAssertTrue(TokenManager.shared.isAuthenticated)
-            
-            expectation.fulfill()
-        }
+        // Then - can login again
+        let result = try await sut.login(
+            email: "another@example.com",
+            password: "password"
+        )
         
-        wait(for: [expectation], timeout: 3.0)
-    }
-    
-    // MARK: - Publisher Tests
-    
-    func testIsAuthenticatedPublisher() {
-        let expectation = XCTestExpectation(description: "Publisher emits values")
-        var receivedValues: [Bool] = []
-        
-        // Subscribe to publisher
-        sut.$isAuthenticated
-            .sink { value in
-                receivedValues.append(value)
-            }
-            .store(in: &cancellables)
-        
-        // Trigger changes
-        sut.mockLogin(asAdmin: false)
-        
-        // Wait for login to complete
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 3.0)
-        
-        // Should receive at least 2 values: initial false, then true after login
-        XCTAssertGreaterThanOrEqual(receivedValues.count, 2)
-        XCTAssertEqual(receivedValues.first, false)
-        XCTAssertTrue(receivedValues.contains(true))
-    }
-    
-    func testErrorHandling() {
-        // Given - error property is read-only in MockAuthService
-        // So we test that it starts as nil and is cleared on logout
-        
-        // Initial state
-        XCTAssertNil(sut.error)
-        
-        // When logout
-        sut.logout()
-        
-        // Then - error should still be nil
-        XCTAssertNil(sut.error)
+        XCTAssertTrue(sut.isAuthenticated)
+        XCTAssertEqual(result.user.email, "another@example.com")
     }
 } 

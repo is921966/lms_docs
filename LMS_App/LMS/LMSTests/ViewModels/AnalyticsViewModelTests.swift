@@ -20,25 +20,31 @@ class MockAnalyticsService: AnalyticsServiceProtocol {
     func getAnalyticsSummary(for period: AnalyticsPeriod) -> AnalyticsSummary {
         return mockSummary ?? AnalyticsSummary(
             period: period,
+            startDate: Date().addingTimeInterval(-Double(period.days) * 24 * 60 * 60),
+            endDate: Date(),
             totalUsers: 100,
             activeUsers: 75,
             completedCourses: 150,
-            totalLearningHours: 1200,
             averageScore: 85.5,
+            totalLearningHours: 1200,
             topPerformers: [],
-            popularCourses: []
+            popularCourses: [],
+            competencyProgress: []
         )
     }
     
-    func getUserPerformance(userId: String, period: AnalyticsPeriod) -> UserPerformance {
-        return mockUserPerformance ?? UserPerformance(
+    func getUserPerformance(userId: String, period: AnalyticsPeriod) -> UserPerformance? {
+        return UserPerformance(
             userId: userId,
-            userName: "Test User",
-            rank: 1,
+            userName: "Test User \(userId)",
+            avatar: "person.circle.fill",
             totalScore: 950,
-            completedCourses: 10,
+            completedCourses: 12,
+            averageTestScore: 87.5,
             learningHours: 120,
-            lastActivityDate: Date()
+            rank: 1,
+            badges: ["star", "trophy", "checkmark.seal"],
+            trend: .improving
         )
     }
     
@@ -49,8 +55,10 @@ class MockAnalyticsService: AnalyticsServiceProtocol {
                 courseName: "iOS Development",
                 enrolledCount: 50,
                 completedCount: 35,
+                averageProgress: 0.7,
                 averageScore: 87.5,
-                averageCompletionTime: 15
+                averageTimeToComplete: 15,
+                satisfactionRating: 4.5
             )
         ] : mockCourseStatistics
     }
@@ -60,14 +68,30 @@ class MockAnalyticsService: AnalyticsServiceProtocol {
             CompetencyProgress(
                 competencyId: "comp1",
                 competencyName: "Swift",
-                progressPercentage: 75,
-                usersCount: 30
+                usersCount: 30,
+                averageLevel: 3.5,
+                targetLevel: 4.0,
+                progressPercentage: 75
             )
         ] : mockCompetencyProgress
     }
     
     func trackEvent(_ data: AnalyticsData) {
         trackedEvents.append(data)
+    }
+    
+    func generateReport(_ report: Report) -> AnyPublisher<Report, Error> {
+        return Just(report)
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
+    }
+    
+    func getReports(for userId: String) -> [Report] {
+        return []
+    }
+    
+    func exportReport(_ report: Report, format: ReportFormat) -> URL? {
+        return URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("test_report.pdf")
     }
 }
 
@@ -110,13 +134,16 @@ final class AnalyticsViewModelTests: XCTestCase {
         // Given - mock service with custom data
         let customSummary = AnalyticsSummary(
             period: .month,
+            startDate: Date().addingTimeInterval(-30 * 24 * 60 * 60),
+            endDate: Date(),
             totalUsers: 200,
             activeUsers: 150,
             completedCourses: 300,
-            totalLearningHours: 2400,
             averageScore: 90.0,
+            totalLearningHours: 2400,
             topPerformers: [],
-            popularCourses: []
+            popularCourses: [],
+            competencyProgress: []
         )
         mockService.mockSummary = customSummary
         
@@ -169,26 +196,26 @@ final class AnalyticsViewModelTests: XCTestCase {
         let metadata = ["courseId": "course1", "module": "module3"]
         
         // When
-        viewModel.trackEvent(type: .courseCompleted, metrics: metrics, metadata: metadata)
+        viewModel.trackEvent(type: .testResult, metrics: metrics, metadata: metadata)
         
         // Then
         XCTAssertEqual(mockService.trackedEvents.count, 1)
-        XCTAssertEqual(mockService.trackedEvents.first?.type, .courseCompleted)
+        XCTAssertEqual(mockService.trackedEvents.first?.type, .testResult)
         XCTAssertEqual(mockService.trackedEvents.first?.metrics["score"], 95.0)
         XCTAssertEqual(mockService.trackedEvents.first?.metadata["courseId"], "course1")
     }
     
     func testTrackMultipleEvents() {
         // When
-        viewModel.trackEvent(type: .courseStarted, metrics: [:])
-        viewModel.trackEvent(type: .testCompleted, metrics: ["score": 85.0])
-        viewModel.trackEvent(type: .moduleCompleted, metrics: ["progress": 100.0])
+        viewModel.trackEvent(type: .courseProgress, metrics: [:])
+        viewModel.trackEvent(type: .testResult, metrics: ["score": 85.0])
+        viewModel.trackEvent(type: .achievement, metrics: ["progress": 100.0])
         
         // Then
         XCTAssertEqual(mockService.trackedEvents.count, 3)
-        XCTAssertEqual(mockService.trackedEvents[0].type, .courseStarted)
-        XCTAssertEqual(mockService.trackedEvents[1].type, .testCompleted)
-        XCTAssertEqual(mockService.trackedEvents[2].type, .moduleCompleted)
+        XCTAssertEqual(mockService.trackedEvents[0].type, .courseProgress)
+        XCTAssertEqual(mockService.trackedEvents[1].type, .testResult)
+        XCTAssertEqual(mockService.trackedEvents[2].type, .achievement)
     }
     
     // MARK: - Filtered Data Tests
@@ -201,16 +228,20 @@ final class AnalyticsViewModelTests: XCTestCase {
                 courseName: "Course 1",
                 enrolledCount: 10,
                 completedCount: 5,
+                averageProgress: 0.5,
                 averageScore: 80,
-                averageCompletionTime: 10
+                averageTimeToComplete: 10,
+                satisfactionRating: 4.0
             ),
             CourseStatistics(
                 courseId: "course2",
                 courseName: "Course 2",
                 enrolledCount: 20,
                 completedCount: 15,
+                averageProgress: 0.75,
                 averageScore: 85,
-                averageCompletionTime: 12
+                averageTimeToComplete: 12,
+                satisfactionRating: 4.5
             )
         ]
         viewModel.loadAnalytics()
@@ -232,22 +263,28 @@ final class AnalyticsViewModelTests: XCTestCase {
             UserPerformance(
                 userId: "user1",
                 userName: "User 1",
-                rank: 1,
+                avatar: "person.circle.fill",
                 totalScore: 1000,
                 completedCourses: 15,
+                averageTestScore: 90.0,
                 learningHours: 150,
-                lastActivityDate: Date()
+                rank: 1,
+                badges: ["star", "trophy"],
+                trend: .improving
             )
         ]
         mockService.mockSummary = AnalyticsSummary(
             period: .month,
+            startDate: Date().addingTimeInterval(-30 * 24 * 60 * 60),
+            endDate: Date(),
             totalUsers: 100,
             activeUsers: 75,
             completedCourses: 150,
-            totalLearningHours: 1200,
             averageScore: 85.5,
+            totalLearningHours: 1200,
             topPerformers: performers,
-            popularCourses: []
+            popularCourses: [],
+            competencyProgress: []
         )
         viewModel.loadAnalytics()
         
@@ -264,19 +301,24 @@ final class AnalyticsViewModelTests: XCTestCase {
                 courseName: "Popular Course",
                 enrolledCount: 100,
                 completedCount: 80,
+                averageProgress: 0.8,
                 averageScore: 90,
-                averageCompletionTime: 10
+                averageTimeToComplete: 10,
+                satisfactionRating: 4.8
             )
         ]
         mockService.mockSummary = AnalyticsSummary(
             period: .month,
+            startDate: Date().addingTimeInterval(-30 * 24 * 60 * 60),
+            endDate: Date(),
             totalUsers: 100,
             activeUsers: 75,
             completedCourses: 150,
-            totalLearningHours: 1200,
             averageScore: 85.5,
+            totalLearningHours: 1200,
             topPerformers: [],
-            popularCourses: courses
+            popularCourses: courses,
+            competencyProgress: []
         )
         viewModel.loadAnalytics()
         
@@ -319,14 +361,18 @@ final class AnalyticsViewModelTests: XCTestCase {
             CompetencyProgress(
                 competencyId: "comp1",
                 competencyName: "Swift",
-                progressPercentage: 75,
-                usersCount: 30
+                usersCount: 30,
+                averageLevel: 3.5,
+                targetLevel: 4.0,
+                progressPercentage: 75
             ),
             CompetencyProgress(
                 competencyId: "comp2",
                 competencyName: "UIKit",
-                progressPercentage: 65,
-                usersCount: 25
+                usersCount: 25,
+                averageLevel: 3.2,
+                targetLevel: 4.0,
+                progressPercentage: 65
             )
         ]
         viewModel.loadAnalytics()
@@ -366,13 +412,16 @@ final class AnalyticsViewModelTests: XCTestCase {
         // Given
         mockService.mockSummary = AnalyticsSummary(
             period: .month,
+            startDate: Date().addingTimeInterval(-30 * 24 * 60 * 60),
+            endDate: Date(),
             totalUsers: 100,
             activeUsers: 75,
             completedCourses: 150,
-            totalLearningHours: 1234.5,
             averageScore: 85.5,
+            totalLearningHours: 1234.5,
             topPerformers: [],
-            popularCourses: []
+            popularCourses: [],
+            competencyProgress: []
         )
         viewModel.loadAnalytics()
         
@@ -384,13 +433,16 @@ final class AnalyticsViewModelTests: XCTestCase {
         // Given
         mockService.mockSummary = AnalyticsSummary(
             period: .month,
+            startDate: Date().addingTimeInterval(-30 * 24 * 60 * 60),
+            endDate: Date(),
             totalUsers: 100,
             activeUsers: 75,
             completedCourses: 150,
-            totalLearningHours: 1200,
             averageScore: 87.35,
+            totalLearningHours: 1200,
             topPerformers: [],
-            popularCourses: []
+            popularCourses: [],
+            competencyProgress: []
         )
         viewModel.loadAnalytics()
         
@@ -402,13 +454,16 @@ final class AnalyticsViewModelTests: XCTestCase {
         // Given
         mockService.mockSummary = AnalyticsSummary(
             period: .month,
+            startDate: Date().addingTimeInterval(-30 * 24 * 60 * 60),
+            endDate: Date(),
             totalUsers: 200,
             activeUsers: 150,
             completedCourses: 150,
-            totalLearningHours: 1200,
             averageScore: 85.5,
+            totalLearningHours: 1200,
             topPerformers: [],
-            popularCourses: []
+            popularCourses: [],
+            competencyProgress: []
         )
         viewModel.loadAnalytics()
         
@@ -424,16 +479,20 @@ final class AnalyticsViewModelTests: XCTestCase {
                 courseName: "Course 1",
                 enrolledCount: 100,
                 completedCount: 80,
+                averageProgress: 0.8,
                 averageScore: 80,
-                averageCompletionTime: 10
+                averageTimeToComplete: 10,
+                satisfactionRating: 4.2
             ),
             CourseStatistics(
                 courseId: "course2",
                 courseName: "Course 2",
                 enrolledCount: 50,
                 completedCount: 30,
+                averageProgress: 0.6,
                 averageScore: 85,
-                averageCompletionTime: 12
+                averageTimeToComplete: 12,
+                satisfactionRating: 4.0
             )
         ]
         viewModel.loadAnalytics()
@@ -470,23 +529,29 @@ final class AnalyticsViewModelTests: XCTestCase {
         // Given
         mockService.mockSummary = AnalyticsSummary(
             period: .month,
+            startDate: Date().addingTimeInterval(-30 * 24 * 60 * 60),
+            endDate: Date(),
             totalUsers: 100,
             activeUsers: 75,
             completedCourses: 150,
-            totalLearningHours: 1200,
             averageScore: 85.5,
+            totalLearningHours: 1200,
             topPerformers: [
                 UserPerformance(
                     userId: "user1",
                     userName: "Top User",
-                    rank: 1,
+                    avatar: "person.circle.fill",
                     totalScore: 1000,
                     completedCourses: 20,
+                    averageTestScore: 92.5,
                     learningHours: 200,
-                    lastActivityDate: Date()
+                    rank: 1,
+                    badges: ["star", "trophy", "checkmark.seal"],
+                    trend: .improving
                 )
             ],
-            popularCourses: []
+            popularCourses: [],
+            competencyProgress: []
         )
         viewModel.loadAnalytics()
         

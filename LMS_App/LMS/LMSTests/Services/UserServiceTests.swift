@@ -12,10 +12,9 @@ struct UserServiceTests {
             id: "1",
             email: "user1@example.com",
             name: "User 1",
-            role: "student",
+            role: .student,
             department: "IT",
             isActive: true,
-            avatar: nil,
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -54,10 +53,9 @@ struct UserServiceTests {
                 id: "\(i)",
                 email: "user\(i)@example.com",
                 name: "User \(i)",
-                role: "student",
+                role: .student,
                 department: "IT",
                 isActive: true,
-                avatar: nil,
                 createdAt: Date(),
                 updatedAt: Date()
             ))
@@ -82,10 +80,9 @@ struct UserServiceTests {
             id: "123",
             email: "test@example.com",
             name: "Test User",
-            role: "student",
+            role: .student,
             department: "IT",
             isActive: true,
-            avatar: nil,
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -126,7 +123,7 @@ struct UserServiceTests {
         let createRequest = CreateUserRequest(
             email: "new@example.com",
             name: "New User",
-            role: "student",
+            role: .student,
             department: "IT",
             password: "password123"
         )
@@ -151,10 +148,9 @@ struct UserServiceTests {
             id: "123",
             email: "test@example.com",
             name: "Test User",
-            role: "student",
+            role: .student,
             department: "IT",
             isActive: true,
-            avatar: nil,
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -162,7 +158,7 @@ struct UserServiceTests {
         
         let updateRequest = UpdateUserRequest(
             name: "Updated Name",
-            role: "admin",
+            role: .admin,
             department: "HR",
             isActive: true
         )
@@ -172,7 +168,7 @@ struct UserServiceTests {
         
         // Then
         #expect(result.name == "Updated Name")
-        #expect(result.role == "admin")
+        #expect(result.role == .admin)
         #expect(result.department == "HR")
         #expect(result.isActive == true)
     }
@@ -185,10 +181,9 @@ struct UserServiceTests {
             id: "123",
             email: "test@example.com",
             name: "Test User",
-            role: "student",
+            role: .student,
             department: "IT",
             isActive: true,
-            avatar: nil,
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -206,14 +201,14 @@ struct UserServiceTests {
         // Given
         let sut = MockUserService()
         let users = [
-            UserResponse(id: "1", email: "student@example.com", name: "Student User", role: "student", department: "IT", isActive: true, avatar: nil, createdAt: Date(), updatedAt: Date()),
-            UserResponse(id: "2", email: "teacher@example.com", name: "Teacher User", role: "teacher", department: "IT", isActive: true, avatar: nil, createdAt: Date(), updatedAt: Date()),
-            UserResponse(id: "3", email: "admin@example.com", name: "Admin User", role: "admin", department: "HR", isActive: true, avatar: nil, createdAt: Date(), updatedAt: Date())
+            UserResponse(id: "1", email: "student@example.com", name: "Student User", role: .student, department: "IT", isActive: true, createdAt: Date(), updatedAt: Date()),
+            UserResponse(id: "2", email: "teacher@example.com", name: "Teacher User", role: .instructor, department: "IT", isActive: true, createdAt: Date(), updatedAt: Date()),
+            UserResponse(id: "3", email: "admin@example.com", name: "Admin User", role: .admin, department: "HR", isActive: true, createdAt: Date(), updatedAt: Date())
         ]
         sut.mockUsers = users
         
         let filters = UserFilters(
-            role: "student",
+            role: .student,
             department: "IT",
             isActive: true,
             search: nil
@@ -224,7 +219,7 @@ struct UserServiceTests {
         
         // Then
         #expect(result.users.count == 1)
-        #expect(result.users[0].role == "student")
+        #expect(result.users[0].role == .student)
         #expect(result.users[0].department == "IT")
     }
     
@@ -236,10 +231,9 @@ struct UserServiceTests {
             id: "123",
             email: "test@example.com",
             name: "Test User",
-            role: "student",
+            role: .student,
             department: "IT",
             isActive: true,
-            avatar: nil,
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -269,10 +263,9 @@ struct UserServiceTests {
             id: "123",
             email: "test@example.com",
             name: "Test User",
-            role: "student",
+            role: .student,
             department: "IT",
             isActive: true,
-            avatar: nil,
             createdAt: Date(),
             updatedAt: Date()
         )

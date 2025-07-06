@@ -300,11 +300,20 @@ final class OnboardingViewModelTests: XCTestCase {
     func testProgramsBinding() {
         // Add new program directly to service
         let newProgram = OnboardingProgram(
-            employeeId: "test-123",
+            templateId: UUID(),
+            employeeId: UUID(),
             employeeName: "Test User",
-            employeeDepartment: "Test Dept",
             employeePosition: "Test Position",
-            startDate: Date()
+            employeeDepartment: "Test Dept",
+            managerId: UUID(),
+            managerName: "Test Manager",
+            title: "Test Onboarding",
+            description: "Test description",
+            startDate: Date(),
+            targetEndDate: Date().addingTimeInterval(30 * 24 * 60 * 60),
+            stages: [],
+            totalDuration: 30,
+            status: .notStarted
         )
         
         let expectation = XCTestExpectation(description: "Programs updated")

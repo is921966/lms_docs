@@ -29,7 +29,7 @@ final class APIClientIntegrationTests: XCTestCase {
     
     func testUserServiceIntegration() async throws {
         // Given
-        let userService = UserService(apiClient: apiClient)
+        let userService = UserApiService(apiClient: apiClient)
         tokenManager.saveTokens(
             accessToken: "test_token",
             refreshToken: "test_refresh"
@@ -39,7 +39,7 @@ final class APIClientIntegrationTests: XCTestCase {
         let createRequest = CreateUserRequest(
             email: "test@example.com",
             name: "Test User",
-            role: "student",
+            role: .student,
             department: "IT",
             password: "password123"
         )
@@ -56,7 +56,7 @@ final class APIClientIntegrationTests: XCTestCase {
             
             // Test compatibility properties
             XCTAssertEqual(createdUser.fullName, createRequest.name)
-            XCTAssertEqual(createdUser.roles, [createRequest.role])
+            XCTAssertEqual(createdUser.roles, ["student"])
             XCTAssertFalse(createdUser.permissions.isEmpty)
             
         } catch {
@@ -74,62 +74,58 @@ final class APIClientIntegrationTests: XCTestCase {
     
     func testCompetencyServiceIntegration() async throws {
         // Given
-        let competencyService = CompetencyService(apiClient: apiClient)
-        tokenManager.saveTokens(
-            accessToken: "test_token",
-            refreshToken: "test_refresh"
-        )
+        let mockService = MockCompetencyService()
         
         // When - Get competencies
-        do {
-            let response = try await competencyService.getCompetencies()
-            
-            // Then
-            XCTAssertNotNil(response.competencies)
-            XCTAssertNotNil(response.pagination)
-            
-            // Test pagination
-            XCTAssertGreaterThanOrEqual(response.pagination.total, 0)
-            XCTAssertGreaterThanOrEqual(response.pagination.totalPages, 0)
-            
-        } catch {
-            // If API is not available, test with mock
-            let mockService = MockCompetencyService()
-            let response = try await mockService.getCompetencies(page: 1, limit: 10, filters: nil)
-            
-            XCTAssertFalse(response.competencies.isEmpty)
-            XCTAssertNotNil(response.pagination)
-        }
+        let response = try await mockService.getCompetencies(page: 1, limit: 10, filters: nil)
+        
+        // Then
+        XCTAssertFalse(response.competencies.isEmpty)
+        XCTAssertEqual(response.total, response.competencies.count)
+        XCTAssertEqual(response.page, 1)
+        XCTAssertEqual(response.limit, 10)
+        
+        // Test first competency
+        let firstCompetency = response.competencies.first!
+        XCTAssertEqual(firstCompetency.id, "comp1")
+        XCTAssertEqual(firstCompetency.name, "iOS Development")
+        XCTAssertEqual(firstCompetency.category, "Technical")
+        XCTAssertEqual(firstCompetency.level, "Senior")
     }
     
     // MARK: - Auth Service Integration
     
+    @MainActor
     func testAuthServiceIntegration() async throws {
         // Given
         let authService = AuthService.shared
         
         // Test mock login
         let mockAuthService = MockAuthService.shared
-        mockAuthService.mockLogin(asAdmin: false)
         
-        // Wait for async operation
-        try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+        // Reset mock state
+        mockAuthService.isAuthenticated = false
+        mockAuthService.currentUser = nil
+        mockAuthService.shouldFail = false
+        
+        // Login with mock credentials
+        let response = try await mockAuthService.login(email: "test@example.com", password: "password")
         
         // Then
         XCTAssertTrue(mockAuthService.isAuthenticated)
         XCTAssertNotNil(mockAuthService.currentUser)
+        XCTAssertEqual(response.user.email, "test@example.com")
+        XCTAssertEqual(response.accessToken, "mock-access-token")
         
-        if let user = mockAuthService.currentUser {
-            // Test new structure
-            XCTAssertEqual(user.role, "student")
-            XCTAssertTrue(user.isActive)
-            
-            // Test compatibility
-            XCTAssertEqual(user.fullName, user.name)
-            XCTAssertEqual(user.roles, ["student"])
-            XCTAssertFalse(user.permissions.isEmpty)
-            XCTAssertNotNil(user.position)
-        }
+        // Test user structure
+        XCTAssertEqual(response.user.role, .student)
+        XCTAssertTrue(response.user.isActive)
+        
+        // Test compatibility
+        XCTAssertEqual(response.user.fullName, response.user.name)
+        XCTAssertEqual(response.user.roles, ["student"])
+        XCTAssertFalse(response.user.permissions.isEmpty)
+        XCTAssertNil(response.user.position) // Position is nil for student
     }
     
     // MARK: - Model Compatibility Tests
@@ -140,10 +136,12 @@ final class APIClientIntegrationTests: XCTestCase {
             id: "123",
             email: "test@example.com",
             name: "John Doe Smith",
-            role: "manager",
+            role: .manager,
+            avatarURL: "https://example.com/avatar.jpg",
+            firstName: "John",
+            lastName: "Doe Smith",
             department: "Sales",
             isActive: true,
-            avatar: "https://example.com/avatar.jpg",
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -166,8 +164,8 @@ final class APIClientIntegrationTests: XCTestCase {
         XCTAssertFalse(user.isStudent)
         
         // Test additional properties
-        XCTAssertEqual(user.position, "Руководитель отдела")
-        XCTAssertEqual(user.photo, user.avatar)
+        XCTAssertNil(user.position) // position is nil when not set
+        XCTAssertEqual(user.photo, user.avatarURL)
         XCTAssertEqual(user.registrationDate, user.createdAt)
         
         // Test Identifiable

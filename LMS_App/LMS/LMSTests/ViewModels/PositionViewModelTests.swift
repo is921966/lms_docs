@@ -19,9 +19,7 @@ final class PositionViewModelTests: XCTestCase {
         super.setUp()
         viewModel = PositionViewModel()
         cancellables = []
-        // Reset mock service
-        PositionMockService.shared.positions = Position.mockPositions()
-        PositionMockService.shared.careerPaths = CareerPath.mockPaths()
+        // Mock service loads data automatically in init
     }
     
     override func tearDown() {
@@ -74,7 +72,7 @@ final class PositionViewModelTests: XCTestCase {
         // Then
         wait(for: [expectation], timeout: 1)
         XCTAssertTrue(viewModel.filteredPositions.allSatisfy { position in
-            position.title.localizedCaseInsensitiveContains("Developer")
+            position.name.localizedCaseInsensitiveContains("Developer")
         })
     }
     
@@ -122,7 +120,14 @@ final class PositionViewModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Inactive filter")
         
         // Create inactive position
-        var inactivePosition = Position.mockPosition()
+        var inactivePosition = Position(
+            name: "Inactive Test Position",
+            description: "Test inactive position",
+            department: "Test",
+            level: .junior,
+            competencyRequirements: [],
+            employeeCount: 0
+        )
         inactivePosition.isActive = false
         PositionMockService.shared.createPosition(inactivePosition)
         
@@ -162,7 +167,7 @@ final class PositionViewModelTests: XCTestCase {
         
         // Then
         XCTAssertTrue(viewModel.filteredPositions.allSatisfy { position in
-            position.title.localizedCaseInsensitiveContains("Senior") &&
+            position.name.localizedCaseInsensitiveContains("Senior") &&
             position.level == .senior &&
             position.department == "Engineering" &&
             position.isActive
@@ -173,7 +178,14 @@ final class PositionViewModelTests: XCTestCase {
     
     func testCreatePosition() {
         // Given
-        let newPosition = Position.mockPosition()
+        let newPosition = Position(
+            name: "New Test Position",
+            description: "Test description",
+            department: "Test",
+            level: .middle,
+            competencyRequirements: [],
+            employeeCount: 1
+        )
         let initialCount = viewModel.positions.count
         
         // When
@@ -188,7 +200,7 @@ final class PositionViewModelTests: XCTestCase {
     func testUpdatePosition() {
         // Given
         var position = viewModel.positions.first!
-        position.title = "Updated Title"
+        position.name = "Updated Title"
         viewModel.selectedPosition = position
         viewModel.showingEditSheet = true
         
@@ -196,7 +208,7 @@ final class PositionViewModelTests: XCTestCase {
         viewModel.updatePosition(position)
         
         // Then
-        XCTAssertTrue(viewModel.positions.contains { $0.title == "Updated Title" })
+        XCTAssertTrue(viewModel.positions.contains { $0.name == "Updated Title" })
         XCTAssertFalse(viewModel.showingEditSheet)
         XCTAssertNil(viewModel.selectedPosition)
     }
@@ -260,7 +272,9 @@ final class PositionViewModelTests: XCTestCase {
         let newPath = CareerPath(
             fromPositionId: fromPosition.id,
             toPositionId: toPosition.id,
-            requiredExperienceMonths: 24,
+            fromPositionName: fromPosition.name,
+            toPositionName: toPosition.name,
+            estimatedDuration: .years2,
             description: "Test career path"
         )
         let initialCount = viewModel.careerPaths.count

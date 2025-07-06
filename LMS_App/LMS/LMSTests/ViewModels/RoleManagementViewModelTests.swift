@@ -2,7 +2,7 @@
 //  RoleManagementViewModelTests.swift
 //  LMSTests
 //
-//  Created on 10/07/2025.
+//  Created on 06/07/2025.
 //
 
 import XCTest
@@ -10,346 +10,210 @@ import Combine
 @testable import LMS
 
 final class RoleManagementViewModelTests: XCTestCase {
-    private var sut: RoleManagementViewModel!
-    private var cancellables: Set<AnyCancellable>!
+    
+    var viewModel: RoleManagementViewModel!
+    var cancellables: Set<AnyCancellable> = []
     
     override func setUp() {
         super.setUp()
-        sut = RoleManagementViewModel()
-        cancellables = Set<AnyCancellable>()
+        viewModel = RoleManagementViewModel()
+        cancellables = []
     }
     
     override func tearDown() {
-        cancellables = nil
-        sut = nil
+        viewModel = nil
+        cancellables.removeAll()
         super.tearDown()
     }
     
     // MARK: - Initialization Tests
     
-    func testInitialization() {
-        // Check initial state - ViewModel loads data on init
-        XCTAssertNotNil(sut.roles)
-        XCTAssertNotNil(sut.roleStatistics)
-        // isLoading might be true due to auto-load in init
-        // so we just check that errorMessage is nil
-        XCTAssertNil(sut.errorMessage)
-    }
-    
-    func testInitialDataLoad() {
-        // Given initial state
-        let expectation = XCTestExpectation(description: "Data loads on init")
+    func testInitialState() {
+        // Initially loading
+        XCTAssertTrue(viewModel.isLoading)
+        XCTAssertNil(viewModel.errorMessage)
         
-        // When - wait for async operations
+        // Wait for load to complete
+        let expectation = XCTestExpectation(description: "Initial load")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            // Then - data should be loaded
-            XCTAssertGreaterThan(self.sut.roles.count, 0)
-            XCTAssertGreaterThan(self.sut.roleStatistics.count, 0)
-            XCTAssertFalse(self.sut.isLoading)
             expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 1)
         
-        wait(for: [expectation], timeout: 1.0)
+        // After load
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertFalse(viewModel.roles.isEmpty)
+        XCTAssertFalse(viewModel.roleStatistics.isEmpty)
     }
     
-    // MARK: - Load Tests
+    // MARK: - Loading Tests
     
     func testLoadRoles() {
-        // Given
+        // Clear initial data
+        viewModel.roles = []
+        
+        // Start loading
+        viewModel.loadRoles()
+        XCTAssertTrue(viewModel.isLoading)
+        
+        // Wait for load
         let expectation = XCTestExpectation(description: "Roles loaded")
-        sut.roles = [] // Clear existing
-        
-        // When
-        sut.loadRoles()
-        
-        // Then - should start loading
-        XCTAssertTrue(sut.isLoading)
-        
-        // Wait for completion
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            // Should finish loading with mock data
-            XCTAssertFalse(self.sut.isLoading)
-            XCTAssertEqual(self.sut.roles.count, 4) // Mock returns 4 roles
-            
-            // Verify mock roles
-            let roleNames = self.sut.roles.map { $0.name }
-            XCTAssertTrue(roleNames.contains("Студент"))
-            XCTAssertTrue(roleNames.contains("Преподаватель"))
-            XCTAssertTrue(roleNames.contains("Администратор"))
-            XCTAssertTrue(roleNames.contains("Супер администратор"))
-            
             expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 1)
         
-        wait(for: [expectation], timeout: 1.0)
+        // Verify loaded data
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertEqual(viewModel.roles.count, 4)
+        
+        // Verify specific roles
+        XCTAssertTrue(viewModel.roles.contains { $0.name == "Студент" })
+        XCTAssertTrue(viewModel.roles.contains { $0.name == "Преподаватель" })
+        XCTAssertTrue(viewModel.roles.contains { $0.name == "Администратор" })
+        XCTAssertTrue(viewModel.roles.contains { $0.name == "Супер администратор" })
     }
     
     func testLoadRoleStatistics() {
-        // Given
-        let expectation = XCTestExpectation(description: "Role statistics loaded")
-        sut.roleStatistics = [] // Clear existing
+        // Clear initial data
+        viewModel.roleStatistics = []
         
-        // When
-        sut.loadRoleStatistics()
+        // Load statistics
+        viewModel.loadRoleStatistics()
         
-        // Wait for completion
+        // Wait for load
+        let expectation = XCTestExpectation(description: "Statistics loaded")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            // Should have loaded statistics
-            XCTAssertEqual(self.sut.roleStatistics.count, 3) // Mock returns 3 stats
-            
-            // Verify mock statistics
-            let statNames = self.sut.roleStatistics.map { $0.roleName }
-            XCTAssertTrue(statNames.contains("Студенты"))
-            XCTAssertTrue(statNames.contains("Преподаватели"))
-            XCTAssertTrue(statNames.contains("Администраторы"))
-            
             expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 0.5)
         
-        wait(for: [expectation], timeout: 1.0)
+        // Verify statistics
+        XCTAssertEqual(viewModel.roleStatistics.count, 3)
+        XCTAssertTrue(viewModel.roleStatistics.contains { $0.roleName == "Студенты" })
+        XCTAssertTrue(viewModel.roleStatistics.contains { $0.roleName == "Преподаватели" })
+        XCTAssertTrue(viewModel.roleStatistics.contains { $0.roleName == "Администраторы" })
     }
     
-    // MARK: - Role Management Tests
+    // MARK: - CRUD Tests
     
     func testUpdateRolePermissions() {
-        // Given
-        let testRole = createMockRole(name: "Test Role")
-        sut.roles = [testRole]
-        let newPermissions = ["Read", "Write", "Delete"]
-        
-        // When
-        sut.updateRolePermissions(testRole, permissions: newPermissions)
-        
-        // Then
-        if let updatedRole = sut.roles.first(where: { $0.id == testRole.id }) {
-            XCTAssertEqual(updatedRole.permissions, newPermissions)
-        } else {
-            XCTFail("Role not found after update")
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Initial load")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
         }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        // Get first role
+        guard let role = viewModel.roles.first else {
+            XCTFail("No roles available")
+            return
+        }
+        
+        // Update permissions
+        let newPermissions = ["New Permission 1", "New Permission 2"]
+        viewModel.updateRolePermissions(role, permissions: newPermissions)
+        
+        // Verify update
+        let updatedRole = viewModel.roles.first { $0.id == role.id }
+        XCTAssertEqual(updatedRole?.permissions, newPermissions)
     }
     
     func testCreateRole() {
-        // Given
-        let initialCount = sut.roles.count
-        let roleName = "New Role"
-        let permissions = ["Permission 1", "Permission 2"]
-        
-        // When
-        sut.createRole(name: roleName, permissions: permissions)
-        
-        // Then
-        XCTAssertEqual(sut.roles.count, initialCount + 1)
-        
-        if let newRole = sut.roles.last {
-            XCTAssertEqual(newRole.name, roleName)
-            XCTAssertEqual(newRole.permissions, permissions)
-            XCTAssertEqual(newRole.usersCount, 0)
-        } else {
-            XCTFail("New role not found")
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Initial load")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
         }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        let initialCount = viewModel.roles.count
+        
+        // Create new role
+        let roleName = "Test Role"
+        let permissions = ["Permission 1", "Permission 2", "Permission 3"]
+        viewModel.createRole(name: roleName, permissions: permissions)
+        
+        // Verify creation
+        XCTAssertEqual(viewModel.roles.count, initialCount + 1)
+        XCTAssertTrue(viewModel.roles.contains { $0.name == roleName })
+        
+        let newRole = viewModel.roles.first { $0.name == roleName }
+        XCTAssertNotNil(newRole)
+        XCTAssertEqual(newRole?.permissions, permissions)
+        XCTAssertEqual(newRole?.usersCount, 0)
     }
     
     func testDeleteRole() {
-        // Given
-        let role1 = createMockRole(name: "Role 1")
-        let role2 = createMockRole(name: "Role 2")
-        let role3 = createMockRole(name: "Role 3")
-        sut.roles = [role1, role2, role3]
-        
-        // When
-        sut.deleteRole(role2)
-        
-        // Then
-        XCTAssertEqual(sut.roles.count, 2)
-        XCTAssertFalse(sut.roles.contains { $0.id == role2.id })
-        XCTAssertTrue(sut.roles.contains { $0.id == role1.id })
-        XCTAssertTrue(sut.roles.contains { $0.id == role3.id })
-    }
-    
-    // MARK: - Multiple Operations Tests
-    
-    func testCreateMultipleRoles() {
-        // Given
-        let initialCount = sut.roles.count
-        
-        // When
-        for i in 1...5 {
-            sut.createRole(
-                name: "Role \(i)",
-                permissions: ["Permission \(i)"]
-            )
-        }
-        
-        // Then
-        XCTAssertEqual(sut.roles.count, initialCount + 5)
-    }
-    
-    func testUpdateMultipleRoles() {
-        // Given
-        let roles = (1...3).map { createMockRole(name: "Role \($0)") }
-        sut.roles = roles
-        let newPermissions = ["Updated Permission"]
-        
-        // When
-        roles.forEach { role in
-            sut.updateRolePermissions(role, permissions: newPermissions)
-        }
-        
-        // Then
-        sut.roles.forEach { role in
-            XCTAssertEqual(role.permissions, newPermissions)
-        }
-    }
-    
-    func testDeleteAllRoles() {
-        // Given
-        let roles = (1...5).map { createMockRole(name: "Role \($0)") }
-        sut.roles = roles
-        
-        // When
-        roles.forEach { sut.deleteRole($0) }
-        
-        // Then
-        XCTAssertTrue(sut.roles.isEmpty)
-    }
-    
-    // MARK: - Edge Cases Tests
-    
-    func testUpdateNonExistentRole() {
-        // Given
-        let nonExistentRole = createMockRole(name: "Non-existent")
-        let existingRole = createMockRole(name: "Existing")
-        sut.roles = [existingRole]
-        
-        // When
-        sut.updateRolePermissions(nonExistentRole, permissions: ["New Permission"])
-        
-        // Then - should not affect existing roles
-        XCTAssertEqual(sut.roles.count, 1)
-        XCTAssertEqual(sut.roles.first?.name, "Existing")
-    }
-    
-    func testDeleteNonExistentRole() {
-        // Given
-        let nonExistentRole = createMockRole(name: "Non-existent")
-        let existingRole = createMockRole(name: "Existing")
-        sut.roles = [existingRole]
-        
-        // When
-        sut.deleteRole(nonExistentRole)
-        
-        // Then - should not affect existing roles
-        XCTAssertEqual(sut.roles.count, 1)
-        XCTAssertTrue(sut.roles.contains { $0.id == existingRole.id })
-    }
-    
-    func testCreateRoleWithEmptyName() {
-        // Given
-        let initialCount = sut.roles.count
-        
-        // When
-        sut.createRole(name: "", permissions: ["Permission"])
-        
-        // Then - should still create (no validation in current implementation)
-        XCTAssertEqual(sut.roles.count, initialCount + 1)
-    }
-    
-    func testCreateRoleWithEmptyPermissions() {
-        // Given
-        let initialCount = sut.roles.count
-        
-        // When
-        sut.createRole(name: "Empty Permissions Role", permissions: [])
-        
-        // Then
-        XCTAssertEqual(sut.roles.count, initialCount + 1)
-        
-        if let newRole = sut.roles.last {
-            XCTAssertTrue(newRole.permissions.isEmpty)
-        }
-    }
-    
-    // MARK: - Mock Data Verification Tests
-    
-    func testMockDataContent() {
-        // Given - wait for initial load
-        let expectation = XCTestExpectation(description: "Mock data loaded")
-        
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Initial load")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            // Verify Student role
-            if let studentRole = self.sut.roles.first(where: { $0.name == "Студент" }) {
-                XCTAssertEqual(studentRole.permissions.count, 4)
-                XCTAssertEqual(studentRole.usersCount, 1_234)
-                XCTAssertTrue(studentRole.permissions.contains("Просмотр курсов"))
-            } else {
-                XCTFail("Student role not found")
-            }
-            
-            // Verify Administrator role
-            if let adminRole = self.sut.roles.first(where: { $0.name == "Администратор" }) {
-                XCTAssertEqual(adminRole.permissions.count, 5)
-                XCTAssertEqual(adminRole.usersCount, 5)
-                XCTAssertTrue(adminRole.permissions.contains("Управление пользователями"))
-            } else {
-                XCTFail("Administrator role not found")
-            }
-            
-            expectation.fulfill()
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
+        
+        // Get initial count and role to delete
+        let initialCount = viewModel.roles.count
+        guard let roleToDelete = viewModel.roles.first else {
+            XCTFail("No roles available")
+            return
         }
         
-        wait(for: [expectation], timeout: 1.0)
+        // Delete role
+        viewModel.deleteRole(roleToDelete)
+        
+        // Verify deletion
+        XCTAssertEqual(viewModel.roles.count, initialCount - 1)
+        XCTAssertFalse(viewModel.roles.contains { $0.id == roleToDelete.id })
     }
     
-    func testMockStatisticsContent() {
-        // Given - wait for initial load
-        let expectation = XCTestExpectation(description: "Mock statistics loaded")
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            // Verify statistics
-            let totalCount = self.sut.roleStatistics.reduce(0) { $0 + $1.count }
-            XCTAssertEqual(totalCount, 1_286) // 1234 + 45 + 7
-            
-            if let studentStat = self.sut.roleStatistics.first(where: { $0.roleName == "Студенты" }) {
-                XCTAssertEqual(studentStat.count, 1_234)
-            }
-            
-            expectation.fulfill()
+    // MARK: - Role Data Tests
+    
+    func testRolePermissions() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Initial load")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
         }
+        wait(for: [loadExpectation], timeout: 1)
         
-        wait(for: [expectation], timeout: 1.0)
+        // Verify student role permissions
+        let studentRole = viewModel.roles.first { $0.name == "Студент" }
+        XCTAssertNotNil(studentRole)
+        XCTAssertEqual(studentRole?.permissions.count, 4)
+        XCTAssertTrue(studentRole?.permissions.contains("Просмотр курсов") ?? false)
+        
+        // Verify teacher role has more permissions
+        let teacherRole = viewModel.roles.first { $0.name == "Преподаватель" }
+        XCTAssertNotNil(teacherRole)
+        XCTAssertEqual(teacherRole?.permissions.count, 5)
+        
+        // Verify admin has admin permissions
+        let adminRole = viewModel.roles.first { $0.name == "Администратор" }
+        XCTAssertNotNil(adminRole)
+        XCTAssertTrue(adminRole?.permissions.contains("Управление пользователями") ?? false)
     }
     
-    // MARK: - Error State Tests
-    
-    func testErrorMessageHandling() {
-        // Given
-        sut.errorMessage = nil
+    func testRoleUserCounts() {
+        // Wait for initial load
+        let loadExpectation = XCTestExpectation(description: "Initial load")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            loadExpectation.fulfill()
+        }
+        wait(for: [loadExpectation], timeout: 1)
         
-        // When - set error
-        sut.errorMessage = "Test error"
+        // Verify user counts
+        let studentRole = viewModel.roles.first { $0.name == "Студент" }
+        XCTAssertEqual(studentRole?.usersCount, 1234)
         
-        // Then
-        XCTAssertNotNil(sut.errorMessage)
-        XCTAssertEqual(sut.errorMessage, "Test error")
+        let teacherRole = viewModel.roles.first { $0.name == "Преподаватель" }
+        XCTAssertEqual(teacherRole?.usersCount, 45)
         
-        // When - clear error
-        sut.errorMessage = nil
+        let adminRole = viewModel.roles.first { $0.name == "Администратор" }
+        XCTAssertEqual(adminRole?.usersCount, 5)
         
-        // Then
-        XCTAssertNil(sut.errorMessage)
-    }
-    
-    // MARK: - Helper Methods
-    
-    private func createMockRole(
-        name: String,
-        permissions: [String] = ["Default Permission"],
-        usersCount: Int = 0
-    ) -> Role {
-        Role(
-            name: name,
-            permissions: permissions,
-            usersCount: usersCount
-        )
+        let superAdminRole = viewModel.roles.first { $0.name == "Супер администратор" }
+        XCTAssertEqual(superAdminRole?.usersCount, 2)
     }
 } 

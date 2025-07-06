@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Request Models
 
 struct UserFilters: Encodable {
-    let role: String?
+    let role: UserRole?
     let department: String?
     let isActive: Bool?
     let search: String?
@@ -12,14 +12,14 @@ struct UserFilters: Encodable {
 struct CreateUserRequest: Encodable {
     let email: String
     let name: String
-    let role: String
+    let role: UserRole
     let department: String?
     let password: String
 }
 
 struct UpdateUserRequest: Encodable {
     let name: String?
-    let role: String?
+    let role: UserRole?
     let department: String?
     let isActive: Bool?
 }

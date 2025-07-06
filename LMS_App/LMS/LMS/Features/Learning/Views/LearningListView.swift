@@ -20,7 +20,7 @@ struct LearningListView: View {
 
     var isAdmin: Bool {
         if let user = MockAuthService.shared.currentUser {
-            return user.role == "admin" || user.role == "manager"
+            return user.role == .admin || user.role == .manager
         }
         return false
     }

@@ -7,6 +7,7 @@ import XCTest
 import SwiftUI
 @testable import LMS
 
+@MainActor
 final class LoginViewTests: XCTestCase {
     
     var loginView: LoginView!
@@ -15,7 +16,13 @@ final class LoginViewTests: XCTestCase {
     override func setUp() {
         super.setUp()
         mockAuthService = MockAuthService.shared
-        mockAuthService.logout() // Reset state
+        // Reset state
+        mockAuthService.isAuthenticated = false
+        mockAuthService.currentUser = nil
+        mockAuthService.shouldFail = false
+        mockAuthService.authError = nil
+        mockAuthService.hasRefreshedToken = false
+        
         // LoginView uses shared instance internally
         loginView = LoginView()
     }

@@ -9,7 +9,7 @@ struct SettingsView: View {
     @StateObject private var adminService = MockAdminService.shared
 
     var isAdmin: Bool {
-        authService.currentUser?.roles.contains("admin") == true
+        authService.currentUser?.role == .admin || authService.currentUser?.role == .superAdmin
     }
 
     var body: some View {
@@ -111,7 +111,9 @@ struct SettingsView: View {
                 // Logout section
                 Section {
                     Button(action: {
-                        authService.logout()
+                        Task {
+                            try await authService.logout()
+                        }
                     }) {
                         HStack {
                             Spacer()
@@ -156,7 +158,7 @@ struct QuickSettingsSection: View {
     @EnvironmentObject var authService: MockAuthService
     
     var isAdmin: Bool {
-        authService.currentUser?.role == "admin"
+        authService.currentUser?.role == .admin || authService.currentUser?.role == .superAdmin
     }
 
     var body: some View {

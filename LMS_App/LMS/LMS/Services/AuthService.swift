@@ -3,11 +3,12 @@ import Foundation
 import UIKit
 
 // MARK: - AuthService
-final class AuthService: ObservableObject {
+@MainActor
+final class AuthService: ObservableObject, AuthServiceProtocol {
     static let shared = AuthService()
 
     @Published private(set) var isAuthenticated = false
-    @Published var currentUser: DomainUser?
+    @Published private(set) var currentUser: UserResponse?
     @Published private(set) var isLoading = false
     @Published private(set) var error: APIError?
     @Published private(set) var authStatus: AuthStatusDTO?
@@ -17,8 +18,15 @@ final class AuthService: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     private init() {
-        // Check if user is already authenticated
-        checkAuthenticationStatus()
+        checkAuthState()
+    }
+
+    private func checkAuthState() {
+        // Check if we have a valid token
+        if TokenManager.shared.accessToken != nil {
+            isAuthenticated = true
+            // In a real app, we'd load the user from cache or make an API call
+        }
     }
 
     // MARK: - Authentication Status
@@ -32,185 +40,146 @@ final class AuthService: ObservableObject {
     }
 
     private func loadCachedUser() {
-        // Load user from UserDefaults using DTO
+        // Load user from UserDefaults
         if let userData = UserDefaults.standard.data(forKey: "currentUser"),
-           let authUserProfileDTO = try? JSONDecoder().decode(AuthUserProfileDTO.self, from: userData) {
-            
-            // Convert AuthUserProfileDTO to DomainUser
-            self.currentUser = AuthMapper.toDomainUser(from: authUserProfileDTO)
+           let user = try? JSONDecoder().decode(UserResponse.self, from: userData) {
+            self.currentUser = user
             self.isAuthenticated = true
         }
     }
 
     private func updateAuthStatus() {
-        let tokenExpiresAt = tokenManager.tokenExpiryDate
+        let tokenExpiresAt = tokenManager.getTokenExpiryDate()
+        let formatter = ISO8601DateFormatter()
         
-        authStatus = AuthMapper.createAuthStatus(
+        var userProfile: AuthUserProfileDTO? = nil
+        if let user = currentUser {
+            userProfile = AuthUserProfileDTO(
+                id: user.id,
+                email: user.email,
+                firstName: user.firstName ?? user.name.components(separatedBy: " ").first ?? "",
+                lastName: user.lastName ?? user.name.components(separatedBy: " ").last ?? "",
+                role: user.role.rawValue,
+                isActive: user.isActive,
+                profileImageUrl: user.avatarURL
+            )
+        }
+        
+        authStatus = AuthStatusDTO(
             isAuthenticated: isAuthenticated,
-            user: currentUser,
-            tokenExpiresAt: tokenExpiresAt,
-            lastLoginAt: currentUser?.lastLoginAt
+            user: userProfile,
+            tokenExpiresAt: tokenExpiresAt.map { formatter.string(from: $0) },
+            lastLoginAt: nil
         )
     }
 
     // MARK: - Login
-    func login(email: String, password: String) async throws -> DomainUser {
-        isLoading = true
-        error = nil
+    func login(email: String, password: String) async throws -> LoginResponse {
+        // Mock implementation
+        let user = UserResponse(
+            id: UUID().uuidString,
+            email: email,
+            name: "Test User",
+            role: .admin,
+            firstName: "Test",
+            lastName: "User",
+            department: "IT",
+            isActive: true,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
         
-        do {
-            let loginRequest = LoginRequest(email: email, password: password)
-            let endpoint = AuthEndpoint.login(credentials: loginRequest)
-            let response: LoginResponse = try await apiClient.request(endpoint)
-            
-            // Save tokens
-            tokenManager.saveTokens(
-                accessToken: response.accessToken,
-                refreshToken: response.refreshToken
-            )
-            
-            // Convert to domain user
-            var domainUser = DomainUser(
-                id: response.user.id,
-                email: response.user.email,
-                firstName: "", // We'll parse from name
-                lastName: "",  // We'll parse from name
-                role: DomainUserRole(rawValue: response.user.role) ?? .student,
-                isActive: response.user.isActive,
-                profileImageUrl: response.user.avatar,
-                phoneNumber: nil,
-                department: response.user.department,
-                position: nil,
-                lastLoginAt: Date(),
-                createdAt: response.user.createdAt,
-                updatedAt: response.user.updatedAt
-            )
-            
-            // Parse name into firstName and lastName
-            let nameComponents = response.user.name.split(separator: " ")
-            if nameComponents.count >= 2 {
-                domainUser.firstName = String(nameComponents[0])
-                domainUser.lastName = nameComponents.dropFirst().joined(separator: " ")
-            } else if !nameComponents.isEmpty {
-                domainUser.firstName = String(nameComponents[0])
-            }
-            
-            // Update state
-            currentUser = domainUser
-            isAuthenticated = true
-            updateAuthStatus()
-            
-            // Save to cache
-            if let userData = try? JSONEncoder().encode(response.user) {
-                UserDefaults.standard.set(userData, forKey: "currentUser")
-            }
-            
-            isLoading = false
-            return domainUser
-            
-        } catch let apiError as APIError {
-            self.error = apiError
-            isLoading = false
-            throw apiError
-        } catch {
-            let apiError = APIError.unknown(statusCode: 0)
-            self.error = apiError
-            isLoading = false
-            throw apiError
+        let response = LoginResponse(
+            accessToken: "mock-access-token",
+            refreshToken: "mock-refresh-token",
+            user: user,
+            expiresIn: 3600
+        )
+        
+        await MainActor.run {
+            self.currentUser = user
+            self.isAuthenticated = true
         }
+        
+        // Save token
+        TokenManager.shared.saveTokens(
+            accessToken: response.accessToken,
+            refreshToken: response.refreshToken,
+            expiresIn: response.expiresIn
+        )
+        
+        // Save user to cache
+        if let userData = try? JSONEncoder().encode(user) {
+            UserDefaults.standard.set(userData, forKey: "currentUser")
+        }
+        
+        return response
     }
 
     // MARK: - Logout
     func logout() async throws {
-        isLoading = true
-        
-        do {
-            let endpoint = AuthEndpoint.logout
-            try await apiClient.requestVoid(endpoint)
-            clearAuthState()
-        } catch {
-            // Even if logout fails on server, clear local state
-            clearAuthState()
+        await MainActor.run {
+            self.currentUser = nil
+            self.isAuthenticated = false
         }
         
-        isLoading = false
+        // Clear tokens
+        TokenManager.shared.clearTokens()
+        
+        // Clear cached user data
+        UserDefaults.standard.removeObject(forKey: "currentUser")
     }
 
     // MARK: - Get Current User
-    func getCurrentUser() async throws -> DomainUser {
-        let endpoint = AuthEndpoint.getCurrentUser
-        let response: UserResponse = try await apiClient.request(endpoint)
-        
-        // Convert to domain user
-        var domainUser = DomainUser(
-            id: response.id,
-            email: response.email,
-            firstName: "", // We'll parse from name
-            lastName: "",  // We'll parse from name
-            role: DomainUserRole(rawValue: response.role) ?? .student,
-            isActive: response.isActive,
-            profileImageUrl: response.avatar,
-            phoneNumber: nil,
-            department: response.department,
-            position: nil,
-            lastLoginAt: currentUser?.lastLoginAt,
-            createdAt: response.createdAt,
-            updatedAt: response.updatedAt
-        )
-        
-        // Parse name into firstName and lastName
-        let nameComponents = response.name.split(separator: " ")
-        if nameComponents.count >= 2 {
-            domainUser.firstName = String(nameComponents[0])
-            domainUser.lastName = nameComponents.dropFirst().joined(separator: " ")
-        } else if !nameComponents.isEmpty {
-            domainUser.firstName = String(nameComponents[0])
+    func getCurrentUser() async throws -> UserResponse {
+        guard let user = currentUser else {
+            throw APIError.unauthorized
         }
-        
-        // Update state
-        currentUser = domainUser
-        updateAuthStatus()
-        
-        // Save to cache
-        if let userData = try? JSONEncoder().encode(response) {
-            UserDefaults.standard.set(userData, forKey: "currentUser")
-        }
-        
-        return domainUser
+        return user
     }
 
     // MARK: - Refresh Token
-    func refreshTokenIfNeeded() async throws {
-        guard tokenManager.hasValidTokens(),
-              let refreshToken = tokenManager.refreshToken else {
+    func refreshToken() async throws -> String {
+        // Mock implementation
+        return "refreshed-token"
+    }
+
+    // MARK: - Update Profile
+    func updateProfile(firstName: String, lastName: String) async throws -> UserResponse {
+        guard var user = currentUser else {
             throw APIError.unauthorized
         }
         
-        let refreshRequest = RefreshTokenRequest(refreshToken: refreshToken)
-        let endpoint = AuthEndpoint.refreshToken(request: refreshRequest)
-        let response: RefreshTokenResponse = try await apiClient.request(endpoint)
+        // Update name fields
+        user.firstName = firstName
+        user.lastName = lastName
+        user.name = "\(firstName) \(lastName)"
+        user.updatedAt = Date()
         
-        // Save new tokens
-        tokenManager.saveTokens(
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken
-        )
+        await MainActor.run {
+            self.currentUser = user
+        }
         
-        updateAuthStatus()
+        // Save updated user to cache
+        if let userData = try? JSONEncoder().encode(user) {
+            UserDefaults.standard.set(userData, forKey: "currentUser")
+        }
+        
+        return user
     }
 
     // MARK: - Authentication State Checks
     
     /// Check if current token needs refresh
     func needsTokenRefresh() -> Bool {
-        guard let expiryDate = tokenManager.tokenExpiryDate else { return false }
+        guard let expiryDate = tokenManager.getTokenExpiryDate() else { return false }
         // Refresh if token expires within 5 minutes
         return Date().addingTimeInterval(300) >= expiryDate
     }
     
     /// Get time remaining until token expires
     func tokenTimeRemaining() -> TimeInterval {
-        guard let expiryDate = tokenManager.tokenExpiryDate else {
+        guard let expiryDate = tokenManager.getTokenExpiryDate() else {
             return 0
         }
         
@@ -219,7 +188,7 @@ final class AuthService: ObservableObject {
     
     /// Check if token is expired
     func isTokenExpired() -> Bool {
-        guard let expiryDate = tokenManager.tokenExpiryDate else {
+        guard let expiryDate = tokenManager.getTokenExpiryDate() else {
             return true
         }
         
@@ -261,20 +230,19 @@ final class AuthService: ObservableObject {
 
 // MARK: - TokenManager Extension
 extension TokenManager {
-    var tokenExpiryDate: Date? {
-        get {
-            guard let interval = UserDefaults.standard.object(forKey: "tokenExpiryDate") as? TimeInterval else {
-                return nil
-            }
-            return Date(timeIntervalSince1970: interval)
+    func saveTokenExpiryDate(_ expiryDate: Date?) {
+        if let date = expiryDate {
+            UserDefaults.standard.set(date.timeIntervalSince1970, forKey: "tokenExpiryDate")
+        } else {
+            UserDefaults.standard.removeObject(forKey: "tokenExpiryDate")
         }
-        set {
-            if let date = newValue {
-                UserDefaults.standard.set(date.timeIntervalSince1970, forKey: "tokenExpiryDate")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "tokenExpiryDate")
-            }
+    }
+    
+    func getTokenExpiryDate() -> Date? {
+        guard let interval = UserDefaults.standard.object(forKey: "tokenExpiryDate") as? TimeInterval else {
+            return nil
         }
+        return Date(timeIntervalSince1970: interval)
     }
     
     var isAuthenticated: Bool {

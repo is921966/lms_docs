@@ -91,7 +91,7 @@ final class AuthModelsTests: XCTestCase {
         XCTAssertEqual(response.user.id, "user-123")
         XCTAssertEqual(response.user.email, "test@example.com")
         XCTAssertEqual(response.user.name, "Test User")
-        XCTAssertEqual(response.user.role, "student")
+        XCTAssertEqual(response.user.role, .student)
     }
     
     func testRefreshTokenResponseDecoding() throws {

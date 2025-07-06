@@ -130,8 +130,10 @@ struct PostPreviewInComments: View {
         switch role {
         case .student:
             return .green
-        case .moderator:
+        case .instructor:
             return .yellow
+        case .manager:
+            return .orange
         case .admin:
             return .blue
         case .superAdmin:

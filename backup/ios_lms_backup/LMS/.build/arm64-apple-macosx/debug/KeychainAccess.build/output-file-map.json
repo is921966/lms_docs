@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/KeychainAccess.build/master.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/KeychainAccess/Lib/KeychainAccess/Keychain.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/KeychainAccess.build/Keychain.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/KeychainAccess.build/Keychain.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/KeychainAccess.build/Keychain~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/KeychainAccess.build/Keychain.swiftdeps"
+  }
+}

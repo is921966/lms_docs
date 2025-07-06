@@ -15,10 +15,10 @@ class UserBuilder {
     private var id = UUID().uuidString
     private var email = "test@lms.com"
     private var name = "Test User"
-    private var role = "student"
+    private var role = UserRole.student
     private var department: String? = nil
     private var isActive = true
-    private var avatar: String? = nil
+    private var avatarURL: String? = nil
     private var createdAt = Date()
     private var updatedAt = Date()
     
@@ -45,14 +45,14 @@ class UserBuilder {
     }
     
     func withAvatar(_ avatar: String) -> UserBuilder {
-        self.avatar = avatar
+        self.avatarURL = avatar
         return self
     }
     
     // MARK: - Role Presets
     
     func asAdmin() -> UserBuilder {
-        self.role = "admin"
+        self.role = .admin
         self.department = "IT"
         self.email = "admin@lms.com"
         self.name = "Admin User"
@@ -60,7 +60,7 @@ class UserBuilder {
     }
     
     func asStudent() -> UserBuilder {
-        self.role = "student"
+        self.role = .student
         self.department = nil
         self.email = "student@lms.com"
         self.name = "Student User"
@@ -68,7 +68,7 @@ class UserBuilder {
     }
     
     func asInstructor() -> UserBuilder {
-        self.role = "instructor"
+        self.role = .instructor
         self.department = "Education"
         self.email = "instructor@lms.com"
         self.name = "Instructor User"
@@ -76,7 +76,7 @@ class UserBuilder {
     }
     
     func asManager() -> UserBuilder {
-        self.role = "manager"
+        self.role = .manager
         self.department = "HR"
         self.email = "manager@lms.com"
         self.name = "Manager User"
@@ -113,9 +113,9 @@ class UserBuilder {
             email: email,
             name: name,
             role: role,
+            avatarURL: avatarURL,
             department: department,
             isActive: isActive,
-            avatar: avatar,
             createdAt: createdAt,
             updatedAt: updatedAt
         )

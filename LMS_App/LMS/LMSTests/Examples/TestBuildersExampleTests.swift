@@ -264,12 +264,12 @@ extension TestBuildersExampleTests {
         
         func canManageUser(_ manager: UserResponse, target: UserResponse) -> Bool {
             // Admin can manage everyone
-            if manager.role == "admin" {
+            if manager.role == .admin {
                 return true
             }
             
             // Instructor can manage their students
-            if manager.role == "instructor" {
+            if manager.role == .instructor {
                 if let studentIds = instructorCourses[manager.id] {
                     return studentIds.contains(target.id)
                 }
@@ -339,8 +339,8 @@ extension TestBuildersExampleTests {
         }
         
         func bulkImport(users: [UserResponse]) -> BulkImportResult {
-            let studentCount = users.filter { $0.role == "student" }.count
-            let instructorCount = users.filter { $0.role == "instructor" }.count
+            let studentCount = users.filter { $0.role == .student }.count
+            let instructorCount = users.filter { $0.role == .instructor }.count
             
             return BulkImportResult(
                 successCount: users.count,

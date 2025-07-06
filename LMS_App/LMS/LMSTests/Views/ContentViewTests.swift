@@ -7,22 +7,24 @@ import XCTest
 import SwiftUI
 @testable import LMS
 
+@MainActor
 final class ContentViewTests: XCTestCase {
     var contentView: ContentView!
     var mockAuthService: MockAuthService!
     
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         // Use shared instance
         mockAuthService = MockAuthService.shared
         // Reset state
-        mockAuthService.logout()
+        try await mockAuthService.logout()
         contentView = ContentView()
     }
     
-    override func tearDown() {
+    override func tearDown() async throws {
+        try await mockAuthService.logout()
         mockAuthService = nil
-        super.tearDown()
+        try await super.tearDown()
     }
     
     // MARK: - Authentication State Tests
@@ -35,9 +37,13 @@ final class ContentViewTests: XCTestCase {
         // In real UI test, would check if LoginView is displayed
     }
     
-    func testContentViewShowsMainContentWhenAuthenticated() {
+    func testContentViewShowsMainContentWhenAuthenticated() async throws {
         // Given - user is authenticated
-        mockAuthService.login(email: "test@example.com", password: "password")
+        _ = try await mockAuthService.login(email: "test@example.com", password: "password")
+        
+        // Then
+        XCTAssertTrue(mockAuthService.isAuthenticated)
+        // In real UI test, would check if MainTabView is displayed
     }
     
     // MARK: - UI Testing Mode Tests
@@ -246,32 +252,33 @@ class ContentViewTabTests: XCTestCase {
 
 // MARK: - ContentView Integration Tests
 
+@MainActor
 class ContentViewIntegrationTests: XCTestCase {
     
     var mockAuthService: MockAuthService!
     
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         mockAuthService = MockAuthService.shared
     }
     
-    override func tearDown() {
+    override func tearDown() async throws {
         // Reset auth state
-        mockAuthService.logout()
+        try await mockAuthService.logout()
         mockAuthService = nil
-        super.tearDown()
+        try await super.tearDown()
     }
     
-    func testAuthenticationFlow_LoginToLogout() {
+    func testAuthenticationFlow_LoginToLogout() async throws {
         // Initially not authenticated
         XCTAssertFalse(mockAuthService.isAuthenticated)
         
         // Login
-        mockAuthService.login(email: "test@example.com", password: "password")
+        _ = try await mockAuthService.login(email: "test@example.com", password: "password")
         XCTAssertTrue(mockAuthService.isAuthenticated)
         
         // Logout
-        mockAuthService.logout()
+        try await mockAuthService.logout()
         XCTAssertFalse(mockAuthService.isAuthenticated)
     }
     

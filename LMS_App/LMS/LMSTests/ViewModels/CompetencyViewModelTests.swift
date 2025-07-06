@@ -19,8 +19,7 @@ final class CompetencyViewModelTests: XCTestCase {
         super.setUp()
         viewModel = CompetencyViewModel()
         cancellables = []
-        // Reset mock service
-        CompetencyMockService.shared.competencies = Competency.mockCompetencies()
+        // Mock service loads data automatically in init
     }
     
     override func tearDown() {
@@ -101,7 +100,12 @@ final class CompetencyViewModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Inactive filter")
         
         // Create inactive competency
-        var inactiveCompetency = Competency.mockCompetency()
+        var inactiveCompetency = Competency(
+            name: "Inactive Test",
+            description: "Test inactive competency",
+            category: .technical,
+            color: .gray
+        )
         inactiveCompetency.isActive = false
         CompetencyMockService.shared.createCompetency(inactiveCompetency)
         
@@ -151,7 +155,12 @@ final class CompetencyViewModelTests: XCTestCase {
     
     func testCreateCompetency() {
         // Given
-        let newCompetency = Competency.mockCompetency()
+        let newCompetency = Competency(
+            name: "New Test Competency",
+            description: "Test description",
+            category: .technical,
+            color: .blue
+        )
         let initialCount = viewModel.competencies.count
         
         // When

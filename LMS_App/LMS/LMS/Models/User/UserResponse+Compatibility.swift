@@ -18,48 +18,17 @@ extension UserResponse {
         return name
     }
     
-    /// First name extracted from full name
-    var firstName: String {
-        let components = name.split(separator: " ")
-        return String(components.first ?? "")
-    }
-    
-    /// Last name extracted from full name
-    var lastName: String {
-        let components = name.split(separator: " ")
-        if components.count > 1 {
-            return components.dropFirst().joined(separator: " ")
-        }
-        return ""
-    }
-    
-    /// Middle name for compatibility (always empty)
-    var middleName: String? {
-        return nil
-    }
+    // firstName and lastName are now direct properties in UserResponse
+    // No need to extract from full name anymore
     
     // MARK: - Role Compatibility
     
     /// Roles array for backward compatibility
     var roles: [String] {
-        return [role]
+        return [role.rawValue]
     }
     
-    /// Permissions array (derived from role)
-    var permissions: [String] {
-        switch role.lowercased() {
-        case "admin", "superadmin":
-            return ["manage_users", "manage_courses", "manage_tests", "view_analytics", "access_courses"]
-        case "manager":
-            return ["view_analytics", "manage_team", "access_courses"]
-        case "instructor":
-            return ["create_courses", "grade_students", "view_courses", "access_courses"]
-        case "student":
-            return ["view_courses", "enroll_courses", "access_courses", "view_progress"]
-        default:
-            return []
-        }
-    }
+    // permissions are now direct property in UserResponse
     
     // MARK: - Additional Compatibility
     
@@ -70,49 +39,37 @@ extension UserResponse {
     
     /// Photo URL (alias for avatar)
     var photo: String? {
-        return avatar
+        return avatarURL
     }
     
     // MARK: - Helper Methods
     
     /// Check if user has specific role
     func hasRole(_ roleName: String) -> Bool {
-        return role.lowercased() == roleName.lowercased()
+        return role.rawValue.lowercased() == roleName.lowercased()
     }
     
     /// Check if user has specific permission
     func hasPermission(_ permission: String) -> Bool {
-        return permissions.contains(permission)
+        return permissions.contains(permission) || role.permissions.contains(permission)
     }
     
     /// Check if user is admin
     var isAdmin: Bool {
-        return role.lowercased() == "admin" || role.lowercased() == "superadmin"
+        return role == .admin || role == .superAdmin
     }
     
     /// Check if user is manager
     var isManager: Bool {
-        return role.lowercased() == "manager"
+        return role == .manager
     }
     
     /// Check if user is student
     var isStudent: Bool {
-        return role.lowercased() == "student"
+        return role == .student
     }
     
-    /// Position (derived from role or department)
-    var position: String? {
-        switch role.lowercased() {
-        case "admin":
-            return "Администратор"
-        case "manager":
-            return "Руководитель отдела"
-        case "student":
-            return "Сотрудник"
-        default:
-            return department
-        }
-    }
+    // position is now a direct property in UserResponse
 }
 
 // MARK: - Identifiable Conformance

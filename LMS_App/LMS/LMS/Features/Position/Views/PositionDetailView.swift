@@ -9,8 +9,8 @@ struct PositionDetailView: View {
     @State private var selectedCompetencyRequirement: CompetencyRequirement?
 
     var isAdmin: Bool {
-        authViewModel.currentUser?.role == .admin ||
-        authViewModel.currentUser?.role == .superAdmin
+        guard let user = authViewModel.currentUser else { return false }
+        return user.role == .admin || user.role == .superAdmin
     }
 
     var body: some View {

@@ -485,6 +485,14 @@
       "day_in_sprint": 4,
       "date": "2025-07-04",
       "end_time": "2025-07-04T17:50:16.346617"
+    },
+    "day_16": {
+      "calendar_day": 16,
+      "project_day": 101,
+      "sprint_number": 21,
+      "day_in_sprint": 1,
+      "date": "2025-07-06",
+      "end_time": "2025-07-06T15:23:01.964950"
     }
   },
   "sprints": {

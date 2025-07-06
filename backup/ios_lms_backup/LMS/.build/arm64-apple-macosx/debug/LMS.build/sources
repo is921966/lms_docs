@@ -1,0 +1,13 @@
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Auth/Services/AuthService.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Auth/Services/AuthServiceProtocol.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Auth/ViewModels/AuthViewModel.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Auth/Views/LoginView.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Colors.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Components/LMSButton.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Components/LoadingView.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Components/UserCard.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Typography.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Users/ViewModels/UserViewModel.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Users/Views/UserDetailView.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Users/Views/UserListView.swift
+/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Models/User.swift

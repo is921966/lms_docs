@@ -56,7 +56,7 @@ struct FeedView: View {
                         .fill(Color.gray.opacity(0.3))
                         .frame(width: 32, height: 32)
                         .overlay(
-                            Text(String(user.firstName.prefix(1)).uppercased())
+                            Text(String((user.firstName ?? "?").prefix(1)).uppercased())
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         )

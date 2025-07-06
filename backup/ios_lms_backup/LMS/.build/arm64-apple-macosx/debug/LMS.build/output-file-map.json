@@ -1,0 +1,83 @@
+{
+  "": {
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/master.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Auth/Services/AuthService.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthService.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthService.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthService~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Auth/Services/AuthServiceProtocol.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthServiceProtocol.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthServiceProtocol.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthServiceProtocol~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthServiceProtocol.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Auth/ViewModels/AuthViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Auth/Views/LoginView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoginView.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoginView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoginView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoginView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Colors.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/Colors.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/Colors.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/Colors~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/Colors.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Components/LMSButton.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Components/LoadingView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoadingView.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoadingView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoadingView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoadingView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Components/UserCard.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserCard.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserCard.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserCard~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserCard.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Common/Typography.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Users/ViewModels/UserViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Users/Views/UserDetailView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserDetailView.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserDetailView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserDetailView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserDetailView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Features/Users/Views/UserListView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserListView.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserListView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserListView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserListView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Sources/LMS/Models/User.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/User.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/User.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/User~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/User.swiftdeps"
+  }
+}

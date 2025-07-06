@@ -7,21 +7,22 @@ import XCTest
 import SwiftUI
 @testable import LMS
 
+@MainActor
 class ProfileViewTests: XCTestCase {
     
     var mockAuthService: MockAuthService!
     
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         mockAuthService = MockAuthService.shared
         // Ensure user is logged in for profile tests
-        mockAuthService.mockLogin(asAdmin: false)
+        _ = try await mockAuthService.login(email: "student@tsum.ru", password: "password")
     }
     
-    override func tearDown() {
-        mockAuthService.logout()
+    override func tearDown() async throws {
+        try await mockAuthService.logout()
         mockAuthService = nil
-        super.tearDown()
+        try await super.tearDown()
     }
     
     // MARK: - Tab Selection Tests
@@ -52,7 +53,7 @@ class ProfileViewTests: XCTestCase {
     }
     
     func testCurrentUser_HasCorrectEmail() {
-        // mockLogin creates a student with email "student@tsum.ru"
+        // login creates a user with email "student@tsum.ru"
         let expectedEmail = "student@tsum.ru"
         XCTAssertEqual(mockAuthService.currentUser?.email, expectedEmail)
     }
@@ -73,12 +74,12 @@ class ProfileViewTests: XCTestCase {
     
     // MARK: - Logout Tests
     
-    func testLogoutButton_CallsAuthServiceLogout() {
+    func testLogoutButton_CallsAuthServiceLogout() async throws {
         // Initially authenticated
         XCTAssertTrue(mockAuthService.isAuthenticated)
         
         // Simulate logout
-        mockAuthService.logout()
+        try await mockAuthService.logout()
         
         // Should be logged out
         XCTAssertFalse(mockAuthService.isAuthenticated)
@@ -127,10 +128,10 @@ class ProfileViewTests: XCTestCase {
         XCTAssertEqual(expectedOpacity, actualOpacity)
     }
     
-    func testInitialState() {
+    func testInitialState() async throws {
         // Given - user is authenticated
-        mockAuthService.mockLogin(asAdmin: false)
-        // mockLogin already creates a user, so we just need to wait
+        _ = try await mockAuthService.login(email: "student@tsum.ru", password: "password")
+        // login already creates a user, so we just need to wait
         let expectation = XCTestExpectation(description: "User login")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -140,7 +141,7 @@ class ProfileViewTests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 3)
+        await fulfillment(of: [expectation], timeout: 3)
     }
 }
 

@@ -17,13 +17,16 @@ class FeedService: ObservableObject {
     }
 
     private func setupPermissions() {
-        // Listen to auth changes and update permissions
-        MockAuthService.shared.$currentUser
-            .sink { [weak self] user in
-                guard let user = user else { return }
-                self?.updatePermissions(for: user)
-            }
-            .store(in: &cancellables)
+        // For main actor properties, we need to handle this differently
+        Task { @MainActor in
+            // Listen to auth changes and update permissions
+            MockAuthService.shared.$currentUser
+                .sink { [weak self] user in
+                    guard let user = user else { return }
+                    self?.updatePermissions(for: user)
+                }
+                .store(in: &cancellables)
+        }
     }
 
     private func updatePermissions(for user: UserResponse) {
@@ -46,7 +49,7 @@ class FeedService: ObservableObject {
             throw FeedError.noPermission
         }
 
-        guard let currentUser = MockAuthService.shared.currentUser else {
+        guard let currentUser = await MockAuthService.shared.currentUser else {
             throw FeedError.notAuthenticated
         }
 
@@ -82,7 +85,7 @@ class FeedService: ObservableObject {
     }
 
     func deletePost(_ postId: String) async throws {
-        guard let currentUser = MockAuthService.shared.currentUser else {
+        guard let currentUser = await MockAuthService.shared.currentUser else {
             throw FeedError.notAuthenticated
         }
 
@@ -107,7 +110,7 @@ class FeedService: ObservableObject {
             throw FeedError.noPermission
         }
 
-        guard let currentUser = MockAuthService.shared.currentUser else {
+        guard let currentUser = await MockAuthService.shared.currentUser else {
             throw FeedError.notAuthenticated
         }
 
@@ -133,7 +136,7 @@ class FeedService: ObservableObject {
             throw FeedError.noPermission
         }
 
-        guard let currentUser = MockAuthService.shared.currentUser else {
+        guard let currentUser = await MockAuthService.shared.currentUser else {
             throw FeedError.notAuthenticated
         }
 
@@ -196,7 +199,7 @@ class FeedService: ObservableObject {
     }
 
     private func sendLikeNotification(post: FeedPost) async {
-        guard let currentUser = MockAuthService.shared.currentUser,
+        guard let currentUser = await MockAuthService.shared.currentUser,
               currentUser.id != post.authorId else { return }
 
         let userName = "\(currentUser.firstName) \(currentUser.lastName)"

@@ -54,7 +54,9 @@ struct ProfileView: View {
 
                     // Logout button
                     Button(action: {
-                        authService.logout()
+                        Task {
+                            try await authService.logout()
+                        }
                     }) {
                         HStack {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
@@ -90,7 +92,9 @@ struct ProfileView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    authService.logout()
+                    Task {
+                        try await authService.logout()
+                    }
                 }) {
                     HStack {
                         Text("Выйти")

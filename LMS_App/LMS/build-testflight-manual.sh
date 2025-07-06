@@ -13,7 +13,10 @@ CONFIGURATION="Release"
 ARCHIVE_PATH="build/LMS.xcarchive"
 EXPORT_PATH="build/LMS-TestFlight"
 EXPORT_OPTIONS_PLIST="ExportOptions.plist"
-BUILD_NUMBER=$(date +%Y%m%d%H%M)
+
+# Get next build number
+BUILD_NUMBER=$(./scripts/get-next-build-number.sh increment)
+echo "📱 Build Number: $BUILD_NUMBER"
 
 # Clean build folder
 echo "🧹 Cleaning build folder..."
@@ -33,7 +36,7 @@ xcodebuild archive \
     DEVELOPMENT_TEAM=N85286S93X \
     CODE_SIGN_STYLE=Automatic \
     PRODUCT_BUNDLE_IDENTIFIER=ru.tsum.lms.igor \
-    MARKETING_VERSION=2.0.1 \
+    MARKETING_VERSION=1.0 \
     CURRENT_PROJECT_VERSION=$BUILD_NUMBER
 
 if [ $? -ne 0 ]; then
@@ -85,33 +88,23 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "✅ Export completed successfully"
-
-# Open the export folder
-echo "📂 Opening export folder..."
-open "$EXPORT_PATH"
-
 echo ""
-echo "✅ Build completed!"
+echo "📱 IPA file created at: $EXPORT_PATH/LMS.ipa"
 echo ""
-echo "📱 Manual upload instructions:"
-echo ""
-echo "Option 1 - Using Xcode:"
+echo "🎯 Next steps:"
 echo "1. Open Xcode"
-echo "2. Go to Window → Organizer"
-echo "3. Click 'Open Archive...' and select: $(pwd)/$ARCHIVE_PATH"
-echo "4. Click 'Distribute App'"
-echo "5. Select 'App Store Connect' → 'Upload'"
-echo "6. Follow the prompts"
+echo "2. Go to Window > Organizer"
+echo "3. Select 'Archives' tab"
+echo "4. Find your archive and click 'Distribute App'"
+echo "5. Follow the wizard to upload to TestFlight"
 echo ""
-echo "Option 2 - Using Transporter:"
+echo "Or use Transporter app:"
 echo "1. Download Transporter from Mac App Store"
-echo "2. Open Transporter and sign in"
-echo "3. Drag the .ipa file from: $(pwd)/$EXPORT_PATH/LMS.ipa"
+echo "2. Sign in with your Apple ID"
+echo "3. Drag the IPA file to Transporter"
 echo "4. Click 'Deliver'"
 echo ""
-echo "Build details:"
-echo "- Version: 2.0.1"
-echo "- Build: $BUILD_NUMBER"
-echo "- Bundle ID: ru.tsum.lms.igor"
-echo ""
-echo "After upload, go to App Store Connect to submit for TestFlight review." 
+echo "Build number: $BUILD_NUMBER"
+
+# Clean up
+rm -f "$EXPORT_OPTIONS_PLIST" 

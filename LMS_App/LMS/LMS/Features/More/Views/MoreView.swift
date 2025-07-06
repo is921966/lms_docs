@@ -122,12 +122,14 @@ struct MoreView: View {
     private func checkAdminStatus() {
         if let user = authService.currentUser {
             // Check if user role is admin or manager
-            isAdmin = user.role == "admin" || user.role == "manager"
+            isAdmin = user.role == .admin || user.role == .manager
         }
     }
 
     private func logout() {
-        authService.logout()
+        Task {
+            try await authService.logout()
+        }
     }
 }
 

@@ -113,9 +113,9 @@ final class TestViewModelTests: XCTestCase {
     func testShowOnlyAvailableFiltering() {
         // Given
         var availableTest = Test.mockQuiz()
-        availableTest.isPublished = true
+        availableTest.status = .published
         var unavailableTest = Test.mockQuiz()
-        unavailableTest.isPublished = false
+        unavailableTest.status = .draft
         TestMockService.shared.tests = [availableTest, unavailableTest]
         
         // When
@@ -298,10 +298,16 @@ final class TestViewModelTests: XCTestCase {
         let test = Test.mockQuiz()
         TestMockService.shared.tests = [test]
         viewModel.startTest(test)
+        let question = viewModel.currentQuestion!
+        let firstOptionId = question.options.first?.id ?? UUID()
         let answer = UserAnswer(
-            questionId: viewModel.currentQuestion!.id,
-            selectedOptions: [0],
-            textAnswer: nil
+            questionId: question.id,
+            selectedOptionIds: [firstOptionId],
+            textAnswer: nil,
+            matchingAnswers: nil,
+            orderingAnswer: nil,
+            fillInBlanksAnswers: nil,
+            essayAnswer: nil
         )
         
         // When
@@ -311,7 +317,7 @@ final class TestViewModelTests: XCTestCase {
         let savedAnswer = viewModel.getCurrentAnswer()
         XCTAssertNotNil(savedAnswer)
         XCTAssertEqual(savedAnswer?.questionId, answer.questionId)
-        XCTAssertEqual(savedAnswer?.selectedOptions, answer.selectedOptions)
+        XCTAssertEqual(savedAnswer?.selectedOptionIds, answer.selectedOptionIds)
     }
     
     func testMarkUnmarkQuestion() {
@@ -343,10 +349,16 @@ final class TestViewModelTests: XCTestCase {
         
         // Answer all questions
         for i in 0..<test.questions.count {
+            let question = test.questions[i]
+            let firstOptionId = question.options.first?.id ?? UUID()
             let answer = UserAnswer(
-                questionId: test.questions[i].id,
-                selectedOptions: [0],
-                textAnswer: nil
+                questionId: question.id,
+                selectedOptionIds: [firstOptionId],
+                textAnswer: nil,
+                matchingAnswers: nil,
+                orderingAnswer: nil,
+                fillInBlanksAnswers: nil,
+                essayAnswer: nil
             )
             viewModel.saveCurrentAnswer(answer)
             if viewModel.hasNextQuestion {
