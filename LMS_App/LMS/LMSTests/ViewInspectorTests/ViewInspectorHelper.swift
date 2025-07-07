@@ -5,6 +5,7 @@ import XCTest
 
 // MARK: - Base Test Class
 
+@MainActor
 class ViewInspectorTests: XCTestCase {
     
     override func setUp() {
