@@ -239,7 +239,7 @@ final class NotificationServiceExtendedTests: XCTestCase {
             to: recipientId,
             title: "Simple Notification",
             message: "No action required",
-            type: .general,
+            type: .system,
             priority: .low
         )
         
@@ -436,7 +436,7 @@ final class NotificationServiceExtendedTests: XCTestCase {
         // Given
         let testNotification = Notification(
             id: "persist-123",
-            type: .general,
+            type: .system,
             title: "Persistent",
             message: "Should be saved",
             createdAt: Date(),
@@ -452,7 +452,7 @@ final class NotificationServiceExtendedTests: XCTestCase {
             to: UUID(),
             title: "Trigger Save",
             message: "This will save",
-            type: .general
+            type: .system
         )
         
         // Then
@@ -460,7 +460,7 @@ final class NotificationServiceExtendedTests: XCTestCase {
         XCTAssertNotNil(savedData, "Notifications should be saved")
         
         if let data = savedData,
-           let decoded = try? JSONDecoder().decode([Notification].self, from: data) {
+           let decoded = try? JSONDecoder().decode([LMS.Notification].self, from: data) {
             XCTAssertGreaterThan(decoded.count, 0, "Should have saved notifications")
         }
     }
@@ -470,7 +470,7 @@ final class NotificationServiceExtendedTests: XCTestCase {
     func testNotificationsPublisher() {
         // Given
         let expectation = XCTestExpectation(description: "Notifications publisher")
-        var receivedNotifications: [[Notification]] = []
+        var receivedNotifications: [[LMS.Notification]] = []
         
         // When
         sut.$notifications
@@ -487,14 +487,14 @@ final class NotificationServiceExtendedTests: XCTestCase {
             to: UUID(),
             title: "First",
             message: "First",
-            type: .general
+            type: .system
         )
         
         sut.sendNotification(
             to: UUID(),
             title: "Second",
             message: "Second",
-            type: .general
+            type: .system
         )
         
         // Then
@@ -523,7 +523,7 @@ final class NotificationServiceExtendedTests: XCTestCase {
             to: UUID(),
             title: "Unread",
             message: "Unread",
-            type: .general
+            type: .system
         )
         
         // Mark all as read
@@ -541,7 +541,7 @@ final class NotificationServiceExtendedTests: XCTestCase {
         measure {
             let notification = Notification(
                 id: UUID().uuidString,
-                type: .general,
+                type: .system,
                 title: "Performance Test",
                 message: "Testing performance",
                 createdAt: Date(),
@@ -568,7 +568,7 @@ final class NotificationServiceExtendedTests: XCTestCase {
             sut.notifications.append(
                 Notification(
                     id: "perf-\(i)",
-                    type: .general,
+                    type: .system,
                     title: "Test \(i)",
                     message: "Message \(i)",
                     createdAt: Date(),

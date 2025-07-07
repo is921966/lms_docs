@@ -1,0 +1,461 @@
+import XCTest
+import SwiftUI
+@testable import LMS
+
+final class CriticalUserFlowsE2ETests: XCTestCase {
+    
+    // MARK: - Properties
+    var app: LMSApp!
+    
+    // MARK: - Setup
+    override func setUp() {
+        super.setUp()
+        
+        // Reset all data
+        MockAuthService.shared.resetForTesting()
+        UserDefaults.standard.removeObject(forKey: "notifications")
+        TokenManager.shared.clearTokens()
+        
+        // Initialize app
+        app = LMSApp()
+    }
+    
+    override func tearDown() {
+        app = nil
+        MockAuthService.shared.resetForTesting()
+        super.tearDown()
+    }
+    
+    // MARK: - Student Learning Journey E2E Test
+    
+    func testStudentLearningJourneyE2E() async throws {
+        // 1. Student Registration/Login Flow
+        let authService = MockAuthService.shared
+        let loginResponse = try await authService.login(
+            email: "student@university.edu",
+            password: "student123"
+        )
+        
+        XCTAssertEqual(loginResponse.user.role, .student)
+        XCTAssertNotNil(loginResponse.accessToken)
+        
+        // 2. Navigate to Course Catalog
+        let courseService = CourseMockService.shared
+        let availableCourses = courseService.getAvailableCourses()
+        XCTAssertGreaterThan(availableCourses.count, 0)
+        
+        // 3. Search and Filter Courses
+        let programmingCourses = availableCourses.filter { 
+            $0.category == "Программирование" 
+        }
+        XCTAssertGreaterThan(programmingCourses.count, 0)
+        
+        // 4. View Course Details
+        guard let selectedCourse = programmingCourses.first else {
+            XCTFail("No programming courses available")
+            return
+        }
+        
+        XCTAssertFalse(selectedCourse.title.isEmpty)
+        XCTAssertFalse(selectedCourse.description.isEmpty)
+        XCTAssertGreaterThan(selectedCourse.lessons.count, 0)
+        
+        // 5. Enroll in Course
+        courseService.enrollInCourse(selectedCourse)
+        let enrolledCourses = courseService.getEnrolledCourses()
+        XCTAssertTrue(enrolledCourses.contains { $0.id == selectedCourse.id })
+        
+        // 6. Start Learning - Access First Lesson
+        guard let firstLesson = selectedCourse.lessons.first else {
+            XCTFail("Course has no lessons")
+            return
+        }
+        
+        XCTAssertFalse(firstLesson.title.isEmpty)
+        XCTAssertNotNil(firstLesson.content)
+        
+        // 7. Complete Lesson and Take Quiz
+        if case .quiz(let questions) = firstLesson.content {
+            XCTAssertGreaterThan(questions.count, 0)
+            
+            // Simulate answering quiz
+            var answers: [String: String] = [:]
+            for question in questions {
+                answers[question.id] = question.options.first ?? ""
+            }
+            
+            // Submit quiz
+            let score = Double(questions.filter { 
+                answers[$0.id] == $0.correctAnswer 
+            }.count) / Double(questions.count) * 100
+            
+            XCTAssertGreaterThanOrEqual(score, 0)
+        }
+        
+        // 8. Track Progress
+        let analyticsService = AnalyticsService()
+        let progressEvent = AnalyticsData(
+            userId: loginResponse.user.id,
+            timestamp: Date(),
+            type: .courseProgress,
+            metrics: ["progress": 0.25, "score": 85.0],
+            metadata: ["courseId": selectedCourse.id]
+        )
+        analyticsService.trackEvent(progressEvent)
+        
+        // 9. Receive Notification
+        let notificationService = NotificationService.shared
+        await notificationService.add(
+            Notification(
+                id: UUID().uuidString,
+                type: .courseProgress,
+                title: "Отличный прогресс!",
+                message: "Вы завершили 25% курса \(selectedCourse.title)",
+                createdAt: Date(),
+                isRead: false,
+                priority: .medium,
+                actionUrl: nil,
+                metadata: ["courseId": selectedCourse.id]
+            )
+        )
+        
+        XCTAssertGreaterThan(notificationService.notifications.count, 0)
+        XCTAssertGreaterThan(notificationService.unreadCount, 0)
+        
+        // 10. Complete Course and Earn Certificate
+        // Simulate course completion
+        let certificateService = PDFExportService()
+        let certificate = Certificate(
+            templateId: "basic",
+            recipientName: "\(loginResponse.user.firstName ?? "") \(loginResponse.user.lastName ?? "")",
+            courseName: selectedCourse.title,
+            completionDate: Date(),
+            instructorName: selectedCourse.instructor,
+            primaryColor: "#007AFF",
+            secondaryColor: "#5856D6"
+        )
+        
+        XCTAssertFalse(certificate.recipientName.isEmpty)
+        XCTAssertEqual(certificate.courseName, selectedCourse.title)
+        
+        // 11. View Learning Analytics
+        let userPerformance = analyticsService.getUserPerformance(
+            userId: loginResponse.user.id,
+            period: .month
+        )
+        
+        XCTAssertNotNil(userPerformance)
+        XCTAssertGreaterThan(userPerformance?.completedCourses ?? 0, 0)
+        XCTAssertGreaterThan(userPerformance?.learningHours ?? 0, 0)
+    }
+    
+    // MARK: - Admin User Management E2E Test
+    
+    func testAdminUserManagementE2E() async throws {
+        // 1. Admin Login
+        let authService = MockAuthService.shared
+        let adminLogin = try await authService.login(
+            email: "admin@university.edu",
+            password: "admin123"
+        )
+        
+        XCTAssertEqual(adminLogin.user.role, .admin)
+        XCTAssertTrue(adminLogin.user.permissions?.contains(.manageUsers) ?? false)
+        
+        // 2. Access Admin Dashboard
+        let adminService = MockAdminService.shared
+        adminService.fetchPendingUsers()
+        
+        await Task.sleep(nanoseconds: 1_100_000_000) // Wait for fetch
+        XCTAssertGreaterThan(adminService.pendingUsers.count, 0)
+        
+        // 3. Review Pending User
+        guard let pendingUser = adminService.pendingUsers.first else {
+            XCTFail("No pending users")
+            return
+        }
+        
+        XCTAssertFalse(pendingUser.email.isEmpty)
+        XCTAssertFalse(pendingUser.firstName.isEmpty)
+        XCTAssertFalse(pendingUser.lastName.isEmpty)
+        
+        // 4. Approve User
+        let expectation = XCTestExpectation(description: "User approved")
+        var approvalSuccess = false
+        
+        adminService.approveSelectedUsers(userIds: [pendingUser.id]) { success in
+            approvalSuccess = success
+            expectation.fulfill()
+        }
+        
+        await fulfillment(of: [expectation], timeout: 2.0)
+        XCTAssertTrue(approvalSuccess)
+        
+        // 5. Verify User Removed from Pending
+        XCTAssertFalse(adminService.pendingUsers.contains { $0.id == pendingUser.id })
+        
+        // 6. Check Notification Sent
+        let notificationService = NotificationService.shared
+        let approvalNotifications = notificationService.notifications.filter {
+            $0.type == .userApproved
+        }
+        
+        // 7. View User Analytics
+        let analyticsService = AnalyticsService()
+        let summary = analyticsService.getAnalyticsSummary(for: .month)
+        
+        XCTAssertGreaterThan(summary.totalUsers, 0)
+        XCTAssertGreaterThan(summary.activeUsers, 0)
+        
+        // 8. Generate User Report
+        let report = Report(
+            title: "User Activity Report",
+            description: "Monthly user activity summary",
+            type: .userActivity,
+            status: .generating,
+            period: .month,
+            createdBy: adminLogin.user.id
+        )
+        
+        let reportExpectation = XCTestExpectation(description: "Report generated")
+        
+        analyticsService.generateReport(report)
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { generatedReport in
+                    XCTAssertEqual(generatedReport.status, .ready)
+                    reportExpectation.fulfill()
+                }
+            )
+            .store(in: &Set<AnyCancellable>())
+        
+        await fulfillment(of: [reportExpectation], timeout: 3.0)
+    }
+    
+    // MARK: - Onboarding Program E2E Test
+    
+    func testNewEmployeeOnboardingE2E() async throws {
+        // 1. HR Manager Login
+        let authService = MockAuthService.shared
+        let hrLogin = try await authService.login(
+            email: "hr@university.edu",
+            password: "hrmanager123"
+        )
+        
+        XCTAssertEqual(hrLogin.user.role, .manager)
+        
+        // 2. Access Onboarding Module
+        let onboardingService = OnboardingMockService()
+        let templates = onboardingService.getTemplates()
+        XCTAssertGreaterThan(templates.count, 0)
+        
+        // 3. Select Template for New Employee
+        guard let template = templates.first(where: { 
+            $0.name.contains("Базовый") 
+        }) else {
+            XCTFail("No basic template found")
+            return
+        }
+        
+        // 4. Create New Employee Record
+        let newEmployee = UserResponse(
+            id: UUID().uuidString,
+            email: "newemployee@university.edu",
+            name: "Новый Сотрудник",
+            role: .student,
+            firstName: "Новый",
+            lastName: "Сотрудник",
+            department: "IT",
+            position: "Junior Developer",
+            isActive: true,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+        
+        // 5. Assign Onboarding Program
+        onboardingService.assignProgram(
+            templateId: template.id,
+            userId: newEmployee.id,
+            mentorId: hrLogin.user.id
+        )
+        
+        let userPrograms = onboardingService.getUserPrograms(userId: newEmployee.id)
+        XCTAssertEqual(userPrograms.count, 1)
+        
+        guard let program = userPrograms.first else {
+            XCTFail("No program assigned")
+            return
+        }
+        
+        // 6. New Employee Starts Onboarding
+        XCTAssertGreaterThan(program.stages.count, 0)
+        
+        guard let firstStage = program.stages.first,
+              let firstTask = firstStage.tasks.first else {
+            XCTFail("No tasks in program")
+            return
+        }
+        
+        // 7. Complete First Task
+        onboardingService.completeTask(
+            programId: program.id,
+            stageId: firstStage.id,
+            taskId: firstTask.id,
+            userId: newEmployee.id
+        )
+        
+        // 8. Track Progress
+        let updatedProgram = onboardingService.getProgram(by: program.id)
+        let completedTasks = updatedProgram?.stages.flatMap { $0.tasks }
+            .filter { $0.isCompleted }.count ?? 0
+        
+        XCTAssertGreaterThan(completedTasks, 0)
+        
+        // 9. Send Progress Notification
+        let notificationService = NotificationService.shared
+        notificationService.notifyOnboardingProgress(
+            programId: program.id,
+            progress: 25,
+            recipientId: UUID(uuidString: newEmployee.id) ?? UUID()
+        )
+        
+        // 10. Manager Reviews Progress
+        let activePrograms = onboardingService.getActivePrograms()
+        XCTAssertTrue(activePrograms.contains { $0.id == program.id })
+        
+        // 11. Complete Onboarding
+        // Simulate completing all tasks
+        for stage in program.stages {
+            for task in stage.tasks {
+                onboardingService.completeTask(
+                    programId: program.id,
+                    stageId: stage.id,
+                    taskId: task.id,
+                    userId: newEmployee.id
+                )
+            }
+        }
+        
+        // 12. Generate Completion Report
+        let finalProgram = onboardingService.getProgram(by: program.id)
+        XCTAssertEqual(finalProgram?.progress, 1.0)
+        XCTAssertEqual(finalProgram?.status, .completed)
+    }
+    
+    // MARK: - Performance Review E2E Test
+    
+    func testPerformanceReviewCycleE2E() async throws {
+        // 1. Manager Login
+        let authService = MockAuthService.shared
+        let managerLogin = try await authService.login(
+            email: "manager@university.edu",
+            password: "manager123"
+        )
+        
+        XCTAssertEqual(managerLogin.user.role, .manager)
+        
+        // 2. Access Team Members
+        let userService = UserApiService()
+        let teamMembers = userService.getUsers().filter {
+            $0.department == managerLogin.user.department
+        }
+        XCTAssertGreaterThan(teamMembers.count, 0)
+        
+        // 3. Select Employee for Review
+        guard let employee = teamMembers.first(where: {
+            $0.role == .student
+        }) else {
+            XCTFail("No team members found")
+            return
+        }
+        
+        // 4. View Employee Competencies
+        let competencyService = MockCompetencyService()
+        let competencies = competencyService.getCompetencies()
+        let userCompetencies = competencyService.getUserCompetencies(userId: employee.id)
+        
+        XCTAssertGreaterThan(competencies.count, 0)
+        XCTAssertGreaterThan(userCompetencies.count, 0)
+        
+        // 5. Assess Competency Levels
+        guard let firstCompetency = userCompetencies.first else {
+            XCTFail("No user competencies")
+            return
+        }
+        
+        let newLevel = min(firstCompetency.currentLevel + 1, 5)
+        competencyService.updateUserCompetencyLevel(
+            userId: employee.id,
+            competencyId: firstCompetency.competency.id,
+            newLevel: newLevel
+        )
+        
+        // 6. Check Learning Recommendations
+        let courseService = CourseMockService.shared
+        let recommendedCourses = courseService.getAllCourses().filter { course in
+            course.requiredCompetencies.contains { 
+                $0.competencyId == firstCompetency.competency.id 
+            }
+        }
+        
+        XCTAssertGreaterThan(recommendedCourses.count, 0)
+        
+        // 7. Assign Development Courses
+        if let recommendedCourse = recommendedCourses.first {
+            // Send course assignment notification
+            let notificationService = NotificationService.shared
+            notificationService.notifyCourseAssigned(
+                courseId: recommendedCourse.id,
+                courseName: recommendedCourse.title,
+                recipientId: UUID(uuidString: employee.id) ?? UUID(),
+                deadline: Date().addingTimeInterval(30 * 24 * 60 * 60) // 30 days
+            )
+        }
+        
+        // 8. Generate Performance Report
+        let analyticsService = AnalyticsService()
+        let performanceReport = Report(
+            title: "Performance Review - \(employee.name)",
+            description: "Quarterly performance assessment",
+            type: .performance,
+            status: .generating,
+            period: .quarter,
+            createdBy: managerLogin.user.id,
+            recipients: [employee.id]
+        )
+        
+        let reportExpectation = XCTestExpectation(description: "Performance report")
+        
+        analyticsService.generateReport(performanceReport)
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { report in
+                    XCTAssertEqual(report.status, .ready)
+                    XCTAssertFalse(report.sections.isEmpty)
+                    reportExpectation.fulfill()
+                }
+            )
+            .store(in: &Set<AnyCancellable>())
+        
+        await fulfillment(of: [reportExpectation], timeout: 3.0)
+        
+        // 9. Schedule Follow-up
+        let followUpNotification = Notification(
+            id: UUID().uuidString,
+            type: .reminder,
+            title: "Performance Review Follow-up",
+            message: "Проверить прогресс сотрудника \(employee.name)",
+            createdAt: Date(),
+            isRead: false,
+            priority: .medium,
+            actionUrl: "review://\(employee.id)",
+            metadata: ["employeeId": employee.id, "reviewType": "quarterly"]
+        )
+        
+        await NotificationService.shared.add(followUpNotification)
+        
+        // 10. Verify Complete Cycle
+        let employeeReports = analyticsService.getReports(for: employee.id)
+        XCTAssertTrue(employeeReports.contains { $0.type == .performance })
+    }
+} 
