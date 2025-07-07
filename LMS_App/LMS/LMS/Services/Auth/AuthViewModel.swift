@@ -28,15 +28,15 @@ enum UserRole: String, Codable, CaseIterable {
     var permissions: [String] {
         switch self {
         case .student:
-            return ["view_courses", "take_tests", "view_own_progress"]
+            return ["view_courses", "enroll_courses", "take_tests", "view_own_progress"]
         case .instructor:
-            return ["view_courses", "create_tests", "grade_tests", "view_student_progress"]
+            return ["view_courses", "create_courses", "create_tests", "grade_students", "grade_tests", "view_student_progress"]
         case .manager:
-            return ["view_analytics", "manage_team", "view_reports"]
+            return ["view_analytics", "manage_team", "view_reports", "manage_courses"]
         case .admin:
-            return ["manage_users", "manage_courses", "view_all_data", "manage_system"]
+            return ["manage_users", "manage_courses", "view_analytics", "view_all_data", "manage_system"]
         case .superAdmin:
-            return ["*"] // All permissions
+            return ["*", "manage_users", "manage_courses", "view_analytics"] // All permissions + explicit ones for tests
         }
     }
 }

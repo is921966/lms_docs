@@ -15,86 +15,87 @@ final class CompetencyTests: XCTestCase {
         let id = UUID()
         let name = "iOS Development"
         let description = "Mobile app development using Swift"
-        let categoryId = UUID()
-        let level = 3
+        let category = CompetencyCategory.technical
+        let color = CompetencyColor.blue
+        let levels = CompetencyLevel.defaultLevels()
         
         // When
         let competency = Competency(
             id: id,
             name: name,
             description: description,
-            categoryId: categoryId,
-            level: level,
-            skills: [],
-            requiredCourses: [],
-            relatedPositions: []
+            category: category,
+            color: color,
+            levels: levels
         )
         
         // Then
         XCTAssertEqual(competency.id, id)
         XCTAssertEqual(competency.name, name)
         XCTAssertEqual(competency.description, description)
-        XCTAssertEqual(competency.categoryId, categoryId)
-        XCTAssertEqual(competency.level, level)
-        XCTAssertTrue(competency.skills.isEmpty)
-        XCTAssertTrue(competency.requiredCourses.isEmpty)
+        XCTAssertEqual(competency.category, category)
+        XCTAssertEqual(competency.color, color)
+        XCTAssertEqual(competency.levels.count, levels.count)
+        XCTAssertTrue(competency.isActive)
         XCTAssertTrue(competency.relatedPositions.isEmpty)
     }
     
-    func testCompetencyWithSkills() {
+    func testCompetencyWithRelatedPositions() {
         // Given
-        let skills = ["Swift", "UIKit", "SwiftUI", "Core Data"]
+        let positions = ["ios-developer", "mobile-lead", "tech-lead"]
         
         // When
         let competency = Competency(
             name: "iOS Developer",
             description: "iOS app development",
-            categoryId: UUID(),
-            level: 4,
-            skills: skills,
-            requiredCourses: [],
-            relatedPositions: []
+            category: .technical,
+            relatedPositions: positions
         )
         
         // Then
-        XCTAssertEqual(competency.skills.count, 4)
-        XCTAssertTrue(competency.skills.contains("Swift"))
-        XCTAssertTrue(competency.skills.contains("SwiftUI"))
+        XCTAssertEqual(competency.relatedPositions.count, 3)
+        XCTAssertTrue(competency.relatedPositions.contains("ios-developer"))
+        XCTAssertTrue(competency.relatedPositions.contains("mobile-lead"))
     }
     
     // MARK: - Level Tests
     
-    func testCompetencyLevelValidation() {
-        // Test valid levels
-        for level in 1...5 {
-            let competency = Competency(
-                name: "Test",
-                description: "Test",
-                categoryId: UUID(),
-                level: level,
-                skills: [],
-                requiredCourses: [],
-                relatedPositions: []
-            )
-            XCTAssertEqual(competency.level, level)
-        }
+    func testCompetencyLevelsValidation() {
+        // Test default levels
+        let competency = Competency(
+            name: "Test",
+            description: "Test"
+        )
+        
+        // Default should have 5 levels
+        XCTAssertEqual(competency.levels.count, 5)
+        XCTAssertEqual(competency.maxLevel, 5)
+        
+        // Test custom levels
+        let customLevels = [
+            CompetencyLevel(level: 1, name: "Beginner", description: "Just starting"),
+            CompetencyLevel(level: 2, name: "Advanced", description: "Experienced")
+        ]
+        
+        let customCompetency = Competency(
+            name: "Custom",
+            description: "Custom levels",
+            levels: customLevels
+        )
+        
+        XCTAssertEqual(customCompetency.levels.count, 2)
+        XCTAssertEqual(customCompetency.maxLevel, 2)
     }
     
-    func testCompetencyLevelDescription() {
-        let competency1 = createCompetency(level: 1)
-        XCTAssertEqual(competency1.levelDescription, "Начальный")
+    func testCompetencyColorProperties() {
+        let competency1 = createCompetency(color: .blue)
+        XCTAssertEqual(competency1.colorHex, "#2196F3")
         
-        let competency2 = createCompetency(level: 2)
-        XCTAssertEqual(competency2.levelDescription, "Базовый")
+        let competency2 = createCompetency(color: .green)
+        XCTAssertEqual(competency2.colorHex, "#4CAF50")
         
-        let competency3 = createCompetency(level: 3)
-        XCTAssertEqual(competency3.levelDescription, "Средний")
-        
-        let competency4 = createCompetency(level: 4)
-        XCTAssertEqual(competency4.levelDescription, "Продвинутый")
-        
-        let competency5 = createCompetency(level: 5)
-        XCTAssertEqual(competency5.levelDescription, "Эксперт")
+        let competency3 = createCompetency(color: .red)
+        XCTAssertEqual(competency3.colorHex, "#F44336")
     }
     
     // MARK: - Codable Tests
@@ -119,51 +120,66 @@ final class CompetencyTests: XCTestCase {
             "id": "550e8400-e29b-41d4-a716-446655440000",
             "name": "Test Competency",
             "description": "Test Description",
-            "categoryId": "550e8400-e29b-41d4-a716-446655440001",
-            "level": 3,
-            "skills": ["Skill1", "Skill2"],
-            "requiredCourses": ["course1", "course2"],
-            "relatedPositions": ["pos1", "pos2"]
+            "category": "technical",
+            "color": "blue",
+            "levels": [
+                {
+                    "id": "550e8400-e29b-41d4-a716-446655440001",
+                    "level": 1,
+                    "name": "Начальный",
+                    "description": "Базовые знания"
+                }
+            ],
+            "isActive": true,
+            "relatedPositions": ["pos1", "pos2"],
+            "createdAt": "2025-01-01T00:00:00Z",
+            "updatedAt": "2025-01-01T00:00:00Z",
+            "currentLevel": 1,
+            "requiredLevel": 3,
+            "usageCount": 0,
+            "coursesCount": 0
         }
         """.data(using: .utf8)!
         
         // When
         let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
         let competency = try decoder.decode(Competency.self, from: json)
         
         // Then
         XCTAssertEqual(competency.name, "Test Competency")
-        XCTAssertEqual(competency.level, 3)
-        XCTAssertEqual(competency.skills.count, 2)
-        XCTAssertEqual(competency.requiredCourses.count, 2)
+        XCTAssertEqual(competency.category, .technical)
+        XCTAssertEqual(competency.color, .blue)
+        XCTAssertEqual(competency.levels.count, 1)
         XCTAssertEqual(competency.relatedPositions.count, 2)
     }
     
     func testCompetencyRoundTripCoding() throws {
         // Given
         let original = createCompetency(
-            skills: ["Swift", "Objective-C"],
-            requiredCourses: ["ios-basics", "swift-advanced"],
             relatedPositions: ["ios-developer", "mobile-lead"]
         )
         
         // When
         let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
         let data = try encoder.encode(original)
+        
         let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
         let decoded = try decoder.decode(Competency.self, from: data)
         
         // Then
         XCTAssertEqual(original.id, decoded.id)
         XCTAssertEqual(original.name, decoded.name)
         XCTAssertEqual(original.description, decoded.description)
-        XCTAssertEqual(original.level, decoded.level)
-        XCTAssertEqual(original.skills, decoded.skills)
-        XCTAssertEqual(original.requiredCourses, decoded.requiredCourses)
+        XCTAssertEqual(original.category, decoded.category)
+        XCTAssertEqual(original.color, decoded.color)
+        XCTAssertEqual(original.levels.count, decoded.levels.count)
         XCTAssertEqual(original.relatedPositions, decoded.relatedPositions)
     }
     
-    // MARK: - Equatable Tests
+    // MARK: - Hashable Tests
     
     func testCompetencyEquality() {
         // Given
@@ -171,22 +187,14 @@ final class CompetencyTests: XCTestCase {
         let competency1 = Competency(
             id: id,
             name: "Test",
-            description: "Test",
-            categoryId: UUID(),
-            level: 3,
-            skills: [],
-            requiredCourses: [],
-            relatedPositions: []
+            description: "Test"
         )
         let competency2 = Competency(
             id: id,
             name: "Different Name",
             description: "Different Description",
-            categoryId: UUID(),
-            level: 5,
-            skills: ["Different"],
-            requiredCourses: [],
-            relatedPositions: []
+            category: .softSkills,
+            color: .red
         )
         
         // Then
@@ -226,36 +234,19 @@ final class CompetencyTests: XCTestCase {
         id: UUID = UUID(),
         name: String = "Test Competency",
         description: String = "Test Description",
-        categoryId: UUID = UUID(),
-        level: Int = 3,
-        skills: [String] = [],
-        requiredCourses: [String] = [],
+        category: CompetencyCategory = .technical,
+        color: CompetencyColor = .blue,
+        levels: [CompetencyLevel] = CompetencyLevel.defaultLevels(),
         relatedPositions: [String] = []
     ) -> Competency {
         return Competency(
             id: id,
             name: name,
             description: description,
-            categoryId: categoryId,
-            level: level,
-            skills: skills,
-            requiredCourses: requiredCourses,
+            category: category,
+            color: color,
+            levels: levels,
             relatedPositions: relatedPositions
         )
-    }
-}
-
-// MARK: - Competency Extension for Tests
-
-extension Competency {
-    var levelDescription: String {
-        switch level {
-        case 1: return "Начальный"
-        case 2: return "Базовый"
-        case 3: return "Средний"
-        case 4: return "Продвинутый"
-        case 5: return "Эксперт"
-        default: return "Неизвестный"
-        }
     }
 } 

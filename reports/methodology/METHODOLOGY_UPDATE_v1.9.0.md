@@ -187,4 +187,175 @@ Feature: User Registration
 
 **Методология обновлена и готова к использованию!**
 
-Все изменения backward-compatible - существующий код продолжит работать без изменений. 
+Все изменения backward-compatible - существующий код продолжит работать без изменений.
+
+# Methodology Update v1.9.0 - Mandatory TestFlight Releases
+
+**Version**: 1.9.0  
+**Date**: 2025-07-07  
+**Author**: AI Development Team  
+**Status**: ACTIVE
+
+---
+
+## 🚀 Major Change: TestFlight Release Every Sprint
+
+### Executive Summary
+Starting immediately, **EVERY sprint MUST end with a TestFlight release**. This ensures continuous user feedback, early bug detection, and maintains development momentum.
+
+### Key Changes
+
+#### 1. Sprint Structure Update
+```yaml
+Old_Sprint_Structure:
+  Day_1-4: Development
+  Day_5: Testing and Documentation
+
+New_Sprint_Structure:
+  Day_1-4: Development  
+  Day_5: TestFlight Release Day
+    Morning: Final testing & bug fixes
+    Afternoon: Build creation & validation
+    Evening: TestFlight upload & distribution
+```
+
+#### 2. Definition of Done Enhanced
+- **Story DoD**: Unchanged
+- **Sprint DoD**: Now REQUIRES successful TestFlight upload
+- **No exceptions**: Sprint is NOT complete without TestFlight build
+
+#### 3. Version Management
+```
+Format: MAJOR.MINOR.PATCH-sprint#
+Examples:
+  - 1.0.0-sprint38 (development)
+  - 1.0.0-beta.1 (first beta)
+  - 1.0.0-rc.1 (release candidate)
+  - 1.0.0 (production)
+```
+
+### Benefits
+
+1. **Weekly User Feedback**
+   - Real users test every week
+   - Issues found early
+   - Feature validation faster
+
+2. **Forced Quality Gates**
+   - Must be stable enough to ship
+   - No "we'll fix it later"
+   - Maintains high standards
+
+3. **Stakeholder Visibility**
+   - Progress visible weekly
+   - Builds confidence
+   - Reduces surprises
+
+4. **Team Momentum**
+   - Regular releases = regular wins
+   - Clear sprint endings
+   - Celebration moments
+
+### Implementation
+
+#### Required Actions:
+1. **Update all sprint plans** to include TestFlight day
+2. **Create release notes template** in Russian
+3. **Setup TestFlight groups** (Internal, External)
+4. **Assign release manager** for each sprint
+5. **Monitor feedback channels** daily
+
+#### New Artifacts:
+- `/docs/project/TESTFLIGHT_SPRINT_PROCESS.md` - Detailed process
+- `/docs/project/SPRINT_TEMPLATE_WITH_TESTFLIGHT.md` - Sprint planning template
+- `/reports/sprints/SPRINT_XX_TESTFLIGHT_METRICS.md` - Metrics tracking
+
+### Metrics to Track
+
+```yaml
+TestFlight_Success_Metrics:
+  Upload_Success_Rate: 100%  # Every sprint must succeed
+  Time_to_Upload: <3 hours   # From code freeze to available
+  Adoption_Rate: >80%        # Testers installing within 24h
+  Crash_Free_Rate: >99%      # Quality threshold
+  Feedback_Items: >5         # Engagement measure
+```
+
+### Process Checklist
+
+#### Pre-Release (Day 5 Morning)
+- [ ] All planned features complete
+- [ ] All tests passing
+- [ ] No critical bugs
+- [ ] SwiftLint clean
+- [ ] Performance acceptable
+
+#### Release (Day 5 Afternoon)
+- [ ] Version updated (X.X.X-sprint#)
+- [ ] Build number incremented
+- [ ] Archive created in Release mode
+- [ ] Export compliance filled
+- [ ] Upload successful
+
+#### Post-Release (Day 5 Evening)
+- [ ] Release notes published
+- [ ] Testers notified
+- [ ] Feedback channel active
+- [ ] Metrics dashboard updated
+- [ ] Next sprint considers feedback
+
+### Emergency Procedures
+
+If TestFlight release is blocked:
+1. **Technical issues**: Fix immediately, delay max 24h
+2. **Apple rejection**: Address feedback, resubmit same day
+3. **Critical bugs found**: Hotfix and create X.X.X-sprint#-hotfix1
+4. **Sprint considered INCOMPLETE** until TestFlight is live
+
+### Cultural Shift
+
+This change represents a cultural shift from:
+- "It works on my machine" → "It works for users"
+- "We'll test later" → "Users test weekly"  
+- "Sprint done = code complete" → "Sprint done = users have it"
+
+### Rollout Plan
+
+1. **Sprint 38** (Next): First mandatory TestFlight sprint
+2. **Sprint 39-40**: Refine process based on learnings
+3. **Sprint 41+**: Process fully embedded
+
+### FAQ
+
+**Q: What if we're not ready on Day 5?**  
+A: Then the sprint is not complete. Better to ship less features that work than more features that don't.
+
+**Q: Can we skip TestFlight for backend-only sprints?**  
+A: No. Find something user-visible to ship, even if small.
+
+**Q: What about holidays/weekends?**  
+A: Plan accordingly. Release Thursday if Friday is holiday.
+
+**Q: Multiple TestFlight builds per sprint?**  
+A: Yes! Minimum one, but more is encouraged.
+
+### Success Criteria
+
+After 3 sprints (38-40), we should see:
+- 100% sprint TestFlight compliance
+- Increased user engagement
+- Faster bug detection
+- Higher stakeholder satisfaction
+- Team pride in shipping weekly
+
+---
+
+## Summary
+
+**TestFlight every sprint is now MANDATORY**. This ensures we deliver value to users continuously, get feedback early, and maintain the highest quality standards. No exceptions, no excuses - if it's not on TestFlight, the sprint is not done.
+
+This is not just a process change - it's a commitment to our users that they will see progress every single week.
+
+---
+
+**Effective immediately for all iOS development sprints** 

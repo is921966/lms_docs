@@ -13,7 +13,9 @@ final class UserResponseTests: XCTestCase {
         role: UserRole = .student,
         department: String? = nil,
         isActive: Bool = true,
-        avatarURL: String? = nil
+        avatarURL: String? = nil,
+        firstName: String? = nil,
+        lastName: String? = nil
     ) -> UserResponse {
         return UserResponse(
             id: id,
@@ -21,6 +23,8 @@ final class UserResponseTests: XCTestCase {
             name: name,
             role: role,
             avatarURL: avatarURL,
+            firstName: firstName,
+            lastName: lastName,
             department: department,
             isActive: isActive,
             createdAt: Date(),
@@ -50,7 +54,7 @@ final class UserResponseTests: XCTestCase {
             "role": "admin",
             "department": "IT",
             "isActive": true,
-            "avatar": "https://example.com/avatar.jpg",
+            "avatarURL": "https://example.com/avatar.jpg",
             "createdAt": "2025-01-01T00:00:00Z",
             "updatedAt": "2025-01-01T00:00:00Z"
         }
@@ -68,7 +72,7 @@ final class UserResponseTests: XCTestCase {
         XCTAssertEqual(user.role, .admin)
         XCTAssertEqual(user.department, "IT")
         XCTAssertTrue(user.isActive)
-        XCTAssertEqual(user.avatar, "https://example.com/avatar.jpg")
+        XCTAssertEqual(user.avatarURL, "https://example.com/avatar.jpg")
     }
     
     func testUserResponseDecodingWithOptionalFields() throws {
@@ -96,7 +100,7 @@ final class UserResponseTests: XCTestCase {
         XCTAssertEqual(user.name, "Minimal User")
         XCTAssertEqual(user.role, .student)
         XCTAssertNil(user.department)
-        XCTAssertNil(user.avatar)
+        XCTAssertNil(user.avatarURL)
         XCTAssertFalse(user.isActive)
     }
     
@@ -112,8 +116,8 @@ final class UserResponseTests: XCTestCase {
         )
         
         // When/Then
-        XCTAssertEqual(user.firstName, "John")
-        XCTAssertEqual(user.lastName, "Doe")
+        XCTAssertEqual(user.effectiveFirstName, "John")
+        XCTAssertEqual(user.effectiveLastName, "Doe")
         XCTAssertEqual(user.fullName, "John Doe")
     }
     
@@ -127,8 +131,8 @@ final class UserResponseTests: XCTestCase {
         )
         
         // When/Then
-        XCTAssertEqual(user.firstName, "Admin")
-        XCTAssertEqual(user.lastName, "")
+        XCTAssertEqual(user.effectiveFirstName, "Admin")
+        XCTAssertEqual(user.effectiveLastName, "")
         XCTAssertEqual(user.fullName, "Admin")
     }
     
@@ -142,8 +146,8 @@ final class UserResponseTests: XCTestCase {
         )
         
         // When/Then
-        XCTAssertEqual(user.firstName, "John")
-        XCTAssertEqual(user.lastName, "Paul Jones Smith")
+        XCTAssertEqual(user.effectiveFirstName, "John")
+        XCTAssertEqual(user.effectiveLastName, "Paul Jones Smith")
         XCTAssertEqual(user.fullName, "John Paul Jones Smith")
     }
     
@@ -209,7 +213,7 @@ final class UserResponseTests: XCTestCase {
             "role": "student",
             "isActive": true,
             "department": null,
-            "avatar": null,
+            "avatarURL": null,
             "createdAt": "2025-01-01T00:00:00Z",
             "updatedAt": "2025-01-01T00:00:00Z"
         }
@@ -226,7 +230,7 @@ final class UserResponseTests: XCTestCase {
         XCTAssertEqual(user.name, "Null Test")
         XCTAssertEqual(user.role, .student)
         XCTAssertNil(user.department)
-        XCTAssertNil(user.avatar)
+        XCTAssertNil(user.avatarURL)
         XCTAssertTrue(user.isActive)
     }
     
@@ -255,8 +259,8 @@ final class UserResponseTests: XCTestCase {
         let user = createUser(id: "empty", email: "empty@test.com", name: "", role: .student)
         
         // When/Then
-        XCTAssertEqual(user.firstName, "")
-        XCTAssertEqual(user.lastName, "")
+        XCTAssertEqual(user.effectiveFirstName, "")
+        XCTAssertEqual(user.effectiveLastName, "")
         XCTAssertEqual(user.fullName, "")
     }
     
@@ -271,8 +275,8 @@ final class UserResponseTests: XCTestCase {
         
         // When/Then
         // The split function should handle spaces properly
-        XCTAssertEqual(user.firstName, "John")
-        XCTAssertEqual(user.lastName, "Doe")
+        XCTAssertEqual(user.effectiveFirstName, "John")
+        XCTAssertEqual(user.effectiveLastName, "Doe")
         XCTAssertEqual(user.fullName, "  John   Doe  ")
     }
     
@@ -288,7 +292,7 @@ final class UserResponseTests: XCTestCase {
         )
         
         // When - old code would access these properties
-        let displayName = "\(user.firstName) \(user.lastName)".trimmingCharacters(in: .whitespaces)
+        let displayName = "\(user.effectiveFirstName) \(user.effectiveLastName)".trimmingCharacters(in: .whitespaces)
         let isAdminUser = user.roles.contains("admin")
         let canManageUsers = user.permissions.contains("manage_users")
         
@@ -296,5 +300,25 @@ final class UserResponseTests: XCTestCase {
         XCTAssertEqual(displayName, "Compatible User")
         XCTAssertTrue(isAdminUser)
         XCTAssertTrue(canManageUsers)
+    }
+    
+    // MARK: - Tests for direct firstName/lastName properties
+    
+    func testDirectFirstNameLastNameProperties() {
+        // Given - user with explicit firstName and lastName
+        let user = createUser(
+            id: "direct",
+            email: "direct@test.com",
+            name: "Full Name",
+            role: .student,
+            firstName: "John",
+            lastName: "Smith"
+        )
+        
+        // Then - direct properties should be used
+        XCTAssertEqual(user.firstName, "John")
+        XCTAssertEqual(user.lastName, "Smith")
+        XCTAssertEqual(user.effectiveFirstName, "John")
+        XCTAssertEqual(user.effectiveLastName, "Smith")
     }
 } 

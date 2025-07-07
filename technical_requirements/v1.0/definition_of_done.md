@@ -38,6 +38,58 @@
 - [ ] EXPLAIN выполнен для сложных запросов
 - [ ] Data migration протестирована на копии production данных
 
+## Sprint Level DoD (iOS Focus)
+
+### TestFlight Release Requirements 🚀
+**КАЖДЫЙ СПРИНТ ДОЛЖЕН ЗАВЕРШАТЬСЯ TESTFLIGHT РЕЛИЗОМ**
+
+- [ ] **Build Preparation**
+  - [ ] Все запланированные features реализованы и работают
+  - [ ] Version number обновлен (MAJOR.MINOR.PATCH-sprint#)
+  - [ ] Build number инкрементирован
+  - [ ] Все тесты проходят локально
+  - [ ] SwiftLint warnings исправлены
+  - [ ] Нет критических TODO в коде
+
+- [ ] **Quality Assurance**
+  - [ ] Smoke testing всех основных flows пройден
+  - [ ] Crash-free сессия минимум 30 минут
+  - [ ] Memory leaks проверены и исправлены
+  - [ ] Performance profiling показывает приемлемые метрики
+  - [ ] Accessibility audit пройден
+
+- [ ] **TestFlight Submission**
+  - [ ] Archive build создан в Release configuration
+  - [ ] Build успешно загружен в App Store Connect
+  - [ ] Export compliance информация заполнена
+  - [ ] Build прошел automatic review от Apple
+  - [ ] Build доступен для Internal Testing группы
+
+- [ ] **Release Communication**
+  - [ ] Release notes написаны на русском языке
+  - [ ] Список новых features и improvements составлен
+  - [ ] Known issues задокументированы
+  - [ ] Инструкция по тестированию подготовлена
+  - [ ] Beta testers уведомлены через TestFlight
+
+- [ ] **Feedback Management**
+  - [ ] Feedback канал в Slack/Teams создан
+  - [ ] GitHub Issues labels подготовлены для feedback
+  - [ ] Ответственный за сбор feedback назначен
+  - [ ] План по обработке критических issues готов
+
+### Sprint Completion Criteria
+- [ ] Sprint Review проведен с демонстрацией функциональности
+- [ ] Sprint Retrospective завершен с action items
+- [ ] Velocity и burndown charts обновлены
+- [ ] Technical debt задокументирован
+- [ ] План следующего спринта составлен
+- [ ] **TestFlight metrics собраны:**
+  - [ ] Количество установок
+  - [ ] Crash-free users %
+  - [ ] Session count
+  - [ ] User feedback summary
+
 ## Integration DoD
 
 ### API Integration

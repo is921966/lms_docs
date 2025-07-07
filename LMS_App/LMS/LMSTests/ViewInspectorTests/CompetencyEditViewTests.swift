@@ -10,14 +10,23 @@ import ViewInspector
 
 final class CompetencyEditViewInspectorTests: ViewInspectorTests {
     var sut: CompetencyEditView!
+    var mockCompetency: Competency!
     
     override func setUp() {
         super.setUp()
-        sut = CompetencyEditView()
+        mockCompetency = Competency(
+            name: "Test Competency",
+            description: "Test Description",
+            category: .technical,
+            color: .blue,
+            levels: CompetencyLevel.defaultLevels()
+        )
+        sut = CompetencyEditView(competency: mockCompetency) { _ in }
     }
     
     override func tearDown() {
         sut = nil
+        mockCompetency = nil
         super.tearDown()
     }
     

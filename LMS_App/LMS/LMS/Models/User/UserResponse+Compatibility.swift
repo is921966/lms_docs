@@ -18,8 +18,33 @@ extension UserResponse {
         return name
     }
     
-    // firstName and lastName are now direct properties in UserResponse
-    // No need to extract from full name anymore
+    // firstName and lastName are direct properties in UserResponse
+    // These computed properties provide the logic for extracting from name when needed
+    
+    /// Get effective first name - from firstName property or extracted from name
+    var effectiveFirstName: String {
+        if let firstName = self.firstName, !firstName.isEmpty {
+            return firstName
+        }
+        // Extract from name field
+        let trimmedName = name.trimmingCharacters(in: .whitespaces)
+        let components = trimmedName.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+        return components.first ?? ""
+    }
+    
+    /// Get effective last name - from lastName property or extracted from name
+    var effectiveLastName: String {
+        if let lastName = self.lastName, !lastName.isEmpty {
+            return lastName
+        }
+        // Extract from name field
+        let trimmedName = name.trimmingCharacters(in: .whitespaces)
+        let components = trimmedName.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+        if components.count > 1 {
+            return components.dropFirst().joined(separator: " ")
+        }
+        return ""
+    }
     
     // MARK: - Role Compatibility
     

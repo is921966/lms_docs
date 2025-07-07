@@ -62,9 +62,10 @@ final class APIClientTests: XCTestCase {
         // Test create user endpoint
         let createUserEndpoint = UserEndpoint.createUser(user: CreateUserRequest(
             email: "test@test.com",
-            firstName: "Test",
-            lastName: "User",
-            role: "student"
+            name: "Test User",
+            role: .student,
+            department: "IT",
+            password: "password123"
         ))
         XCTAssertEqual(createUserEndpoint.path, "/users")
         XCTAssertEqual(createUserEndpoint.method, .post)
@@ -140,15 +141,16 @@ final class APIClientTests: XCTestCase {
     func testCreateUserRequest() {
         let createUserRequest = CreateUserRequest(
             email: "newuser@example.com",
-            firstName: "John",
-            lastName: "Doe",
-            role: "student",
+            name: "John Doe",
+            role: .student,
+            department: "IT",
             password: "password123"
         )
         XCTAssertEqual(createUserRequest.email, "newuser@example.com")
-        XCTAssertEqual(createUserRequest.firstName, "John")
-        XCTAssertEqual(createUserRequest.lastName, "Doe")
-        XCTAssertEqual(createUserRequest.role, "student")
+        XCTAssertEqual(createUserRequest.name, "John Doe")
+        XCTAssertEqual(createUserRequest.role, .student)
+        XCTAssertEqual(createUserRequest.department, "IT")
+        XCTAssertEqual(createUserRequest.password, "password123")
     }
     
     // MARK: - Bundle Extension Tests

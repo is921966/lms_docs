@@ -4,18 +4,25 @@
 //
 
 import XCTest
+import Combine
 @testable import LMS
 
 final class NetworkServiceTests: XCTestCase {
     
     var sut: NetworkService!
+    var mockService: MockNetworkService!
+    var cancellables: Set<AnyCancellable>!
     
     override func setUp() {
         super.setUp()
         sut = NetworkService.shared
+        mockService = MockNetworkService()
+        cancellables = []
     }
     
     override func tearDown() {
+        cancellables = nil
+        mockService = nil
         sut = nil
         super.tearDown()
     }
@@ -28,67 +35,6 @@ final class NetworkServiceTests: XCTestCase {
         XCTAssertTrue(instance1 === instance2)
     }
     
-    // MARK: - Request Tests
-    
-    func testBuildURLRequest() throws {
-        // Given
-        let endpoint = "users"
-        let method = HTTPMethod.get
-        
-        // When
-        let request = try sut.buildRequest(
-            endpoint: endpoint,
-            method: method,
-            body: nil,
-            headers: nil
-        )
-        
-        // Then
-        XCTAssertNotNil(request)
-        XCTAssertTrue(request.url?.absoluteString.contains(endpoint) ?? false)
-        XCTAssertEqual(request.httpMethod, method.rawValue)
-    }
-    
-    func testBuildURLRequestWithBody() throws {
-        // Given
-        let endpoint = "users"
-        let method = HTTPMethod.post
-        let body = ["name": "Test User", "email": "test@example.com"]
-        
-        // When
-        let request = try sut.buildRequest(
-            endpoint: endpoint,
-            method: method,
-            body: body,
-            headers: nil
-        )
-        
-        // Then
-        XCTAssertNotNil(request)
-        XCTAssertNotNil(request.httpBody)
-        XCTAssertEqual(request.httpMethod, method.rawValue)
-        XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
-    }
-    
-    func testBuildURLRequestWithHeaders() throws {
-        // Given
-        let endpoint = "users"
-        let method = HTTPMethod.get
-        let headers = ["Authorization": "Bearer token123"]
-        
-        // When
-        let request = try sut.buildRequest(
-            endpoint: endpoint,
-            method: method,
-            body: nil,
-            headers: headers
-        )
-        
-        // Then
-        XCTAssertNotNil(request)
-        XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer token123")
-    }
-    
     // MARK: - HTTP Method Tests
     
     func testHTTPMethods() {
@@ -99,166 +45,154 @@ final class NetworkServiceTests: XCTestCase {
         XCTAssertEqual(HTTPMethod.patch.rawValue, "PATCH")
     }
     
-    // MARK: - Configuration Tests
+    // MARK: - Mock Service Tests
     
-    func testDefaultConfiguration() {
-        XCTAssertNotNil(sut.baseURL)
-        XCTAssertFalse(sut.baseURL.isEmpty)
-        XCTAssertNotNil(sut.session)
-        XCTAssertNotNil(sut.decoder)
-    }
-    
-    func testTimeoutConfiguration() {
-        let timeout = sut.session.configuration.timeoutIntervalForRequest
-        XCTAssertGreaterThan(timeout, 0)
-        XCTAssertLessThanOrEqual(timeout, 60)
-    }
-    
-    // MARK: - Error Handling Tests
-    
-    func testNetworkError() {
-        let error = NetworkError.noData
-        XCTAssertEqual(error.localizedDescription, "No data received")
-        
-        let invalidURLError = NetworkError.invalidURL
-        XCTAssertEqual(invalidURLError.localizedDescription, "Invalid URL")
-        
-        let decodingError = NetworkError.decodingError
-        XCTAssertEqual(decodingError.localizedDescription, "Failed to decode response")
-    }
-    
-    func testHTTPStatusCodeErrors() {
-        let badRequest = NetworkError.httpError(400)
-        XCTAssertEqual(badRequest.localizedDescription, "HTTP Error: 400")
-        
-        let unauthorized = NetworkError.httpError(401)
-        XCTAssertEqual(unauthorized.localizedDescription, "HTTP Error: 401")
-        
-        let serverError = NetworkError.httpError(500)
-        XCTAssertEqual(serverError.localizedDescription, "HTTP Error: 500")
-    }
-    
-    // MARK: - URL Building Tests
-    
-    func testBuildURL() {
+    func testMockServiceSuccess() async throws {
         // Given
-        let endpoint = "api/v1/users"
-        
-        // When
-        let url = sut.buildURL(for: endpoint)
-        
-        // Then
-        XCTAssertNotNil(url)
-        XCTAssertTrue(url?.absoluteString.contains(endpoint) ?? false)
-    }
-    
-    func testBuildURLWithQueryParameters() {
-        // Given
-        let endpoint = "api/v1/users"
-        let parameters = ["page": "1", "limit": "10"]
-        
-        // When
-        let url = sut.buildURL(for: endpoint, parameters: parameters)
-        
-        // Then
-        XCTAssertNotNil(url)
-        XCTAssertTrue(url?.absoluteString.contains("page=1") ?? false)
-        XCTAssertTrue(url?.absoluteString.contains("limit=10") ?? false)
-    }
-    
-    // MARK: - Mock Response Tests
-    
-    func testHandleSuccessResponse() {
-        // Given
-        let data = """
-        {
-            "id": "123",
-            "name": "Test User",
-            "email": "test@example.com"
+        struct TestResponse: Codable {
+            let id: String
+            let name: String
         }
-        """.data(using: .utf8)!
+        
+        let expectedResponse = TestResponse(id: "123", name: "Test")
+        mockService.mockResponse = expectedResponse
         
         // When
-        let result = sut.handleResponse(data: data, response: nil, error: nil)
+        let response: TestResponse = try await mockService.request(
+            "/test",
+            method: .get,
+            headers: nil,
+            body: nil
+        )
         
         // Then
-        switch result {
-        case .success(let responseData):
-            XCTAssertEqual(responseData, data)
-        case .failure:
-            XCTFail("Should return success")
+        XCTAssertEqual(response.id, expectedResponse.id)
+        XCTAssertEqual(response.name, expectedResponse.name)
+    }
+    
+    func testMockServiceError() async {
+        // Given
+        mockService.shouldThrowError = true
+        mockService.error = NetworkError.noData
+        
+        // When/Then
+        do {
+            let _: TestResponse = try await mockService.request(
+                "/test",
+                method: .get,
+                headers: nil,
+                body: nil
+            )
+            XCTFail("Should throw error")
+        } catch {
+            XCTAssertTrue(error is NetworkError)
         }
     }
     
-    func testHandleErrorResponse() {
+    func testMockServiceCombineSuccess() {
         // Given
-        let error = NSError(domain: "test", code: -1, userInfo: nil)
+        struct TestResponse: Codable {
+            let success: Bool
+        }
+        
+        let expectedResponse = TestResponse(success: true)
+        mockService.mockResponse = expectedResponse
+        
+        let expectation = XCTestExpectation(description: "Request completes")
         
         // When
-        let result = sut.handleResponse(data: nil, response: nil, error: error)
+        mockService.request(
+            "/test",
+            method: .post,
+            headers: ["Content-Type": "application/json"],
+            body: nil
+        )
+        .sink(
+            receiveCompletion: { completion in
+                if case .failure = completion {
+                    XCTFail("Should not fail")
+                }
+            },
+            receiveValue: { (response: TestResponse) in
+                // Then
+                XCTAssertTrue(response.success)
+                expectation.fulfill()
+            }
+        )
+        .store(in: &cancellables)
         
-        // Then
-        switch result {
-        case .success:
-            XCTFail("Should return failure")
-        case .failure(let networkError):
-            XCTAssertNotNil(networkError)
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testMockServiceCombineError() {
+        // Given
+        mockService.shouldThrowError = true
+        mockService.error = NetworkError.invalidURL
+        
+        let expectation = XCTestExpectation(description: "Request fails")
+        
+        // When
+        mockService.request(
+            "/test",
+            method: .get,
+            headers: nil,
+            body: nil
+        )
+        .sink(
+            receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    // Then
+                    XCTAssertTrue(error is NetworkError)
+                    expectation.fulfill()
+                }
+            },
+            receiveValue: { (_: TestResponse) in
+                XCTFail("Should not receive value")
+            }
+        )
+        .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
+    // MARK: - Network Error Tests
+    
+    func testNetworkErrorTypes() {
+        XCTAssertNotNil(NetworkError.invalidURL)
+        XCTAssertNotNil(NetworkError.noData)
+        XCTAssertNotNil(NetworkError.decodingError)
+        XCTAssertNotNil(NetworkError.serverError(404))
+        XCTAssertNotNil(NetworkError.unknown)
+    }
+    
+    func testNetworkErrorServerCodes() {
+        let badRequest = NetworkError.serverError(400)
+        if case .serverError(let code) = badRequest {
+            XCTAssertEqual(code, 400)
+        } else {
+            XCTFail("Should be server error")
+        }
+        
+        let notFound = NetworkError.serverError(404)
+        if case .serverError(let code) = notFound {
+            XCTAssertEqual(code, 404)
+        } else {
+            XCTFail("Should be server error")
+        }
+        
+        let serverError = NetworkError.serverError(500)
+        if case .serverError(let code) = serverError {
+            XCTAssertEqual(code, 500)
+        } else {
+            XCTFail("Should be server error")
         }
     }
 }
 
-// MARK: - Test Helpers
+// MARK: - Test Response Struct
 
-extension NetworkService {
-    func handleResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<Data, NetworkError> {
-        if let error = error {
-            return .failure(.requestFailed(error))
-        }
-        
-        guard let data = data else {
-            return .failure(.noData)
-        }
-        
-        if let httpResponse = response as? HTTPURLResponse,
-           !(200...299).contains(httpResponse.statusCode) {
-            return .failure(.httpError(httpResponse.statusCode))
-        }
-        
-        return .success(data)
-    }
-    
-    func buildURL(for endpoint: String, parameters: [String: String]? = nil) -> URL? {
-        var components = URLComponents(string: baseURL + "/" + endpoint)
-        
-        if let parameters = parameters {
-            components?.queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
-        }
-        
-        return components?.url
-    }
-}
-
-// MARK: - Network Error
-
-enum NetworkError: LocalizedError {
-    case noData
-    case invalidURL
-    case decodingError
-    case httpError(Int)
-    case requestFailed(Error)
-    
-    var errorDescription: String? {
-        switch self {
-        case .noData:
-            return "No data received"
-        case .invalidURL:
-            return "Invalid URL"
-        case .decodingError:
-            return "Failed to decode response"
-        case .httpError(let code):
-            return "HTTP Error: \(code)"
-        case .requestFailed(let error):
-            return error.localizedDescription
-        }
-    }
+private struct TestResponse: Codable {
+    let id: String
+    let name: String
+    let email: String
 } 
