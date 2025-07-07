@@ -19,14 +19,16 @@ let package = Package(
     targets: [
         .target(
             name: "LMS",
-            dependencies: []
+            dependencies: [],
+            path: "LMS"
         ),
         .testTarget(
             name: "LMSTests",
             dependencies: [
                 "LMS",
                 .product(name: "ViewInspector", package: "ViewInspector")
-            ]
+            ],
+            path: "LMSTests"
         )
     ]
 ) 

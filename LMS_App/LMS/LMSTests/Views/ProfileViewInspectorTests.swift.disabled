@@ -17,8 +17,18 @@ final class ProfileViewInspectorTests: XCTestCase {
     override func setUp() {
         super.setUp()
         authService = MockAuthService.shared
-        authService.reset()
-        authService.currentUser = createMockUser(role: .student)
+        // Create mock UserResponse
+        authService.currentUser = UserResponse(
+            id: UUID().uuidString,
+            email: "test@example.com",
+            name: "Test User",
+            role: .student,
+            firstName: "Test",
+            lastName: "User",
+            avatar: nil,
+            lastLogin: nil,
+            status: "active"
+        )
         sut = ProfileView()
     }
     

@@ -12,7 +12,7 @@ import Foundation
 class MockUserService {
     var mockUsers: [UserResponse] = []
     var shouldThrowError = false
-    var error: Error = APIError.unknown(statusCode: 500)
+    var error: Error = APIError.serverError(statusCode: 500)
     
     func getUsers(page: Int, limit: Int) async throws -> UsersResponse {
         if shouldThrowError { throw error }

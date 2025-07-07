@@ -1,0 +1,742 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -scheme LMS -configuration Release -destination generic/platform=iOS -archivePath build/LMS.xcarchive archive
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'LMS' in project 'LMS' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 2e255d4bf9c1ca31709ba9b6e7d97773
+Build description path: /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/XCBuildData/2e255d4bf9c1ca31709ba9b6e7d97773.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk /Users/ishirokov/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphoneos18.5-22F76-7fa4eea80a99bbfdc046826b63ec4baf.sdkstatcache
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS/LMS.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -o /Users/ishirokov/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphoneos18.5-22F76-7fa4eea80a99bbfdc046826b63ec4baf.sdkstatcache
+
+CreateBuildDirectory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS/LMS.xcodeproj
+    builtin-create-build-directory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation
+
+CreateBuildDirectory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS/LMS.xcodeproj
+    builtin-create-build-directory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath
+
+CreateBuildDirectory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS/LMS.xcodeproj
+    builtin-create-build-directory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath
+
+CreateBuildDirectory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS/LMS.xcodeproj
+    builtin-create-build-directory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos
+
+CreateBuildDirectory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/EagerLinkingTBDs/Release-iphoneos
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS/LMS.xcodeproj
+    builtin-create-build-directory /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/EagerLinkingTBDs/Release-iphoneos
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS-7c7ac6d5575d6d61900bb354995e8f2d-VFS-iphoneos/all-product-headers.yaml
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS/LMS.xcodeproj
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS-7c7ac6d5575d6d61900bb354995e8f2d-VFS-iphoneos/all-product-headers.yaml
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/empty-LMS.plist (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/empty-LMS.plist
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.hmap (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.hmap
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-own-target-headers.hmap (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-generated-files.hmap (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-generated-files.hmap
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-all-target-headers.hmap (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-project-headers.hmap (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-project-headers.hmap
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-all-non-framework-target-headers.hmap (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.LinkFileList (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.LinkFileList
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-OutputFileMap.json (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS_const_extract_protocols.json (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.SwiftFileList (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.SwiftFileList
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.SwiftConstValuesFileList (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.DependencyStaticMetadataFileList (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.DependencyMetadataFileList (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/Entitlements.plist (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    write-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/Entitlements.plist
+
+SymLink /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.app ../../InstallationBuildProductsLocation/Applications/LMS.app (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /bin/ln -sfh ../../InstallationBuildProductsLocation/Applications/LMS.app /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.app
+
+MkDir /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /bin/mkdir -p /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app
+
+ProcessProductPackaging /Users/ishirokov/Library/Developer/Xcode/UserData/Provisioning\ Profiles/fb273bec-f5d0-478b-b362-723644391b35.mobileprovision /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/embedded.mobileprovision (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-productPackagingUtility /Users/ishirokov/Library/Developer/Xcode/UserData/Provisioning\ Profiles/fb273bec-f5d0-478b-b362-723644391b35.mobileprovision -o /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/embedded.mobileprovision
+
+ProcessProductPackaging "" /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.app.xcent (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    
+    Entitlements:
+    
+    {
+    "application-identifier" = "N85286S93X.ru.tsum.lms.igor";
+    "com.apple.developer.team-identifier" = N85286S93X;
+    "get-task-allow" = 1;
+}
+    
+    builtin-productPackagingUtility -entitlements -format xml -o /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.app.xcent
+
+ProcessProductPackagingDER /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.app.xcent /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.app.xcent.der (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /usr/bin/derq query -f xml -i /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.app.xcent -o /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.app.xcent.der --raw
+
+CpResource /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/VKIDAuthService.swift.disabled /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Auth/VKIDAuthService.swift.disabled (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Auth/VKIDAuthService.swift.disabled /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app
+
+GenerateAssetSymbols /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Assets.xcassets (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /Applications/Xcode.app/Contents/Developer/usr/bin/actool /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Assets.xcassets --compile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app --output-format human-readable-text --notices --warnings --export-dependency-info /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_dependencies --output-partial-info-plist /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_generated_info.plist --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 18.5 --platform iphoneos --bundle-identifier ru.tsum.lms.igor --generate-swift-asset-symbols /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/GeneratedAssetSymbols.swift --generate-objc-asset-symbols /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/GeneratedAssetSymbols.h --generate-asset-symbol-index /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/* com.apple.actool.compilation-results */
+/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/GeneratedAssetSymbols.swift
+
+
+MkDir /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/unthinned (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /bin/mkdir -p /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/unthinned
+
+CpResource /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/README.md /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/README.md (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/README.md /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app
+
+MkDir /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/thinned (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /bin/mkdir -p /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/thinned
+
+CompileAssetCatalogVariant thinned /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Assets.xcassets (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /Applications/Xcode.app/Contents/Developer/usr/bin/actool /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Assets.xcassets --compile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 18.5 --platform iphoneos
+/* com.apple.actool.document.notices */
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Assets.xcassets:./AppIcon.appiconset/[][ipad][76x76][][][1x][][][][]: notice: 76x76@1x app icons only apply to iPad apps targeting releases of iOS prior to 10.0.
+/* com.apple.actool.compilation-results */
+/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_generated_info.plist_thinned
+/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/thinned/AppIcon60x60@2x.png
+/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/thinned/AppIcon76x76@2x~ipad.png
+/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/thinned/Assets.car
+
+
+SwiftDriver LMS normal arm64 com.apple.xcode.tools.swift.compiler (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name LMS -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.SwiftFileList -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -target arm64-apple-ios18.5 -g -module-cache-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -swift-version 5 -I /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos -F /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos -emit-localized-strings -emit-localized-strings-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64 -c -num-threads 12 -Xcc -ivfsstatcache -Xcc /Users/ishirokov/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphoneos18.5-22F76-7fa4eea80a99bbfdc046826b63ec4baf.sdkstatcache -output-file-map /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS_const_extract_protocols.json -Xcc -iquote -Xcc /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-generated-files.hmap -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-own-target-headers.hmap -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-all-target-headers.hmap -Xcc -iquote -Xcc /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-project-headers.hmap -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/include -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources-normal/arm64 -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/arm64 -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-Swift.h -working-directory /Users/ishirokov/lms_docs/LMS_App/LMS -no-emit-module-separately-wmo
+
+SwiftDriver\ Compilation LMS normal arm64 com.apple.xcode.tools.swift.compiler (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name LMS -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.SwiftFileList -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -target arm64-apple-ios18.5 -g -module-cache-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -swift-version 5 -I /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos -F /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos -emit-localized-strings -emit-localized-strings-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64 -c -num-threads 12 -Xcc -ivfsstatcache -Xcc /Users/ishirokov/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphoneos18.5-22F76-7fa4eea80a99bbfdc046826b63ec4baf.sdkstatcache -output-file-map /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS_const_extract_protocols.json -Xcc -iquote -Xcc /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-generated-files.hmap -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-own-target-headers.hmap -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-all-target-headers.hmap -Xcc -iquote -Xcc /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-project-headers.hmap -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/include -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources-normal/arm64 -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/arm64 -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-Swift.h -working-directory /Users/ishirokov/lms_docs/LMS_App/LMS -no-emit-module-separately-wmo
+
+SwiftCompile normal arm64 Compiling\ UserEndpoint.swift,\ UserMockService.swift,\ APIClient.swift,\ OfflineIndicator.swift,\ ContactInfo.swift,\ AnalyticsService.swift,\ TestBookmarkButton.swift,\ DomainUser.swift,\ DomainUserMapper.swift,\ AdminModels.swift,\ TestViewModel.swift,\ TestPlayerView.swift,\ RoleManagementViewModel.swift,\ CertificateListView.swift,\ PostHeaderView.swift,\ FeedbackUIComponents.swift,\ User.swift,\ CompetencyLevel.swift,\ OnboardingTemplateListView.swift,\ NewEmployeeOnboardingView.swift,\ TestMockService.swift,\ QuizQuestion.swift,\ StudentDashboardView.swift,\ UserDTO.swift,\ CourseViewModel.swift,\ StudentCompetencyView.swift,\ CompetencyDetailView.swift,\ LearningListView.swift,\ TokenRefreshManager.swift,\ LoginView.swift,\ CompetencyDTO.swift,\ CompetencyViewModel.swift,\ MatchingAnswerView.swift,\ CourseCompetencyLinkView.swift,\ PositionDetailView.swift,\ InMemoryDomainUserRepository.swift,\ LoadingView.swift,\ ArchitectureGuide.swift,\ QuickActionsView.swift,\ AuthServiceProtocol.swift,\ TestAddView.swift,\ PostActionsView.swift,\ ActivityView.swift,\ Test.swift,\ TestAnswerView.swift,\ ReportRow.swift,\ AnalyticsDashboard.swift,\ TestListView.swift,\ ReportInfoCard.swift,\ FeedbackManager.swift,\ TableView.swift,\ UserDetailView.swift,\ SettingsView.swift,\ CareerPathDetailView.swift,\ ValueObject.swift,\ UserServiceProtocol.swift,\ ProfileStatCard.swift,\ PendingApprovalView.swift,\ MoreView.swift,\ Notification.swift,\ NetworkMonitor.swift,\ SettingsViewModel.swift,\ CommentsView.swift,\ UserResponse+Compatibility.swift,\ ScreenshotEditorView.swift,\ FeedbackService.swift,\ CourseListView.swift,\ OnboardingProgramView.swift,\ UserListView.swift,\ ContentView.swift,\ OnboardingNotificationService.swift,\ Repository.swift,\ CourseEditView.swift,\ OnboardingViewModel.swift,\ UserViewModel.swift,\ ProfileView.swift,\ CareerPath.swift,\ AnalyticsViewModel.swift,\ AssignmentLessonView.swift,\ TestPlayerHeader.swift,\ MetricsView.swift,\ LearningValues.swift,\ CompetencyService.swift,\ TextLessonView.swift,\ AuthViewModel.swift,\ NotificationService.swift,\ UserApiService.swift,\ Report.swift,\ Competency.swift,\ CompetencyLevelValue.swift,\ AuthMapper.swift,\ PaginationModels.swift,\ OnboardingTaskView.swift,\ SingleChoiceAnswerView.swift,\ PDFExportService.swift,\ OnboardingTemplate.swift,\ FeedPost.swift,\ FeedPostCard.swift,\ LessonQuizView.swift,\ CourseTestLinkView.swift,\ LMSApp.swift,\ Question.swift,\ MyOnboardingProgramsView.swift,\ Typography.swift,\ FeedService.swift,\ PositionListView.swift,\ StudentCourseListView.swift,\ TestDetailView.swift,\ DataTransferObject.swift,\ LessonNavigationBar.swift,\ UserResponse.swift,\ CompetencyListView.swift,\ AuthDTO.swift,\ FeedbackType.swift,\ PostContentView.swift,\ AdminDashboardView.swift,\ GitHubFeedbackService.swift,\ NotificationListView.swift,\ OnboardingMockService.swift,\ AuthService.swift,\ CompetencyEndpoint.swift,\ AccessibilityIdentifiers.swift,\ TypeAliases.swift,\ ReportFilterSection.swift,\ ArchitectureDocumentation.swift,\ CreateUserView.swift,\ FeedView.swift,\ QuizIntroView.swift,\ AdminService.swift,\ ProfileModels.swift,\ TextInputAnswerView.swift,\ CourseAddView.swift,\ FeedbackFeedView.swift,\ AuthModels.swift,\ CourseAssignmentView.swift,\ TestQuestionView.swift,\ CareerPathView.swift,\ FeedPermissionsView.swift,\ TestResultView.swift,\ LMSButton.swift,\ AdminManagementView.swift,\ PendingUsersView.swift,\ MockAuthService.swift,\ TestResult.swift,\ FeedbackModels.swift,\ AppConfig.swift,\ Identifiers.swift,\ SummaryView.swift,\ PositionMockService.swift,\ CourseMockService.swift,\ StatsCardsView.swift,\ FillInBlanksAnswerView.swift,\ UserManagementViewModel.swift,\ MockLoginView.swift,\ FeedbackView.swift,\ AnalyticsData.swift,\ TokenManager.swift,\ CourseDetailView.swift,\ OnboardingProgramEditView.swift,\ DomainUserRepository.swift,\ FeatureRegistry.swift,\ AnswerState.swift,\ CreateReportView.swift,\ OnboardingStageView.swift,\ CompetencyModels.swift,\ CompetencyMockService.swift,\ LessonProgressBar.swift,\ ReportSectionView.swift,\ FeedSettingsView.swift,\ Course.swift,\ OrderingAnswerView.swift,\ NetworkService.swift,\ CertificateView.swift,\ OnboardingProgram.swift,\ QuizResultsView.swift,\ PositionEditView.swift,\ UserCard.swift,\ RepositoryUsageExamples.swift,\ CompetencyEditView.swift,\ LessonView.swift,\ TestEditView.swift,\ ProfileHeaderView.swift,\ CoursePositionLinkView.swift,\ Colors.swift,\ OnboardingDashboard.swift,\ SkillsView.swift,\ RepositoryFactory.swift,\ TestLoadingView.swift,\ StudentTestListView.swift,\ InteractiveLessonView.swift,\ FeedbackModel.swift,\ UserModels.swift,\ ServerFeedbackService.swift,\ CommonModels.swift,\ UserListViewModel.swift,\ APIEndpoint.swift,\ AuthEndpoint.swift,\ PositionViewModel.swift,\ ReportDetailView.swift,\ TestAttempt.swift,\ LMSApp+Feedback.swift,\ AdminContentView.swift,\ UserFiltersView.swift,\ AchievementsView.swift,\ CourseDTO.swift,\ OnboardingReportsView.swift,\ CourseMaterialsView.swift,\ TestPlayerNavigation.swift,\ ReportsListView.swift,\ AdminSettingsView.swift,\ EditTemplateView.swift,\ MainTabView.swift,\ AdminEditButton.swift,\ CreatePostView.swift,\ Logger.swift,\ VKLoginView.swift,\ Certificate.swift,\ VideoLessonView.swift,\ Position.swift,\ GeneratedAssetSymbols.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/API/Endpoints/UserEndpoint.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/MockServices/UserMockService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/API/APIClient.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Views/OfflineIndicator.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Domain/ValueObjects/ContactInfo.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Services/AnalyticsService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/TestBookmarkButton.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Domain/Models/DomainUser.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/Mappers/DomainUserMapper.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Models/AdminModels.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/ViewModels/TestViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayerView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/ViewModels/RoleManagementViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CertificateListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostHeaderView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackUIComponents.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Models/User/User.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Models/CompetencyLevel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingTemplateListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/NewEmployeeOnboardingView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Services/TestMockService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/QuizQuestion.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Student/Views/StudentDashboardView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/DTOs/UserDTO.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/ViewModels/CourseViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Student/Views/StudentCompetencyView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Views/CompetencyDetailView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/LearningListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/API/TokenRefreshManager.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Auth/Views/LoginView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/DTOs/CompetencyDTO.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/ViewModels/CompetencyViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/MatchingAnswerView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseCompetencyLinkView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Views/PositionDetailView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/Repositories/Implementations/InMemoryDomainUserRepository.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LoadingView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Examples/ArchitectureGuide.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/Profile/QuickActionsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Auth/AuthServiceProtocol.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/TestAddView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostActionsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/Profile/ActivityView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Models/Test.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/TestAnswerView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/Reports/ReportRow.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/AnalyticsDashboard.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/Reports/ReportInfoCard.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/Reports/TableView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/UserManagement/Views/UserDetailView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Settings/Views/SettingsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Views/CareerPathDetailView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Domain/ValueObjects/ValueObject.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/User/UserServiceProtocol.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/Profile/ProfileStatCard.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Auth/Views/PendingApprovalView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/More/Views/MoreView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Models/Notification.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Network/NetworkMonitor.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/ViewModels/SettingsViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CommentsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Models/User/UserResponse+Compatibility.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/ScreenshotEditorView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingProgramView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/UserManagement/Views/UserListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/ContentView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/OnboardingNotificationService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/Repositories/Repository.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/CourseEditView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/ViewModels/OnboardingViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/ViewModels/UserViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/ProfileView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Models/CareerPath.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/ViewModels/AnalyticsViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/AssignmentLessonView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/TestPlayerHeader.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/Reports/MetricsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Domain/ValueObjects/LearningValues.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Competency/CompetencyService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/TextLessonView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Auth/AuthViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Services/NotificationService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/User/UserApiService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Models/Report.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Models/Competency.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Domain/ValueObjects/CompetencyLevelValue.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/Mappers/AuthMapper.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Models/PaginationModels.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingTaskView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/SingleChoiceAnswerView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Export/Services/PDFExportService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingTemplate.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedPost.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPostCard.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/LessonQuizView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseTestLinkView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/LMSApp.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Models/Question.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/MyOnboardingProgramsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Styles/Typography.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Views/PositionListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Student/Views/StudentCourseListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestDetailView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/DTOs/DataTransferObject.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/LessonNavigationBar.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Models/User/UserResponse.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Views/CompetencyListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/DTOs/AuthDTO.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Models/FeedbackType.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostContentView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/AdminDashboardView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/GitHubFeedbackService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Views/NotificationListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/MockServices/OnboardingMockService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/AuthService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/API/Endpoints/CompetencyEndpoint.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Helpers/AccessibilityIdentifiers.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Types/TypeAliases.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/Reports/ReportFilterSection.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Examples/ArchitectureDocumentation.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/UserManagement/Views/CreateUserView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/QuizIntroView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Services/AdminService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/Profile/ProfileModels.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/TextInputAnswerView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/CourseAddView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackFeedView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Models/API/AuthModels.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseAssignmentView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/TestQuestionView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Views/CareerPathView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPermissionsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestResultView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LMSButton.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/AdminManagementView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/PendingUsersView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Auth/MockAuthService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Models/TestResult.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackModels.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Config/AppConfig.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Domain/ValueObjects/Identifiers.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/Reports/SummaryView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Services/PositionMockService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/Services/CourseMockService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/Profile/StatsCardsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/FillInBlanksAnswerView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/ViewModels/UserManagementViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Auth/Views/MockLoginView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Models/AnalyticsData.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/API/TokenManager.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseDetailView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingProgramEditView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/Repositories/DomainUserRepository.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/FeatureRegistry.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/AnswerState.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/Reports/CreateReportView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingStageView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Models/Competency/CompetencyModels.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Services/CompetencyMockService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/LessonProgressBar.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/Reports/ReportSectionView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedSettingsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/OrderingAnswerView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Network/Core/NetworkService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CertificateView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingProgram.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/QuizResultsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Views/PositionEditView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/UserCard.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Examples/RepositoryUsageExamples.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Views/CompetencyEditView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/LessonView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/TestEditView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/Profile/ProfileHeaderView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CoursePositionLinkView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Styles/Colors.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingDashboard.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/Profile/SkillsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/Repositories/RepositoryFactory.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/TestLoadingView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Student/Views/StudentTestListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/InteractiveLessonView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Models/User/UserModels.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Models/CommonModels.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/UserManagement/ViewModels/UserListViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/API/APIEndpoint.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/API/Endpoints/AuthEndpoint.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/ViewModels/PositionViewModel.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/Reports/ReportDetailView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Models/TestAttempt.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/LMSApp+Feedback.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/AdminContentView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/UserManagement/Views/UserFiltersView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/Profile/AchievementsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/DTOs/CourseDTO.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingReportsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/CourseMaterialsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/TestPlayerNavigation.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Views/ReportsListView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Views/AdminSettingsView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/EditTemplateView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Navigation/MainTabView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/Components/AdminEditButton.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CreatePostView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Common/Logger.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Auth/Views/VKLoginView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Certificate.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/Lesson/VideoLessonView.swift /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Models/Position.swift /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'LMS' from project 'LMS')
+CompileSwift normal arm64 (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/ViewModels/TestViewModel.swift:203:16: warning: value 'result' was defined but never used; consider replacing with boolean test
+        if let result = service.submitTest(attemptId: attemptId) {
+           ~~~~^~~~~~~~~
+                                                                 != nil
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayerView.swift:91:10: warning: 'onChange(of:perform:)' was deprecated in iOS 17.0: Use `onChange` with a two or zero parameter action closure instead.
+        .onChange(of: viewModel.currentQuestion) { _ in
+         ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Auth/AuthViewModel.swift:73:57: warning: main actor-isolated static property 'shared' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    init(authService: MockAuthService = MockAuthService.shared) {
+                                                        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Auth/MockAuthService.swift:8:16: note: static property declared here
+    static let shared = MockAuthService()
+               ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:99:25: warning: initialization of immutable value 'issueNumber' was never used; consider replacing with assignment to '_' or removing it
+                    let issueNumber = try await feedbackService.submitFeedback(
+                    ~~~~^~~~~~~~~~~
+                    _
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:114:29: warning: capture of 'self' with non-sendable type 'FeedbackManager' in a '@Sendable' closure
+                            self.isShowingFeedback = false
+                            ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:6:7: note: class 'FeedbackManager' does not conform to the 'Sendable' protocol
+class FeedbackManager: ObservableObject {
+      ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:131:24: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+        let feedback = FeedbackModel(
+                       ^~~~~~~~~~~~~~
+                       await 
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:136:24: note: property access is 'async'
+                model: UIDevice.current.model,
+                       ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:136:24: note: property access is 'async'
+                model: UIDevice.current.model,
+                       ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:137:28: note: property access is 'async'
+                osVersion: UIDevice.current.systemVersion,
+                           ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:137:28: note: property access is 'async'
+                osVersion: UIDevice.current.systemVersion,
+                           ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:141:32: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                               await 
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:141:36: note: property access is 'async'
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                   ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:141:36: note: property access is 'async'
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                   ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:141:67: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                  await 
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:141:71: note: property access is 'async'
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                                                      ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackManager.swift:141:71: note: property access is 'async'
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                                                      ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackService.swift:94:13: warning: variable 'feedback' was never mutated; consider changing to 'let' constant
+        var feedback = feedbacks[index]
+        ~~~ ^
+        let
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feedback/FeedbackService.swift:150:13: warning: variable 'feedback' was never mutated; consider changing to 'let' constant
+        var feedback = feedbacks[index]
+        ~~~ ^
+        let
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Models/Report.swift:272:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Models/Report.swift:272:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Analytics/Models/Report.swift:272:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/SingleChoiceAnswerView.swift:77:24: warning: value 'imageUrl' was defined but never used; consider replacing with boolean test
+                if let imageUrl = option.imageUrl {
+                   ~~~~^~~~~~~~~~~
+                                                  != nil
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Export/Services/PDFExportService.swift:150:33: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+            drawCenteredText("\(user.firstName) \(user.lastName)", at: CGPoint(x: pageRect.midX, y: 240), fontSize: 36, weight: .semibold)
+                                ^~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Export/Services/PDFExportService.swift:150:38: note: use 'String(describing:)' to silence this warning
+            drawCenteredText("\(user.firstName) \(user.lastName)", at: CGPoint(x: pageRect.midX, y: 240), fontSize: 36, weight: .semibold)
+                                ~~~~~^~~~~~~~~
+                                String(describing:  )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Export/Services/PDFExportService.swift:150:38: note: provide a default value to avoid this warning
+            drawCenteredText("\(user.firstName) \(user.lastName)", at: CGPoint(x: pageRect.midX, y: 240), fontSize: 36, weight: .semibold)
+                                ~~~~~^~~~~~~~~
+                                               ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Export/Services/PDFExportService.swift:150:51: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+            drawCenteredText("\(user.firstName) \(user.lastName)", at: CGPoint(x: pageRect.midX, y: 240), fontSize: 36, weight: .semibold)
+                                                  ^~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Export/Services/PDFExportService.swift:150:56: note: use 'String(describing:)' to silence this warning
+            drawCenteredText("\(user.firstName) \(user.lastName)", at: CGPoint(x: pageRect.midX, y: 240), fontSize: 36, weight: .semibold)
+                                                  ~~~~~^~~~~~~~
+                                                  String(describing:  )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Export/Services/PDFExportService.swift:150:56: note: provide a default value to avoid this warning
+            drawCenteredText("\(user.firstName) \(user.lastName)", at: CGPoint(x: pageRect.midX, y: 240), fontSize: 36, weight: .semibold)
+                                                  ~~~~~^~~~~~~~
+                                                                ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingTemplate.swift:13:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingTemplate.swift:13:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingTemplate.swift:13:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/LMSApp.swift:61:18: warning: 'onChange(of:perform:)' was deprecated in iOS 17.0: Use `onChange` with a two or zero parameter action closure instead.
+                .onChange(of: scenePhase) { newPhase in
+                 ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:62:28: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                           ^~~~~~~~~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:62:40: note: use 'String(describing:)' to silence this warning
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                           ~~~~~~~~~~~~^~~~~~~~~
+                           String(describing:   )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:62:40: note: provide a default value to avoid this warning
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                           ~~~~~~~~~~~~^~~~~~~~~
+                                                 ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:62:53: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                                                    ^~~~~~~~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:62:65: note: use 'String(describing:)' to silence this warning
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                                                    ~~~~~~~~~~~~^~~~~~~~
+                                                    String(describing:  )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:62:65: note: provide a default value to avoid this warning
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                                                    ~~~~~~~~~~~~^~~~~~~~
+                                                                         ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:103:25: warning: result of call to 'run(resultType:body:)' is unused
+        await MainActor.run {
+                        ^   ~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:151:28: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                           ^~~~~~~~~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:151:40: note: use 'String(describing:)' to silence this warning
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                           ~~~~~~~~~~~~^~~~~~~~~
+                           String(describing:   )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:151:40: note: provide a default value to avoid this warning
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                           ~~~~~~~~~~~~^~~~~~~~~
+                                                 ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:151:53: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                                                    ^~~~~~~~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:151:65: note: use 'String(describing:)' to silence this warning
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                                                    ~~~~~~~~~~~~^~~~~~~~
+                                                    String(describing:  )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:151:65: note: provide a default value to avoid this warning
+            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
+                                                    ~~~~~~~~~~~~^~~~~~~~
+                                                                         ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:205:27: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+        let userName = "\(currentUser.firstName) \(currentUser.lastName)"
+                          ^~~~~~~~~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:205:39: note: use 'String(describing:)' to silence this warning
+        let userName = "\(currentUser.firstName) \(currentUser.lastName)"
+                          ~~~~~~~~~~~~^~~~~~~~~
+                          String(describing:   )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:205:39: note: provide a default value to avoid this warning
+        let userName = "\(currentUser.firstName) \(currentUser.lastName)"
+                          ~~~~~~~~~~~~^~~~~~~~~
+                                                ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:205:52: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+        let userName = "\(currentUser.firstName) \(currentUser.lastName)"
+                                                   ^~~~~~~~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:205:64: note: use 'String(describing:)' to silence this warning
+        let userName = "\(currentUser.firstName) \(currentUser.lastName)"
+                                                   ~~~~~~~~~~~~^~~~~~~~
+                                                   String(describing:  )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift:205:64: note: provide a default value to avoid this warning
+        let userName = "\(currentUser.firstName) \(currentUser.lastName)"
+                                                   ~~~~~~~~~~~~^~~~~~~~
+                                                                        ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Student/Views/StudentCourseListView.swift:92:47: warning: left side of nil coalescing operator '??' has non-optional type 'String', so the right side is never used
+                Image(systemName: course.icon ?? "book.fill")
+                                  ~~~~~~~~~~~~^~~~~~~~~~~~~~
+                                             
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestDetailView.swift:335:20: warning: value 'activeAttempt' was defined but never used; consider replacing with boolean test
+            if let activeAttempt = viewModel.getActiveAttempt(userId: viewModel.currentUserId, testId: test.id) {
+               ~~~~^~~~~~~~~~~~~~~~
+                                                                                                                != nil
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Views/NotificationListView.swift:172:13: warning: 'init(destination:isActive:label:)' was deprecated in iOS 16.0: use NavigationLink(value:label:), or navigationDestination(isPresented:destination:), inside a NavigationStack or NavigationSplitView
+            NavigationLink(
+            ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/MockServices/OnboardingMockService.swift:122:17: warning: initialization of immutable value 'allTasksCount' was never used; consider replacing with assignment to '_' or removing it
+            let allTasksCount = program.stages.flatMap { $0.tasks }.count
+            ~~~~^~~~~~~~~~~~~
+            _
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/MockServices/OnboardingMockService.swift:227:19: warning: variable 'program' was never mutated; consider changing to 'let' constant
+        guard var program = getProgram(by: programId) else { return }
+              ~~~ ^
+              let
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/MockServices/OnboardingMockService.swift:231:20: warning: value 'taskIndex' was defined but never used; consider replacing with boolean test
+            if let taskIndex = stage.tasks.firstIndex(where: { $0.id == taskId }) {
+               ~~~~^~~~~~~~~~~~
+                                                                                  != nil
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseAssignmentView.swift:247:13: warning: initialization of immutable value 'currentUserId' was never used; consider replacing with assignment to '_' or removing it
+        let currentUserId = MockAuthService.shared.currentUser?.id ?? "admin"
+        ~~~~^~~~~~~~~~~~~
+        _
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseAssignmentView.swift:249:13: warning: immutable value 'userId' was never used; consider replacing with '_' or removing it
+        for userId in selectedUsers {
+            ^~~~~~
+            _
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Tests/Views/TestPlayer/TestQuestionView.swift:34:20: warning: value 'imageUrl' was defined but never used; consider replacing with boolean test
+            if let imageUrl = question.imageUrl {
+               ~~~~^~~~~~~~~~~
+                                                != nil
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Auth/MockAuthService.swift:174:20: warning: variable 'user' was never mutated; consider changing to 'let' constant
+            if var user = self.currentUser {
+               ~~~ ^
+               let
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/Services/CourseMockService.swift:93:17: warning: variable 'enrolledCourse' was never mutated; consider changing to 'let' constant
+            var enrolledCourse = availableCourses[index]
+            ~~~ ^
+            let
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/Services/CourseMockService.swift:101:17: warning: variable 'leftCourse' was never mutated; consider changing to 'let' constant
+            var leftCourse = enrolledCourses[index]
+            ~~~ ^
+            let
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Admin/ViewModels/UserManagementViewModel.swift:17:47: warning: main actor-isolated static property 'shared' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    private let authService = MockAuthService.shared
+                                              ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Auth/MockAuthService.swift:8:16: note: static property declared here
+    static let shared = MockAuthService()
+               ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseDetailView.swift:135:26: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+            userName: "\(user.firstName) \(user.lastName)",
+                         ^~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseDetailView.swift:135:31: note: use 'String(describing:)' to silence this warning
+            userName: "\(user.firstName) \(user.lastName)",
+                         ~~~~~^~~~~~~~~
+                         String(describing:  )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseDetailView.swift:135:31: note: provide a default value to avoid this warning
+            userName: "\(user.firstName) \(user.lastName)",
+                         ~~~~~^~~~~~~~~
+                                        ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseDetailView.swift:135:44: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+            userName: "\(user.firstName) \(user.lastName)",
+                                           ^~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseDetailView.swift:135:49: note: use 'String(describing:)' to silence this warning
+            userName: "\(user.firstName) \(user.lastName)",
+                                           ~~~~~^~~~~~~~
+                                           String(describing:  )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Views/CourseDetailView.swift:135:49: note: provide a default value to avoid this warning
+            userName: "\(user.firstName) \(user.lastName)",
+                                           ~~~~~^~~~~~~~
+                                                         ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/Repositories/DomainUserRepository.swift:158:9: warning: no 'async' operations occur within 'await' expression
+        await cacheQueue.sync(flags: .barrier) {
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/Repositories/DomainUserRepository.swift:164:26: warning: result of call to 'sync(flags:execute:)' is unused
+        await cacheQueue.sync(flags: .barrier) {
+                         ^   ~~~~~~~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/Repositories/DomainUserRepository.swift:164:9: warning: no 'async' operations occur within 'await' expression
+        await cacheQueue.sync(flags: .barrier) {
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:43:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:43:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:43:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:72:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:72:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:72:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:111:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:111:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:111:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:133:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:133:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:133:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:197:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:197:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:197:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:226:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:226:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:226:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:269:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:269:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Course.swift:269:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingProgram.swift:13:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingProgram.swift:13:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingProgram.swift:13:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingProgram.swift:111:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingProgram.swift:111:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingProgram.swift:111:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:15:24: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+        let feedback = FeedbackModel(
+                       ^~~~~~~~~~~~~~
+                       await 
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:21:24: note: property access is 'async'
+                model: UIDevice.current.model,
+                       ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:21:24: note: property access is 'async'
+                model: UIDevice.current.model,
+                       ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:22:28: note: property access is 'async'
+                osVersion: UIDevice.current.systemVersion,
+                           ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:22:28: note: property access is 'async'
+                osVersion: UIDevice.current.systemVersion,
+                           ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:26:32: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                               await 
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:26:36: note: property access is 'async'
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                   ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:26:36: note: property access is 'async'
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                   ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:26:67: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                  await 
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:26:71: note: property access is 'async'
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                                                      ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Feedback/ServerFeedbackService.swift:26:71: note: property access is 'async'
+                screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
+                                                                      ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CreatePostView.swift:34:33: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+                        Text("\(user.firstName) \(user.lastName)")
+                                ^~~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CreatePostView.swift:34:38: note: use 'String(describing:)' to silence this warning
+                        Text("\(user.firstName) \(user.lastName)")
+                                ~~~~~^~~~~~~~~
+                                String(describing:  )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CreatePostView.swift:34:38: note: provide a default value to avoid this warning
+                        Text("\(user.firstName) \(user.lastName)")
+                                ~~~~~^~~~~~~~~
+                                               ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CreatePostView.swift:34:51: warning: string interpolation produces a debug description for an optional value; did you mean to make this explicit?
+                        Text("\(user.firstName) \(user.lastName)")
+                                                  ^~~~~~~~~~~~~
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CreatePostView.swift:34:56: note: use 'String(describing:)' to silence this warning
+                        Text("\(user.firstName) \(user.lastName)")
+                                                  ~~~~~^~~~~~~~
+                                                  String(describing:  )
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CreatePostView.swift:34:56: note: provide a default value to avoid this warning
+                        Text("\(user.firstName) \(user.lastName)")
+                                                  ~~~~~^~~~~~~~
+                                                                ?? <#default value#>
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Auth/Views/VKLoginView.swift:141:22: warning: 'imageEdgeInsets' was deprecated in iOS 15.0: This property is ignored when using UIButtonConfiguration
+            vkButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 8)
+                     ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Certificate.swift:36:34: warning: left side of nil coalescing operator '??' has non-optional type 'Color', so the right side is never used
+        Color(hex: primaryColor) ?? .blue
+        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+                                
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Certificate.swift:40:36: warning: left side of nil coalescing operator '??' has non-optional type 'Color', so the right side is never used
+        Color(hex: secondaryColor) ?? .gray
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+                                  
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Certificate.swift:13:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Certificate.swift:13:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Certificate.swift:13:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Certificate.swift:46:9: warning: immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Certificate.swift:46:9: note: set the initial value via the initializer or explicitly define a CodingKeys enum including a 'id' case to silence this warning
+    let id = UUID()
+        ^
+/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Learning/Models/Certificate.swift:46:9: note: make the property mutable instead
+    let id = UUID()
+    ~~~ ^
+    var
+
+LinkAssetCatalog /Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Assets.xcassets (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-linkAssetCatalog --thinned /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/thinned --thinned-dependencies /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_output/unthinned --unthinned-dependencies /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_generated_info.plist_unthinned --output /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app --plist-output /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_generated_info.plist
+note: Emplaced /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/Assets.car (in target 'LMS' from project 'LMS')
+note: Emplaced /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/AppIcon76x76@2x~ipad.png (in target 'LMS' from project 'LMS')
+note: Emplaced /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/AppIcon60x60@2x.png (in target 'LMS' from project 'LMS')
+
+ProcessInfoPlistFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/Info.plist /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/empty-LMS.plist (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-infoPlistUtility /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/empty-LMS.plist -producttype com.apple.product-type.application -genpkginfo /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/PkgInfo -expandbuildsettings -format binary -platform iphoneos -additionalcontentfile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/assetcatalog_generated_info.plist -requiredArchitecture arm64 -o /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/Info.plist
+
+SwiftDriverJobDiscovery normal arm64 Compiling UserEndpoint.swift, UserMockService.swift, APIClient.swift, OfflineIndicator.swift, ContactInfo.swift, AnalyticsService.swift, TestBookmarkButton.swift, DomainUser.swift, DomainUserMapper.swift, AdminModels.swift, TestViewModel.swift, TestPlayerView.swift, RoleManagementViewModel.swift, CertificateListView.swift, PostHeaderView.swift, FeedbackUIComponents.swift, User.swift, CompetencyLevel.swift, OnboardingTemplateListView.swift, NewEmployeeOnboardingView.swift, TestMockService.swift, QuizQuestion.swift, StudentDashboardView.swift, UserDTO.swift, CourseViewModel.swift, StudentCompetencyView.swift, CompetencyDetailView.swift, LearningListView.swift, TokenRefreshManager.swift, LoginView.swift, CompetencyDTO.swift, CompetencyViewModel.swift, MatchingAnswerView.swift, CourseCompetencyLinkView.swift, PositionDetailView.swift, InMemoryDomainUserRepository.swift, LoadingView.swift, ArchitectureGuide.swift, QuickActionsView.swift, AuthServiceProtocol.swift, TestAddView.swift, PostActionsView.swift, ActivityView.swift, Test.swift, TestAnswerView.swift, ReportRow.swift, AnalyticsDashboard.swift, TestListView.swift, ReportInfoCard.swift, FeedbackManager.swift, TableView.swift, UserDetailView.swift, SettingsView.swift, CareerPathDetailView.swift, ValueObject.swift, UserServiceProtocol.swift, ProfileStatCard.swift, PendingApprovalView.swift, MoreView.swift, Notification.swift, NetworkMonitor.swift, SettingsViewModel.swift, CommentsView.swift, UserResponse+Compatibility.swift, ScreenshotEditorView.swift, FeedbackService.swift, CourseListView.swift, OnboardingProgramView.swift, UserListView.swift, ContentView.swift, OnboardingNotificationService.swift, Repository.swift, CourseEditView.swift, OnboardingViewModel.swift, UserViewModel.swift, ProfileView.swift, CareerPath.swift, AnalyticsViewModel.swift, AssignmentLessonView.swift, TestPlayerHeader.swift, MetricsView.swift, LearningValues.swift, CompetencyService.swift, TextLessonView.swift, AuthViewModel.swift, NotificationService.swift, UserApiService.swift, Report.swift, Competency.swift, CompetencyLevelValue.swift, AuthMapper.swift, PaginationModels.swift, OnboardingTaskView.swift, SingleChoiceAnswerView.swift, PDFExportService.swift, OnboardingTemplate.swift, FeedPost.swift, FeedPostCard.swift, LessonQuizView.swift, CourseTestLinkView.swift, LMSApp.swift, Question.swift, MyOnboardingProgramsView.swift, Typography.swift, FeedService.swift, PositionListView.swift, StudentCourseListView.swift, TestDetailView.swift, DataTransferObject.swift, LessonNavigationBar.swift, UserResponse.swift, CompetencyListView.swift, AuthDTO.swift, FeedbackType.swift, PostContentView.swift, AdminDashboardView.swift, GitHubFeedbackService.swift, NotificationListView.swift, OnboardingMockService.swift, AuthService.swift, CompetencyEndpoint.swift, AccessibilityIdentifiers.swift, TypeAliases.swift, ReportFilterSection.swift, ArchitectureDocumentation.swift, CreateUserView.swift, FeedView.swift, QuizIntroView.swift, AdminService.swift, ProfileModels.swift, TextInputAnswerView.swift, CourseAddView.swift, FeedbackFeedView.swift, AuthModels.swift, CourseAssignmentView.swift, TestQuestionView.swift, CareerPathView.swift, FeedPermissionsView.swift, TestResultView.swift, LMSButton.swift, AdminManagementView.swift, PendingUsersView.swift, MockAuthService.swift, TestResult.swift, FeedbackModels.swift, AppConfig.swift, Identifiers.swift, SummaryView.swift, PositionMockService.swift, CourseMockService.swift, StatsCardsView.swift, FillInBlanksAnswerView.swift, UserManagementViewModel.swift, MockLoginView.swift, FeedbackView.swift, AnalyticsData.swift, TokenManager.swift, CourseDetailView.swift, OnboardingProgramEditView.swift, DomainUserRepository.swift, FeatureRegistry.swift, AnswerState.swift, CreateReportView.swift, OnboardingStageView.swift, CompetencyModels.swift, CompetencyMockService.swift, LessonProgressBar.swift, ReportSectionView.swift, FeedSettingsView.swift, Course.swift, OrderingAnswerView.swift, NetworkService.swift, CertificateView.swift, OnboardingProgram.swift, QuizResultsView.swift, PositionEditView.swift, UserCard.swift, RepositoryUsageExamples.swift, CompetencyEditView.swift, LessonView.swift, TestEditView.swift, ProfileHeaderView.swift, CoursePositionLinkView.swift, Colors.swift, OnboardingDashboard.swift, SkillsView.swift, RepositoryFactory.swift, TestLoadingView.swift, StudentTestListView.swift, InteractiveLessonView.swift, FeedbackModel.swift, UserModels.swift, ServerFeedbackService.swift, CommonModels.swift, UserListViewModel.swift, APIEndpoint.swift, AuthEndpoint.swift, PositionViewModel.swift, ReportDetailView.swift, TestAttempt.swift, LMSApp+Feedback.swift, AdminContentView.swift, UserFiltersView.swift, AchievementsView.swift, CourseDTO.swift, OnboardingReportsView.swift, CourseMaterialsView.swift, TestPlayerNavigation.swift, ReportsListView.swift, AdminSettingsView.swift, EditTemplateView.swift, MainTabView.swift, AdminEditButton.swift, CreatePostView.swift, Logger.swift, VKLoginView.swift, Certificate.swift, VideoLessonView.swift, Position.swift, GeneratedAssetSymbols.swift (in target 'LMS' from project 'LMS')
+
+SwiftDriver\ Compilation\ Requirements LMS normal arm64 com.apple.xcode.tools.swift.compiler (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name LMS -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.SwiftFileList -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -target arm64-apple-ios18.5 -g -module-cache-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -swift-version 5 -I /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos -F /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos -emit-localized-strings -emit-localized-strings-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64 -c -num-threads 12 -Xcc -ivfsstatcache -Xcc /Users/ishirokov/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphoneos18.5-22F76-7fa4eea80a99bbfdc046826b63ec4baf.sdkstatcache -output-file-map /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS_const_extract_protocols.json -Xcc -iquote -Xcc /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-generated-files.hmap -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-own-target-headers.hmap -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-all-target-headers.hmap -Xcc -iquote -Xcc /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS-project-headers.hmap -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/include -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources-normal/arm64 -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/arm64 -Xcc -I/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-Swift.h -working-directory /Users/ishirokov/lms_docs/LMS_App/LMS -no-emit-module-separately-wmo
+
+SwiftMergeGeneratedHeaders /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/LMS-Swift.h /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-Swift.h (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-swiftHeaderTool -arch arm64 /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS-Swift.h -o /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/DerivedSources/LMS-Swift.h
+
+Copy /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.swiftmodule/arm64-apple-ios.swiftdoc /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.swiftdoc (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.swiftdoc /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.swiftmodule/arm64-apple-ios.swiftdoc
+
+Copy /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.swiftmodule/arm64-apple-ios.swiftmodule /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.swiftmodule (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.swiftmodule /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.swiftmodule/arm64-apple-ios.swiftmodule
+
+Copy /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.swiftmodule/arm64-apple-ios.abi.json /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.abi.json (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.abi.json /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.swiftmodule/arm64-apple-ios.abi.json
+
+Ld /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/LMS normal (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios18.5 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -Os -L/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/EagerLinkingTBDs/Release-iphoneos -L/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos -F/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/EagerLinkingTBDs/Release-iphoneos -F/Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos -filelist /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.LinkFileList -Xlinker -rpath -Xlinker @executable_path/Frameworks -dead_strip -Xlinker -object_path_lto -Xlinker /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS_lto.o -Xlinker -final_output -Xlinker /Applications/LMS.app/LMS -Xlinker -dependency_info -Xlinker /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.swiftmodule -Xlinker -no_adhoc_codesign -o /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/LMS
+
+CopySwiftLibs /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-swiftStdLibTool --copy --verbose --sign 781AC6CA4629E40526BFD0C6D655286E51AC5910 --scan-executable /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/LMS --scan-folder /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/Frameworks --scan-folder /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/PlugIns --scan-folder /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/SystemExtensions --scan-folder /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/Extensions --platform iphoneos --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/Frameworks --unsigned-destination /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/SwiftSupport --strip-bitcode --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+ExtractAppIntentsMetadata (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name LMS --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk --xcode-version 16F6 --platform-family iOS --deployment-target 18.5 --bundle-identifier ru.tsum.lms.igor --output /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app --target-triple arm64-apple-ios18.5 --binary-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/LMS --dependency-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS_dependency_info.dat --stringsdata-file /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.SwiftFileList --metadata-file-list /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.DependencyMetadataFileList --static-metadata-file-list /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.DependencyStaticMetadataFileList --swift-const-vals-list /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/Objects-normal/arm64/LMS.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2025-07-06 16:00:03.355 appintentsmetadataprocessor[61132:58340272] Starting appintentsmetadataprocessor export
+2025-07-06 16:00:03.356 appintentsmetadataprocessor[61132:58340272] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+GenerateDSYMFile /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.app.dSYM /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/LMS (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/LMS -o /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/BuildProductsPath/Release-iphoneos/LMS.app.dSYM
+
+AppIntentsSSUTraining (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/Info.plist --temp-dir-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/ssu --bundle-id ru.tsum.lms.igor --product-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app --extracted-metadata-path /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/Metadata.appintents --deployment-postprocessing --metadata-file-list /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.DependencyMetadataFileList --archive-ssu-assets
+2025-07-06 16:00:03.368 appintentsnltrainingprocessor[61134:58340274] Parsing options for appintentsnltrainingprocessor
+2025-07-06 16:00:03.368 appintentsnltrainingprocessor[61134:58340274] No AppShortcuts found - Skipping.
+
+Strip /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/LMS (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -D /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app/LMS
+
+SetOwnerAndGroup ishirokov:staff /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /usr/sbin/chown -RH ishirokov:staff /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app
+
+SetMode u+w,go-w,a+rX /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /bin/chmod -RH u+w,go-w,a+rX /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app
+
+CodeSign /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    
+    Signing Identity:     "Apple Development: Igor Shirokov (N97MV6M5PR)"
+    Provisioning Profile: "iOS Team Provisioning Profile: ru.tsum.lms.igor"
+                          (fb273bec-f5d0-478b-b362-723644391b35)
+    
+    /usr/bin/codesign --force --sign 781AC6CA4629E40526BFD0C6D655286E51AC5910 --entitlements /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/IntermediateBuildFilesPath/LMS.build/Release-iphoneos/LMS.build/LMS.app.xcent --generate-entitlement-der /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app
+
+RegisterExecutionPolicyException /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-RegisterExecutionPolicyException /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app
+
+Validate /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    builtin-validationUtility /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app -validate-for-store -infoplist-subpath Info.plist
+
+Touch /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app (in target 'LMS' from project 'LMS')
+    cd /Users/ishirokov/lms_docs/LMS_App/LMS
+    /usr/bin/touch -c /Users/ishirokov/Library/Developer/Xcode/DerivedData/LMS-fmibjtqzpojocqddhkjahwikhxzd/Build/Intermediates.noindex/ArchiveIntermediates/LMS/InstallationBuildProductsLocation/Applications/LMS.app
+
+note: Disabling previews because SWIFT_VERSION is set and SWIFT_OPTIMIZATION_LEVEL=-O, expected -Onone (in target 'LMS' from project 'LMS')
+** ARCHIVE SUCCEEDED **
+

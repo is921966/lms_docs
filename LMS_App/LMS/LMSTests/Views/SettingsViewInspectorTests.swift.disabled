@@ -10,6 +10,7 @@ import SwiftUI
 import ViewInspector
 @testable import LMS
 
+@MainActor
 final class SettingsViewInspectorTests: XCTestCase {
     var viewModel: SettingsViewModel!
     var sut: SettingsView!

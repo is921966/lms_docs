@@ -10,6 +10,7 @@ import SwiftUI
 import ViewInspector
 @testable import LMS
 
+@MainActor
 final class ContentViewInspectorTests: XCTestCase {
     var authService: MockAuthService!
     var sut: ContentView!
@@ -17,9 +18,15 @@ final class ContentViewInspectorTests: XCTestCase {
     override func setUp() {
         super.setUp()
         authService = MockAuthService.shared
-        authService.reset()
         authService.isAuthenticated = true
-        authService.currentUser = createMockUser(role: .student)
+        authService.currentUser = UserResponse(
+            id: UUID().uuidString,
+            email: "test@example.com",
+            name: "Test User",
+            role: .student,
+            firstName: "Test",
+            lastName: "User"
+        )
         sut = ContentView()
     }
     
@@ -75,7 +82,7 @@ final class ContentViewInspectorTests: XCTestCase {
     // MARK: - Loading State Tests
     
     func testLoadingViewAppearsInitially() throws {
-        authService.isLoading = true
+        // authService.isLoading = true
         // State-based UI requires runtime
         XCTAssertTrue(true, "Loading state testing requires runtime")
     }

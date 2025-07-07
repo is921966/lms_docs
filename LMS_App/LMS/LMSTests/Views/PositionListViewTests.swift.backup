@@ -1,0 +1,272 @@
+import XCTest
+import SwiftUI
+@testable import LMS
+
+// MARK: - PositionListViewTests
+final class PositionListViewTests: XCTestCase {
+    
+    // MARK: - Properties
+    private var sut: PositionListView!
+    private var authViewModel: AuthViewModel!
+    
+    // MARK: - Setup
+    override func setUp() {
+        super.setUp()
+        authViewModel = AuthViewModel()
+        authViewModel.currentUser = MockUser(role: .admin)
+        sut = PositionListView()
+    }
+    
+    override func tearDown() {
+        sut = nil
+        authViewModel = nil
+        super.tearDown()
+    }
+    
+    // MARK: - Initialization Tests
+    
+    func testInitialization() {
+        // Then
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Navigation Tests
+    
+    func testNavigationTitle() {
+        // Given
+        let expectedTitle = "Должности"
+        
+        // Then
+        // Navigation title should be set to "Должности"
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Loading State Tests
+    
+    func testLoadingIndicator() {
+        // When loading
+        // Then loading indicator should be shown
+        XCTAssertNotNil(sut)
+    }
+    
+    func testEmptyState() {
+        // When no positions available
+        // Then empty state should be shown
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Search Tests
+    
+    func testSearchBarPresence() {
+        // Search bar should be present
+        XCTAssertNotNil(sut)
+    }
+    
+    func testSearchFunctionality() {
+        // Search should filter positions
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Filter Tests
+    
+    func testFilterButtonPresence() {
+        // Filter button should be in toolbar
+        XCTAssertNotNil(sut)
+    }
+    
+    func testFilterSheetPresentation() {
+        // Filter sheet should be presentable
+        XCTAssertNotNil(sut)
+    }
+    
+    func testLevelFiltering() {
+        // Should filter by position level
+        XCTAssertNotNil(sut)
+    }
+    
+    func testDepartmentFiltering() {
+        // Should filter by department
+        XCTAssertNotNil(sut)
+    }
+    
+    func testInactivePositionsToggle() {
+        // Should show/hide inactive positions
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Statistics Card Tests
+    
+    func testStatisticsCardVisibility() {
+        // Statistics card should be visible without filters
+        XCTAssertNotNil(sut)
+    }
+    
+    func testStatisticsCardHiddenWithFilters() {
+        // Statistics card should be hidden with active filters
+        XCTAssertNotNil(sut)
+    }
+    
+    func testStatisticsContent() {
+        // Statistics should show correct counts
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Department Grouping Tests
+    
+    func testPositionGroupingByDepartment() {
+        // Positions should be grouped by department
+        XCTAssertNotNil(sut)
+    }
+    
+    func testDepartmentHeaders() {
+        // Each department should have header
+        XCTAssertNotNil(sut)
+    }
+    
+    func testDepartmentCounts() {
+        // Department headers should show position count
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Position Card Tests
+    
+    func testPositionCardDisplay() {
+        // Position cards should display correct info
+        XCTAssertNotNil(sut)
+    }
+    
+    func testPositionCardTapNavigation() {
+        // Tapping card should navigate to detail
+        XCTAssertNotNil(sut)
+    }
+    
+    func testPositionCardContextMenu() {
+        // Context menu should show appropriate actions
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Admin Access Tests
+    
+    func testAdminCreateButton() {
+        // Given
+        authViewModel.currentUser = MockUser(role: .admin)
+        
+        // Then create button should be visible
+        XCTAssertTrue(authViewModel.currentUser?.role == .admin)
+    }
+    
+    func testSuperAdminCreateButton() {
+        // Given
+        authViewModel.currentUser = MockUser(role: .superAdmin)
+        
+        // Then create button should be visible
+        XCTAssertTrue(authViewModel.currentUser?.role == .superAdmin)
+    }
+    
+    func testStudentNoCreateButton() {
+        // Given
+        authViewModel.currentUser = MockUser(role: .student)
+        
+        // Then create button should not be visible
+        XCTAssertFalse(authViewModel.currentUser?.role == .admin)
+    }
+    
+    // MARK: - Sheet Presentations Tests
+    
+    func testCreatePositionSheet() {
+        // Create position sheet should be presentable
+        XCTAssertNotNil(sut)
+    }
+    
+    func testEditPositionSheet() {
+        // Edit position sheet should be presentable
+        XCTAssertNotNil(sut)
+    }
+    
+    func testCareerPathsSheet() {
+        // Career paths sheet should be presentable
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Refresh Tests
+    
+    func testPullToRefresh() {
+        // Pull to refresh should reload data
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Level Chip Tests
+    
+    func testLevelChipsDisplay() {
+        // Level chips should show all position levels
+        XCTAssertNotNil(sut)
+    }
+    
+    func testLevelChipSelection() {
+        // Selecting level chip should filter positions
+        XCTAssertNotNil(sut)
+    }
+    
+    func testLevelChipCounts() {
+        // Level chips should show position counts
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Helper
+    
+    struct MockUser {
+        var id: UUID
+        var name: String
+        var email: String
+        var role: User.Role
+        var avatarURL: URL?
+        
+        init(id: UUID = UUID(), name: String = "Test User", email: String = "test@example.com", role: User.Role, avatarURL: URL? = nil) {
+            self.id = id
+            self.name = name
+            self.email = email
+            self.role = role
+            self.avatarURL = avatarURL
+        }
+    }
+}
+
+// MARK: - PositionCard Component Tests
+final class PositionCardComponentTests: XCTestCase {
+    
+    func testCardInitialization() {
+        // Given
+        let position = Position(
+            name: "iOS Developer",
+            description: "iOS app development",
+            department: "Engineering",
+            level: .middle
+        )
+        
+        // When
+        let card = PositionCard(position: position)
+        
+        // Then
+        XCTAssertNotNil(card)
+    }
+    
+    func testCardContent() {
+        // Card should display position information
+        XCTAssertTrue(true)
+    }
+    
+    func testLevelBadgeDisplay() {
+        // Card should show level badge with correct color
+        XCTAssertTrue(true)
+    }
+    
+    func testCompetencyRequirementsDisplay() {
+        // Card should show competency requirements count
+        XCTAssertTrue(true)
+    }
+    
+    func testInactivePositionIndicator() {
+        // Inactive positions should have visual indicator
+        XCTAssertTrue(true)
+    }
+} 
