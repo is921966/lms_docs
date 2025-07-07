@@ -78,3 +78,7 @@ github-secrets.txt
 # Test Results
 TestResults.xcresult/
 *.xcresult/
+
+# Xcode DerivedData
+LMS_App/LMS/DerivedData/
+DerivedData/
