@@ -44,6 +44,14 @@
 - **Dependencies:** Все сервисы (read-only)
 - **Technology:** PHP 8.1, ClickHouse, Redis для кеширования
 
+### xAPI Service (расширение v1.2.0)
+- **Bounded Context:** Experience Tracking
+- **Core Responsibility:** Learning Record Store (LRS) для хранения xAPI statements, поддержка Cmi5
+- **Data Ownership:** xapi_statements, actors, activities, state_data, cmi5_packages
+- **Dependencies:** Learning Service, Analytics Service
+- **Technology:** PHP 8.1, MongoDB/PostgreSQL для LRS, JWT для auth
+- **Note:** Добавляется для поддержки стандарта Cmi5 и расширенной аналитики обучения
+
 ## API Contracts (OpenAPI)
 
 ### Competency Service API

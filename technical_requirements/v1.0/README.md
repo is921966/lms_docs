@@ -46,6 +46,7 @@
 - [User Stories](./user_stories.md) - Детальные требования и acceptance criteria
 - [Technical Architecture](./technical_architecture.md) - Архитектура и технические решения
 - [Microservices Contracts](./microservices_contracts.md) - Детальные API контракты для всех сервисов
+- [Cmi5 Support](./cmi5_support.md) - Техническое задание на поддержку стандарта Cmi5
 - [Definition of Done](./definition_of_done.md) - Критерии готовности
 - [LLM Development Guide](./llm_development_guide.md) - Руководство по разработке с помощью языковых моделей
 - [LLM Versioning Guide](./llm_versioning_guide.md) - Руководство по версионированию и инкрементальной разработке
@@ -89,7 +90,8 @@
 - Социальные функции
 - Мобильное приложение
 - SCORM поддержка
-- Внешние интеграции (кроме Microsoft AD)
+
+⚠️ **Примечание:** Поддержка стандарта Cmi5 добавлена как расширение MVP и будет реализована в Sprint 40-45. См. [Cmi5 Support](./cmi5_support.md) для деталей.
 
 ## Критерии успеха
 
