@@ -139,13 +139,15 @@ public final class Cmi5Service: ObservableObject {
         
         // Парсим манифест
         let manifestData = try Data(contentsOf: extraction.manifestURL)
-        let manifest = try parser.parseManifest(manifestData, baseURL: extraction.contentURL)
+        let xmlParser = Cmi5XMLParser()
+        let parseResult = try xmlParser.parseManifest(manifestData, baseURL: extraction.contentURL)
+        let manifest = parseResult.manifest
         
         // Создаем пакет
         var package = Cmi5Package(
             packageId: manifest.identifier,
-            title: manifest.course?.title.first?.value ?? "Untitled",
-            description: manifest.course?.description?.first?.value,
+            title: manifest.title,
+            description: manifest.description,
             courseId: courseId,
             manifest: manifest,
             filePath: extraction.extractedPath.path,
@@ -280,7 +282,7 @@ public final class Cmi5Service: ObservableObject {
     
     private func getActorJSON(studentId: UUID) -> String {
         // Создаем JSON для actor
-        let actor = [
+        let actor: [String: Any] = [
             "objectType": "Agent",
             "account": [
                 "name": studentId.uuidString,

@@ -333,37 +333,60 @@ private class Cmi5XMLParserDelegate: NSObject, XMLParserDelegate {
     func buildResult() -> Cmi5XMLParser.ParseResult? {
         guard !manifestId.isEmpty else { return nil }
         
+        // Найдем первый блок в rootNodes
+        var firstBlock: Cmi5Block?
+        if let firstNode = rootNodes.first {
+            if case .block(let block) = firstNode {
+                firstBlock = convertToNewBlock(block)
+            }
+        }
+        
         let manifest = Cmi5Manifest(
             identifier: manifestId,
             title: manifestTitle,
             description: manifestDescription,
-            moreInfo: nil,
-            vendor: nil,
-            version: manifestVersion,
             course: Cmi5Course(
                 id: courseId,
-                title: courseTitle,
-                description: courseDescription,
-                auCount: allActivities.count
+                title: courseTitle.isEmpty ? nil : [Cmi5LangString(lang: "en", value: courseTitle)],
+                description: courseDescription.isEmpty ? nil : [Cmi5LangString(lang: "en", value: courseDescription)],
+                auCount: allActivities.count,
+                rootBlock: firstBlock
             )
         )
         
         let extendedCourse = Cmi5FullParser.Cmi5ExtendedCourse(
-            course: manifest.course,
+            manifest: manifest,
             structure: rootNodes,
-            metadata: Cmi5FullParser.Cmi5Metadata(
-                language: metadata["language"],
-                duration: metadata["duration"],
-                publisher: metadata["publisher"],
-                rights: metadata["rights"],
-                extensions: metadata
-            )
+            metadata: nil
         )
         
         return Cmi5XMLParser.ParseResult(
             manifest: manifest,
             activities: allActivities,
             extendedCourse: extendedCourse
+        )
+    }
+
+    // Вспомогательная функция для конвертации старого блока в новый
+    private func convertToNewBlock(_ oldBlock: Cmi5FullParser.Cmi5Block) -> Cmi5Block {
+        var subBlocks: [Cmi5Block] = []
+        var activities: [Cmi5Activity] = []
+        
+        for child in oldBlock.children {
+            switch child {
+            case .block(let block):
+                subBlocks.append(convertToNewBlock(block))
+            case .activity(let activity):
+                activities.append(activity)
+            }
+        }
+        
+        return Cmi5Block(
+            id: oldBlock.id,
+            title: [Cmi5LangString(lang: "en", value: oldBlock.title)],
+            description: oldBlock.description.map { [Cmi5LangString(lang: "en", value: $0)] },
+            blocks: subBlocks,
+            activities: activities
         )
     }
 } 

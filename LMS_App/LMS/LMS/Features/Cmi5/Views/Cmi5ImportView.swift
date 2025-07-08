@@ -194,26 +194,32 @@ struct Cmi5ImportView: View {
             
             // Информация о пакете
             VStack(alignment: .leading, spacing: 12) {
-                Cmi5DetailRow(label: "Название", value: package.packageName)
+                Cmi5DetailRow(label: "Название", value: package.title)
                 
-                if let version = package.packageVersion {
-                    Cmi5DetailRow(label: "Версия", value: version)
+                Cmi5DetailRow(label: "Версия", value: package.version)
+                
+                if let description = package.description {
+                    Cmi5DetailRow(label: "Описание", value: description)
                 }
                 
-                Cmi5DetailRow(label: "Количество активностей", value: "\(package.activities.count)")
+                let activityCount = countActivities(in: package)
+                Cmi5DetailRow(label: "Количество активностей", value: "\(activityCount)")
                 
-                Cmi5DetailRow(label: "Курс", value: package.manifest.course.title)
+                if let courseTitle = package.manifest.course?.title?.first?.value {
+                    Cmi5DetailRow(label: "Курс", value: courseTitle)
+                }
             }
             
             // Список активностей
-            if !package.activities.isEmpty {
+            let activities = collectActivities(from: package)
+            if !activities.isEmpty {
                 Divider()
                 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Активности:")
                         .font(.headline)
                     
-                    ForEach(package.activities) { activity in
+                    ForEach(activities) { activity in
                         ActivityRow(activity: activity)
                     }
                 }
@@ -316,6 +322,40 @@ struct Cmi5ImportView: View {
             onImportComplete?(package)
             dismiss()
         }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func countActivities(in package: Cmi5Package) -> Int {
+        guard let rootBlock = package.manifest.rootBlock else { return 0 }
+        
+        var count = 0
+        
+        func countInBlock(_ block: Cmi5Block) {
+            count += block.activities.count
+            for subBlock in block.blocks {
+                countInBlock(subBlock)
+            }
+        }
+        
+        countInBlock(rootBlock)
+        return count
+    }
+    
+    private func collectActivities(from package: Cmi5Package) -> [Cmi5Activity] {
+        guard let rootBlock = package.manifest.rootBlock else { return [] }
+        
+        var activities: [Cmi5Activity] = []
+        
+        func collectFromBlock(_ block: Cmi5Block) {
+            activities.append(contentsOf: block.activities)
+            for subBlock in block.blocks {
+                collectFromBlock(subBlock)
+            }
+        }
+        
+        collectFromBlock(rootBlock)
+        return activities
     }
 }
 

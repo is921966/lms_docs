@@ -124,18 +124,8 @@ final class Cmi5ImportViewModel: ObservableObject {
             try await Task.sleep(nanoseconds: 500_000_000) // 0.5 секунды
             
             // Создаем новый пакет с обновленными данными
-            let importedPackage = Cmi5Package(
-                id: package.id,
-                courseId: courseId,
-                packageName: package.packageName,
-                packageVersion: package.packageVersion,
-                manifest: package.manifest,
-                activities: package.activities,
-                uploadedAt: package.uploadedAt,
-                uploadedBy: package.uploadedBy,
-                fileSize: package.fileSize,
-                status: .valid
-            )
+            var importedPackage = package
+            importedPackage.courseId = courseId
             
             self.importedPackage = importedPackage
             processingProgress = "Импорт завершен!"
@@ -240,6 +230,21 @@ final class Cmi5ImportViewModel: ObservableObject {
             )
         ]
         
+        // Создаем блок с активностями
+        let rootBlock = Cmi5Block(
+            id: "block_main",
+            title: [Cmi5LangString(lang: "ru", value: "Основные модули")],
+            activities: activities
+        )
+        
+        let course = Cmi5Course(
+            id: "course_001",
+            title: [Cmi5LangString(lang: "ru", value: "Корпоративная культура ЦУМ")],
+            description: [Cmi5LangString(lang: "ru", value: "Базовый курс для новых сотрудников")],
+            auCount: activities.count,
+            rootBlock: rootBlock
+        )
+        
         let manifest = Cmi5Manifest(
             identifier: "course_corporate_culture_v1",
             title: "Корпоративная культура ЦУМ",
@@ -250,25 +255,19 @@ final class Cmi5ImportViewModel: ObservableObject {
                 contact: "learning@tsum.ru",
                 url: "https://lms.tsum.ru"
             ),
-            course: Cmi5Course(
-                id: "course_001",
-                title: "Корпоративная культура ЦУМ",
-                description: "Базовый курс для новых сотрудников",
-                auCount: activities.count
-            )
+            version: "1.0.0",
+            course: course
         )
         
         return Cmi5Package(
-            id: UUID(),
+            packageId: manifest.identifier,
+            title: manifest.title,
+            description: manifest.description,
             courseId: courseId,
-            packageName: manifest.title,
-            packageVersion: "1.0.0",
             manifest: manifest,
-            activities: activities,
-            uploadedAt: Date(),
-            uploadedBy: UUID(), // Текущий пользователь
-            fileSize: selectedFileInfo?.size ?? 0,
-            status: .processing
+            filePath: "/demo/package.zip",
+            size: selectedFileInfo?.size ?? 0,
+            uploadedBy: UUID() // Текущий пользователь
         )
     }
 }

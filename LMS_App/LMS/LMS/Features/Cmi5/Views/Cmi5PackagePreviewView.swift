@@ -10,7 +10,6 @@ import SwiftUI
 /// View для предпросмотра структуры Cmi5 пакета
 struct Cmi5PackagePreviewView: View {
     let package: Cmi5Package
-    let extendedCourse: Cmi5FullParser.Cmi5ExtendedCourse?
     @State private var expandedNodes: Set<String> = []
     @Environment(\.dismiss) private var dismiss
     
@@ -24,17 +23,17 @@ struct Cmi5PackagePreviewView: View {
                     Divider()
                     
                     // Course structure
-                    if let extended = extendedCourse {
-                        courseStructureSection(extended)
+                    if let rootBlock = package.manifest.rootBlock {
+                        courseStructureSection(rootBlock)
                     } else {
-                        simpleActivityList
+                        emptyStateView
                     }
                     
                     Divider()
                     
-                    // Metadata section
-                    if let metadata = extendedCourse?.metadata {
-                        metadataSection(metadata)
+                    // Vendor info
+                    if let vendor = package.manifest.vendor {
+                        vendorSection(vendor)
                     }
                     
                     // Actions
@@ -67,38 +66,65 @@ struct Cmi5PackagePreviewView: View {
                     Label("Название", systemImage: "book.fill")
                         .foregroundColor(.secondary)
                         .frame(width: 120, alignment: .leading)
-                    Text(package.packageName)
+                    Text(package.title)
                         .fontWeight(.medium)
                 }
                 
-                if let version = package.packageVersion {
-                    HStack {
-                        Label("Версия", systemImage: "number.circle")
+                if let description = package.description {
+                    HStack(alignment: .top) {
+                        Label("Описание", systemImage: "text.alignleft")
                             .foregroundColor(.secondary)
                             .frame(width: 120, alignment: .leading)
-                        Text(version)
+                        Text(description)
+                            .font(.callout)
                     }
+                }
+                
+                HStack {
+                    Label("Версия", systemImage: "number.circle")
+                        .foregroundColor(.secondary)
+                        .frame(width: 120, alignment: .leading)
+                    Text(package.version)
                 }
                 
                 HStack {
                     Label("Размер", systemImage: "doc.zipper")
                         .foregroundColor(.secondary)
                         .frame(width: 120, alignment: .leading)
-                    Text(package.formattedFileSize)
+                    Text(formatFileSize(package.size))
                 }
                 
                 HStack {
                     Label("Активностей", systemImage: "list.bullet")
                         .foregroundColor(.secondary)
                         .frame(width: 120, alignment: .leading)
-                    Text("\(package.activities.count)")
+                    Text("\(countActivities())")
                 }
                 
                 HStack {
                     Label("Статус", systemImage: "checkmark.circle")
                         .foregroundColor(.secondary)
                         .frame(width: 120, alignment: .leading)
-                    Cmi5StatusBadge(status: package.status)
+                    
+                    if package.isValid {
+                        Label("Валидный", systemImage: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.caption)
+                    } else {
+                        VStack(alignment: .leading) {
+                            Label("Невалидный", systemImage: "xmark.circle.fill")
+                                .foregroundColor(.red)
+                                .font(.caption)
+                            
+                            if !package.validationErrors.isEmpty {
+                                ForEach(package.validationErrors, id: \.self) { error in
+                                    Text("• \(error)")
+                                        .font(.caption2)
+                                        .foregroundColor(.red)
+                                }
+                            }
+                        }
+                    }
                 }
             }
             .font(.callout)
@@ -107,52 +133,33 @@ struct Cmi5PackagePreviewView: View {
     
     // MARK: - Course Structure Section
     
-    private func courseStructureSection(_ extended: Cmi5FullParser.Cmi5ExtendedCourse) -> some View {
+    private func courseStructureSection(_ rootBlock: Cmi5Block) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Структура курса")
                 .font(.headline)
                 .foregroundColor(.secondary)
             
-            VStack(alignment: .leading, spacing: 4) {
-                // Course title
+            if let courseTitle = package.manifest.course?.title?.first?.value {
                 HStack {
                     Image(systemName: "graduationcap.fill")
                         .foregroundColor(.blue)
-                    Text(extended.course.title)
+                    Text(courseTitle)
                         .font(.title3)
                         .fontWeight(.semibold)
                 }
-                
-                if let description = extended.course.description {
-                    Text(description)
-                        .font(.callout)
-                        .foregroundColor(.secondary)
-                        .padding(.leading, 28)
-                }
+                .padding(.bottom, 8)
             }
-            .padding(.bottom, 8)
             
-            // Render course nodes
-            ForEach(Array(extended.structure.enumerated()), id: \.offset) { index, node in
-                renderNode(node, level: 0)
-            }
+            // Render root block
+            renderBlock(rootBlock, level: 0)
         }
     }
     
-    // MARK: - Node Rendering
+    // MARK: - Block Rendering
     
     @ViewBuilder
-    private func renderNode(_ node: Cmi5FullParser.Cmi5CourseNode, level: Int) -> some View {
-        switch node {
-        case .block(let block):
-            renderBlock(block, level: level)
-        case .activity(let activity):
-            renderActivity(activity, level: level)
-        }
-    }
-    
-    private func renderBlock(_ block: Cmi5FullParser.Cmi5Block, level: Int) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private func renderBlock(_ block: Cmi5Block, level: Int) -> AnyView {
+        AnyView(VStack(alignment: .leading, spacing: 8) {
             // Block header
             HStack(spacing: 8) {
                 // Indentation
@@ -164,12 +171,17 @@ struct Cmi5PackagePreviewView: View {
                 }
                 
                 // Expand/Collapse button
-                Button(action: {
-                    toggleExpanded(block.id)
-                }) {
-                    Image(systemName: isExpanded(block.id) ? "chevron.down" : "chevron.right")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                if !block.blocks.isEmpty || !block.activities.isEmpty {
+                    Button(action: {
+                        toggleExpanded(block.id)
+                    }) {
+                        Image(systemName: isExpanded(block.id) ? "chevron.down" : "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                } else {
+                    Spacer()
+                        .frame(width: 20)
                 }
                 
                 // Block icon
@@ -178,73 +190,45 @@ struct Cmi5PackagePreviewView: View {
                 
                 // Block title
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(block.title)
+                    Text(block.title.first?.value ?? "Блок")
                         .fontWeight(.medium)
                     
-                    if let description = block.description {
+                    if let description = block.description?.first?.value {
                         Text(description)
                             .font(.caption)
                             .foregroundColor(.secondary)
-                    }
-                    
-                    // Objectives
-                    if !block.objectives.isEmpty {
-                        HStack {
-                            Image(systemName: "target")
-                                .font(.caption2)
-                            Text("\(block.objectives.count) цели")
-                                .font(.caption2)
-                        }
-                        .foregroundColor(.blue)
                     }
                 }
                 
                 Spacer()
                 
                 // Child count
-                Text("\(block.children.count)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(4)
+                let childCount = block.blocks.count + block.activities.count
+                if childCount > 0 {
+                    Text("\(childCount)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(4)
+                }
             }
             .contentShape(Rectangle())
             
             // Block children (if expanded)
             if isExpanded(block.id) {
-                ForEach(Array(block.children.enumerated()), id: \.offset) { index, child in
-                    renderNode(child, level: level + 1)
+                // Render sub-blocks
+                ForEach(block.blocks) { subBlock in
+                    renderBlock(subBlock, level: level + 1)
                 }
                 
-                // Show objectives if any
-                if !block.objectives.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        ForEach(block.objectives, id: \.self) { objective in
-                            HStack(spacing: 4) {
-                                // Indentation
-                                ForEach(0..<(level + 1), id: \.self) { _ in
-                                    Rectangle()
-                                        .fill(Color.gray.opacity(0.3))
-                                        .frame(width: 2, height: 16)
-                                        .padding(.leading, 12)
-                                }
-                                
-                                Image(systemName: "target")
-                                    .font(.caption2)
-                                    .foregroundColor(.blue)
-                                
-                                Text(objective)
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
-                            }
-                        }
-                    }
-                    .padding(.vertical, 4)
+                // Render activities
+                ForEach(block.activities) { activity in
+                    renderActivity(activity, level: level + 1)
                 }
             }
-        }
+        })
     }
     
     private func renderActivity(_ activity: Cmi5Activity, level: Int) -> some View {
@@ -265,12 +249,19 @@ struct Cmi5PackagePreviewView: View {
                 Text(activity.title)
                     .font(.callout)
                 
+                if let description = activity.description {
+                    Text(description)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                }
+                
                 HStack(spacing: 12) {
                     // Launch method
                     HStack(spacing: 4) {
                         Image(systemName: activity.launchMethod == .ownWindow ? "macwindow" : "rectangle.on.rectangle")
                             .font(.caption2)
-                        Text(activity.launchMethod == .ownWindow ? "Новое окно" : "Любое окно")
+                        Text(activity.launchMethod.localizedName)
                             .font(.caption2)
                     }
                     
@@ -278,7 +269,7 @@ struct Cmi5PackagePreviewView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "arrow.right.circle")
                             .font(.caption2)
-                        Text(moveOnText(for: activity.moveOn))
+                        Text(activity.moveOn.localizedName)
                             .font(.caption2)
                     }
                     
@@ -310,54 +301,58 @@ struct Cmi5PackagePreviewView: View {
         .padding(.vertical, 4)
     }
     
-    // MARK: - Simple Activity List
+    // MARK: - Empty State
     
-    private var simpleActivityList: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Активности")
-                .font(.headline)
-                .foregroundColor(.secondary)
+    private var emptyStateView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.largeTitle)
+                .foregroundColor(.orange)
             
-            ForEach(package.activities) { activity in
-                renderActivity(activity, level: 0)
-            }
+            Text("Структура курса не найдена")
+                .font(.headline)
+            
+            Text("Не удалось загрузить структуру блоков и активностей")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
         }
+        .padding()
+        .frame(maxWidth: .infinity)
     }
     
-    // MARK: - Metadata Section
+    // MARK: - Vendor Section
     
-    private func metadataSection(_ metadata: Cmi5FullParser.Cmi5Metadata) -> some View {
+    private func vendorSection(_ vendor: Cmi5Vendor) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Метаданные")
+            Text("Информация о поставщике")
                 .font(.headline)
                 .foregroundColor(.secondary)
             
             VStack(alignment: .leading, spacing: 8) {
-                if let publisher = metadata.publisher {
+                HStack {
+                    Label("Название", systemImage: "building.2")
+                        .foregroundColor(.secondary)
+                        .frame(width: 120, alignment: .leading)
+                    Text(vendor.name)
+                }
+                
+                if let contact = vendor.contact {
                     HStack {
-                        Label("Издатель", systemImage: "building.2")
+                        Label("Контакт", systemImage: "person.circle")
                             .foregroundColor(.secondary)
                             .frame(width: 120, alignment: .leading)
-                        Text(publisher)
+                        Text(contact)
                     }
                 }
                 
-                if let rights = metadata.rights {
+                if let url = vendor.url {
                     HStack {
-                        Label("Права", systemImage: "lock.shield")
+                        Label("Сайт", systemImage: "globe")
                             .foregroundColor(.secondary)
                             .frame(width: 120, alignment: .leading)
-                        Text(rights)
-                            .font(.caption)
-                    }
-                }
-                
-                if let language = metadata.language {
-                    HStack {
-                        Label("Язык", systemImage: "globe")
-                            .foregroundColor(.secondary)
-                            .frame(width: 120, alignment: .leading)
-                        Text(language)
+                        Link(url, destination: URL(string: url)!)
+                            .font(.callout)
                     }
                 }
             }
@@ -376,11 +371,12 @@ struct Cmi5PackagePreviewView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .disabled(!package.isValid)
             
             Button(action: {
-                // TODO: Implement validation
+                // TODO: Implement re-validation
             }) {
-                Label("Валидировать", systemImage: "checkmark.shield")
+                Label("Перепроверить", systemImage: "arrow.clockwise")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
@@ -400,6 +396,28 @@ struct Cmi5PackagePreviewView: View {
         } else {
             expandedNodes.insert(nodeId)
         }
+    }
+    
+    private func countActivities() -> Int {
+        guard let rootBlock = package.manifest.rootBlock else { return 0 }
+        
+        var count = 0
+        
+        func countInBlock(_ block: Cmi5Block) {
+            count += block.activities.count
+            for subBlock in block.blocks {
+                countInBlock(subBlock)
+            }
+        }
+        
+        countInBlock(rootBlock)
+        return count
+    }
+    
+    private func formatFileSize(_ bytes: Int64) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: bytes)
     }
     
     private func activityIcon(for type: String) -> some View {
@@ -428,21 +446,6 @@ struct Cmi5PackagePreviewView: View {
             .foregroundColor(color)
     }
     
-    private func moveOnText(for criteria: Cmi5Activity.MoveOnCriteria) -> String {
-        switch criteria {
-        case .passed:
-            return "Пройдено"
-        case .completed:
-            return "Завершено"
-        case .completedAndPassed:
-            return "Завершено и пройдено"
-        case .completedOrPassed:
-            return "Завершено или пройдено"
-        case .notApplicable:
-            return "Не применимо"
-        }
-    }
-    
     private func formatDuration(_ isoDuration: String) -> String {
         // Simple ISO 8601 duration parser
         if isoDuration.hasPrefix("PT") {
@@ -457,45 +460,49 @@ struct Cmi5PackagePreviewView: View {
     }
 }
 
-// MARK: - Status Badge
+// MARK: - Preview
 
-private struct Cmi5StatusBadge: View {
-    let status: Cmi5Package.PackageStatus
-    
-    var body: some View {
-        Text(status.localizedName)
-            .font(.caption)
-            .fontWeight(.medium)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-            .background(backgroundColor)
-            .foregroundColor(textColor)
-            .cornerRadius(4)
+struct Cmi5PackagePreviewView_Previews: PreviewProvider {
+    static var previews: some View {
+        Cmi5PackagePreviewView(package: mockPackage)
     }
     
-    private var backgroundColor: Color {
-        switch status {
-        case .processing:
-            return .orange.opacity(0.2)
-        case .valid:
-            return .green.opacity(0.2)
-        case .invalid:
-            return .red.opacity(0.2)
-        case .archived:
-            return .gray.opacity(0.2)
-        }
-    }
-    
-    private var textColor: Color {
-        switch status {
-        case .processing:
-            return .orange
-        case .valid:
-            return .green
-        case .invalid:
-            return .red
-        case .archived:
-            return .gray
-        }
+    static var mockPackage: Cmi5Package {
+        // Create mock package for preview
+        let mockBlock = Cmi5Block(
+            id: "block1",
+            title: [Cmi5LangString(lang: "ru", value: "Модуль 1")],
+            activities: [
+                Cmi5Activity(
+                    packageId: UUID(),
+                    activityId: "activity1",
+                    title: "Урок 1",
+                    launchUrl: "lesson1.html",
+                    launchMethod: .ownWindow,
+                    moveOn: .completed,
+                    activityType: "lesson"
+                )
+            ]
+        )
+        
+        let manifest = Cmi5Manifest(
+            identifier: "test-package",
+            title: "Тестовый пакет",
+            course: Cmi5Course(
+                id: "course1",
+                title: [Cmi5LangString(lang: "ru", value: "Тестовый курс")],
+                auCount: 5,
+                rootBlock: mockBlock
+            )
+        )
+        
+        return Cmi5Package(
+            packageId: "test-package",
+            title: "Тестовый пакет",
+            manifest: manifest,
+            filePath: "/test/path",
+            size: 1024 * 1024 * 10,
+            uploadedBy: UUID()
+        )
     }
 } 

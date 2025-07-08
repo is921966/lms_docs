@@ -39,6 +39,7 @@ enum Feature: String, CaseIterable {
     case competencies = "Компетенции"
     case positions = "Должности"
     case feed = "Новости"
+    case cmi5 = "Cmi5 Контент"  // НОВЫЙ МОДУЛЬ
 
     // Будущие модули
     case certificates = "Сертификаты"
@@ -76,6 +77,7 @@ enum Feature: String, CaseIterable {
         case .competencies: return "lightbulb"
         case .positions: return "briefcase"
         case .feed: return "newspaper"
+        case .cmi5: return "cube.box"  // НОВАЯ ИКОНКА
         case .certificates: return "rosette"
         case .gamification: return "gamecontroller"
         case .notifications: return "bell"
@@ -111,6 +113,9 @@ enum Feature: String, CaseIterable {
         case .feed:
             // Wrapper view для FeedView чтобы передать environment object
             FeedWrapper()
+        case .cmi5:
+            // НОВЫЙ VIEW - Cmi5 управление
+            Cmi5ManagementView()
         case .certificates:
             PlaceholderView(title: "Сертификаты", icon: "rosette")
         case .gamification:
@@ -230,11 +235,13 @@ extension Feature {
         Feature.enable(.competencies)
         Feature.enable(.positions)
         Feature.enable(.feed)
+        Feature.enable(.cmi5)  // ВКЛЮЧАЕМ CMI5
 
         print("✅ Готовые модули включены:")
         print("  - Компетенции")
         print("  - Должности")
         print("  - Новости")
+        print("  - Cmi5 Контент")  // НОВЫЙ МОДУЛЬ
 
         // КРИТИЧЕСКИ ВАЖНО: Уведомляем UI об изменениях
         FeatureRegistryManager.shared.refresh()

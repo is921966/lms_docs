@@ -29,7 +29,7 @@ public final class Cmi5FullParser {
     
     /// Расширенная структура курса
     public struct Cmi5ExtendedCourse {
-        public let course: Cmi5Course
+        public let manifest: Cmi5Manifest
         public let structure: [Cmi5CourseNode]
         public let metadata: Cmi5Metadata?
     }
@@ -77,16 +77,14 @@ public final class Cmi5FullParser {
         
         // Создаем пакет
         let package = Cmi5Package(
-            id: UUID(),
-            courseId: nil,
-            packageName: parseResult.manifest.title,
-            packageVersion: parseResult.manifest.version,
+            packageId: parseResult.manifest.identifier,
+            title: parseResult.manifest.title,
+            description: parseResult.manifest.description,
             manifest: parseResult.manifest,
-            activities: parseResult.activities,
-            uploadedAt: Date(),
+            filePath: fileURL.path,
+            size: fileSize,
             uploadedBy: UUID(), // TODO: Получить из контекста
-            fileSize: fileSize,
-            status: .processing
+            version: parseResult.manifest.version ?? "1.0"
         )
         
         return (package, parseResult.extendedCourse)
@@ -98,7 +96,7 @@ public final class Cmi5FullParser {
         var warnings: [String] = []
         
         // Валидация базовой информации
-        if extendedCourse.course.title.isEmpty {
+        if extendedCourse.manifest.title.isEmpty {
             errors.append("Название курса обязательно")
         }
         

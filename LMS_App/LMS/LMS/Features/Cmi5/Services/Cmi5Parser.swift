@@ -91,15 +91,18 @@ public final class Cmi5Parser {
         
         return Cmi5Package(
             id: packageId,
+            packageId: manifest.identifier,
+            title: manifest.title,
+            description: manifest.description,
             courseId: nil,
-            packageName: manifest.title,
-            packageVersion: manifest.version,
             manifest: manifest,
-            activities: activitiesWithPackageId,
+            filePath: fileURL.path,
             uploadedAt: Date(),
+            size: extraction.packageSize,
             uploadedBy: UUID(), // Should be current user
-            fileSize: extraction.packageSize,
-            status: .processing
+            version: manifest.version ?? "1.0",
+            isValid: true,
+            validationErrors: []
         )
     }
     
@@ -124,12 +127,25 @@ public final class Cmi5Parser {
             errors.append("Название курса не может быть пустым")
         }
         
-        // Проверка активностей
-        if package.activities.isEmpty {
+        // Проверка активностей через блоки
+        var activities: [Cmi5Activity] = []
+        
+        func collectActivities(from block: Cmi5Block) {
+            activities.append(contentsOf: block.activities)
+            for subBlock in block.blocks {
+                collectActivities(from: subBlock)
+            }
+        }
+        
+        if let rootBlock = package.manifest.rootBlock {
+            collectActivities(from: rootBlock)
+        }
+        
+        if activities.isEmpty {
             warnings.append("Пакет не содержит учебных активностей")
         }
         
-        for activity in package.activities {
+        for activity in activities {
             if activity.launchUrl.isEmpty {
                 errors.append("Активность '\(activity.title)' не имеет URL для запуска")
             }
@@ -236,9 +252,10 @@ private class Cmi5ManifestParserDelegate: NSObject, XMLParserDelegate {
                 vendor: nil,
                 course: Cmi5Course(
                     id: courseId,
-                    title: courseTitle,
-                    description: manifestDescription,
-                    auCount: 0 // Will be updated after parsing activities
+                    title: courseTitle.isEmpty ? nil : [Cmi5LangString(lang: "en", value: courseTitle)],
+                    description: manifestDescription == nil ? nil : [Cmi5LangString(lang: "en", value: manifestDescription!)],
+                    auCount: 0, // Will be updated after parsing activities
+                    rootBlock: nil // Will be populated from activities structure
                 )
             )
         default:

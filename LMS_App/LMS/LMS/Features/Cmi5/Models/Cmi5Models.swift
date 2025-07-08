@@ -140,7 +140,10 @@ public struct Cmi5Manifest: Codable {
     public let moreInfo: String?
     public let vendor: Cmi5Vendor?
     public let version: String?
-    public var course: Cmi5Course
+    public var course: Cmi5Course?
+    public var rootBlock: Cmi5Block? {
+        return course?.rootBlock
+    }
     
     public init(
         identifier: String,
@@ -149,7 +152,7 @@ public struct Cmi5Manifest: Codable {
         moreInfo: String? = nil,
         vendor: Cmi5Vendor? = nil,
         version: String? = nil,
-        course: Cmi5Course
+        course: Cmi5Course? = nil
     ) {
         self.identifier = identifier
         self.title = title
@@ -166,20 +169,61 @@ public struct Cmi5Manifest: Codable {
 /// Курс в манифесте Cmi5
 public struct Cmi5Course: Codable {
     public let id: String
-    public let title: String
-    public let description: String?
+    public let title: [Cmi5LangString]?
+    public let description: [Cmi5LangString]?
     public var auCount: Int // Assignable Units count
+    public let rootBlock: Cmi5Block?
     
     public init(
         id: String,
-        title: String,
-        description: String? = nil,
-        auCount: Int
+        title: [Cmi5LangString]? = nil,
+        description: [Cmi5LangString]? = nil,
+        auCount: Int,
+        rootBlock: Cmi5Block? = nil
     ) {
         self.id = id
         self.title = title
         self.description = description
         self.auCount = auCount
+        self.rootBlock = rootBlock
+    }
+}
+
+// MARK: - Cmi5Block
+
+/// Блок в структуре курса
+public struct Cmi5Block: Codable, Identifiable {
+    public let id: String
+    public let title: [Cmi5LangString]
+    public let description: [Cmi5LangString]?
+    public let blocks: [Cmi5Block]
+    public let activities: [Cmi5Activity]
+    
+    public init(
+        id: String,
+        title: [Cmi5LangString],
+        description: [Cmi5LangString]? = nil,
+        blocks: [Cmi5Block] = [],
+        activities: [Cmi5Activity] = []
+    ) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.blocks = blocks
+        self.activities = activities
+    }
+}
+
+// MARK: - Cmi5LangString
+
+/// Локализованная строка
+public struct Cmi5LangString: Codable {
+    public let lang: String
+    public let value: String
+    
+    public init(lang: String, value: String) {
+        self.lang = lang
+        self.value = value
     }
 }
 
@@ -216,9 +260,10 @@ public extension Cmi5Manifest {
             version: nil,
             course: Cmi5Course(
                 id: "",
-                title: "",
+                title: nil,
                 description: nil,
-                auCount: 0
+                auCount: 0,
+                rootBlock: nil
             )
         )
     }

@@ -1,0 +1,811 @@
+openapi: 3.0.0
+info:
+  title: LMS Cmi5 API
+  description: API для работы с Cmi5 пакетами и xAPI
+  version: 1.0.0
+  
+servers:
+  - url: https://api.lms.tsum.ru/v1
+    description: Production server
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+paths:
+  /cmi5/upload:
+    post:
+      summary: Загрузка Cmi5 пакета
+      description: Загружает ZIP архив с Cmi5 пакетом для последующей обработки
+      tags:
+        - Cmi5
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: ZIP архив с Cmi5 пакетом
+                filename:
+                  type: string
+                  description: Имя файла
+      responses:
+        200:
+          description: Пакет успешно загружен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uploadId:
+                    type: string
+                    format: uuid
+                    description: ID загруженного файла
+                  filename:
+                    type: string
+                  size:
+                    type: integer
+                    description: Размер файла в байтах
+                  uploadedAt:
+                    type: string
+                    format: date-time
+        400:
+          $ref: '#/components/responses/BadRequest'
+        413:
+          description: Файл слишком большой (макс. 500MB)
+          
+  /cmi5/validate/{uploadId}:
+    post:
+      summary: Валидация загруженного пакета
+      description: Проверяет структуру и валидность Cmi5 пакета
+      tags:
+        - Cmi5
+      parameters:
+        - name: uploadId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Результат валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+        404:
+          $ref: '#/components/responses/NotFound'
+          
+  /cmi5/import/{courseId}:
+    post:
+      summary: Импорт пакета в курс
+      description: Импортирует валидный Cmi5 пакет и привязывает к курсу
+      tags:
+        - Cmi5
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - uploadId
+              properties:
+                uploadId:
+                  type: string
+                  format: uuid
+                options:
+                  $ref: '#/components/schemas/Cmi5ImportOptions'
+      responses:
+        201:
+          description: Пакет успешно импортирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cmi5Package'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+          
+  /cmi5/packages:
+    get:
+      summary: Список Cmi5 пакетов
+      description: Возвращает список всех импортированных пакетов
+      tags:
+        - Cmi5
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: courseId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Фильтр по курсу
+      responses:
+        200:
+          description: Список пакетов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cmi5Package'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                    
+  /cmi5/packages/{id}:
+    get:
+      summary: Информация о пакете
+      description: Возвращает детальную информацию о Cmi5 пакете
+      tags:
+        - Cmi5
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Информация о пакете
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cmi5PackageDetail'
+        404:
+          $ref: '#/components/responses/NotFound'
+          
+    delete:
+      summary: Удаление пакета
+      description: Удаляет Cmi5 пакет и все связанные данные
+      tags:
+        - Cmi5
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Пакет успешно удален
+        404:
+          $ref: '#/components/responses/NotFound'
+          
+  /cmi5/activities/{packageId}:
+    get:
+      summary: Список активностей пакета
+      description: Возвращает все активности из Cmi5 пакета
+      tags:
+        - Cmi5
+      parameters:
+        - name: packageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Список активностей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cmi5Activity'
+        404:
+          $ref: '#/components/responses/NotFound'
+          
+  /cmi5/sessions:
+    post:
+      summary: Создание сессии для активности
+      description: Создает новую учебную сессию для Cmi5 активности
+      tags:
+        - Cmi5
+        - xAPI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - activityId
+                - userId
+              properties:
+                activityId:
+                  type: string
+                  format: uuid
+                userId:
+                  type: string
+                  format: uuid
+      responses:
+        201:
+          description: Сессия создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LRSSession'
+                
+  /xapi/statements:
+    post:
+      summary: Отправка xAPI statement
+      description: Сохраняет xAPI statement в LRS
+      tags:
+        - xAPI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/XAPIStatement'
+      responses:
+        200:
+          description: Statement сохранен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    
+    get:
+      summary: Получение xAPI statements
+      description: Возвращает список statements по фильтрам
+      tags:
+        - xAPI
+      parameters:
+        - name: activityId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: verb
+          in: query
+          schema:
+            type: string
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: until
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 1000
+      responses:
+        200:
+          description: Список statements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statements:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/XAPIStatement'
+                  more:
+                    type: string
+                    description: URL для получения следующей страницы
+                    
+  /xapi/activities/{activityId}/state/{userId}:
+    get:
+      summary: Получение состояния активности
+      description: Возвращает сохраненное состояние для пользователя
+      tags:
+        - xAPI
+      parameters:
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: stateId
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: Состояние активности
+          content:
+            application/json:
+              schema:
+                type: object
+                
+    put:
+      summary: Сохранение состояния активности
+      description: Сохраняет состояние прогресса пользователя
+      tags:
+        - xAPI
+      parameters:
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: stateId
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        204:
+          description: Состояние сохранено
+          
+  /cmi5/activities/{activityId}/progress/{userId}:
+    get:
+      summary: Прогресс пользователя по активности
+      description: Возвращает детальную информацию о прогрессе
+      tags:
+        - Cmi5
+      parameters:
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Информация о прогрессе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityProgress'
+
+components:
+  schemas:
+    Cmi5Package:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        packageId:
+          type: string
+          description: Идентификатор из манифеста
+        title:
+          type: string
+        description:
+          type: string
+        version:
+          type: string
+        courseId:
+          type: string
+          format: uuid
+          nullable: true
+        uploadedAt:
+          type: string
+          format: date-time
+        uploadedBy:
+          type: string
+          format: uuid
+        size:
+          type: integer
+          description: Размер в байтах
+        isValid:
+          type: boolean
+        validationErrors:
+          type: array
+          items:
+            type: string
+            
+    Cmi5PackageDetail:
+      allOf:
+        - $ref: '#/components/schemas/Cmi5Package'
+        - type: object
+          properties:
+            manifest:
+              $ref: '#/components/schemas/Cmi5Manifest'
+            activities:
+              type: array
+              items:
+                $ref: '#/components/schemas/Cmi5Activity'
+                
+    Cmi5Manifest:
+      type: object
+      properties:
+        identifier:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        vendor:
+          type: object
+          properties:
+            name:
+              type: string
+            contact:
+              type: string
+            url:
+              type: string
+        course:
+          type: object
+          properties:
+            id:
+              type: string
+            title:
+              type: array
+              items:
+                $ref: '#/components/schemas/LangString'
+            auCount:
+              type: integer
+              
+    Cmi5Activity:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        activityId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        launchUrl:
+          type: string
+        launchMethod:
+          type: string
+          enum: [OwnWindow, AnyWindow]
+        moveOn:
+          type: string
+          enum: [Passed, Completed, CompletedAndPassed, CompletedOrPassed, NotApplicable]
+        masteryScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        activityType:
+          type: string
+        duration:
+          type: string
+          description: ISO 8601 duration
+          
+    XAPIStatement:
+      type: object
+      required:
+        - actor
+        - verb
+        - object
+      properties:
+        id:
+          type: string
+          format: uuid
+        actor:
+          $ref: '#/components/schemas/XAPIActor'
+        verb:
+          $ref: '#/components/schemas/XAPIVerb'
+        object:
+          $ref: '#/components/schemas/XAPIObject'
+        result:
+          $ref: '#/components/schemas/XAPIResult'
+        context:
+          $ref: '#/components/schemas/XAPIContext'
+        timestamp:
+          type: string
+          format: date-time
+          
+    XAPIActor:
+      type: object
+      properties:
+        objectType:
+          type: string
+          default: Agent
+        name:
+          type: string
+        account:
+          type: object
+          properties:
+            name:
+              type: string
+            homePage:
+              type: string
+              
+    XAPIVerb:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uri
+        display:
+          type: object
+          additionalProperties:
+            type: string
+            
+    XAPIObject:
+      oneOf:
+        - $ref: '#/components/schemas/XAPIActivity'
+        - $ref: '#/components/schemas/XAPIStatementRef'
+        
+    XAPIActivity:
+      type: object
+      properties:
+        objectType:
+          type: string
+          default: Activity
+        id:
+          type: string
+          format: uri
+        definition:
+          type: object
+          properties:
+            name:
+              type: object
+              additionalProperties:
+                type: string
+            description:
+              type: object
+              additionalProperties:
+                type: string
+            type:
+              type: string
+              format: uri
+              
+    XAPIStatementRef:
+      type: object
+      properties:
+        objectType:
+          type: string
+          enum: [StatementRef]
+        id:
+          type: string
+          format: uuid
+          
+    XAPIResult:
+      type: object
+      properties:
+        score:
+          type: object
+          properties:
+            scaled:
+              type: number
+              minimum: 0
+              maximum: 1
+            raw:
+              type: number
+            min:
+              type: number
+            max:
+              type: number
+        success:
+          type: boolean
+        completion:
+          type: boolean
+        duration:
+          type: string
+          description: ISO 8601 duration
+          
+    XAPIContext:
+      type: object
+      properties:
+        registration:
+          type: string
+          format: uuid
+        contextActivities:
+          type: object
+          properties:
+            parent:
+              type: array
+              items:
+                $ref: '#/components/schemas/XAPIActivity'
+            grouping:
+              type: array
+              items:
+                $ref: '#/components/schemas/XAPIActivity'
+        extensions:
+          type: object
+          additionalProperties: true
+          
+    LRSSession:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+        authToken:
+          type: string
+        endpoint:
+          type: string
+          format: uri
+        registration:
+          type: string
+          format: uuid
+        actorMbox:
+          type: string
+          format: email
+        expiresAt:
+          type: string
+          format: date-time
+          
+    ActivityProgress:
+      type: object
+      properties:
+        activityId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [NotStarted, InProgress, Completed, Passed, Failed]
+        score:
+          type: number
+          format: float
+        completionPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        duration:
+          type: string
+          description: Total time spent
+        attempts:
+          type: integer
+        lastAccessedAt:
+          type: string
+          format: date-time
+        statements:
+          type: integer
+          description: Count of xAPI statements
+          
+    ValidationResult:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+        errors:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+        packageInfo:
+          type: object
+          properties:
+            identifier:
+              type: string
+            title:
+              type: string
+            version:
+              type: string
+            activityCount:
+              type: integer
+              
+    Cmi5ImportOptions:
+      type: object
+      properties:
+        autoCreateLessons:
+          type: boolean
+          default: false
+          description: Автоматически создать уроки из активностей
+        mappingRules:
+          type: object
+          description: Правила маппинга активностей на уроки
+          
+    LangString:
+      type: object
+      properties:
+        lang:
+          type: string
+        value:
+          type: string
+          
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+          
+  responses:
+    BadRequest:
+      description: Некорректный запрос
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              details:
+                type: array
+                items:
+                  type: string
+                  
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+security:
+  - bearerAuth: [] 
