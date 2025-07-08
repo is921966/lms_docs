@@ -49,59 +49,63 @@ public final class Cmi5Parser {
     /// - Returns: Распарсенный Cmi5Package
     /// - Throws: ParsingError если парсинг не удался
     public func parsePackage(from fileURL: URL) async throws -> Cmi5Package {
-        // Проверяем существование файла
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            throw ParsingError.fileNotFound
-        }
-        
-        // Получаем размер файла
-        let attributes = try fileManager.attributesOfItem(atPath: fileURL.path)
-        let fileSize = attributes[.size] as? Int64 ?? 0
-        
-        // Создаем временную директорию для распаковки
-        let tempURL = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        try fileManager.createDirectory(at: tempURL, withIntermediateDirectories: true)
-        
-        defer {
-            // Очищаем временную директорию
-            try? fileManager.removeItem(at: tempURL)
-        }
+        let archiveHandler = Cmi5ArchiveHandler()
         
         // Распаковываем архив
+        let extraction: Cmi5ArchiveHandler.ExtractionResult
         do {
-            try fileManager.unzipItem(at: fileURL, to: tempURL)
+            extraction = try await archiveHandler.extractArchive(from: fileURL)
         } catch {
             throw ParsingError.invalidPackageFormat
         }
         
-        // Ищем манифест
-        let manifestURL = tempURL.appendingPathComponent("cmi5.xml")
-        guard fileManager.fileExists(atPath: manifestURL.path) else {
-            throw ParsingError.manifestNotFound
+        defer {
+            // Очищаем временные файлы после парсинга
+            archiveHandler.cleanupPackage(at: extraction.extractedPath)
         }
         
-        // Парсим манифест
-        let manifestData = try Data(contentsOf: manifestURL)
+        // Читаем манифест
+        let manifestData = try Data(contentsOf: extraction.manifestURL)
         let manifest = try parseManifest(from: manifestData)
         
         // Парсим активности
-        let activities = try parseActivities(from: manifestData, baseURL: tempURL)
+        let activities = try parseActivities(from: manifestData, baseURL: extraction.contentURL)
         
         // Создаем пакет
-        let package = Cmi5Package(
-            id: UUID(),
+        let packageId = UUID()
+        let activitiesWithPackageId = activities.map { activity in
+            Cmi5Activity(
+                id: UUID(),
+                packageId: packageId,
+                activityId: activity.activityId,
+                title: activity.title,
+                description: activity.description,
+                launchUrl: activity.launchUrl,
+                launchMethod: activity.launchMethod,
+                moveOn: activity.moveOn,
+                masteryScore: activity.masteryScore,
+                activityType: activity.activityType,
+                duration: activity.duration
+            )
+        }
+        
+        return Cmi5Package(
+            id: packageId,
             courseId: nil,
             packageName: manifest.title,
-            packageVersion: nil,
+            packageVersion: manifest.version,
             manifest: manifest,
-            activities: activities,
+            activities: activitiesWithPackageId,
             uploadedAt: Date(),
-            uploadedBy: UUID(), // Заглушка для текущего пользователя
-            fileSize: fileSize,
+            uploadedBy: UUID(), // Should be current user
+            fileSize: extraction.packageSize,
             status: .processing
         )
-        
-        return package
+    }
+    
+    /// Парсит манифест из данных с базовым URL
+    public func parseManifest(_ data: Data, baseURL: URL) throws -> Cmi5Manifest {
+        return try parseManifest(from: data)
     }
     
     /// Валидирует Cmi5 пакет
