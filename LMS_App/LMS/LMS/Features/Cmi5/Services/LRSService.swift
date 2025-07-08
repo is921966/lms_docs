@@ -1,3 +1,9 @@
+//  LRSService.swift
+//  LMS
+//
+//  Created by LMS on 11.01.2025.
+//
+
 import Foundation
 import Combine
 
@@ -39,11 +45,33 @@ private class LRSSessionBox {
     }
 }
 
-// MARK: - LRSService Implementation
+// MARK: - LRS Service Implementation
 
-final class LRSService: LRSServiceProtocol {
+/// Сервис для работы с Learning Record Store (LRS) - центральным хранилищем xAPI statements
+final class LRSService: LRSServiceProtocol, ObservableObject {
+    
+    // MARK: - Singleton
+    
+    static let shared = LRSService()
+    
+    // MARK: - Properties
+    
     private let apiClient: APIClient
     private let sessionCache = NSCache<NSString, LRSSessionBox>()
+    
+    @Published private(set) var isOnline = true
+    @Published private(set) var pendingStatements = 0
+    
+    // Configuration
+    private(set) var endpoint: String = "https://lrs.example.com/xapi"
+    private(set) var authToken: String = "mock-auth-token"
+    private(set) var version = "1.0.3"
+    
+    // Current actor
+    private(set) var currentActor: XAPIActor = XAPIActor(
+        name: "Default User",
+        mbox: "mailto:user@example.com"
+    )
     
     init(apiClient: APIClient = APIClient.shared) {
         self.apiClient = apiClient

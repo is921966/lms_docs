@@ -238,6 +238,7 @@ struct Lesson: Identifiable, Codable {
         case interactive = "Интерактив"
         case quiz = "Тест"
         case assignment = "Задание"
+        case cmi5 = "Cmi5"
 
         var icon: String {
             switch self {
@@ -246,6 +247,7 @@ struct Lesson: Identifiable, Codable {
             case .interactive: return "hand.tap.fill"
             case .quiz: return "checkmark.circle.fill"
             case .assignment: return "pencil.circle.fill"
+            case .cmi5: return "cube.box.fill"
             }
         }
     }
@@ -256,6 +258,7 @@ struct Lesson: Identifiable, Codable {
         case interactive(url: String)
         case quiz(questions: [CourseQuizQuestion])
         case assignment(instructions: String, dueDate: Date?)
+        case cmi5(activityId: String, packageId: String)
     }
 
     var isCompleted: Bool {
