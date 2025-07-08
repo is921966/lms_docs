@@ -164,10 +164,22 @@ final class LRSService: LRSServiceProtocol, ObservableObject {
 // MARK: - Mock LRS Service
 
 final class MockLRSService: LRSServiceProtocol {
-    private var statements: [XAPIStatement] = []
+    var statements: [XAPIStatement] = []
     private var state: [String: [String: Any]] = [:]
     
+    // For testing
+    var shouldFailNextCalls: Int = 0
+    var sendAttempts: Int = 0
+    
     func sendStatement(_ statement: XAPIStatement) async throws -> String {
+        sendAttempts += 1
+        
+        // Simulate failures for testing
+        if shouldFailNextCalls > 0 {
+            shouldFailNextCalls -= 1
+            throw NSError(domain: "MockLRS", code: 500, userInfo: [NSLocalizedDescriptionKey: "Mock LRS failure"])
+        }
+        
         var newStatement = statement
         if newStatement.id == nil {
             newStatement.id = UUID().uuidString
