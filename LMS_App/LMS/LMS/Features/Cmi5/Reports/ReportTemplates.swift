@@ -15,7 +15,7 @@ public struct ReportTemplate {
     public struct Section {
         public let title: String
         public let template: String
-        public let type: ReportSection.SectionType
+        public let type: Cmi5ReportSection.SectionType
     }
     
     // MARK: - Predefined Templates

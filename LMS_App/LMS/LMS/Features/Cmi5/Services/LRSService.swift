@@ -9,7 +9,7 @@ import Combine
 
 // MARK: - LRSService Protocol
 
-protocol LRSServiceProtocol {
+public protocol LRSServiceProtocol {
     func sendStatement(_ statement: XAPIStatement) async throws -> String
     func getStatements(activityId: String, userId: String?, limit: Int) async throws -> [XAPIStatement]
     func getState(activityId: String, userId: String, stateId: String) async throws -> [String: Any]?
@@ -20,7 +20,7 @@ protocol LRSServiceProtocol {
 
 // MARK: - LRSSession
 
-struct LRSSession {
+public struct LRSSession {
     let sessionId: String
     let authToken: String
     let endpoint: String
@@ -168,8 +168,6 @@ final class MockLRSService: LRSServiceProtocol {
     private var state: [String: [String: Any]] = [:]
     
     // For testing
-    var shouldFailNextCalls: Int = 0
-    var sendAttempts: Int = 0
     
     func sendStatement(_ statement: XAPIStatement) async throws -> String {
         sendAttempts += 1

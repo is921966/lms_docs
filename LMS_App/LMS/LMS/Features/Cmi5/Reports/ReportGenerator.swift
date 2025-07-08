@@ -1,5 +1,5 @@
 //
-//  ReportGenerator.swift
+//  Cmi5ReportGenerator.swift
 //  LMS
 //
 //  Created on Sprint 42 Day 3 - Reports
@@ -10,7 +10,7 @@ import PDFKit
 import SwiftUI
 
 /// Генерирует отчеты на основе аналитических данных
-public final class ReportGenerator {
+public final class Cmi5ReportGenerator {
     
     // MARK: - Types
     
@@ -62,36 +62,36 @@ public final class ReportGenerator {
     
     // MARK: - Report Generation
     
-    public func generateProgressReport(
+    public func generateProgressCmi5Report(
         userId: String,
         courseId: String
-    ) async throws -> Report {
+    ) async throws -> Cmi5Report {
         
         // In real implementation, would fetch from analytics
         let sections = [
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Completion Status",
                 content: "75% completed (15 out of 20 activities)",
                 type: .text
             ),
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Daily Progress",
                 content: "Chart showing daily progress",
                 type: .chart,
-                chartData: ChartData(
+                chartData: Cmi5ChartData(
                     type: .line,
                     labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
                     datasets: [ChartDataset(label: "Completed", data: [2, 3, 5, 2, 3])]
                 )
             ),
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Time Investment",
                 content: "Total learning time: 12h 30m",
                 type: .text
             )
         ]
         
-        return Report(
+        return Cmi5Report(
             id: UUID(),
             type: .progress,
             userId: userId,
@@ -101,35 +101,35 @@ public final class ReportGenerator {
         )
     }
     
-    public func generatePerformanceReport(
+    public func generatePerformanceCmi5Report(
         userId: String,
         courseId: String
-    ) async throws -> Report {
+    ) async throws -> Cmi5Report {
         
         let sections = [
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Overall Performance",
                 content: "Average score: 82%\nSuccess rate: 85%",
                 type: .text
             ),
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Score Distribution",
                 content: "Bar chart of scores",
                 type: .chart,
-                chartData: ChartData(
+                chartData: Cmi5ChartData(
                     type: .bar,
                     labels: ["0-60", "60-70", "70-80", "80-90", "90-100"],
                     datasets: [ChartDataset(label: "Count", data: [0, 2, 5, 8, 3])]
                 )
             ),
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Recommendations",
                 content: generateRecommendations(averageScore: 0.82),
                 type: .text
             )
         ]
         
-        return Report(
+        return Cmi5Report(
             id: UUID(),
             type: .performance,
             userId: userId,
@@ -139,36 +139,36 @@ public final class ReportGenerator {
         )
     }
     
-    public func generateEngagementReport(
+    public func generateEngagementCmi5Report(
         userId: String,
         courseId: String,
         period: Int
-    ) async throws -> Report {
+    ) async throws -> Cmi5Report {
         
         let sections = [
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Learning Habits",
                 content: "Active days: 15 out of \(period)\nFrequency: 75%",
                 type: .text
             ),
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Peak Learning Hours",
                 content: "Most active: 2-3 PM",
                 type: .chart,
-                chartData: ChartData(
+                chartData: Cmi5ChartData(
                     type: .radar,
                     labels: Array(0..<24).map { "\($0):00" },
                     datasets: [ChartDataset(label: "Activity", data: generateHourlyActivity())]
                 )
             ),
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Consistency Score",
                 content: "Your learning consistency: Good (4/5)",
                 type: .text
             )
         ]
         
-        return Report(
+        return Cmi5Report(
             id: UUID(),
             type: .engagement,
             userId: userId,
@@ -178,36 +178,36 @@ public final class ReportGenerator {
         )
     }
     
-    public func generateComparisonReport(
+    public func generateComparisonCmi5Report(
         userId: String,
         courseId: String,
         groupId: String
-    ) async throws -> Report {
+    ) async throws -> Cmi5Report {
         
         let sections = [
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Your Performance vs Group Average",
                 content: "You: 85% | Group: 78%",
                 type: .text
             ),
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Group Comparison",
                 content: "You are in the 75th percentile",
                 type: .chart,
-                chartData: ChartData(
+                chartData: Cmi5ChartData(
                     type: .horizontalBar,
                     labels: ["You", "Group Average", "Top 10%"],
                     datasets: [ChartDataset(label: "Score", data: [85, 78, 92])]
                 )
             ),
-            ReportSection(
+            Cmi5ReportSection(
                 title: "Ranking",
                 content: "Your rank: 5 out of 20 learners",
                 type: .text
             )
         ]
         
-        return Report(
+        return Cmi5Report(
             id: UUID(),
             type: .comparison,
             userId: userId,
@@ -219,7 +219,7 @@ public final class ReportGenerator {
     
     // MARK: - Export Functions
     
-    public func exportToPDF(_ report: Report) async throws -> Data {
+    public func exportToPDF(_ report: Cmi5Report) async throws -> Data {
         let pdfDocument = PDFDocument()
         
         // Create first page
@@ -270,7 +270,7 @@ public final class ReportGenerator {
         return pdfData as Data
     }
     
-    public func exportToCSV(_ report: Report) async throws -> String {
+    public func exportToCSV(_ report: Cmi5Report) async throws -> String {
         var csv = "Section,Content\n"
         
         for section in report.sections {
@@ -284,12 +284,12 @@ public final class ReportGenerator {
     
     // MARK: - Template System
     
-    public func applyTemplate(_ template: ReportTemplate, with data: [String: String]) -> [ReportSection] {
+    public func applyTemplate(_ template: ReportTemplate, with data: [String: String]) -> [Cmi5ReportSection] {
         return template.sections.map { templateSection in
             let title = replaceVariables(in: templateSection.title, with: data)
             let content = replaceVariables(in: templateSection.template, with: data)
             
-            return ReportSection(
+            return Cmi5ReportSection(
                 title: title,
                 content: content,
                 type: templateSection.type
@@ -346,26 +346,26 @@ public final class ReportGenerator {
 
 // MARK: - Supporting Types
 
-public struct Report {
+public struct Cmi5Report {
     public let id: UUID
-    public let type: ReportGenerator.ReportType
+    public let type: Cmi5ReportGenerator.ReportType
     public let userId: String
     public let courseId: String
     public let generatedAt: Date
-    public let sections: [ReportSection]
+    public let sections: [Cmi5ReportSection]
 }
 
-public struct ReportSection {
+public struct Cmi5ReportSection {
     public let title: String
     public let content: String
     public let type: SectionType
-    public let chartData: ChartData?
+    public let chartData: Cmi5ChartData?
     
     public init(
         title: String,
         content: String,
         type: SectionType,
-        chartData: ChartData? = nil
+        chartData: Cmi5ChartData? = nil
     ) {
         self.title = title
         self.content = content
@@ -381,7 +381,7 @@ public struct ReportSection {
     }
 }
 
-public struct ChartData {
+public struct Cmi5ChartData {
     public let type: ChartType
     public let labels: [String]
     public let datasets: [ChartDataset]

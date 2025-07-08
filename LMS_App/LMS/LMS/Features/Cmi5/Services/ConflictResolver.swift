@@ -2,12 +2,17 @@
 //  ConflictResolver.swift
 //  LMS
 //
-//  Created on Sprint 42 Day 2 - Conflict Resolution
+//  Created on Sprint 42 Day 2 - Offline Support
 //
 
 import Foundation
 
-/// Разрешает конфликты при синхронизации xAPI statements
+/// Протокол для разрешения конфликтов
+public protocol ConflictResolverProtocol {
+    func resolve(local: XAPIStatement, remote: XAPIStatement, strategy: ConflictResolver.ResolutionStrategy) -> XAPIStatement
+}
+
+/// Решает конфликты между локальными и удаленными xAPI statements
 public final class ConflictResolver {
     
     // MARK: - Types

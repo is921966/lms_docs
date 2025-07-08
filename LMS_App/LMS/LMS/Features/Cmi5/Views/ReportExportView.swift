@@ -12,7 +12,7 @@ struct ReportExportView: View {
     @ObservedObject var viewModel: AnalyticsDashboardViewModel
     @Environment(\.dismiss) private var dismiss
     
-    @State private var selectedReportType = ReportGenerator.ReportType.progress
+    @State private var selectedReportType = Cmi5ReportGenerator.ReportType.progress
     @State private var selectedFormat = ExportFormat.pdf
     @State private var isGenerating = false
     @State private var showingShareSheet = false
@@ -69,7 +69,7 @@ struct ReportExportView: View {
         }
         .sheet(isPresented: $showingShareSheet) {
             if let url = generatedFileURL {
-                ShareSheet(items: [url])
+                ReportShareSheet(items: [url])
             }
         }
         .alert("Export Error", isPresented: $showingError) {
@@ -254,7 +254,7 @@ struct ReportExportView: View {
         try generateCSVReport(to: url)
     }
     
-    private func reportIcon(for type: ReportGenerator.ReportType) -> String {
+    private func reportIcon(for type: Cmi5ReportGenerator.ReportType) -> String {
         switch type {
         case .progress: return "chart.line.uptrend.xyaxis"
         case .performance: return "star.fill"
@@ -268,7 +268,7 @@ struct ReportExportView: View {
 // MARK: - Supporting Views
 
 struct ReportPreview: View {
-    let type: ReportGenerator.ReportType
+    let type: Cmi5ReportGenerator.ReportType
     let metrics: ReportMetrics
     
     var body: some View {
@@ -390,7 +390,7 @@ struct ReportMetrics {
 
 // MARK: - Share Sheet
 
-struct ShareSheet: UIViewControllerRepresentable {
+struct ReportShareSheet: UIViewControllerRepresentable {
     let items: [Any]
     
     func makeUIViewController(context: Context) -> UIActivityViewController {

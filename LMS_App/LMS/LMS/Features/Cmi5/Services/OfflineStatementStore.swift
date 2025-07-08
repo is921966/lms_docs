@@ -9,6 +9,15 @@ import Foundation
 import CoreData
 import Combine
 
+/// Протокол для хранилища офлайн statements
+public protocol OfflineStatementStoreProtocol {
+    func save(_ statement: XAPIStatement, priority: OfflineStatementStore.Priority) async throws
+    func getAllPending() async throws -> [OfflineStatementStore.PendingStatement]
+    func markAsSynced(statementId: String) async throws
+    func markAsFailed(statementId: String, error: Error) async throws
+    var pendingCountPublisher: AnyPublisher<Int, Never> { get }
+}
+
 /// Хранилище для офлайн xAPI statements
 public final class OfflineStatementStore {
     
@@ -94,7 +103,7 @@ public final class OfflineStatementStore {
             throw StoreError.invalidStatement
         }
         
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let entity = NSEntityDescription.entity(forEntityName: "PendingStatement", in: self.backgroundContext)!
             let pendingStatement = NSManagedObject(entity: entity, insertInto: self.backgroundContext)
             
@@ -116,7 +125,7 @@ public final class OfflineStatementStore {
     }
     
     public func batchSave(_ statements: [XAPIStatement], priority: Priority = .normal) async throws {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             for statement in statements {
                 guard let statementId = statement.id else { continue }
                 
@@ -143,7 +152,7 @@ public final class OfflineStatementStore {
     // MARK: - Retrieval Operations
     
     public func getAllPending() async throws -> [PendingStatement] {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
             request.predicate = NSPredicate(format: "syncStatus != %@", SyncStatus.synced.rawValue)
             request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: true)]
@@ -158,7 +167,7 @@ public final class OfflineStatementStore {
     }
     
     public func getPendingByPriority() async throws -> [PendingStatement] {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
             request.predicate = NSPredicate(format: "syncStatus != %@", SyncStatus.synced.rawValue)
             request.sortDescriptors = [
@@ -176,7 +185,7 @@ public final class OfflineStatementStore {
     }
     
     public func getBatch(limit: Int) async throws -> [PendingStatement] {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
             request.predicate = NSPredicate(format: "syncStatus == %@", SyncStatus.pending.rawValue)
             request.sortDescriptors = [
@@ -195,7 +204,7 @@ public final class OfflineStatementStore {
     }
     
     public func getPendingCount() async throws -> Int {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
             request.predicate = NSPredicate(format: "syncStatus != %@", SyncStatus.synced.rawValue)
             
@@ -208,7 +217,7 @@ public final class OfflineStatementStore {
     }
     
     public func getSyncedCount() async throws -> Int {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
             request.predicate = NSPredicate(format: "syncStatus == %@", SyncStatus.synced.rawValue)
             
@@ -247,7 +256,7 @@ public final class OfflineStatementStore {
     // MARK: - Delete Operations
     
     public func delete(statementId: String) async throws {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
             request.predicate = NSPredicate(format: "id == %@", statementId)
             
@@ -265,7 +274,7 @@ public final class OfflineStatementStore {
     }
     
     public func deleteAllPending() async throws {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
             request.predicate = NSPredicate(format: "syncStatus != %@", SyncStatus.synced.rawValue)
             
@@ -283,7 +292,7 @@ public final class OfflineStatementStore {
     }
     
     public func deleteOldSynced(olderThan days: Int) async throws {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
             let cutoffDate = Date().addingTimeInterval(-Double(days) * 24 * 60 * 60)
             request.predicate = NSPredicate(
@@ -307,7 +316,7 @@ public final class OfflineStatementStore {
     // MARK: - Private Methods
     
     private func updateStatement(id: String, update: @escaping (NSManagedObject) -> Void) async throws {
-        try await backgroundContext.perform {
+        try await backgroundContext.perform { @Sendable in
             let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
             request.predicate = NSPredicate(format: "id == %@", id)
             

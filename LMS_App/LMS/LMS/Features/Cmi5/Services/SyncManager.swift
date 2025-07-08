@@ -12,19 +12,12 @@ import BackgroundTasks
 
 // MARK: - Protocols
 
-protocol OfflineStatementStoreProtocol {
-    func getAllPending() async throws -> [OfflineStatementStore.PendingStatement]
-    func getBatch(limit: Int) async throws -> [OfflineStatementStore.PendingStatement]
-    func markAsSynced(statementId: String) async throws
-    func markAsFailed(statementId: String, error: Error) async throws
-}
-
-protocol StatementProcessorProtocol {
+public protocol StatementProcessorProtocol {
     func processStatement(_ statement: XAPIStatement) async throws -> String
     func processBatch(_ batch: [OfflineStatementStore.PendingStatement]) async throws
 }
 
-protocol NetworkMonitorProtocol {
+public protocol NetworkMonitorProtocol {
     var isNetworkAvailable: Bool { get }
     var networkStatusPublisher: AnyPublisher<Bool, Never> { get }
 }
