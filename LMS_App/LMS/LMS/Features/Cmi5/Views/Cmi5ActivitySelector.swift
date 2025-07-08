@@ -116,22 +116,20 @@ private struct PackageSection: View {
             Button(action: onToggleExpand) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(package.packageName)
+                        Text(package.title)
                             .font(.headline)
                             .foregroundColor(.primary)
                         
-                        if let version = package.packageVersion {
-                            Text("Версия: \(version)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                        Text("Версия: \(package.version)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                         
                         HStack {
-                            Label("\(package.activities.count)", systemImage: "doc.text")
+                            Label("\(activitiesCount(for: package))", systemImage: "doc.text")
                             
                             Spacer()
                             
-                            Text(package.formattedFileSize)
+                            Text(formatFileSize(package.size))
                         }
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -149,7 +147,8 @@ private struct PackageSection: View {
             
             // Activities
             if isExpanded {
-                ForEach(package.activities) { activity in
+                let activities = getActivities(for: package)
+                ForEach(activities) { activity in
                     ActivityRow(
                         activity: activity,
                         isSelected: selectedActivity?.id == activity.id,
@@ -160,6 +159,46 @@ private struct PackageSection: View {
                 }
             }
         }
+    }
+    
+    private func activitiesCount(for package: Cmi5Package) -> Int {
+        var count = 0
+        
+        func countInBlock(_ block: Cmi5Block) {
+            count += block.activities.count
+            for childBlock in block.blocks {
+                countInBlock(childBlock)
+            }
+        }
+        
+        if let rootBlock = package.manifest.rootBlock {
+            countInBlock(rootBlock)
+        }
+        
+        return count
+    }
+    
+    private func getActivities(for package: Cmi5Package) -> [Cmi5Activity] {
+        var activities: [Cmi5Activity] = []
+        
+        func collectFromBlock(_ block: Cmi5Block) {
+            activities.append(contentsOf: block.activities)
+            for childBlock in block.blocks {
+                collectFromBlock(childBlock)
+            }
+        }
+        
+        if let rootBlock = package.manifest.rootBlock {
+            collectFromBlock(rootBlock)
+        }
+        
+        return activities
+    }
+    
+    private func formatFileSize(_ bytes: Int64) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: bytes)
     }
 }
 
@@ -285,14 +324,14 @@ final class Cmi5ActivitySelectorViewModel: ObservableObject {
         
         do {
             await service.loadPackages()
-            packages = service.packages.filter { $0.status == .valid }
+            packages = service.packages.filter { $0.isValid }
             
             // Автоматически раскрываем первый пакет
             if let firstPackage = packages.first {
                 expandedPackages.insert(firstPackage.id)
             }
-        } catch {
-            self.error = error
+        } catch let loadError {
+            self.error = loadError
         }
         
         isLoading = false

@@ -114,27 +114,27 @@ struct Cmi5LessonView: View {
             
             // Activity details
             VStack(spacing: 16) {
-                DetailRow(
+                Cmi5DetailRow(
                     icon: "clock",
                     title: "Продолжительность",
                     value: formatDuration(activity.duration)
                 )
                 
-                DetailRow(
+                Cmi5DetailRow(
                     icon: "checkmark.circle",
                     title: "Критерий завершения",
                     value: activity.moveOn.localizedName
                 )
                 
                 if let score = activity.masteryScore {
-                    DetailRow(
+                    Cmi5DetailRow(
                         icon: "percent",
                         title: "Проходной балл",
                         value: "\(Int(score * 100))%"
                     )
                 }
                 
-                DetailRow(
+                Cmi5DetailRow(
                     icon: activity.launchMethod == .ownWindow ? "macwindow" : "rectangle.on.rectangle",
                     title: "Режим запуска",
                     value: activity.launchMethod.localizedName
@@ -255,7 +255,7 @@ struct Cmi5LessonView: View {
 
 // MARK: - Detail Row
 
-private struct DetailRow: View {
+private struct Cmi5DetailRow: View {
     let icon: String
     let title: String
     let value: String

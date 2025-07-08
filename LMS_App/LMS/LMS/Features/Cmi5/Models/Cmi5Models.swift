@@ -12,122 +12,47 @@ import Foundation
 /// Представляет импортированный Cmi5 пакет
 public struct Cmi5Package: Identifiable, Codable {
     public let id: UUID
-    public let courseId: UUID?
-    public let packageName: String
-    public let packageVersion: String?
+    public let packageId: String
+    public let title: String
+    public let description: String?
+    public var courseId: UUID?
     public let manifest: Cmi5Manifest
-    public let activities: [Cmi5Activity]
+    public let filePath: String
     public let uploadedAt: Date
-    public let uploadedBy: UUID
-    public let fileSize: Int64
-    public var status: PackageStatus
+    public let size: Int64
+    public var uploadedBy: UUID
+    public let version: String
+    public let isValid: Bool
+    public let validationErrors: [String]
     
-    public enum PackageStatus: String, Codable, CaseIterable {
-        case processing = "processing"
-        case valid = "valid"
-        case invalid = "invalid"
-        case archived = "archived"
-        
-        var localizedName: String {
-            switch self {
-            case .processing: return "Обрабатывается"
-            case .valid: return "Валидный"
-            case .invalid: return "Невалидный"
-            case .archived: return "В архиве"
-            }
-        }
-    }
-    
-    /// Форматированный размер файла
-    public var formattedFileSize: String {
-        let formatter = ByteCountFormatter()
-        formatter.countStyle = .file
-        // Форматируем в байтах сначала
-        let bytes = Double(fileSize)
-        
-        // Ручное форматирование для консистентности
-        switch bytes {
-        case 0..<1024:
-            return "\(Int(bytes)) B"
-        case 1024..<(1024 * 1024):
-            let kb = bytes / 1024
-            if kb.truncatingRemainder(dividingBy: 1) == 0 {
-                return "\(Int(kb)) KB"
-            } else {
-                return String(format: "%.1f KB", kb)
-            }
-        case (1024 * 1024)..<(1024 * 1024 * 1024):
-            let mb = bytes / (1024 * 1024)
-            if mb.truncatingRemainder(dividingBy: 1) == 0 {
-                return "\(Int(mb)) MB"
-            } else {
-                return String(format: "%.1f MB", mb)
-            }
-        default:
-            let gb = bytes / (1024 * 1024 * 1024)
-            if gb.truncatingRemainder(dividingBy: 1) == 0 {
-                return "\(Int(gb)) GB"
-            } else {
-                return String(format: "%.1f GB", gb)
-            }
-        }
-    }
-    
-    /// Проверка валидности пакета
-    public var isValid: Bool {
-        return status == .valid && 
-               !packageName.isEmpty && 
-               fileSize > 0 &&
-               !activities.isEmpty &&
-               !manifest.identifier.isEmpty
-    }
-    
-    /// Ошибки валидации
-    public func validationErrors() -> [String]? {
-        var errors: [String] = []
-        
-        if packageName.isEmpty {
-            errors.append("Имя пакета не может быть пустым")
-        }
-        
-        if fileSize <= 0 {
-            errors.append("Размер файла должен быть больше 0")
-        }
-        
-        if activities.isEmpty && status == .valid {
-            errors.append("Валидный пакет должен содержать активности")
-        }
-        
-        if manifest.identifier.isEmpty {
-            errors.append("Идентификатор манифеста не может быть пустым")
-        }
-        
-        return errors.isEmpty ? nil : errors
-    }
-    
-    /// Инициализатор для тестов и создания
     public init(
         id: UUID = UUID(),
+        packageId: String,
+        title: String,
+        description: String? = nil,
         courseId: UUID? = nil,
-        packageName: String,
-        packageVersion: String? = nil,
         manifest: Cmi5Manifest,
-        activities: [Cmi5Activity] = [],
+        filePath: String,
         uploadedAt: Date = Date(),
+        size: Int64,
         uploadedBy: UUID,
-        fileSize: Int64,
-        status: PackageStatus = .processing
+        version: String = "1.0",
+        isValid: Bool = true,
+        validationErrors: [String] = []
     ) {
         self.id = id
+        self.packageId = packageId
+        self.title = title
+        self.description = description
         self.courseId = courseId
-        self.packageName = packageName
-        self.packageVersion = packageVersion
         self.manifest = manifest
-        self.activities = activities
+        self.filePath = filePath
         self.uploadedAt = uploadedAt
+        self.size = size
         self.uploadedBy = uploadedBy
-        self.fileSize = fileSize
-        self.status = status
+        self.version = version
+        self.isValid = isValid
+        self.validationErrors = validationErrors
     }
 }
 

@@ -55,20 +55,20 @@ public final class Cmi5Service: ObservableObject {
     
     // MARK: - Properties
     
-    private let parser = Cmi5Parser()
+    private let parser = Cmi5FullParser()
     private let archiveHandler = Cmi5ArchiveHandler()
-    private let repository: Cmi5Repository
+    private let repository: Cmi5RepositoryProtocol
     private let fileStorage: FileStorageService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
     
     public init(
-        repository: Cmi5Repository = Cmi5Repository(),
-        fileStorage: FileStorageService = FileStorageService()
+        repository: Cmi5RepositoryProtocol? = nil,
+        fileStorage: FileStorageService? = nil
     ) {
-        self.repository = repository
-        self.fileStorage = fileStorage
+        self.repository = repository ?? Cmi5Repository()
+        self.fileStorage = fileStorage ?? FileStorageService()
         
         // Загружаем пакеты при инициализации
         Task {
@@ -134,13 +134,27 @@ public final class Cmi5Service: ObservableObject {
             throw ServiceError.validationFailed(validation.errors)
         }
         
-        // Парсим пакет
-        var package = try await parser.parsePackage(from: url)
+        // Распаковываем архив
+        let extraction = try await archiveHandler.extractArchive(from: url)
         
-        // Обновляем данные пакета
-        package.courseId = courseId
-        package.uploadedBy = uploadedBy
-        package.status = validation.isValid ? .valid : .invalid
+        // Парсим манифест
+        let manifestData = try Data(contentsOf: extraction.manifestURL)
+        let manifest = try parser.parseManifest(manifestData, baseURL: extraction.contentURL)
+        
+        // Создаем пакет
+        var package = Cmi5Package(
+            packageId: manifest.identifier,
+            title: manifest.course?.title.first?.value ?? "Untitled",
+            description: manifest.course?.description?.first?.value,
+            courseId: courseId,
+            manifest: manifest,
+            filePath: extraction.extractedPath.path,
+            size: extraction.packageSize,
+            uploadedBy: uploadedBy,
+            version: manifest.version ?? "1.0",
+            isValid: validation.isValid,
+            validationErrors: validation.errors
+        )
         
         // Сохраняем в хранилище
         let storageUrl = try await savePackageFiles(package: package, from: url)
@@ -189,7 +203,25 @@ public final class Cmi5Service: ObservableObject {
     /// Получает активности пакета
     public func getActivities(for packageId: UUID) async throws -> [Cmi5Activity] {
         let package = try await loadPackage(id: packageId)
-        return package.activities
+        
+        // Парсим активности из манифеста
+        var activities: [Cmi5Activity] = []
+        
+        func parseBlock(_ block: Cmi5Block, parentId: String? = nil) {
+            for activity in block.activities {
+                activities.append(activity)
+            }
+            
+            for childBlock in block.blocks {
+                parseBlock(childBlock, parentId: block.id)
+            }
+        }
+        
+        if let rootBlock = package.manifest.rootBlock {
+            parseBlock(rootBlock)
+        }
+        
+        return activities
     }
     
     /// Создает URL для запуска активности

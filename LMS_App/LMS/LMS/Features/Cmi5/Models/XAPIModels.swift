@@ -11,41 +11,38 @@ import Foundation
 
 /// Представляет xAPI Statement - основную единицу данных в xAPI
 public struct XAPIStatement: Codable, Identifiable {
-    public let id: UUID
+    public var id: String?
     public let actor: XAPIActor
     public let verb: XAPIVerb
     public let object: XAPIObject
-    public let result: XAPIResult?
-    public let context: XAPIContext?
-    public let timestamp: Date
-    public let stored: Date?
-    public let authority: XAPIActor?
-    public let version: String?
-    public let attachments: [XAPIAttachment]?
+    public var result: XAPIResult?
+    public var context: XAPIContext?
+    public var timestamp: Date?
+    public var stored: Date?
+    public var authority: XAPIActor?
+    public var attachments: [XAPIAttachment]?
     
     public init(
-        id: UUID = UUID(),
+        id: String? = nil,
         actor: XAPIActor,
         verb: XAPIVerb,
         object: XAPIObject,
         result: XAPIResult? = nil,
         context: XAPIContext? = nil,
-        timestamp: Date = Date(),
+        timestamp: Date? = nil,
         stored: Date? = nil,
         authority: XAPIActor? = nil,
-        version: String? = "1.0.3",
         attachments: [XAPIAttachment]? = nil
     ) {
-        self.id = id
+        self.id = id ?? UUID().uuidString
         self.actor = actor
         self.verb = verb
         self.object = object
         self.result = result
         self.context = context
-        self.timestamp = timestamp
+        self.timestamp = timestamp ?? Date()
         self.stored = stored
         self.authority = authority
-        self.version = version
         self.attachments = attachments
     }
 }
@@ -54,30 +51,32 @@ public struct XAPIStatement: Codable, Identifiable {
 
 /// Представляет актора (пользователя) в xAPI
 public struct XAPIActor: Codable {
-    public let objectType: String?
     public let name: String?
     public let mbox: String?
     public let mbox_sha1sum: String?
     public let openid: String?
     public let account: XAPIAccount?
-    public let member: [XAPIActor]? // For groups
     
     public init(
-        objectType: String? = "Agent",
         name: String? = nil,
         mbox: String? = nil,
         mbox_sha1sum: String? = nil,
         openid: String? = nil,
-        account: XAPIAccount? = nil,
-        member: [XAPIActor]? = nil
+        account: XAPIAccount? = nil
     ) {
-        self.objectType = objectType
         self.name = name
         self.mbox = mbox
         self.mbox_sha1sum = mbox_sha1sum
         self.openid = openid
         self.account = account
-        self.member = member
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case mbox
+        case mbox_sha1sum = "mbox_sha1sum"
+        case openid
+        case account
     }
 }
 
@@ -194,16 +193,11 @@ public enum XAPIObject: Codable {
 
 /// Активность в xAPI (курс, урок, тест и т.д.)
 public struct XAPIActivity: Codable {
-    public let objectType: String?
+    public let objectType: String = "Activity"
     public let id: String
     public let definition: XAPIActivityDefinition?
     
-    public init(
-        objectType: String? = "Activity",
-        id: String,
-        definition: XAPIActivityDefinition? = nil
-    ) {
-        self.objectType = objectType
+    public init(id: String, definition: XAPIActivityDefinition?) {
         self.id = id
         self.definition = definition
     }
@@ -262,12 +256,12 @@ public struct XAPISubStatement: Codable {
 
 /// Результат действия
 public struct XAPIResult: Codable {
-    public let score: XAPIScore?
-    public let success: Bool?
-    public let completion: Bool?
-    public let response: String?
-    public let duration: String? // ISO 8601 Duration
-    public let extensions: [String: AnyCodable]?
+    public var score: XAPIScore?
+    public var success: Bool?
+    public var completion: Bool?
+    public var response: String?
+    public var duration: String? // ISO 8601 Duration
+    public var extensions: [String: AnyCodable]?
     
     public init(
         score: XAPIScore? = nil,
@@ -293,22 +287,22 @@ public struct XAPIScore: Codable {
     public let min: Double?
     public let max: Double?
     
-    public init(
-        scaled: Double? = nil,
-        raw: Double? = nil,
-        min: Double? = nil,
-        max: Double? = nil
-    ) {
+    public init(scaled: Double? = nil, raw: Double? = nil, min: Double? = nil, max: Double? = nil) {
         self.scaled = scaled
         self.raw = raw
         self.min = min
         self.max = max
     }
     
-    /// Валидация scaled значения
+    // Validation
     public var isValid: Bool {
-        guard let scaled = scaled else { return true }
-        return scaled >= -1.0 && scaled <= 1.0
+        if let scaled = scaled, (scaled < -1.0 || scaled > 1.0) {
+            return false
+        }
+        if let raw = raw, let min = min, let max = max {
+            return raw >= min && raw <= max && min < max
+        }
+        return true
     }
 }
 
@@ -316,23 +310,19 @@ public struct XAPIScore: Codable {
 
 /// Контекст выполнения действия
 public struct XAPIContext: Codable {
-    public let registration: UUID?
+    public let registration: String?
     public let instructor: XAPIActor?
     public let team: XAPIActor?
     public let contextActivities: XAPIContextActivities?
-    public let revision: String?
-    public let platform: String?
     public let language: String?
     public let statement: XAPIStatementRef?
     public let extensions: [String: AnyCodable]?
     
     public init(
-        registration: UUID? = nil,
+        registration: String? = nil,
         instructor: XAPIActor? = nil,
         team: XAPIActor? = nil,
         contextActivities: XAPIContextActivities? = nil,
-        revision: String? = nil,
-        platform: String? = nil,
         language: String? = nil,
         statement: XAPIStatementRef? = nil,
         extensions: [String: AnyCodable]? = nil
@@ -341,8 +331,6 @@ public struct XAPIContext: Codable {
         self.instructor = instructor
         self.team = team
         self.contextActivities = contextActivities
-        self.revision = revision
-        self.platform = platform
         self.language = language
         self.statement = statement
         self.extensions = extensions
@@ -413,25 +401,20 @@ public struct AnyCodable: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         
-        if container.decodeNil() {
-            self.value = NSNull()
-        } else if let bool = try? container.decode(Bool.self) {
-            self.value = bool
+        if let bool = try? container.decode(Bool.self) {
+            value = bool
         } else if let int = try? container.decode(Int.self) {
-            self.value = int
+            value = int
         } else if let double = try? container.decode(Double.self) {
-            self.value = double
+            value = double
         } else if let string = try? container.decode(String.self) {
-            self.value = string
+            value = string
         } else if let array = try? container.decode([AnyCodable].self) {
-            self.value = array.map { $0.value }
+            value = array.map { $0.value }
         } else if let dictionary = try? container.decode([String: AnyCodable].self) {
-            self.value = dictionary.mapValues { $0.value }
+            value = dictionary.mapValues { $0.value }
         } else {
-            throw DecodingError.dataCorruptedError(
-                in: container,
-                debugDescription: "Cannot decode AnyCodable"
-            )
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "AnyCodable value cannot be decoded")
         }
     }
     
@@ -439,8 +422,6 @@ public struct AnyCodable: Codable {
         var container = encoder.singleValueContainer()
         
         switch value {
-        case is NSNull:
-            try container.encodeNil()
         case let bool as Bool:
             try container.encode(bool)
         case let int as Int:
@@ -454,13 +435,7 @@ public struct AnyCodable: Codable {
         case let dictionary as [String: Any]:
             try container.encode(dictionary.mapValues { AnyCodable($0) })
         default:
-            throw EncodingError.invalidValue(
-                value,
-                EncodingError.Context(
-                    codingPath: [],
-                    debugDescription: "Cannot encode AnyCodable"
-                )
-            )
+            throw EncodingError.invalidValue(value, .init(codingPath: encoder.codingPath, debugDescription: "AnyCodable value cannot be encoded"))
         }
     }
 } 
