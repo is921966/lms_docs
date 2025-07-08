@@ -7,324 +7,298 @@
 
 import XCTest
 
-/// UI тесты для Cmi5 функциональности
-final class Cmi5UITests: XCTestCase {
+/// UI tests for Cmi5 module user interface
+class Cmi5UITests: XCTestCase {
     
-    private var app: XCUIApplication!
+    var app: XCUIApplication!
     
     override func setUpWithError() throws {
         continueAfterFailure = false
-        
         app = XCUIApplication()
-        app.launchArguments = ["-UITesting"]
+        app.launchArguments = ["UI_TESTING"]
         app.launch()
         
-        // Логинимся
-        performLogin()
-        
-        // Переходим в Course Builder
-        navigateToCourseBuilder()
+        // Navigate to Cmi5 section
+        navigateToCmi5()
     }
     
-    override func tearDownWithError() throws {
-        app = nil
+    // MARK: - Navigation Tests
+    
+    func testCmi5ModuleAccessibility() {
+        // Verify Cmi5 module is accessible from main menu
+        XCTAssertTrue(app.navigationBars["Cmi5 Player"].exists)
+        
+        // Check main sections are visible
+        XCTAssertTrue(app.buttons["Browse Courses"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["My Learning"].exists)
+        XCTAssertTrue(app.buttons["Analytics"].exists)
+        XCTAssertTrue(app.buttons["Reports"].exists)
     }
     
-    // MARK: - Import Tests
-    
-    func testCmi5ImportFlow() throws {
-        // Given - находимся в Course Builder
+    func testNavigationFlow() {
+        // Test navigation through all Cmi5 sections
         
-        // When - начинаем импорт Cmi5
-        let addContentButton = app.buttons["AddContentButton"]
-        XCTAssertTrue(addContentButton.exists)
-        addContentButton.tap()
+        // Browse Courses
+        app.buttons["Browse Courses"].tap()
+        XCTAssertTrue(app.navigationBars["Course Catalog"].exists)
+        app.navigationBars.buttons["Back"].tap()
         
-        // Выбираем Cmi5
-        let cmi5Option = app.buttons["ImportCmi5Package"]
-        XCTAssertTrue(cmi5Option.waitForExistence(timeout: 2))
-        cmi5Option.tap()
+        // My Learning
+        app.buttons["My Learning"].tap()
+        XCTAssertTrue(app.navigationBars["My Learning"].exists)
+        app.navigationBars.buttons["Back"].tap()
         
-        // Then - проверяем что открылся импорт
-        let importTitle = app.navigationBars["Импорт Cmi5 пакета"]
-        XCTAssertTrue(importTitle.exists)
+        // Analytics
+        app.buttons["Analytics"].tap()
+        XCTAssertTrue(app.navigationBars["Learning Analytics"].exists)
+        app.navigationBars.buttons["Back"].tap()
         
-        // Проверяем элементы UI
-        XCTAssertTrue(app.staticTexts["Инструкции"].exists)
-        XCTAssertTrue(app.staticTexts["Перетащите файл сюда"].exists)
-        XCTAssertTrue(app.buttons["Выбрать файл"].exists)
-        
-        // Нажимаем выбрать файл (в тесте используется демо)
-        app.buttons["Выбрать файл"].tap()
-        
-        // Ждем обработку
-        let successMessage = app.staticTexts["Пакет успешно обработан"]
-        XCTAssertTrue(successMessage.waitForExistence(timeout: 5))
-        
-        // Проверяем информацию о пакете
-        XCTAssertTrue(app.staticTexts["Корпоративная культура ЦУМ"].exists)
-        XCTAssertTrue(app.staticTexts["Количество активностей"].exists)
-        
-        // Импортируем
-        let importButton = app.buttons["Импортировать"]
-        XCTAssertTrue(importButton.isEnabled)
-        importButton.tap()
-        
-        // Проверяем что вернулись в Course Builder
-        let courseBuilderTitle = app.navigationBars["Конструктор курса"]
-        XCTAssertTrue(courseBuilderTitle.waitForExistence(timeout: 3))
+        // Reports
+        app.buttons["Reports"].tap()
+        XCTAssertTrue(app.navigationBars["Learning Reports"].exists)
     }
     
-    func testCmi5PackagePreview() throws {
-        // Given - импортировали пакет
-        importDemoCmi5Package()
+    // MARK: - Course Launch Tests
+    
+    func testCourseLaunchFlow() {
+        // Navigate to course catalog
+        app.buttons["Browse Courses"].tap()
         
-        // When - открываем предпросмотр
-        let cmi5Activity = app.cells.containing(.staticText, identifier: "Корпоративная культура ЦУМ").firstMatch
-        XCTAssertTrue(cmi5Activity.waitForExistence(timeout: 3))
-        cmi5Activity.tap()
+        // Select first course
+        let courseCell = app.collectionViews.cells.firstMatch
+        XCTAssertTrue(courseCell.waitForExistence(timeout: 5))
+        courseCell.tap()
         
-        // Then - проверяем экран предпросмотра
-        let previewTitle = app.navigationBars["Предпросмотр пакета"]
-        XCTAssertTrue(previewTitle.exists)
+        // Verify course details
+        XCTAssertTrue(app.staticTexts["Course Details"].exists)
+        XCTAssertTrue(app.buttons["Launch Course"].exists)
         
-        // Проверяем информацию
-        XCTAssertTrue(app.staticTexts["Информация о пакете"].exists)
-        XCTAssertTrue(app.staticTexts["Структура курса"].exists)
+        // Launch course
+        app.buttons["Launch Course"].tap()
         
-        // Проверяем кнопки действий
-        XCTAssertTrue(app.buttons["Создать уроки"].exists)
-        XCTAssertTrue(app.buttons["Перепроверить"].exists)
-        
-        // Закрываем
-        app.buttons["Закрыть"].tap()
+        // Verify player view
+        XCTAssertTrue(app.otherElements["CoursePlayer"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Exit Course"].exists)
     }
     
-    func testCmi5ActivitySelection() throws {
-        // Given - находимся в Course Builder с Cmi5 пакетом
-        importDemoCmi5Package()
+    func testCoursePlayerControls() {
+        launchTestCourse()
         
-        // When - выбираем активности из пакета
-        let selectActivitiesButton = app.buttons["Выбрать активности"]
-        XCTAssertTrue(selectActivitiesButton.waitForExistence(timeout: 3))
-        selectActivitiesButton.tap()
+        // Verify player controls
+        XCTAssertTrue(app.buttons["Pause"].exists)
+        XCTAssertTrue(app.progressIndicators["CourseProgress"].exists)
+        XCTAssertTrue(app.staticTexts["Session Time"].exists)
         
-        // Then - проверяем селектор активностей
-        let selectorTitle = app.navigationBars["Выберите активности"]
-        XCTAssertTrue(selectorTitle.exists)
+        // Test pause/resume
+        app.buttons["Pause"].tap()
+        XCTAssertTrue(app.buttons["Resume"].exists)
         
-        // Проверяем список пакетов
-        let packageCell = app.cells.containing(.staticText, identifier: "Корпоративная культура ЦУМ").firstMatch
-        XCTAssertTrue(packageCell.exists)
-        
-        // Раскрываем пакет
-        packageCell.tap()
-        
-        // Проверяем активности
-        XCTAssertTrue(app.staticTexts["Введение в корпоративную культуру"].waitForExistence(timeout: 2))
-        XCTAssertTrue(app.staticTexts["Тест: Корпоративные ценности"].exists)
-        XCTAssertTrue(app.staticTexts["Видео: История компании"].exists)
-        
-        // Выбираем активность
-        let activityCell = app.cells.containing(.staticText, identifier: "Введение в корпоративную культуру").firstMatch
-        activityCell.tap()
-        
-        // Добавляем
-        let addButton = app.buttons["Добавить"]
-        XCTAssertTrue(addButton.isEnabled)
-        addButton.tap()
-        
-        // Проверяем что активность добавлена в курс
-        XCTAssertTrue(app.staticTexts["Введение в корпоративную культуру"].waitForExistence(timeout: 3))
+        app.buttons["Resume"].tap()
+        XCTAssertTrue(app.buttons["Pause"].exists)
     }
     
-    // MARK: - Lesson Player Tests
+    // MARK: - Analytics Dashboard Tests
     
-    func testCmi5LessonPlayer() throws {
-        // Given - есть курс с Cmi5 уроком
-        navigateToCourseWithCmi5()
+    func testAnalyticsDashboardDisplay() {
+        app.buttons["Analytics"].tap()
         
-        // When - открываем урок
-        let lessonCell = app.cells.containing(.staticText, identifier: "Введение в корпоративную культуру").firstMatch
-        XCTAssertTrue(lessonCell.waitForExistence(timeout: 3))
-        lessonCell.tap()
+        // Verify metrics cards
+        XCTAssertTrue(app.otherElements["CompletionRateCard"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["AverageScoreCard"].exists)
+        XCTAssertTrue(app.otherElements["TimeSpentCard"].exists)
+        XCTAssertTrue(app.otherElements["ActiveSessionsCard"].exists)
         
-        // Then - проверяем экран урока
-        let lessonTitle = app.navigationBars["Введение в корпоративную культуру"]
-        XCTAssertTrue(lessonTitle.exists)
+        // Verify chart
+        XCTAssertTrue(app.otherElements["ProgressChart"].exists)
         
-        // Проверяем экран подготовки
-        XCTAssertTrue(app.staticTexts["Подготовка к запуску"].exists)
-        XCTAssertTrue(app.staticTexts["Продолжительность"].exists)
-        XCTAssertTrue(app.staticTexts["30 мин"].exists)
-        
-        // Запускаем урок
-        let startButton = app.buttons["Начать урок"]
-        XCTAssertTrue(startButton.exists)
-        startButton.tap()
-        
-        // Проверяем что WebView загрузился
-        let webView = app.webViews.firstMatch
-        XCTAssertTrue(webView.waitForExistence(timeout: 5))
-        
-        // Проверяем контролы
-        XCTAssertTrue(app.buttons["exitFullScreenButton"].exists)
-        XCTAssertTrue(app.buttons["Завершить"].exists)
+        // Verify heatmap
+        XCTAssertTrue(app.otherElements["ActivityHeatmap"].exists)
     }
     
-    func testCmi5FullScreenMode() throws {
-        // Given - находимся в уроке
-        navigateToCmi5Lesson()
+    func testAnalyticsInteraction() {
+        app.buttons["Analytics"].tap()
         
-        // When - включаем полноэкранный режим
-        let fullScreenButton = app.buttons["enterFullScreenButton"]
-        XCTAssertTrue(fullScreenButton.waitForExistence(timeout: 3))
-        fullScreenButton.tap()
+        // Test time range selector
+        app.buttons["TimeRangeSelector"].tap()
+        XCTAssertTrue(app.buttons["Last 7 Days"].exists)
+        XCTAssertTrue(app.buttons["Last 30 Days"].exists)
+        XCTAssertTrue(app.buttons["All Time"].exists)
         
-        // Then - проверяем полноэкранный режим
-        // Навигация должна скрыться
-        XCTAssertFalse(app.navigationBars.firstMatch.exists)
+        app.buttons["Last 30 Days"].tap()
         
-        // Кнопка выхода должна быть доступна
-        let exitFullScreenButton = app.buttons["exitFullScreenButton"]
-        XCTAssertTrue(exitFullScreenButton.exists)
-        
-        // Выходим из полноэкранного режима
-        exitFullScreenButton.tap()
-        
-        // Проверяем что вернулись в обычный режим
-        XCTAssertTrue(app.navigationBars.firstMatch.waitForExistence(timeout: 2))
+        // Verify data updates (check loading indicator)
+        XCTAssertTrue(app.activityIndicators["LoadingAnalytics"].exists)
+        XCTAssertFalse(app.activityIndicators["LoadingAnalytics"].exists)
     }
     
-    func testCmi5LessonCompletion() throws {
-        // Given - находимся в уроке
-        navigateToCmi5Lesson()
+    // MARK: - Report Generation Tests
+    
+    func testReportGeneration() {
+        app.buttons["Reports"].tap()
         
-        // When - завершаем урок
-        let completeButton = app.buttons["Завершить"]
-        XCTAssertTrue(completeButton.waitForExistence(timeout: 3))
-        completeButton.tap()
+        // Select report type
+        app.buttons["Generate Report"].tap()
+        XCTAssertTrue(app.sheets["Report Options"].exists)
         
-        // Подтверждаем
-        let alert = app.alerts["Завершить урок?"]
-        XCTAssertTrue(alert.waitForExistence(timeout: 2))
-        alert.buttons["Завершить"].tap()
+        // Select progress report
+        app.buttons["Progress Report"].tap()
         
-        // Then - проверяем что вернулись к списку уроков
-        let courseTitle = app.navigationBars.firstMatch
-        XCTAssertTrue(courseTitle.waitForExistence(timeout: 3))
+        // Verify preview
+        XCTAssertTrue(app.staticTexts["Report Preview"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Export"].exists)
+    }
+    
+    func testReportExportOptions() {
+        generateTestReport()
         
-        // Проверяем что урок отмечен как пройденный
-        let completedIcon = app.images["checkmark.circle.fill"]
-        XCTAssertTrue(completedIcon.exists)
+        // Test export options
+        app.buttons["Export"].tap()
+        XCTAssertTrue(app.sheets["Export Options"].exists)
+        
+        // Verify format options
+        XCTAssertTrue(app.buttons["Export as PDF"].exists)
+        XCTAssertTrue(app.buttons["Export as CSV"].exists)
+        XCTAssertTrue(app.buttons["Share"].exists)
+        
+        // Test PDF export
+        app.buttons["Export as PDF"].tap()
+        XCTAssertTrue(app.activityIndicators["ExportingReport"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.alerts["Export Complete"].waitForExistence(timeout: 10))
+    }
+    
+    // MARK: - Offline Mode Tests
+    
+    func testOfflineModeIndicator() {
+        // Enable airplane mode (simulated)
+        app.launchArguments.append("SIMULATE_OFFLINE")
+        app.terminate()
+        app.launch()
+        navigateToCmi5()
+        
+        // Verify offline indicator
+        XCTAssertTrue(app.staticTexts["Offline Mode"].exists)
+        XCTAssertTrue(app.images["OfflineIcon"].exists)
+    }
+    
+    func testOfflineFunctionality() {
+        // Launch in offline mode
+        app.launchArguments.append("SIMULATE_OFFLINE")
+        app.terminate()
+        app.launch()
+        navigateToCmi5()
+        
+        // Launch course offline
+        launchTestCourse()
+        
+        // Verify offline features work
+        XCTAssertTrue(app.staticTexts["Statements will sync when online"].exists)
+        
+        // Complete an action
+        app.buttons["Mark Complete"].tap()
+        XCTAssertTrue(app.staticTexts["Saved offline"].exists)
+    }
+    
+    // MARK: - Loading States Tests
+    
+    func testLoadingStates() {
+        // Test course catalog loading
+        app.buttons["Browse Courses"].tap()
+        XCTAssertTrue(app.otherElements["SkeletonLoader"].exists)
+        XCTAssertFalse(app.otherElements["SkeletonLoader"].waitForExistence(timeout: 5))
+        
+        // Test analytics loading
+        app.navigationBars.buttons["Back"].tap()
+        app.buttons["Analytics"].tap()
+        XCTAssertTrue(app.activityIndicators["LoadingAnalytics"].exists)
+        XCTAssertFalse(app.activityIndicators["LoadingAnalytics"].waitForExistence(timeout: 5))
     }
     
     // MARK: - Error Handling Tests
     
-    func testCmi5ImportError() throws {
-        // Given - начинаем импорт
-        app.buttons["AddContentButton"].tap()
-        app.buttons["ImportCmi5Package"].tap()
+    func testErrorHandling() {
+        // Simulate network error
+        app.launchArguments.append("SIMULATE_NETWORK_ERROR")
+        app.terminate()
+        app.launch()
+        navigateToCmi5()
         
-        // When - симулируем ошибку (в демо режиме)
-        app.switches["SimulateError"].tap() // Специальный switch для тестов
-        app.buttons["Выбрать файл"].tap()
+        app.buttons["Browse Courses"].tap()
         
-        // Then - проверяем отображение ошибки
-        let errorMessage = app.staticTexts["Ошибка"]
-        XCTAssertTrue(errorMessage.waitForExistence(timeout: 3))
+        // Verify error state
+        XCTAssertTrue(app.staticTexts["Unable to load courses"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Retry"].exists)
         
-        // Проверяем что кнопка импорта недоступна
-        let importButton = app.buttons["Импортировать"]
-        XCTAssertFalse(importButton.isEnabled)
+        // Test retry
+        app.buttons["Retry"].tap()
+        XCTAssertTrue(app.activityIndicators["LoadingCourses"].exists)
+    }
+    
+    // MARK: - Accessibility Tests
+    
+    func testAccessibilityLabels() {
+        // Verify accessibility labels
+        XCTAssertTrue(app.buttons["Browse Courses"].isHittable)
+        XCTAssertEqual(app.buttons["Browse Courses"].label, "Browse available courses")
+        
+        app.buttons["Analytics"].tap()
+        
+        let completionCard = app.otherElements["CompletionRateCard"]
+        XCTAssertTrue(completionCard.isAccessibilityElement)
+        XCTAssertTrue(completionCard.label.contains("Completion rate"))
+    }
+    
+    func testVoiceOverNavigation() {
+        // Enable VoiceOver simulation
+        app.launchArguments.append("ENABLE_ACCESSIBILITY_TESTING")
+        app.terminate()
+        app.launch()
+        navigateToCmi5()
+        
+        // Test navigation with accessibility
+        let elements = app.descendants(matching: .any).allElementsBoundByAccessibilityElement
+        XCTAssertGreaterThan(elements.count, 0)
+        
+        // Verify all interactive elements have labels
+        for element in [app.buttons, app.staticTexts, app.images].flatMap({ $0.allElementsBoundByIndex }) {
+            if element.isHittable {
+                XCTAssertFalse(element.label.isEmpty, "Element \(element) missing accessibility label")
+            }
+        }
     }
     
     // MARK: - Helper Methods
     
-    private func performLogin() {
-        // Пропускаем если уже залогинены
-        if app.tabBars.firstMatch.exists {
-            return
+    private func navigateToCmi5() {
+        // Navigate to Learning tab
+        if app.tabBars.buttons["Learning"].exists {
+            app.tabBars.buttons["Learning"].tap()
         }
         
-        let emailField = app.textFields["EmailTextField"]
-        if emailField.waitForExistence(timeout: 3) {
-            emailField.tap()
-            emailField.typeText("test@example.com")
-            
-            let passwordField = app.secureTextFields["PasswordTextField"]
-            passwordField.tap()
-            passwordField.typeText("password123")
-            
-            app.buttons["LoginButton"].tap()
-            
-            // Ждем появления главного экрана
-            XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 5))
-        }
-    }
-    
-    private func navigateToCourseBuilder() {
-        // Переходим в Курсы
-        app.tabBars.buttons["Курсы"].tap()
-        
-        // Создаем новый курс или открываем существующий
-        if app.buttons["CreateCourseButton"].exists {
-            app.buttons["CreateCourseButton"].tap()
-            
-            // Заполняем форму
-            let titleField = app.textFields["CourseTitleField"]
-            titleField.tap()
-            titleField.typeText("Test Cmi5 Course")
-            
-            app.buttons["Создать"].tap()
+        // Find and tap Cmi5 Player
+        let cmi5Button = app.collectionViews.buttons["Cmi5 Player"]
+        if cmi5Button.exists {
+            cmi5Button.tap()
         } else {
-            // Открываем первый курс
-            app.cells.firstMatch.tap()
-        }
-        
-        // Переходим в конструктор
-        if app.buttons["EditCourseButton"].exists {
-            app.buttons["EditCourseButton"].tap()
-        }
-    }
-    
-    private func importDemoCmi5Package() {
-        app.buttons["AddContentButton"].tap()
-        app.buttons["ImportCmi5Package"].tap()
-        app.buttons["Выбрать файл"].tap()
-        
-        let importButton = app.buttons["Импортировать"]
-        _ = importButton.waitForExistence(timeout: 5)
-        if importButton.isEnabled {
-            importButton.tap()
+            // Scroll to find it
+            let collectionView = app.collectionViews.firstMatch
+            collectionView.swipeUp()
+            if cmi5Button.exists {
+                cmi5Button.tap()
+            }
         }
     }
     
-    private func navigateToCourseWithCmi5() {
-        // Переходим в Курсы
-        app.tabBars.buttons["Курсы"].tap()
-        
-        // Открываем курс с Cmi5
-        let courseCell = app.cells.containing(.staticText, identifier: "Test Cmi5 Course").firstMatch
-        if courseCell.waitForExistence(timeout: 3) {
-            courseCell.tap()
-        } else {
-            // Создаем если нет
-            navigateToCourseBuilder()
-            importDemoCmi5Package()
-            app.navigationBars.buttons.firstMatch.tap() // Назад
-        }
+    private func launchTestCourse() {
+        app.buttons["Browse Courses"].tap()
+        app.collectionViews.cells.firstMatch.tap()
+        app.buttons["Launch Course"].tap()
+        _ = app.otherElements["CoursePlayer"].waitForExistence(timeout: 10)
     }
     
-    private func navigateToCmi5Lesson() {
-        navigateToCourseWithCmi5()
-        
-        let lessonCell = app.cells.containing(.staticText, identifier: "Введение в корпоративную культуру").firstMatch
-        lessonCell.tap()
-        
-        let startButton = app.buttons["Начать урок"]
-        if startButton.waitForExistence(timeout: 2) {
-            startButton.tap()
-        }
+    private func generateTestReport() {
+        app.buttons["Reports"].tap()
+        app.buttons["Generate Report"].tap()
+        app.buttons["Progress Report"].tap()
+        _ = app.staticTexts["Report Preview"].waitForExistence(timeout: 5)
     }
 } 
