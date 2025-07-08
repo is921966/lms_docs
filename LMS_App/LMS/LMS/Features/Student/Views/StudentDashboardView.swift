@@ -57,12 +57,12 @@ struct StudentDashboardView: View {
                         Image(systemName: "bell")
                             .font(.system(size: 20))
 
-                        if notificationService.unreadCount > 0 {
+                        if notificationService.unreadCountValue > 0 {
                             Circle()
                                 .fill(Color.red)
                                 .frame(width: 16, height: 16)
                                 .overlay(
-                                    Text("\(notificationService.unreadCount)")
+                                    Text("\(notificationService.unreadCountValue)")
                                         .font(.system(size: 10, weight: .bold))
                                         .foregroundColor(.white)
                                 )

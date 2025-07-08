@@ -59,7 +59,7 @@ final class NotificationServiceTests: XCTestCase {
     
     func testAddMultipleNotifications() async {
         // Given
-        let notifications = (1...5).map { createTestNotification(id: "\($0)") }
+        let notifications = (1...5).map { _ in createTestNotification() }
         
         // When
         for notification in notifications {
@@ -73,16 +73,15 @@ final class NotificationServiceTests: XCTestCase {
     
     func testNotificationsAreSortedByDate() async {
         // Given
-        let oldNotification = createTestNotification(id: "1", createdAt: Date().addingTimeInterval(-3600))
-        let newNotification = createTestNotification(id: "2", createdAt: Date())
+        let oldNotification = createTestNotification(createdAt: Date().addingTimeInterval(-3600))
+        let newNotification = createTestNotification(createdAt: Date())
         
         // When
         await sut.add(oldNotification)
         await sut.add(newNotification)
         
         // Then
-        XCTAssertEqual(sut.notifications.first?.id, "2")
-        XCTAssertEqual(sut.notifications.last?.id, "1")
+        XCTAssertTrue(sut.notifications.first!.createdAt > sut.notifications.last!.createdAt)
     }
     
     // MARK: - Mark As Read Tests
@@ -116,7 +115,7 @@ final class NotificationServiceTests: XCTestCase {
     
     func testMarkAllAsRead() async {
         // Given
-        let notifications = (1...5).map { createTestNotification(id: "\($0)") }
+        let notifications = (1...5).map { _ in createTestNotification() }
         for notification in notifications {
             await sut.add(notification)
         }
@@ -146,8 +145,8 @@ final class NotificationServiceTests: XCTestCase {
     
     func testDeleteNonExistentNotification() async {
         // Given
-        let notification1 = createTestNotification(id: "1")
-        let notification2 = createTestNotification(id: "2")
+        let notification1 = createTestNotification()
+        let notification2 = createTestNotification()
         await sut.add(notification1)
         
         // When
@@ -155,7 +154,7 @@ final class NotificationServiceTests: XCTestCase {
         
         // Then
         XCTAssertEqual(sut.notifications.count, 1)
-        XCTAssertEqual(sut.notifications.first?.id, "1")
+        XCTAssertEqual(sut.notifications.first?.id, notification1.id)
     }
     
     // MARK: - Send Notification Tests
@@ -165,7 +164,7 @@ final class NotificationServiceTests: XCTestCase {
         let recipientId = UUID()
         let title = "Test Notification"
         let message = "This is a test"
-        let type = NotificationType.system
+        let type = NotificationType.systemMessage
         let priority = NotificationPriority.medium
         
         // When
@@ -181,7 +180,7 @@ final class NotificationServiceTests: XCTestCase {
         XCTAssertEqual(sut.notifications.count, 1)
         let notification = sut.notifications.first
         XCTAssertEqual(notification?.title, title)
-        XCTAssertEqual(notification?.message, message)
+        XCTAssertEqual(notification?.body, message)
         XCTAssertEqual(notification?.type, type)
         XCTAssertEqual(notification?.priority, priority)
     }
@@ -206,7 +205,7 @@ final class NotificationServiceTests: XCTestCase {
         let notification = sut.notifications.first
         XCTAssertEqual(notification?.type, .courseAssigned)
         XCTAssertEqual(notification?.priority, .high)
-        XCTAssertTrue(notification?.actionUrl?.contains(recipientId.uuidString) ?? false)
+        XCTAssertTrue(notification?.metadata?.actionUrl?.contains(recipientId.uuidString) ?? false)
     }
     
     func testNotifyTestReminder() {
@@ -229,7 +228,7 @@ final class NotificationServiceTests: XCTestCase {
         let notification = sut.notifications.first
         XCTAssertEqual(notification?.type, .testReminder)
         XCTAssertEqual(notification?.priority, .medium)
-        XCTAssertTrue(notification?.actionUrl?.contains(recipientId.uuidString) ?? false)
+        XCTAssertTrue(notification?.metadata?.actionUrl?.contains(recipientId.uuidString) ?? false)
     }
     
     // MARK: - Publisher Tests
@@ -288,23 +287,28 @@ final class NotificationServiceTests: XCTestCase {
     // MARK: - Helper Methods
     
     private func createTestNotification(
-        id: String = UUID().uuidString,
-        type: NotificationType = .system,
+        id: UUID = UUID(),
+        userId: UUID = UUID(),
+        type: NotificationType = .systemMessage,
         title: String = "Test Notification",
-        message: String = "Test message",
+        body: String = "Test message",
         createdAt: Date = Date(),
         isRead: Bool = false,
         priority: NotificationPriority = .medium
     ) -> LMS.Notification {
         return LMS.Notification(
             id: id,
+            userId: userId,
             type: type,
             title: title,
-            message: message,
-            createdAt: createdAt,
-            isRead: isRead,
+            body: body,
+            data: nil,
+            channels: [.inApp],
             priority: priority,
-            actionUrl: nil,
+            isRead: isRead,
+            readAt: isRead ? Date() : nil,
+            createdAt: createdAt,
+            expiresAt: nil,
             metadata: nil
         )
     }

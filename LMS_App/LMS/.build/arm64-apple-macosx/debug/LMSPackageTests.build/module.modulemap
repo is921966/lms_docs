@@ -1,0 +1,4 @@
+module LMSPackageTests {
+    header "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSPackageTests.build/LMSPackageTests-Swift.h"
+    requires objc
+}

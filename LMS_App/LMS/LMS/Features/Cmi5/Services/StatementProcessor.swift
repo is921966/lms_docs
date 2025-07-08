@@ -345,3 +345,14 @@ extension MockLRSService {
         0 // Default implementation
     }
 } 
+
+// MARK: - StatementProcessorProtocol Conformance
+
+extension StatementProcessor: StatementProcessorProtocol {
+    public func processBatch(_ batch: [OfflineStatementStore.PendingStatement]) async throws {
+        // Process each statement in the batch
+        for pendingStatement in batch {
+            try await processStatement(pendingStatement.statement)
+        }
+    }
+} 

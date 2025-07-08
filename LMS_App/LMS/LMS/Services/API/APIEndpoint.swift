@@ -3,7 +3,7 @@ import Foundation
 // MARK: - APIEndpoint Protocol
 
 /// Протокол для определения API endpoints
-protocol APIEndpoint {
+public protocol APIEndpoint {
     /// Путь к endpoint (без базового URL)
     var path: String { get }
     
@@ -17,23 +17,23 @@ protocol APIEndpoint {
     var parameters: [String: Any]? { get }
     
     /// HTTP body (для POST/PUT запросов)
-    var body: Encodable? { get }
+    var body: Data? { get }
     
     /// Дополнительные headers
     var headers: [String: String]? { get }
 }
 
 // Default implementation
-extension APIEndpoint {
+public extension APIEndpoint {
     var requiresAuth: Bool { true }
     var parameters: [String: Any]? { nil }
-    var body: Encodable? { nil }
+    var body: Data? { nil }
     var headers: [String: String]? { nil }
 }
 
 // MARK: - HTTPMethod
 
-enum HTTPMethod: String {
+public enum HTTPMethod: String {
     case get = "GET"
     case post = "POST"
     case put = "PUT"

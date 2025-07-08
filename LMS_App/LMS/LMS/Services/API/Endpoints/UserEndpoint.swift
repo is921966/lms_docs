@@ -87,16 +87,4 @@ enum UserEndpoint: APIEndpoint {
     }
 }
 
-// MARK: - Additional Models (not duplicated)
-
-struct UserPreferences: Codable {
-    let language: String
-    let notifications: NotificationPreferences
-    let theme: String
-}
-
-struct NotificationPreferences: Codable {
-    let email: Bool
-    let push: Bool
-    let sms: Bool
-} 
+// MARK: - Additional Models (moved to NotificationModels.swift) 

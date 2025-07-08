@@ -19,6 +19,10 @@ import Foundation
 /// - Since: v2.0.0
 public final class CacheService {
     
+    // MARK: - Shared Instance
+    
+    public static let shared = CacheService()
+    
     // MARK: - Types
     
     private struct CacheEntry {

@@ -1,0 +1,382 @@
+//
+//  OfflineStatementStore.swift
+//  LMS
+//
+//  Created on Sprint 42 Day 2 - Offline Support
+//
+
+import Foundation
+import CoreData
+import Combine
+
+/// Хранилище для офлайн xAPI statements
+public final class OfflineStatementStore {
+    
+    // MARK: - Types
+    
+    public enum StoreError: LocalizedError {
+        case invalidStatement
+        case saveFailure(Error)
+        case fetchFailure(Error)
+        case notFound
+        case corruptedData
+        
+        public var errorDescription: String? {
+            switch self {
+            case .invalidStatement:
+                return "Invalid statement: missing required fields"
+            case .saveFailure(let error):
+                return "Failed to save statement: \(error.localizedDescription)"
+            case .fetchFailure(let error):
+                return "Failed to fetch statements: \(error.localizedDescription)"
+            case .notFound:
+                return "Statement not found"
+            case .corruptedData:
+                return "Corrupted data in storage"
+            }
+        }
+    }
+    
+    public enum SyncStatus: String {
+        case pending = "pending"
+        case syncing = "syncing"
+        case synced = "synced"
+        case failed = "failed"
+    }
+    
+    public enum Priority: Int16, Comparable {
+        case low = 0
+        case normal = 1
+        case high = 2
+        
+        public static func < (lhs: Priority, rhs: Priority) -> Bool {
+            lhs.rawValue < rhs.rawValue
+        }
+    }
+    
+    public struct PendingStatement {
+        public let statementId: String
+        public let statement: XAPIStatement
+        public let priority: Priority
+        public let createdAt: Date
+        public let syncStatus: SyncStatus
+        public let retryCount: Int
+        public let lastError: String?
+    }
+    
+    // MARK: - Properties
+    
+    private let container: NSPersistentContainer
+    private let backgroundContext: NSManagedObjectContext
+    
+    // Publishers
+    private let pendingCountSubject = CurrentValueSubject<Int, Never>(0)
+    public var pendingCountPublisher: AnyPublisher<Int, Never> {
+        pendingCountSubject.eraseToAnyPublisher()
+    }
+    
+    // MARK: - Initialization
+    
+    public init(container: NSPersistentContainer) {
+        self.container = container
+        self.backgroundContext = container.newBackgroundContext()
+        
+        // Initial count update
+        Task {
+            await updatePendingCount()
+        }
+    }
+    
+    // MARK: - Save Operations
+    
+    public func save(_ statement: XAPIStatement, priority: Priority = .normal) async throws {
+        guard let statementId = statement.id else {
+            throw StoreError.invalidStatement
+        }
+        
+        try await backgroundContext.perform {
+            let entity = NSEntityDescription.entity(forEntityName: "PendingStatement", in: self.backgroundContext)!
+            let pendingStatement = NSManagedObject(entity: entity, insertInto: self.backgroundContext)
+            
+            // Set properties
+            pendingStatement.setValue(statementId, forKey: "id")
+            pendingStatement.setValue(try self.encodeStatement(statement), forKey: "statementJSON")
+            pendingStatement.setValue(priority.rawValue, forKey: "priority")
+            pendingStatement.setValue(Date(), forKey: "createdAt")
+            pendingStatement.setValue(SyncStatus.pending.rawValue, forKey: "syncStatus")
+            pendingStatement.setValue(0, forKey: "retryCount")
+            
+            do {
+                try self.backgroundContext.save()
+                await self.updatePendingCount()
+            } catch {
+                throw StoreError.saveFailure(error)
+            }
+        }
+    }
+    
+    public func batchSave(_ statements: [XAPIStatement], priority: Priority = .normal) async throws {
+        try await backgroundContext.perform {
+            for statement in statements {
+                guard let statementId = statement.id else { continue }
+                
+                let entity = NSEntityDescription.entity(forEntityName: "PendingStatement", in: self.backgroundContext)!
+                let pendingStatement = NSManagedObject(entity: entity, insertInto: self.backgroundContext)
+                
+                pendingStatement.setValue(statementId, forKey: "id")
+                pendingStatement.setValue(try self.encodeStatement(statement), forKey: "statementJSON")
+                pendingStatement.setValue(priority.rawValue, forKey: "priority")
+                pendingStatement.setValue(Date(), forKey: "createdAt")
+                pendingStatement.setValue(SyncStatus.pending.rawValue, forKey: "syncStatus")
+                pendingStatement.setValue(0, forKey: "retryCount")
+            }
+            
+            do {
+                try self.backgroundContext.save()
+                await self.updatePendingCount()
+            } catch {
+                throw StoreError.saveFailure(error)
+            }
+        }
+    }
+    
+    // MARK: - Retrieval Operations
+    
+    public func getAllPending() async throws -> [PendingStatement] {
+        try await backgroundContext.perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
+            request.predicate = NSPredicate(format: "syncStatus != %@", SyncStatus.synced.rawValue)
+            request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: true)]
+            
+            do {
+                let results = try self.backgroundContext.fetch(request)
+                return try results.compactMap { try self.convertToPendingStatement($0) }
+            } catch {
+                throw StoreError.fetchFailure(error)
+            }
+        }
+    }
+    
+    public func getPendingByPriority() async throws -> [PendingStatement] {
+        try await backgroundContext.perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
+            request.predicate = NSPredicate(format: "syncStatus != %@", SyncStatus.synced.rawValue)
+            request.sortDescriptors = [
+                NSSortDescriptor(key: "priority", ascending: false),
+                NSSortDescriptor(key: "createdAt", ascending: true)
+            ]
+            
+            do {
+                let results = try self.backgroundContext.fetch(request)
+                return try results.compactMap { try self.convertToPendingStatement($0) }
+            } catch {
+                throw StoreError.fetchFailure(error)
+            }
+        }
+    }
+    
+    public func getBatch(limit: Int) async throws -> [PendingStatement] {
+        try await backgroundContext.perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
+            request.predicate = NSPredicate(format: "syncStatus == %@", SyncStatus.pending.rawValue)
+            request.sortDescriptors = [
+                NSSortDescriptor(key: "priority", ascending: false),
+                NSSortDescriptor(key: "createdAt", ascending: true)
+            ]
+            request.fetchLimit = limit
+            
+            do {
+                let results = try self.backgroundContext.fetch(request)
+                return try results.compactMap { try self.convertToPendingStatement($0) }
+            } catch {
+                throw StoreError.fetchFailure(error)
+            }
+        }
+    }
+    
+    public func getPendingCount() async throws -> Int {
+        try await backgroundContext.perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
+            request.predicate = NSPredicate(format: "syncStatus != %@", SyncStatus.synced.rawValue)
+            
+            do {
+                return try self.backgroundContext.count(for: request)
+            } catch {
+                throw StoreError.fetchFailure(error)
+            }
+        }
+    }
+    
+    public func getSyncedCount() async throws -> Int {
+        try await backgroundContext.perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
+            request.predicate = NSPredicate(format: "syncStatus == %@", SyncStatus.synced.rawValue)
+            
+            do {
+                return try self.backgroundContext.count(for: request)
+            } catch {
+                throw StoreError.fetchFailure(error)
+            }
+        }
+    }
+    
+    // MARK: - Update Operations
+    
+    public func markAsSynced(statementId: String) async throws {
+        try await updateStatement(id: statementId) { entity in
+            entity.setValue(SyncStatus.synced.rawValue, forKey: "syncStatus")
+            entity.setValue(Date(), forKey: "syncedAt")
+        }
+    }
+    
+    public func markAsFailed(statementId: String, error: Error) async throws {
+        try await updateStatement(id: statementId) { entity in
+            entity.setValue(SyncStatus.failed.rawValue, forKey: "syncStatus")
+            let currentRetryCount = entity.value(forKey: "retryCount") as? Int16 ?? 0
+            entity.setValue(currentRetryCount + 1, forKey: "retryCount")
+            entity.setValue(error.localizedDescription, forKey: "lastError")
+        }
+    }
+    
+    public func updateSyncStatus(statementId: String, status: SyncStatus) async throws {
+        try await updateStatement(id: statementId) { entity in
+            entity.setValue(status.rawValue, forKey: "syncStatus")
+        }
+    }
+    
+    // MARK: - Delete Operations
+    
+    public func delete(statementId: String) async throws {
+        try await backgroundContext.perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
+            request.predicate = NSPredicate(format: "id == %@", statementId)
+            
+            do {
+                let results = try self.backgroundContext.fetch(request)
+                for object in results {
+                    self.backgroundContext.delete(object)
+                }
+                try self.backgroundContext.save()
+                await self.updatePendingCount()
+            } catch {
+                throw StoreError.saveFailure(error)
+            }
+        }
+    }
+    
+    public func deleteAllPending() async throws {
+        try await backgroundContext.perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
+            request.predicate = NSPredicate(format: "syncStatus != %@", SyncStatus.synced.rawValue)
+            
+            do {
+                let results = try self.backgroundContext.fetch(request)
+                for object in results {
+                    self.backgroundContext.delete(object)
+                }
+                try self.backgroundContext.save()
+                await self.updatePendingCount()
+            } catch {
+                throw StoreError.saveFailure(error)
+            }
+        }
+    }
+    
+    public func deleteOldSynced(olderThan days: Int) async throws {
+        try await backgroundContext.perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
+            let cutoffDate = Date().addingTimeInterval(-Double(days) * 24 * 60 * 60)
+            request.predicate = NSPredicate(
+                format: "syncStatus == %@ AND syncedAt < %@",
+                SyncStatus.synced.rawValue,
+                cutoffDate as NSDate
+            )
+            
+            do {
+                let results = try self.backgroundContext.fetch(request)
+                for object in results {
+                    self.backgroundContext.delete(object)
+                }
+                try self.backgroundContext.save()
+            } catch {
+                throw StoreError.saveFailure(error)
+            }
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    private func updateStatement(id: String, update: @escaping (NSManagedObject) -> Void) async throws {
+        try await backgroundContext.perform {
+            let request = NSFetchRequest<NSManagedObject>(entityName: "PendingStatement")
+            request.predicate = NSPredicate(format: "id == %@", id)
+            
+            do {
+                guard let entity = try self.backgroundContext.fetch(request).first else {
+                    throw StoreError.notFound
+                }
+                
+                update(entity)
+                try self.backgroundContext.save()
+                await self.updatePendingCount()
+            } catch {
+                throw StoreError.saveFailure(error)
+            }
+        }
+    }
+    
+    private func updatePendingCount() async {
+        if let count = try? await getPendingCount() {
+            pendingCountSubject.send(count)
+        }
+    }
+    
+    private func encodeStatement(_ statement: XAPIStatement) throws -> String {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(statement)
+        return String(data: data, encoding: .utf8) ?? ""
+    }
+    
+    private func decodeStatement(_ json: String) throws -> XAPIStatement {
+        guard let data = json.data(using: .utf8) else {
+            throw StoreError.corruptedData
+        }
+        
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(XAPIStatement.self, from: data)
+    }
+    
+    private func convertToPendingStatement(_ entity: NSManagedObject) throws -> PendingStatement {
+        guard let id = entity.value(forKey: "id") as? String,
+              let json = entity.value(forKey: "statementJSON") as? String,
+              let priorityRaw = entity.value(forKey: "priority") as? Int16,
+              let priority = Priority(rawValue: priorityRaw),
+              let createdAt = entity.value(forKey: "createdAt") as? Date,
+              let statusRaw = entity.value(forKey: "syncStatus") as? String,
+              let status = SyncStatus(rawValue: statusRaw),
+              let retryCount = entity.value(forKey: "retryCount") as? Int16 else {
+            throw StoreError.corruptedData
+        }
+        
+        let statement = try decodeStatement(json)
+        let lastError = entity.value(forKey: "lastError") as? String
+        
+        return PendingStatement(
+            statementId: id,
+            statement: statement,
+            priority: priority,
+            createdAt: createdAt,
+            syncStatus: status,
+            retryCount: Int(retryCount),
+            lastError: lastError
+        )
+    }
+}
+
+// MARK: - OfflineStatementStoreProtocol Conformance
+
+extension OfflineStatementStore: OfflineStatementStoreProtocol {
+    // All required methods are already implemented above
+} 

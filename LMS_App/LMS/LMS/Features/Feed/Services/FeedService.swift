@@ -182,16 +182,19 @@ class FeedService: ObservableObject {
     }
 
     private func sendMentionNotification(to userId: String, post: FeedPost) async {
+        guard let userUUID = UUID(uuidString: userId) else { return }
+        
         let notification = Notification(
-            id: UUID().uuidString,
+            userId: userUUID,
             type: .feedMention,
             title: "\(post.authorName) упомянул вас",
-            message: String(post.content.prefix(100)),
-            createdAt: Date(),
-            isRead: false,
+            body: String(post.content.prefix(100)),
+            data: ["postId": post.id],
+            channels: [.inApp, .push],
             priority: .medium,
-            actionUrl: "feed://post/\(post.id)",
-            metadata: ["postId": post.id]
+            metadata: NotificationMetadata(
+                actionUrl: "feed://post/\(post.id)"
+            )
         )
 
         // Add notification to the service
@@ -201,18 +204,21 @@ class FeedService: ObservableObject {
     private func sendLikeNotification(post: FeedPost) async {
         guard let currentUser = await MockAuthService.shared.currentUser,
               currentUser.id != post.authorId else { return }
+              
+        guard let authorUUID = UUID(uuidString: post.authorId) else { return }
 
         let userName = "\(currentUser.firstName) \(currentUser.lastName)"
         let notification = Notification(
-            id: UUID().uuidString,
+            userId: authorUUID,
             type: .feedActivity,
             title: "\(userName) понравилась ваша запись",
-            message: String(post.content.prefix(100)),
-            createdAt: Date(),
-            isRead: false,
+            body: String(post.content.prefix(100)),
+            data: ["postId": post.id],
+            channels: [.inApp],
             priority: .low,
-            actionUrl: "feed://post/\(post.id)",
-            metadata: ["postId": post.id]
+            metadata: NotificationMetadata(
+                actionUrl: "feed://post/\(post.id)"
+            )
         )
 
         await NotificationService.shared.add(notification)
@@ -220,17 +226,19 @@ class FeedService: ObservableObject {
 
     private func sendCommentNotification(post: FeedPost, comment: FeedComment) async {
         guard comment.authorId != post.authorId else { return }
+        guard let authorUUID = UUID(uuidString: post.authorId) else { return }
 
         let notification = Notification(
-            id: UUID().uuidString,
+            userId: authorUUID,
             type: .feedActivity,
             title: "\(comment.authorName) прокомментировал вашу запись",
-            message: comment.content,
-            createdAt: Date(),
-            isRead: false,
+            body: comment.content,
+            data: ["postId": post.id, "commentId": comment.id],
+            channels: [.inApp, .push],
             priority: .medium,
-            actionUrl: "feed://post/\(post.id)",
-            metadata: ["postId": post.id, "commentId": comment.id]
+            metadata: NotificationMetadata(
+                actionUrl: "feed://post/\(post.id)"
+            )
         )
 
         await NotificationService.shared.add(notification)
