@@ -12,35 +12,18 @@ extension Cmi5Activity {
     /// Преобразует Cmi5Activity в XAPIActivity для использования в statements
     func toXAPIActivity() -> XAPIActivity {
         var definition = XAPIActivityDefinition(
-            name: Dictionary(uniqueKeysWithValues: title.map { ($0.lang, $0.value) }),
-            description: description.isEmpty ? nil : Dictionary(uniqueKeysWithValues: description.map { ($0.lang, $0.value) })
+            name: ["en": title],
+            description: description.map { ["en": $0] }
         )
         
         // Установить тип активности
-        if let activityType = activityType {
-            definition.type = activityType
-        } else {
-            // Определить тип по умолчанию на основе типа Cmi5
-            switch type {
-            case "AU":
-                definition.type = "http://adlnet.gov/expapi/activities/module"
-            case "Block":
-                definition.type = "http://adlnet.gov/expapi/activities/course"
-            default:
-                definition.type = "http://adlnet.gov/expapi/activities/interaction"
-            }
-        }
+        definition.type = activityType
         
         // Добавить расширения Cmi5
         var extensions: [String: Any] = [:]
         
-        if let launchMethod = launchMethod {
-            extensions["https://w3id.org/xapi/cmi5/context/extensions/launchmethod"] = launchMethod
-        }
-        
-        if let moveOn = moveOn {
-            extensions["https://w3id.org/xapi/cmi5/context/extensions/moveon"] = moveOn
-        }
+        extensions["https://w3id.org/xapi/cmi5/context/extensions/launchmethod"] = launchMethod.rawValue
+        extensions["https://w3id.org/xapi/cmi5/context/extensions/moveon"] = moveOn.rawValue
         
         if let masteryScore = masteryScore {
             extensions["https://w3id.org/xapi/cmi5/context/extensions/masteryscore"] = masteryScore
@@ -51,7 +34,7 @@ extension Cmi5Activity {
         }
         
         return XAPIActivity(
-            id: url,
+            id: launchUrl,
             definition: definition
         )
     }
@@ -62,9 +45,14 @@ extension Cmi5Activity {
 extension Cmi5Block {
     /// Преобразует Cmi5Block в XAPIActivity
     func toXAPIActivity() -> XAPIActivity {
+        let names = Dictionary(uniqueKeysWithValues: title.map { ($0.lang, $0.value) })
+        let descriptions = description?.isEmpty == false 
+            ? Dictionary(uniqueKeysWithValues: description!.map { ($0.lang, $0.value) })
+            : nil
+            
         let definition = XAPIActivityDefinition(
-            name: Dictionary(uniqueKeysWithValues: title.map { ($0.lang, $0.value) }),
-            description: description.isEmpty ? nil : Dictionary(uniqueKeysWithValues: description.map { ($0.lang, $0.value) }),
+            name: names,
+            description: descriptions,
             type: "http://adlnet.gov/expapi/activities/course"
         )
         
@@ -92,7 +80,7 @@ extension Cmi5Block {
     /// Находит активность по ID
     func findActivity(byId id: String) -> Cmi5Activity? {
         // Проверить активности текущего блока
-        if let activity = activities.first(where: { $0.id == id }) {
+        if let activity = activities.first(where: { $0.activityId == id }) {
             return activity
         }
         
@@ -112,12 +100,12 @@ extension Cmi5Block {
 extension Cmi5Package {
     /// Получает все активности из пакета
     func getAllActivities() -> [Cmi5Activity] {
-        return manifest.course.rootBlock.getAllActivities()
+        return manifest.course?.rootBlock?.getAllActivities() ?? []
     }
     
     /// Находит активность по ID
     func findActivity(byId id: String) -> Cmi5Activity? {
-        return manifest.course.rootBlock.findActivity(byId: id)
+        return manifest.course?.rootBlock?.findActivity(byId: id)
     }
     
     /// Проверяет валидность пакета
@@ -125,12 +113,16 @@ extension Cmi5Package {
         var errors: [String] = []
         
         // Проверить наличие обязательных полей
-        if manifest.course.id.isEmpty {
-            errors.append("Course ID is required")
-        }
-        
-        if manifest.course.title.isEmpty {
-            errors.append("Course title is required")
+        if let course = manifest.course {
+            if course.id.isEmpty {
+                errors.append("Course ID is required")
+            }
+            
+            if course.title?.isEmpty != false {
+                errors.append("Course title is required")
+            }
+        } else {
+            errors.append("Manifest must contain a course")
         }
         
         // Проверить наличие активностей
@@ -141,13 +133,13 @@ extension Cmi5Package {
         
         // Проверить URL активностей
         for activity in activities {
-            if activity.url.isEmpty {
-                errors.append("Activity '\(activity.id)' has no URL")
+            if activity.launchUrl.isEmpty {
+                errors.append("Activity '\(activity.activityId)' has no URL")
             }
             
             // Проверить, что URL валидный
-            if URL(string: activity.url) == nil {
-                errors.append("Activity '\(activity.id)' has invalid URL: \(activity.url)")
+            if URL(string: activity.launchUrl) == nil {
+                errors.append("Activity '\(activity.activityId)' has invalid URL: \(activity.launchUrl)")
             }
         }
         
@@ -156,24 +148,31 @@ extension Cmi5Package {
     
     /// Создает структуру курса для импорта
     func toCourseStructure() -> CourseStructure {
-        let rootBlock = manifest.course.rootBlock
+        guard let rootBlock = manifest.course?.rootBlock else {
+            return CourseStructure(
+                id: UUID(),
+                title: title,
+                description: description ?? "",
+                modules: []
+            )
+        }
         
         return CourseStructure(
             id: UUID(),
-            title: manifest.course.title.first?.value ?? "Imported Cmi5 Course",
-            description: manifest.course.description.first?.value ?? "",
+            title: manifest.course?.title?.first?.value ?? title,
+            description: manifest.course?.description?.first?.value ?? description ?? "",
             modules: rootBlock.blocks.map { block in
                 CourseModule(
                     id: UUID(),
                     title: block.title.first?.value ?? "Module",
-                    description: block.description.first?.value ?? "",
+                    description: block.description?.first?.value ?? "",
                     lessons: block.activities.map { activity in
                         CourseLesson(
                             id: UUID(),
-                            title: activity.title.first?.value ?? "Lesson",
-                            description: activity.description.first?.value ?? "",
+                            title: activity.title,
+                            description: activity.description ?? "",
                             contentType: .cmi5,
-                            cmi5ActivityId: activity.id,
+                            cmi5ActivityId: activity.activityId,
                             duration: 0, // Will be updated from xAPI data
                             order: 0
                         )

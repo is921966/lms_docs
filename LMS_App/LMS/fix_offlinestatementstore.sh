@@ -1,3 +1,11 @@
+#!/bin/bash
+
+echo "🔧 Fixing OfflineStatementStore.swift..."
+
+cd "$(dirname "$0")"
+
+# Fix all the async/await issues with CoreData perform blocks
+cat > temp_offlinestore_fix.swift << 'EOF'
 //
 //  OfflineStatementStore.swift
 //  LMS
@@ -493,3 +501,8 @@ public final class OfflineStatementStore {
 extension OfflineStatementStore: OfflineStatementStoreProtocol {
     // All required methods are already implemented above
 }
+EOF
+
+mv temp_offlinestore_fix.swift LMS/Features/Cmi5/Services/OfflineStatementStore.swift
+
+echo "✅ Fixed OfflineStatementStore.swift" 

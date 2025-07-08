@@ -178,7 +178,7 @@ struct Cmi5PlayerView: View {
             // Bottom info bar
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(activity.title.first?.value ?? "Cmi5 Activity")
+                    Text(activity.title)
                         .font(.headline)
                         .foregroundColor(.white)
                     
@@ -210,7 +210,7 @@ struct Cmi5PlayerView: View {
     // MARK: - Methods
     
     private func buildLaunchURL() -> URL {
-        var components = URLComponents(string: activity.url)!
+        var components = URLComponents(string: activity.launchUrl)!
         
         // Add launch parameters
         var queryItems = launchParameters.map { URLQueryItem(name: $0.key, value: $0.value) }
@@ -236,7 +236,7 @@ struct Cmi5PlayerView: View {
                 let launchedStatement = XAPIStatementBuilder()
                     .setActor(lrsService.currentActor)
                     .setVerb(XAPIStatementBuilder.Cmi5Verb.launched)
-                    .setObject(activity.toXAPIActivity())
+                    .setObject(XAPIObject.activity(activity.toXAPIActivity()))
                     .setCmi5Context(sessionId: sessionId, registration: UUID().uuidString)
                     .build()
                 
@@ -254,7 +254,7 @@ struct Cmi5PlayerView: View {
                 let initializedStatement = XAPIStatementBuilder()
                     .setActor(lrsService.currentActor)
                     .setVerb(XAPIStatementBuilder.Cmi5Verb.initialized)
-                    .setObject(activity.toXAPIActivity())
+                    .setObject(XAPIObject.activity(activity.toXAPIActivity()))
                     .setCmi5Context(sessionId: sessionId, registration: UUID().uuidString)
                     .build()
                 
@@ -272,7 +272,7 @@ struct Cmi5PlayerView: View {
                 let terminatedStatement = XAPIStatementBuilder()
                     .setActor(lrsService.currentActor)
                     .setVerb(XAPIStatementBuilder.Cmi5Verb.terminated)
-                    .setObject(activity.toXAPIActivity())
+                    .setObject(XAPIObject.activity(activity.toXAPIActivity()))
                     .setCmi5Context(sessionId: sessionId, registration: UUID().uuidString)
                     .build()
                 
@@ -393,14 +393,17 @@ struct Cmi5PlayerView_Previews: PreviewProvider {
         NavigationView {
             Cmi5PlayerView(
                 activity: Cmi5Activity(
-                    id: "activity-1",
-                    type: "http://adlnet.gov/expapi/activities/course",
-                    title: [Cmi5LangString(lang: "ru", value: "Тестовая активность")],
-                    description: [Cmi5LangString(lang: "ru", value: "Описание активности")],
-                    url: "https://example.com/cmi5/activity",
+                    id: UUID(),
+                    packageId: UUID(),
+                    activityId: "activity-1",
+                    title: "Тестовая активность",
+                    description: "Описание активности",
+                    launchUrl: "https://example.com/cmi5/activity",
+                    launchMethod: .ownWindow,
+                    moveOn: .passed,
+                    masteryScore: nil,
                     activityType: "http://adlnet.gov/expapi/activities/course",
-                    launchMethod: "OwnWindow",
-                    moveOn: "Passed"
+                    duration: nil
                 ),
                 sessionId: UUID().uuidString,
                 launchParameters: [

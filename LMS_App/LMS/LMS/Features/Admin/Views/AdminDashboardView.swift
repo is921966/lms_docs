@@ -92,12 +92,12 @@ struct AdminDashboardView: View {
                         Image(systemName: "bell")
                             .font(.system(size: 20))
 
-                        if notificationService.unreadCountValue > 0 {
+                        if notificationService.unreadCount > 0 {
                             Circle()
                                 .fill(Color.red)
                                 .frame(width: 12, height: 12)
                                 .overlay(
-                                    Text("\(notificationService.unreadCountValue)")
+                                    Text("\(notificationService.unreadCount)")
                                         .font(.system(size: 8, weight: .bold))
                                         .foregroundColor(.white)
                                 )

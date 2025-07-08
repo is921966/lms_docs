@@ -52,7 +52,7 @@ struct AnalyticsDashboardView: View {
             }
         }
         .sheet(isPresented: $showingExportSheet) {
-            ReportExportView(viewModel: viewModel)
+            ReportExportView()
         }
         .onAppear {
             viewModel.loadData(for: selectedTimeRange)

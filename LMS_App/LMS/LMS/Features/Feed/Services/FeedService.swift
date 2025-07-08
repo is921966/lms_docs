@@ -182,66 +182,26 @@ class FeedService: ObservableObject {
     }
 
     private func sendMentionNotification(to userId: String, post: FeedPost) async {
-        guard let userUUID = UUID(uuidString: userId) else { return }
-        
-        let notification = Notification(
-            userId: userUUID,
-            type: .feedMention,
-            title: "\(post.authorName) упомянул вас",
-            body: String(post.content.prefix(100)),
-            data: ["postId": post.id],
-            channels: [.inApp, .push],
-            priority: .medium,
-            metadata: NotificationMetadata(
-                actionUrl: "feed://post/\(post.id)"
-            )
-        )
-
-        // Add notification to the service
-        await NotificationService.shared.add(notification)
+        // Notification temporarily disabled
+        // TODO: Re-implement when notification system is restored
+        print("Mention notification would be sent to user \(userId) for post by \(post.authorName)")
     }
 
     private func sendLikeNotification(post: FeedPost) async {
         guard let currentUser = await MockAuthService.shared.currentUser,
               currentUser.id != post.authorId else { return }
-              
-        guard let authorUUID = UUID(uuidString: post.authorId) else { return }
 
-        let userName = "\(currentUser.firstName) \(currentUser.lastName)"
-        let notification = Notification(
-            userId: authorUUID,
-            type: .feedActivity,
-            title: "\(userName) понравилась ваша запись",
-            body: String(post.content.prefix(100)),
-            data: ["postId": post.id],
-            channels: [.inApp],
-            priority: .low,
-            metadata: NotificationMetadata(
-                actionUrl: "feed://post/\(post.id)"
-            )
-        )
-
-        await NotificationService.shared.add(notification)
+        // Notification temporarily disabled
+        // TODO: Re-implement when notification system is restored
+        print("Like notification would be sent for post by \(post.authorName)")
     }
 
     private func sendCommentNotification(post: FeedPost, comment: FeedComment) async {
         guard comment.authorId != post.authorId else { return }
-        guard let authorUUID = UUID(uuidString: post.authorId) else { return }
-
-        let notification = Notification(
-            userId: authorUUID,
-            type: .feedActivity,
-            title: "\(comment.authorName) прокомментировал вашу запись",
-            body: comment.content,
-            data: ["postId": post.id, "commentId": comment.id],
-            channels: [.inApp, .push],
-            priority: .medium,
-            metadata: NotificationMetadata(
-                actionUrl: "feed://post/\(post.id)"
-            )
-        )
-
-        await NotificationService.shared.add(notification)
+        
+        // Notification temporarily disabled
+        // TODO: Re-implement when notification system is restored
+        print("Comment notification would be sent for post by \(post.authorName)")
     }
 
     // MARK: - Mock Data
