@@ -214,7 +214,8 @@ public struct Cmi5Manifest: Codable {
     public let description: String?
     public let moreInfo: String?
     public let vendor: Cmi5Vendor?
-    public let course: Cmi5Course
+    public let version: String?
+    public var course: Cmi5Course
     
     public init(
         identifier: String,
@@ -222,6 +223,7 @@ public struct Cmi5Manifest: Codable {
         description: String? = nil,
         moreInfo: String? = nil,
         vendor: Cmi5Vendor? = nil,
+        version: String? = nil,
         course: Cmi5Course
     ) {
         self.identifier = identifier
@@ -229,6 +231,7 @@ public struct Cmi5Manifest: Codable {
         self.description = description
         self.moreInfo = moreInfo
         self.vendor = vendor
+        self.version = version
         self.course = course
     }
 }
@@ -240,7 +243,7 @@ public struct Cmi5Course: Codable {
     public let id: String
     public let title: String
     public let description: String?
-    public let auCount: Int // Assignable Units count
+    public var auCount: Int // Assignable Units count
     
     public init(
         id: String,
@@ -274,113 +277,29 @@ public struct Cmi5Vendor: Codable {
     }
 }
 
-// MARK: - xAPI Models
+// MARK: - Helper Extensions
 
-/// xAPI Actor (обучающийся)
-public struct XAPIActor: Codable {
-    public let objectType: String // "Agent"
-    public let name: String?
-    public let mbox: String? // email в формате mailto:
-    public let account: XAPIAccount?
+/// Расширение для создания пустого манифеста
+public extension Cmi5Manifest {
+    static func empty() -> Cmi5Manifest {
+        return Cmi5Manifest(
+            identifier: "",
+            title: "",
+            description: nil,
+            moreInfo: nil,
+            vendor: nil,
+            version: nil,
+            course: Cmi5Course(
+                id: "",
+                title: "",
+                description: nil,
+                auCount: 0
+            )
+        )
+    }
 }
 
-/// xAPI Account
-public struct XAPIAccount: Codable {
-    public let name: String
-    public let homePage: String
-}
+// MARK: - Note about xAPI Models
 
-/// xAPI Verb (действие)
-public struct XAPIVerb: Codable {
-    public let id: String // IRI
-    public let display: [String: String] // язык: название
-}
-
-/// xAPI Object (объект действия)
-public struct XAPIObject: Codable {
-    public let objectType: String // "Activity"
-    public let id: String // IRI
-    public let definition: XAPIActivityDefinition?
-}
-
-/// xAPI Activity Definition
-public struct XAPIActivityDefinition: Codable {
-    public let name: [String: String]? // язык: название
-    public let description: [String: String]?
-    public let type: String? // IRI типа активности
-}
-
-/// xAPI Result (результат)
-public struct XAPIResult: Codable {
-    public let score: XAPIScore?
-    public let success: Bool?
-    public let completion: Bool?
-    public let response: String?
-    public let duration: String? // ISO 8601
-}
-
-/// xAPI Score
-public struct XAPIScore: Codable {
-    public let scaled: Double? // 0.0 - 1.0
-    public let raw: Double?
-    public let min: Double?
-    public let max: Double?
-}
-
-/// xAPI Context
-public struct XAPIContext: Codable {
-    public let registration: UUID?
-    public let contextActivities: XAPIContextActivities?
-    public let language: String?
-}
-
-/// xAPI Context Activities
-public struct XAPIContextActivities: Codable {
-    public let parent: [XAPIObject]?
-    public let grouping: [XAPIObject]?
-    public let category: [XAPIObject]?
-    public let other: [XAPIObject]?
-}
-
-/// xAPI Statement
-public struct XAPIStatement: Codable {
-    public let id: UUID
-    public let actor: XAPIActor
-    public let verb: XAPIVerb
-    public let object: XAPIObject
-    public let result: XAPIResult?
-    public let context: XAPIContext?
-    public let timestamp: Date
-    public let stored: Date
-    public let authority: XAPIActor?
-    public let version: String? // "1.0.3"
-}
-
-// MARK: - Common xAPI Verbs
-
-public extension XAPIVerb {
-    static let launched = XAPIVerb(
-        id: "http://adlnet.gov/expapi/verbs/launched",
-        display: ["en-US": "launched", "ru-RU": "запустил"]
-    )
-    
-    static let completed = XAPIVerb(
-        id: "http://adlnet.gov/expapi/verbs/completed",
-        display: ["en-US": "completed", "ru-RU": "завершил"]
-    )
-    
-    static let passed = XAPIVerb(
-        id: "http://adlnet.gov/expapi/verbs/passed",
-        display: ["en-US": "passed", "ru-RU": "прошел"]
-    )
-    
-    static let failed = XAPIVerb(
-        id: "http://adlnet.gov/expapi/verbs/failed",
-        display: ["en-US": "failed", "ru-RU": "провалил"]
-    )
-    
-    static let progressed = XAPIVerb(
-        id: "http://adlnet.gov/expapi/verbs/progressed",
-        display: ["en-US": "progressed", "ru-RU": "прогрессировал"]
-    )
-} 
+// xAPI models (Actor, Verb, Object, Statement, etc.) are defined in XAPIModels.swift
+// This file only contains Cmi5-specific models 

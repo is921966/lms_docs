@@ -269,20 +269,4 @@ final class Cmi5PackageTests: XCTestCase {
 }
 
 // MARK: - Mock Helpers
-extension Cmi5Manifest {
-    static func empty() -> Cmi5Manifest {
-        return Cmi5Manifest(
-            identifier: "",
-            title: "",
-            description: nil,
-            moreInfo: nil,
-            vendor: nil,
-            course: Cmi5Course(
-                id: "",
-                title: "",
-                description: nil,
-                auCount: 0
-            )
-        )
-    }
-} 
+// empty() method is defined in Cmi5Models.swift 

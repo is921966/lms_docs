@@ -275,21 +275,4 @@ final class Cmi5ImportViewModel: ObservableObject {
 
 // MARK: - Extensions
 
-extension Cmi5Manifest {
-    /// Создает пустой манифест для тестирования
-    static func empty() -> Cmi5Manifest {
-        Cmi5Manifest(
-            identifier: "",
-            title: "",
-            description: nil,
-            moreInfo: nil,
-            vendor: nil,
-            course: Cmi5Course(
-                id: "",
-                title: "",
-                description: nil,
-                auCount: 0
-            )
-        )
-    }
-} 
+// empty() method is defined in Cmi5Models.swift 
