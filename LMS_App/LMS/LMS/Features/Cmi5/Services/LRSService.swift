@@ -168,6 +168,8 @@ final class MockLRSService: LRSServiceProtocol {
     private var state: [String: [String: Any]] = [:]
     
     // For testing
+    var sendAttempts = 0
+    var shouldFailNextCalls = 0
     
     func sendStatement(_ statement: XAPIStatement) async throws -> String {
         sendAttempts += 1

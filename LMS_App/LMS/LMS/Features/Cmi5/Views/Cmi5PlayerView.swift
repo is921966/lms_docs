@@ -233,7 +233,7 @@ struct Cmi5PlayerView: View {
         Task {
             do {
                 // Send launched statement
-                let launchedStatement = XAPIStatementBuilder()
+                let launchedStatement = try XAPIStatementBuilder()
                     .setActor(lrsService.currentActor)
                     .setVerb(XAPIStatementBuilder.Cmi5Verb.launched)
                     .setObject(XAPIObject.activity(activity.toXAPIActivity()))
@@ -251,7 +251,7 @@ struct Cmi5PlayerView: View {
     private func sendInitializedStatement() {
         Task {
             do {
-                let initializedStatement = XAPIStatementBuilder()
+                let initializedStatement = try XAPIStatementBuilder()
                     .setActor(lrsService.currentActor)
                     .setVerb(XAPIStatementBuilder.Cmi5Verb.initialized)
                     .setObject(XAPIObject.activity(activity.toXAPIActivity()))
@@ -269,7 +269,7 @@ struct Cmi5PlayerView: View {
     private func terminateActivity() {
         Task {
             do {
-                let terminatedStatement = XAPIStatementBuilder()
+                let terminatedStatement = try XAPIStatementBuilder()
                     .setActor(lrsService.currentActor)
                     .setVerb(XAPIStatementBuilder.Cmi5Verb.terminated)
                     .setObject(XAPIObject.activity(activity.toXAPIActivity()))

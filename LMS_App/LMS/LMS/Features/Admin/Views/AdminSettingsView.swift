@@ -37,7 +37,9 @@ struct AdminSettingsView: View {
                     case .integrations:
                         IntegrationsSettingsView()
                     case .notifications:
-                        NotificationSettingsView()
+                        NavigationLink(destination: Text("Notification Settings Coming Soon")) {
+                            Label("Уведомления", systemImage: "bell")
+                        }
                     case .security:
                         SecuritySettingsView()
                     case .backup:

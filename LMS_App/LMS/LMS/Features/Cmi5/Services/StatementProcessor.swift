@@ -328,24 +328,6 @@ public final class StatementProcessor {
     }
 }
 
-// MARK: - Mock for Testing
-
-/// Mock LRS service for testing (should already be in LRSService.swift)
-extension MockLRSService {
-    var sentStatements: [XAPIStatement] {
-        statements
-    }
-    
-    var shouldFailNextCalls: Int {
-        get { 0 } // Default implementation
-        set { } // For testing
-    }
-    
-    var sendAttempts: Int {
-        0 // Default implementation
-    }
-} 
-
 // MARK: - StatementProcessorProtocol Conformance
 
 extension StatementProcessor: StatementProcessorProtocol {

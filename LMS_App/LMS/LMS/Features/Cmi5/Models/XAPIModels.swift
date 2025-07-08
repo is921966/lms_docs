@@ -94,7 +94,7 @@ public struct XAPIAccount: Codable {
 // MARK: - xAPI Verb
 
 /// Представляет действие в xAPI
-public struct XAPIVerb: Codable {
+public struct XAPIVerb: Codable, Equatable {
     public let id: String
     public let display: [String: String]
     
@@ -207,9 +207,9 @@ public struct XAPIActivity: Codable {
 public struct XAPIActivityDefinition: Codable {
     public let name: [String: String]?
     public let description: [String: String]?
-    public let type: String?
+    public var type: String?
     public let moreInfo: String?
-    public let extensions: [String: AnyCodable]?
+    public var extensions: [String: AnyCodable]?
     
     public init(
         name: [String: String]? = nil,

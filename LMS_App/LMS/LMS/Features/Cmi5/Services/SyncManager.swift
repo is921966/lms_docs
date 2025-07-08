@@ -29,11 +29,22 @@ public final class SyncManager {
     
     // MARK: - Types
     
-    public enum SyncStatus {
+    public enum SyncStatus: Equatable {
         case idle
         case syncing
         case waiting // Waiting for network
         case failed(Error)
+        
+        public static func == (lhs: SyncStatus, rhs: SyncStatus) -> Bool {
+            switch (lhs, rhs) {
+            case (.idle, .idle), (.syncing, .syncing), (.waiting, .waiting):
+                return true
+            case (.failed, .failed):
+                return true // Consider all errors equal for simplicity
+            default:
+                return false
+            }
+        }
     }
     
     public struct SyncStatistics {

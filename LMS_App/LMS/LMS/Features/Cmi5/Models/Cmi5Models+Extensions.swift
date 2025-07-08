@@ -20,13 +20,13 @@ extension Cmi5Activity {
         definition.type = activityType
         
         // Добавить расширения Cmi5
-        var extensions: [String: Any] = [:]
+        var extensions: [String: AnyCodable] = [:]
         
-        extensions["https://w3id.org/xapi/cmi5/context/extensions/launchmethod"] = launchMethod.rawValue
-        extensions["https://w3id.org/xapi/cmi5/context/extensions/moveon"] = moveOn.rawValue
+        extensions["https://w3id.org/xapi/cmi5/context/extensions/launchmethod"] = AnyCodable(launchMethod.rawValue)
+        extensions["https://w3id.org/xapi/cmi5/context/extensions/moveon"] = AnyCodable(moveOn.rawValue)
         
         if let masteryScore = masteryScore {
-            extensions["https://w3id.org/xapi/cmi5/context/extensions/masteryscore"] = masteryScore
+            extensions["https://w3id.org/xapi/cmi5/context/extensions/masteryscore"] = AnyCodable(masteryScore)
         }
         
         if !extensions.isEmpty {

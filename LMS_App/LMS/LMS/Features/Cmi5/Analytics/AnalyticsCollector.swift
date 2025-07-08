@@ -97,9 +97,8 @@ public final class AnalyticsCollector {
         }
         
         // Notify subscribers
-        if let metrics = await getCurrentMetrics() {
-            metricsSubject.send(metrics)
-        }
+        let metrics = await getCurrentMetrics()
+        metricsSubject.send(metrics)
     }
     
     // MARK: - General Metrics

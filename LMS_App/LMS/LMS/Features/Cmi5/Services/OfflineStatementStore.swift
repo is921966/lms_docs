@@ -13,6 +13,7 @@ import Combine
 public protocol OfflineStatementStoreProtocol {
     func save(_ statement: XAPIStatement, priority: OfflineStatementStore.Priority) async throws
     func getAllPending() async throws -> [OfflineStatementStore.PendingStatement]
+    func getBatch(limit: Int) async throws -> [OfflineStatementStore.PendingStatement]
     func markAsSynced(statementId: String) async throws
     func markAsFailed(statementId: String, error: Error) async throws
     var pendingCountPublisher: AnyPublisher<Int, Never> { get }
