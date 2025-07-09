@@ -65,6 +65,15 @@ struct ContentView: View {
                 Label("Настройки", systemImage: "gear")
             }
             .tag(3)
+            
+            // НОВЫЙ ТАБ: Ещё - для доступа ко всем модулям
+            NavigationStack {
+                MoreModulesView()
+            }
+            .tabItem {
+                Label("Ещё", systemImage: "ellipsis.circle")
+            }
+            .tag(4)
         }
         .accentColor(.blue)
         // Добавляем индикатор админского режима

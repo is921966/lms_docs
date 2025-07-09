@@ -40,6 +40,13 @@ struct LMSApp: App {
             // КРИТИЧЕСКИ ВАЖНО: Используем FeatureRegistryManager для уведомления UI
             FeatureRegistryManager.shared.enableReadyModules()
         }
+        
+        // НОВОЕ: Для TestFlight всегда включаем готовые модули
+        // Это позволит тестировщикам видеть весь функционал
+        #if !DEBUG
+        FeatureRegistryManager.shared.enableReadyModules()
+        print("🚀 TestFlight Mode: Все готовые модули включены автоматически")
+        #endif
     }
 
     var body: some Scene {
