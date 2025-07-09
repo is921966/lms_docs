@@ -2,19 +2,33 @@ import SwiftUI
 
 struct MoreModulesView: View {
     @StateObject private var featureRegistry = FeatureRegistryManager.shared
+    @EnvironmentObject var authService: MockAuthService
     @State private var selectedModule: Feature?
     @State private var showingModule = false
+    @State private var showingSettings = false
+    @State private var showingCourses = false
     
-    // Модули для отображения в "Ещё"
-    let additionalModules: [Feature] = [
-        .tests,
-        .analytics,
-        .onboarding,
-        .competencies,
-        .positions,
-        .feed,
-        .cmi5
-    ]
+    // Базовые модули для всех
+    var baseModules: [Feature] {
+        [
+            .tests,
+            .analytics,
+            .onboarding,
+            .competencies,
+            .positions,
+            .cmi5
+        ]
+    }
+    
+    // Дополнительные модули для админов
+    var adminModules: [Feature] {
+        authService.currentUser?.role == .admin ? [.feed] : []
+    }
+    
+    // Все доступные модули
+    var additionalModules: [Feature] {
+        baseModules + adminModules
+    }
     
     // Будущие модули
     let futureModules: [Feature] = [
@@ -28,11 +42,11 @@ struct MoreModulesView: View {
             VStack(spacing: 20) {
                 // Заголовок
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Дополнительные модули")
+                    Text("Дополнительные функции")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                     
-                    Text("Все доступные функции LMS")
+                    Text("Все инструменты и настройки")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -40,24 +54,48 @@ struct MoreModulesView: View {
                 .padding(.horizontal)
                 .padding(.top)
                 
-                // Активные модули
+                // Основные функции (всегда доступны)
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Доступные модули")
+                    Text("Основные функции")
                         .font(.headline)
                         .padding(.horizontal)
                     
-                    LazyVGrid(columns: [
-                        GridItem(.flexible()),
-                        GridItem(.flexible())
-                    ], spacing: 16) {
-                        ForEach(additionalModules.filter { $0.isEnabled }, id: \.self) { module in
-                            FeatureCard(feature: module) {
-                                selectedModule = module
-                                showingModule = true
+                    VStack(spacing: 16) {
+                        // Настройки - всегда первые
+                        SettingsCard {
+                            showingSettings = true
+                        }
+                        
+                        // Курсы - только для админов
+                        if authService.currentUser?.role == .admin {
+                            CoursesCard {
+                                showingCourses = true
                             }
                         }
                     }
                     .padding(.horizontal)
+                }
+                
+                // Доступные модули
+                if !additionalModules.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Дополнительные модули")
+                            .font(.headline)
+                            .padding(.horizontal)
+                        
+                        LazyVGrid(columns: [
+                            GridItem(.flexible()),
+                            GridItem(.flexible())
+                        ], spacing: 16) {
+                            ForEach(additionalModules.filter { $0.isEnabled }, id: \.self) { module in
+                                FeatureCard(feature: module) {
+                                    selectedModule = module
+                                    showingModule = true
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
                 }
                 
                 // Скоро будут доступны
@@ -91,6 +129,12 @@ struct MoreModulesView: View {
             if let module = selectedModule {
                 module.view
             }
+        }
+        .navigationDestination(isPresented: $showingSettings) {
+            SettingsView()
+        }
+        .navigationDestination(isPresented: $showingCourses) {
+            CourseListView()
         }
         // Обновляем при изменении feature flags
         .onReceive(featureRegistry.$lastUpdate) { _ in
@@ -166,6 +210,78 @@ struct FutureFeatureCard: View {
                 .stroke(style: StrokeStyle(lineWidth: 1, dash: [5]))
                 .foregroundColor(.gray.opacity(0.3))
         )
+    }
+}
+
+// MARK: - Settings Card
+struct SettingsCard: View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "gear")
+                    .font(.system(size: 24))
+                    .foregroundColor(.blue)
+                    .frame(width: 50)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Настройки")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    
+                    Text("Управление приложением и аккаунтом")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Courses Card (для админов)
+struct CoursesCard: View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "book.fill")
+                    .font(.system(size: 24))
+                    .foregroundColor(.green)
+                    .frame(width: 50)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Управление курсами")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    
+                    Text("Создание и редактирование курсов")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

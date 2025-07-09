@@ -28,52 +28,49 @@ struct ContentView: View {
 
     var authenticatedView: some View {
         TabView(selection: $selectedTab) {
-            // Главная - используем дашборд в зависимости от роли
+            // Главная - теперь это лента новостей
             NavigationStack {
-                if authService.currentUser?.role == .admin {
-                    AdminDashboardView()
-                } else {
-                    StudentDashboardView()
-                }
+                FeedView()
             }
             .tabItem {
                 Label("Главная", systemImage: "house.fill")
             }
             .tag(0)
             
-            // Курсы - используем реальный CourseListView
+            // Курсы для студентов / Админ панель для админов
             NavigationStack {
-                CourseListView()
+                if authService.currentUser?.role == .admin {
+                    AdminManagementView()
+                } else {
+                    CourseListView()
+                }
             }
             .tabItem {
-                Label("Курсы", systemImage: "book.fill")
+                if authService.currentUser?.role == .admin {
+                    Label("Админ панель", systemImage: "person.2.badge.gearshape")
+                } else {
+                    Label("Курсы", systemImage: "book.fill")
+                }
             }
             .tag(1)
             
+            // Профиль - теперь включает дашборды
             NavigationStack {
-                ProfileView()
+                ProfileWithDashboardView()
             }
             .tabItem {
                 Label("Профиль", systemImage: "person.fill")
             }
             .tag(2)
             
-            NavigationStack {
-                SettingsView()
-            }
-            .tabItem {
-                Label("Настройки", systemImage: "gear")
-            }
-            .tag(3)
-            
-            // НОВЫЙ ТАБ: Ещё - для доступа ко всем модулям
+            // Ещё - все модули + настройки
             NavigationStack {
                 MoreModulesView()
             }
             .tabItem {
                 Label("Ещё", systemImage: "ellipsis.circle")
             }
-            .tag(4)
+            .tag(3)
         }
         .accentColor(.blue)
         // Добавляем индикатор админского режима
