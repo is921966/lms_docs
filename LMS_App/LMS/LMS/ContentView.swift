@@ -28,18 +28,27 @@ struct ContentView: View {
 
     var authenticatedView: some View {
         TabView(selection: $selectedTab) {
-            // Временно упрощаем структуру для отладки
-            Text("Главная")
-                .tabItem {
-                    Label("Главная", systemImage: "house.fill")
+            // Главная - используем дашборд в зависимости от роли
+            NavigationStack {
+                if authService.currentUser?.role == .admin {
+                    AdminDashboardView()
+                } else {
+                    StudentDashboardView()
                 }
-                .tag(0)
+            }
+            .tabItem {
+                Label("Главная", systemImage: "house.fill")
+            }
+            .tag(0)
             
-            Text("Курсы")
-                .tabItem {
-                    Label("Курсы", systemImage: "book.fill")
-                }
-                .tag(1)
+            // Курсы - используем реальный CourseListView
+            NavigationStack {
+                CourseListView()
+            }
+            .tabItem {
+                Label("Курсы", systemImage: "book.fill")
+            }
+            .tag(1)
             
             NavigationStack {
                 ProfileView()
@@ -70,6 +79,64 @@ struct ContentView: View {
             FeedbackManager.shared.presentFeedback()
         }
     }
+    
+    // Продвинутая версия с динамическими табами (закомментирована для стабильности)
+    /*
+    var advancedAuthenticatedView: some View {
+        TabView(selection: $selectedTab) {
+            // Главная
+            NavigationStack {
+                if authService.currentUser?.role == .admin {
+                    AdminDashboardView()
+                } else {
+                    StudentDashboardView()
+                }
+            }
+            .tabItem {
+                Label("Главная", systemImage: "house.fill")
+            }
+            .tag(0)
+            
+            // Динамические табы из FeatureRegistry
+            ForEach(Array(Feature.enabledTabFeatures.enumerated()), id: \.element) { index, feature in
+                NavigationStack {
+                    feature.view
+                }
+                .tabItem {
+                    Label(feature.rawValue, systemImage: feature.icon)
+                }
+                .tag(index + 1)
+            }
+            
+            // Профиль и настройки всегда последние
+            NavigationStack {
+                ProfileView()
+            }
+            .tabItem {
+                Label("Профиль", systemImage: "person.fill")
+            }
+            .tag(Feature.enabledTabFeatures.count + 1)
+            
+            NavigationStack {
+                SettingsView()
+            }
+            .tabItem {
+                Label("Ещё", systemImage: "ellipsis.circle")
+            }
+            .tag(Feature.enabledTabFeatures.count + 2)
+        }
+        .accentColor(.blue)
+        .overlay(alignment: .topTrailing) {
+            if isAdminMode {
+                AdminModeIndicator()
+                    .padding()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("deviceDidShake"))) { _ in
+            FeedbackManager.shared.presentFeedback()
+        }
+    }
+    */
 }
 
 // Индикатор админского режима
