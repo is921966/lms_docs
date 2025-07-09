@@ -51,7 +51,7 @@ struct MoreModulesView: View {
                         GridItem(.flexible())
                     ], spacing: 16) {
                         ForEach(additionalModules.filter { $0.isEnabled }, id: \.self) { module in
-                            ModuleCard(feature: module) {
+                            FeatureCard(feature: module) {
                                 selectedModule = module
                                 showingModule = true
                             }
@@ -73,7 +73,7 @@ struct MoreModulesView: View {
                             GridItem(.flexible())
                         ], spacing: 16) {
                             ForEach(futureModules, id: \.self) { module in
-                                FutureModuleCard(feature: module)
+                                FutureFeatureCard(feature: module)
                             }
                         }
                         .padding(.horizontal)
@@ -99,8 +99,8 @@ struct MoreModulesView: View {
     }
 }
 
-// MARK: - Module Card
-struct ModuleCard: View {
+// MARK: - Feature Card
+struct FeatureCard: View {
     let feature: Feature
     let action: () -> Void
     
@@ -137,8 +137,8 @@ struct ModuleCard: View {
     }
 }
 
-// MARK: - Future Module Card
-struct FutureModuleCard: View {
+// MARK: - Future Feature Card
+struct FutureFeatureCard: View {
     let feature: Feature
     
     var body: some View {
@@ -181,10 +181,10 @@ struct TestingInfoSection: View {
             }
             
             VStack(alignment: .leading, spacing: 8) {
-                InfoRow(icon: "1.circle.fill", text: "Все модули включены автоматически в TestFlight")
-                InfoRow(icon: "2.circle.fill", text: "Нажмите на модуль для перехода")
-                InfoRow(icon: "3.circle.fill", text: "Используйте Shake для обратной связи")
-                InfoRow(icon: "4.circle.fill", text: "Debug режим: Настройки → 7 тапов по версии")
+                MoreInfoRow(icon: "1.circle.fill", text: "Все модули включены автоматически в TestFlight")
+                MoreInfoRow(icon: "2.circle.fill", text: "Нажмите на модуль для перехода")
+                MoreInfoRow(icon: "3.circle.fill", text: "Используйте Shake для обратной связи")
+                MoreInfoRow(icon: "4.circle.fill", text: "Debug режим: Настройки → 7 тапов по версии")
             }
             .font(.caption)
             .foregroundColor(.secondary)
@@ -196,7 +196,7 @@ struct TestingInfoSection: View {
     }
 }
 
-struct InfoRow: View {
+struct MoreInfoRow: View {
     let icon: String
     let text: String
     
