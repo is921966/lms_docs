@@ -3,24 +3,23 @@
 **Current Date**: July 12, 2025  
 **Project Day**: 184 (Условный день)  
 **Current Sprint**: 42 - Cmi5 Player & Learning Experience ✅  
-**Version**: 2.0.0 (Build 200) - TestFlight Ready! 🚀
+**Version**: 2.1.0 (Build 202) - TestFlight Ready! 🚀
 
-## 🚀 Major Milestone: TestFlight 2.0.0
+## 🚀 Latest Build: v2.1.0 Build 202
 
-### What's New in 2.0.0:
-- ✅ **Cmi5 Support**: Full implementation of industry-standard eLearning
-- ✅ **Offline Learning**: Continue without internet, automatic sync
-- ✅ **Advanced Analytics**: Beautiful charts, PDF/CSV export
-- ✅ **Modern UI**: Animations, skeleton loaders, haptic feedback
-- ✅ **Performance**: 50% faster, 38% less memory usage
+### What's New - Menu Reorganization:
+- ✅ **Home = Feed**: News feed is now the main screen
+- ✅ **Adaptive 2nd Tab**: Courses for students, Admin Panel for admins
+- ✅ **Profile + Dashboard**: Combined with segmented control
+- ✅ **Everything in More**: Settings, modules, and admin tools
+- ✅ **4 Tabs Instead of 5**: Cleaner navigation
 
 ### Archive Details:
-- **Version**: 2.0.0
-- **Build**: 200
-- **Archive Location**: `~/Library/Developer/Xcode/Archives/2025-07-09/LMS_2.0.0_Build_200.xcarchive`
+- **Version**: 2.1.0
+- **Build**: 202
+- **Archive Location**: `~/Library/Developer/Xcode/Archives/2025-07-09/LMS_2.1.0_Build_202.xcarchive`
 - **Status**: Ready for TestFlight upload
-- **Release Notes**: Prepared in Russian
-- **Testing Docs**: 5 comprehensive guides created
+- **Key Feature**: Reorganized menu structure for better UX
 
 ## 📊 Overall Project Progress
 
