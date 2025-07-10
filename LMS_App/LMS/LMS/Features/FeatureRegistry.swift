@@ -40,6 +40,7 @@ enum Feature: String, CaseIterable {
     case positions = "Должности"
     case feed = "Новости"
     case cmi5 = "Cmi5 Контент"  // НОВЫЙ МОДУЛЬ
+    case courseManagement = "Управление курсами"  // Управление курсами для админов
 
     // Будущие модули
     case certificates = "Сертификаты"
@@ -78,6 +79,7 @@ enum Feature: String, CaseIterable {
         case .positions: return "briefcase"
         case .feed: return "newspaper"
         case .cmi5: return "cube.box"  // НОВАЯ ИКОНКА
+        case .courseManagement: return "folder.badge.gearshape"  // Иконка для управления курсами
         case .certificates: return "rosette"
         case .gamification: return "gamecontroller"
         case .notifications: return "bell"
@@ -116,6 +118,9 @@ enum Feature: String, CaseIterable {
         case .cmi5:
             // НОВЫЙ VIEW - Cmi5 управление
             Cmi5ManagementView()
+        case .courseManagement:
+            // Управление курсами для админов
+            CourseManagementView()
         case .certificates:
             PlaceholderView(title: "Сертификаты", icon: "rosette")
         case .gamification:
@@ -225,6 +230,7 @@ extension Feature {
         case .positions: return "Управление должностями"
         case .feed: return "Лента новостей и объявлений"
         case .cmi5: return "Интерактивные учебные материалы"
+        case .courseManagement: return "Управление курсами и модулями"
         case .certificates: return "Выдача сертификатов"
         case .gamification: return "Игровые механики"
         case .notifications: return "Push-уведомления"
@@ -246,6 +252,7 @@ extension Feature {
         case .positions: return .brown
         case .feed: return .pink
         case .cmi5: return .cyan
+        case .courseManagement: return .mint
         case .certificates: return .purple
         case .gamification: return .orange
         case .notifications: return .red

@@ -1,0 +1,491 @@
+openapi: 3.0.0
+info:
+  title: Course Management API
+  version: 2.1.1
+  description: API для управления курсами в LMS
+
+servers:
+  - url: https://api.lms.example.com/v1
+    description: Production server
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+paths:
+  /courses:
+    get:
+      summary: Получить список курсов
+      tags:
+        - Courses
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Поиск по названию и описанию
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [technical, soft_skills, compliance, onboarding]
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, draft, archived]
+      responses:
+        '200':
+          description: Список курсов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    
+    post:
+      summary: Создать новый курс
+      tags:
+        - Courses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseCreate'
+      responses:
+        '201':
+          description: Курс создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /courses/{id}:
+    get:
+      summary: Получить курс по ID
+      tags:
+        - Courses
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Детали курса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDetail'
+        '404':
+          description: Курс не найден
+    
+    put:
+      summary: Обновить курс
+      tags:
+        - Courses
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseUpdate'
+      responses:
+        '200':
+          description: Курс обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+    
+    delete:
+      summary: Удалить курс
+      tags:
+        - Courses
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Курс удален
+        '404':
+          description: Курс не найден
+
+  /courses/{id}/assign:
+    post:
+      summary: Назначить курс пользователям
+      tags:
+        - Course Assignment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_ids:
+                  type: array
+                  items:
+                    type: integer
+                group_ids:
+                  type: array
+                  items:
+                    type: integer
+                deadline:
+                  type: string
+                  format: date-time
+                notify_users:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Курс назначен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  assigned_count:
+                    type: integer
+                  message:
+                    type: string
+
+  /courses/{id}/materials:
+    get:
+      summary: Получить материалы курса
+      tags:
+        - Course Materials
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список материалов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseMaterial'
+    
+    post:
+      summary: Добавить материал к курсу
+      tags:
+        - Course Materials
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseMaterialCreate'
+      responses:
+        '201':
+          description: Материал добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseMaterial'
+
+  /courses/{id}/analytics:
+    get:
+      summary: Получить аналитику по курсу
+      tags:
+        - Course Analytics
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: date_from
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: date_to
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Аналитика курса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseAnalytics'
+
+  /courses/bulk:
+    post:
+      summary: Массовые операции с курсами
+      tags:
+        - Bulk Operations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course_ids:
+                  type: array
+                  items:
+                    type: integer
+                action:
+                  type: string
+                  enum: [archive, activate, delete, duplicate]
+      responses:
+        '200':
+          description: Операция выполнена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  affected_count:
+                    type: integer
+                  message:
+                    type: string
+
+components:
+  schemas:
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+        duration_hours:
+          type: integer
+        thumbnail_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        
+    CourseDetail:
+      allOf:
+        - $ref: '#/components/schemas/Course'
+        - type: object
+          properties:
+            materials_count:
+              type: integer
+            enrolled_count:
+              type: integer
+            completion_rate:
+              type: number
+            average_score:
+              type: number
+            competencies:
+              type: array
+              items:
+                $ref: '#/components/schemas/Competency'
+            materials:
+              type: array
+              items:
+                $ref: '#/components/schemas/CourseMaterial'
+    
+    CourseCreate:
+      type: object
+      required:
+        - title
+        - category
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        duration_hours:
+          type: integer
+        thumbnail_url:
+          type: string
+        competency_ids:
+          type: array
+          items:
+            type: integer
+    
+    CourseUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+        duration_hours:
+          type: integer
+        thumbnail_url:
+          type: string
+    
+    CourseMaterial:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+          enum: [video, document, cmi5, scorm, quiz, text]
+        url:
+          type: string
+        duration_minutes:
+          type: integer
+        order:
+          type: integer
+    
+    CourseMaterialCreate:
+      type: object
+      required:
+        - title
+        - type
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        url:
+          type: string
+        file:
+          type: string
+          format: binary
+        duration_minutes:
+          type: integer
+        order:
+          type: integer
+    
+    CourseAnalytics:
+      type: object
+      properties:
+        total_enrolled:
+          type: integer
+        active_learners:
+          type: integer
+        completed_count:
+          type: integer
+        average_progress:
+          type: number
+        average_score:
+          type: number
+        completion_rate:
+          type: number
+        time_spent_total:
+          type: integer
+        daily_progress:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              enrollments:
+                type: integer
+              completions:
+                type: integer
+              average_progress:
+                type: number
+    
+    Competency:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        level:
+          type: string
+    
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+        last_page:
+          type: integer
+    
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [] 
