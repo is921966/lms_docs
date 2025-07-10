@@ -2,6 +2,12 @@
   "": {
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/master.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/App/LMSApp+PushNotifications.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+PushNotifications.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+PushNotifications.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+PushNotifications~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+PushNotifications.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LMSButton.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton.swift.o",
@@ -404,6 +410,24 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/VKLoginView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/VKLoginView.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Analytics/AnalyticsCollector.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsCollector.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsCollector.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsCollector~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsCollector.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Analytics/LearningMetrics.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LearningMetrics.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LearningMetrics.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LearningMetrics~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LearningMetrics.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/Cmi5Models+Extensions.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models+Extensions.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models+Extensions.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models+Extensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models+Extensions.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/Cmi5Models.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models.swift.o",
@@ -415,6 +439,18 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIModels.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIModels~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIModels.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Reports/ReportGenerator.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportGenerator.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportGenerator.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportGenerator~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportGenerator.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Reports/ReportTemplates.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportTemplates.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportTemplates.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportTemplates~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportTemplates.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5ArchiveHandler.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ArchiveHandler.d",
@@ -446,11 +482,47 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5XMLParser~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5XMLParser.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/ConflictResolver.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ConflictResolver.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ConflictResolver.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ConflictResolver~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ConflictResolver.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/LRSService.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LRSService.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LRSService.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LRSService~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LRSService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/OfflineStatementStore.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OfflineStatementStore.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OfflineStatementStore.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OfflineStatementStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OfflineStatementStore.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/StatementProcessor.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementProcessor.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementProcessor.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementProcessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementProcessor.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/StatementQueue.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementQueue.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementQueue.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementQueue~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementQueue.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/StatementValidator.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementValidator.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementValidator.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementValidator~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StatementValidator.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/SyncManager.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/SyncManager.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/SyncManager.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/SyncManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/SyncManager.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/XAPIStatementBuilder.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIStatementBuilder.d",
@@ -458,11 +530,23 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIStatementBuilder~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIStatementBuilder.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Utils/AnyCodable.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnyCodable.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnyCodable.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnyCodable~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnyCodable.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ImportViewModel.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/AnalyticsDashboardView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsDashboardView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsDashboardView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsDashboardView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsDashboardView.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5ActivitySelector.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ActivitySelector.d",
@@ -493,6 +577,18 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PackagePreviewView.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PackagePreviewView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PackagePreviewView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5PlayerView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PlayerView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PlayerView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PlayerView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PlayerView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/ReportExportView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportExportView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportExportView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportExportView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportExportView.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Models/Competency.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Competency.d",
@@ -571,6 +667,18 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedService.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedService~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/MockFeedService.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/ViewModels/FeedViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedViewModel.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CommentsView.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CommentsView.d",
@@ -812,6 +920,12 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LessonView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LessonView.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/More/Views/MoreModulesView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MoreModulesView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MoreModulesView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MoreModulesView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MoreModulesView.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/More/Views/MoreView.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MoreView.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MoreView.swift.o",
@@ -823,12 +937,6 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MainTabView.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MainTabView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MainTabView.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/API/NotificationEndpoint.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationEndpoint.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationEndpoint.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationEndpoint~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationEndpoint.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Models/NotificationModels.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationModels.d",
@@ -842,71 +950,11 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockNotificationRepository~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockNotificationRepository.swiftdeps"
   },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Services/MockPushNotificationService.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockPushNotificationService.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockPushNotificationService.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockPushNotificationService~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockPushNotificationService.swiftdeps"
-  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Services/NotificationRepositoryProtocol.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationRepositoryProtocol.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationRepositoryProtocol.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationRepositoryProtocol~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationRepositoryProtocol.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Services/NotificationService.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationService.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationService.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationService~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationService.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Services/NotificationServiceProtocol.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationServiceProtocol.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationServiceProtocol.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationServiceProtocol~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationServiceProtocol.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Services/PushNotificationServiceProtocol.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PushNotificationServiceProtocol.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PushNotificationServiceProtocol.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PushNotificationServiceProtocol~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PushNotificationServiceProtocol.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/ViewModels/NotificationCenterViewModel.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationCenterViewModel.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationCenterViewModel.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationCenterViewModel~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationCenterViewModel.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/ViewModels/NotificationSettingsViewModel.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationSettingsViewModel.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationSettingsViewModel.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationSettingsViewModel~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationSettingsViewModel.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Views/NotificationCenterView.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationCenterView.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationCenterView.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationCenterView~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationCenterView.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Views/NotificationDetailView.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationDetailView.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationDetailView.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationDetailView~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationDetailView.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Views/NotificationListView.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationListView.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationListView.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationListView~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationListView.swiftdeps"
-  },
-  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Notifications/Views/NotificationSettingsView.swift": {
-    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationSettingsView.d",
-    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationSettingsView.swift.o",
-    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationSettingsView~partial.swiftmodule",
-    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationSettingsView.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Models/OnboardingProgram.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OnboardingProgram.d",
@@ -1088,11 +1136,23 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ProfileView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ProfileView.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Profile/Views/ProfileWithDashboardView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ProfileWithDashboardView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ProfileWithDashboardView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ProfileWithDashboardView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ProfileWithDashboardView.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Settings/Views/SettingsView.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/SettingsView.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/SettingsView.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/SettingsView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/SettingsView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Student/Views/NotificationListView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationListView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationListView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationListView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/NotificationListView.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Student/Views/StudentCompetencyView.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCompetencyView.d",
@@ -1316,6 +1376,12 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserModels~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserModels.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Models/User/UserPreferences.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserPreferences.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserPreferences.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserPreferences~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserPreferences.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Models/User/UserResponse+Compatibility.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserResponse+Compatibility.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserResponse+Compatibility.swift.o",
@@ -1453,6 +1519,12 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MetricsCollector.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MetricsCollector~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MetricsCollector.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/MockNotificationService.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockNotificationService.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockNotificationService.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockNotificationService~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockNotificationService.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/MockServices/OnboardingMockService.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OnboardingMockService.d",

@@ -31,7 +31,7 @@ class SettingsViewModel: ObservableObject {
     
     // MARK: - Initialization
     init(authService: AuthServiceProtocol? = nil, userService: UserServiceProtocol? = nil) {
-        self.authService = authService ?? AuthService.shared
+        self.authService = authService ?? MockAuthService.shared
         self.userService = userService ?? MockUserService()
         
         Task {

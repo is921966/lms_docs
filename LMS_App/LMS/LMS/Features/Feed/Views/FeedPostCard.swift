@@ -69,7 +69,7 @@ struct FeedPostCard: View {
     private var postOptionsSheet: ActionSheet {
         var buttons: [ActionSheet.Button] = []
 
-        if post.authorId == authService.currentUser?.id || feedService.permissions.canDelete {
+        if post.author.id == authService.currentUser?.id || feedService.permissions.canDelete {
             buttons.append(.destructive(Text("Удалить")) {
                 Task {
                     try? await feedService.deletePost(post.id)
@@ -88,7 +88,7 @@ struct FeedPostCard: View {
     // MARK: - Helper Methods
 
     private func canShowOptions() -> Bool {
-        post.authorId == authService.currentUser?.id || feedService.permissions.canDelete
+        post.author.id == authService.currentUser?.id || feedService.permissions.canDelete
     }
 
     private func toggleLike() {
@@ -101,3 +101,30 @@ struct FeedPostCard: View {
         // In real app, would show share sheet
     }
 }
+
+#if DEBUG
+struct FeedPostCard_Previews: PreviewProvider {
+    static var previews: some View {
+        let samplePost = FeedPost(
+            id: "1",
+            author: UserResponse(id: "user1", email: "test@test.com", name: "Иван Петров", role: .instructor),
+            content: "Это пример поста для превью. Он содержит несколько строк текста, чтобы проверить, как отображается контент.",
+            images: [],
+            attachments: [
+                FeedAttachment(id: "att1", type: .document, url: "https://example.com/doc.pdf", name: "Пример документа.pdf", size: 123456, thumbnailUrl: nil)
+            ],
+            createdAt: Date().addingTimeInterval(-3600),
+            visibility: .everyone,
+            likes: ["user2", "user3"],
+            comments: [
+                FeedComment(id: "c1", postId: "1", author: UserResponse(id: "user2", email: "commenter@test.com", name: "Анна Иванова", role: .student), content: "Отличный пост!", createdAt: Date().addingTimeInterval(-1800), likes: [])
+            ]
+        )
+
+        FeedPostCard(post: samplePost)
+            .padding()
+            .previewLayout(.sizeThatFits)
+            .background(Color(.systemGray6))
+    }
+}
+#endif

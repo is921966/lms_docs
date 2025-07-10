@@ -322,16 +322,12 @@ final class Cmi5ActivitySelectorViewModel: ObservableObject {
         isLoading = true
         error = nil
         
-        do {
-            await service.loadPackages()
-            packages = service.packages.filter { $0.isValid }
-            
-            // Автоматически раскрываем первый пакет
-            if let firstPackage = packages.first {
-                expandedPackages.insert(firstPackage.id)
-            }
-        } catch let loadError {
-            self.error = loadError
+        await service.loadPackages()
+        packages = service.packages.filter { $0.isValid }
+        
+        // Автоматически раскрываем первый пакет
+        if let firstPackage = packages.first {
+            expandedPackages.insert(firstPackage.id)
         }
         
         isLoading = false

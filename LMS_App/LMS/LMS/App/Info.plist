@@ -17,11 +17,19 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.0</string>
+	<string>2.1.0</string>
 	<key>CFBundleVersion</key>
-	<string>41</string>
+	<string>204</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>LMS needs camera access to scan QR codes and take photos for assignments</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>LMS needs microphone access to record audio for assignments</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>LMS needs photo library access to upload images for assignments</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app does not track users</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -48,13 +56,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>LMS needs camera access to scan QR codes and take photos for assignments</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>LMS needs photo library access to upload images for assignments</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>LMS needs microphone access to record audio for assignments</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>This app does not track users</string>
 </dict>
-</plist> 
+</plist>

@@ -98,17 +98,17 @@ struct PostPreviewInComments: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Circle()
-                    .fill(roleColor(for: post.authorRole))
+                    .fill(roleColor(for: post.author.role))
                     .frame(width: 32, height: 32)
                     .overlay(
-                        Text(post.authorName.prefix(1).uppercased())
+                        Text(post.author.name.prefix(1).uppercased())
                             .font(.caption)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(post.authorName)
+                    Text(post.author.name)
                         .font(.subheadline)
                         .fontWeight(.semibold)
 
@@ -165,7 +165,7 @@ struct CommentView: View {
                 .fill(Color.gray.opacity(0.3))
                 .frame(width: 36, height: 36)
                 .overlay(
-                    Text(comment.authorName.prefix(1).uppercased())
+                    Text(comment.author.name.prefix(1).uppercased())
                         .font(.subheadline)
                         .fontWeight(.semibold)
                 )
@@ -173,7 +173,7 @@ struct CommentView: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Comment content
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(comment.authorName)
+                    Text(comment.author.name)
                         .font(.subheadline)
                         .fontWeight(.semibold)
 
@@ -222,21 +222,44 @@ struct CommentView: View {
 }
 
 #Preview {
-    CommentsView(post: FeedPost(
-        id: "1",
-        authorId: "1",
-        authorName: "Test User",
-        authorRole: .student,
-        authorAvatar: nil,
-        content: "Test post",
+    let mockStudent = UserResponse(
+        id: "user-1",
+        email: "student@tsum.ru",
+        name: "Иван Студентов",
+        role: .student,
+        firstName: "Иван",
+        lastName: "Студентов",
+        department: "IT",
+        isActive: true
+    )
+    
+    let mockAdmin = UserResponse(
+        id: "user-2",
+        email: "admin@tsum.ru",
+        name: "Анна Администратор",
+        role: .admin,
+        firstName: "Анна",
+        lastName: "Администратор",
+        department: "HR",
+        isActive: true
+    )
+
+    let mockPost = FeedPost(
+        id: "post-1",
+        author: mockAdmin,
+        content: "Это пример поста для превью. В нем мы обсуждаем важные вопросы корпоративного обучения и последние обновления платформы.",
         images: [],
         attachments: [],
-        createdAt: Date(),
-        updatedAt: Date(),
-        likes: [],
-        comments: [],
+        createdAt: Date().addingTimeInterval(-3600), // 1 час назад
         visibility: .everyone,
-        tags: [],
+        likes: ["user-2", "user-3"],
+        comments: [
+            FeedComment(id: "comment-1", postId: "post-1", author: mockStudent, content: "Отличный пост!", createdAt: Date().addingTimeInterval(-1800), likes: ["user-4"]),
+            FeedComment(id: "comment-2", postId: "post-1", author: mockAdmin, content: "Полностью согласна. Важное обновление.", createdAt: Date().addingTimeInterval(-900), likes: [])
+        ],
+        tags: ["#обновление", "#обучение"],
         mentions: []
-    ))
+    )
+    
+    CommentsView(post: mockPost)
 }

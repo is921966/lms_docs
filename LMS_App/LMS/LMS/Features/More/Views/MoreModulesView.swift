@@ -7,96 +7,124 @@ struct MoreModulesView: View {
     @State private var showingModule = false
     @State private var showingSettings = false
     @State private var showingCourses = false
+    @State private var showingPendingUsers = false
     
-    // Базовые модули для всех
-    var baseModules: [Feature] {
-        [
-            .tests,
-            .analytics,
-            .onboarding,
-            .competencies,
-            .positions,
-            .cmi5
-        ]
-    }
-    
-    // Дополнительные модули для админов
-    var adminModules: [Feature] {
-        authService.currentUser?.role == .admin ? [.feed] : []
-    }
-    
-    // Все доступные модули
-    var additionalModules: [Feature] {
-        baseModules + adminModules
+    // Все функции для администратора в одном списке
+    var allFunctions: [(title: String, subtitle: String, icon: String, color: Color, action: () -> Void, badge: Int?)] {
+        var functions: [(title: String, subtitle: String, icon: String, color: Color, action: () -> Void, badge: Int?)] = []
+        
+        // 1. Настройки - всегда первые
+        functions.append((
+            title: "Настройки",
+            subtitle: "Управление приложением и аккаунтом",
+            icon: "gear",
+            color: .blue,
+            action: { showingSettings = true },
+            badge: nil
+        ))
+        
+        // 2. Новости (Feed) - сразу после настроек
+        if Feature.feed.isEnabled {
+            functions.append((
+                title: Feature.feed.displayName,
+                subtitle: Feature.feed.description,
+                icon: Feature.feed.icon,
+                color: Feature.feed.color,
+                action: {
+                    selectedModule = .feed
+                    showingModule = true
+                },
+                badge: nil
+            ))
+        }
+        
+        // Для администраторов добавляем админские функции
+        if authService.currentUser?.role == .admin {
+            // 3. Новые студенты
+            functions.append((
+                title: "Новые студенты",
+                subtitle: "Одобрение новых пользователей",
+                icon: "person.badge.plus",
+                color: .orange,
+                action: { showingPendingUsers = true },
+                badge: 3  // Количество ожидающих
+            ))
+            
+            // 4. Управление курсами
+            functions.append((
+                title: "Управление курсами",
+                subtitle: "Создание и редактирование курсов",
+                icon: "book.fill",
+                color: .green,
+                action: { showingCourses = true },
+                badge: nil
+            ))
+            
+            // 5. Cmi5 Контент - сразу после курсов
+            if Feature.cmi5.isEnabled {
+                functions.append((
+                    title: Feature.cmi5.displayName,
+                    subtitle: Feature.cmi5.description,
+                    icon: Feature.cmi5.icon,
+                    color: Feature.cmi5.color,
+                    action: {
+                        selectedModule = .cmi5
+                        showingModule = true
+                    },
+                    badge: -1  // -1 означает "НОВОЕ"
+                ))
+            }
+        }
+        
+        // Добавляем все остальные активные модули (кроме cmi5 и feed, которые уже добавлены)
+        let activeModules = Feature.allCases.filter { $0.isEnabled && $0 != .cmi5 && $0 != .feed }
+        for module in activeModules {
+            // Для администраторов пропускаем модуль "Курсы", так как есть "Управление курсами"
+            if authService.currentUser?.role == .admin && module == .courses {
+                continue
+            }
+            
+            functions.append((
+                title: module.displayName,
+                subtitle: module.description,
+                icon: module.icon,
+                color: module.color,
+                action: {
+                    selectedModule = module
+                    showingModule = true
+                },
+                badge: nil
+            ))
+        }
+        
+        return functions
     }
     
     // Будущие модули
-    let futureModules: [Feature] = [
-        .certificates,
-        .gamification,
-        .notifications
+    let futureModules: [(title: String, icon: String, color: Color)] = [
+        (title: "Сертификаты", icon: "seal.fill", color: .purple),
+        (title: "Геймификация", icon: "gamecontroller.fill", color: .orange),
+        (title: "Уведомления", icon: "bell.fill", color: .red)
     ]
     
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Заголовок
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Дополнительные функции")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    Text("Все инструменты и настройки")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                // Все функции в едином списке
+                VStack(spacing: 12) {
+                    ForEach(Array(allFunctions.enumerated()), id: \.offset) { index, function in
+                        FunctionCard(
+                            title: function.title,
+                            subtitle: function.subtitle,
+                            icon: function.icon,
+                            color: function.color,
+                            badge: function.badge,
+                            action: function.action
+                        )
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
                 .padding(.top)
-                
-                // Основные функции (всегда доступны)
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Основные функции")
-                        .font(.headline)
-                        .padding(.horizontal)
-                    
-                    VStack(spacing: 16) {
-                        // Настройки - всегда первые
-                        SettingsCard {
-                            showingSettings = true
-                        }
-                        
-                        // Курсы - только для админов
-                        if authService.currentUser?.role == .admin {
-                            CoursesCard {
-                                showingCourses = true
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                
-                // Доступные модули
-                if !additionalModules.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Дополнительные модули")
-                            .font(.headline)
-                            .padding(.horizontal)
-                        
-                        LazyVGrid(columns: [
-                            GridItem(.flexible()),
-                            GridItem(.flexible())
-                        ], spacing: 16) {
-                            ForEach(additionalModules.filter { $0.isEnabled }, id: \.self) { module in
-                                FeatureCard(feature: module) {
-                                    selectedModule = module
-                                    showingModule = true
-                                }
-                            }
-                        }
-                        .padding(.horizontal)
-                    }
-                }
                 
                 // Скоро будут доступны
                 if !futureModules.isEmpty {
@@ -106,12 +134,13 @@ struct MoreModulesView: View {
                             .padding(.horizontal)
                             .padding(.top)
                         
-                        LazyVGrid(columns: [
-                            GridItem(.flexible()),
-                            GridItem(.flexible())
-                        ], spacing: 16) {
-                            ForEach(futureModules, id: \.self) { module in
-                                FutureFeatureCard(feature: module)
+                        VStack(spacing: 12) {
+                            ForEach(futureModules, id: \.title) { module in
+                                FutureFunctionCard(
+                                    title: module.title,
+                                    icon: module.icon,
+                                    color: module.color
+                                )
                             }
                         }
                         .padding(.horizontal)
@@ -136,6 +165,9 @@ struct MoreModulesView: View {
         .navigationDestination(isPresented: $showingCourses) {
             CourseListView()
         }
+        .navigationDestination(isPresented: $showingPendingUsers) {
+            MockPendingUsersView()
+        }
         // Обновляем при изменении feature flags
         .onReceive(featureRegistry.$lastUpdate) { _ in
             // Триггерим обновление UI
@@ -143,37 +175,67 @@ struct MoreModulesView: View {
     }
 }
 
-// MARK: - Feature Card
-struct FeatureCard: View {
-    let feature: Feature
+// MARK: - Function Card (единообразная карточка для всех функций)
+struct FunctionCard: View {
+    let title: String
+    let subtitle: String
+    let icon: String
+    let color: Color
+    let badge: Int?
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 12) {
-                Image(systemName: feature.icon)
-                    .font(.system(size: 36))
-                    .foregroundColor(.blue)
+            HStack {
+                // Иконка
+                Image(systemName: icon)
+                    .font(.system(size: 24))
+                    .foregroundColor(color)
+                    .frame(width: 50)
                 
-                Text(feature.rawValue)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.primary)
-                
-                if feature == .cmi5 {
-                    Text("НОВОЕ")
-                        .font(.caption2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(Color.red)
-                        .cornerRadius(8)
+                // Текст
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
                 }
+                
+                Spacer()
+                
+                // Badge или стрелка
+                if let badge = badge {
+                    if badge == -1 {
+                        // Специальный badge "НОВОЕ"
+                        Text("НОВОЕ")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(Color.red)
+                            .cornerRadius(8)
+                    } else {
+                        // Числовой badge
+                        Text("\(badge)")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(Color.red)
+                            .cornerRadius(10)
+                    }
+                }
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.secondary)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 120)
+            .padding()
             .background(Color(.systemGray6))
             .cornerRadius(12)
         }
@@ -181,28 +243,44 @@ struct FeatureCard: View {
     }
 }
 
-// MARK: - Future Feature Card
-struct FutureFeatureCard: View {
-    let feature: Feature
+// MARK: - Future Function Card
+struct FutureFunctionCard: View {
+    let title: String
+    let icon: String
+    let color: Color
     
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: feature.icon)
-                .font(.system(size: 36))
-                .foregroundColor(.gray)
+        HStack {
+            // Иконка
+            Image(systemName: icon)
+                .font(.system(size: 24))
+                .foregroundColor(color.opacity(0.5))
+                .frame(width: 50)
             
-            Text(feature.rawValue)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+            // Текст
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                
+                Text("В разработке")
+                    .font(.caption)
+                    .foregroundColor(.secondary.opacity(0.7))
+            }
+            
+            Spacer()
             
             Text("Скоро")
                 .font(.caption2)
                 .foregroundColor(.secondary)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+                )
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 120)
+        .padding()
         .background(Color(.systemGray6).opacity(0.5))
         .cornerRadius(12)
         .overlay(

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История ЦУМ</title>
+    <script src="https://unpkg.com/@xapi/cmi5@latest/dist/cmi5.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-item {
+            margin-bottom: 30px;
+            padding-left: 40px;
+            position: relative;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3498db;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 15px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background: #e0e0e0;
+        }
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        .year {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.2em;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>История ЦУМ</h1>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress">0%</div>
+        </div>
+        
+        <div id="content">
+            <div class="section" data-section="1">
+                <h2>Добро пожаловать в историю ЦУМ!</h2>
+                <p>ЦУМ (Центральный универсальный магазин) — это не просто магазин, это символ Москвы и важная часть истории российской торговли.</p>
+                
+                <div class="highlight">
+                    <strong>Знаете ли вы?</strong> ЦУМ является одним из старейших универмагов России и входит в топ самых известных торговых центров мира.
+                </div>
+            </div>
+            
+            <div class="section" data-section="2" style="display: none;">
+                <h2>Хронология развития</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="year">1857</div>
+                        <p>Основание торгового дома "Мюр и Мерилиз" шотландскими предпринимателями Эндрю Мюром и Арчибальдом Мерилизом.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="year">1885</div>
+                        <p>Открытие первого универсального магазина на Театральной площади.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="year">1908</div>
+                        <p>Строительство нового здания в стиле модерн по проекту архитектора Романа Клейна.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="year">1922</div>
+                        <p>Национализация и переименование в ЦУМ - Центральный универсальный магазин.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" data-section="3" style="display: none;">
+                <h2>Современный ЦУМ</h2>
+                <p>Сегодня ЦУМ — это:</p>
+                <ul>
+                    <li>Более 120 000 м² торговых площадей</li>
+                    <li>Свыше 2000 мировых брендов</li>
+                    <li>7 этажей премиального шопинга</li>
+                    <li>Уникальная архитектура и дизайн</li>
+                    <li>Культурный центр с выставками и мероприятиями</li>
+                </ul>
+                
+                <div class="highlight">
+                    <strong>Наша миссия:</strong> Предоставлять исключительный опыт шопинга, объединяя традиции и инновации, роскошь и комфорт.
+                </div>
+            </div>
+            
+            <div class="section" data-section="4" style="display: none;">
+                <h2>Ключевые достижения</h2>
+                <ul>
+                    <li><strong>2008:</strong> Полная реконструкция здания с сохранением исторического фасада</li>
+                    <li><strong>2012:</strong> Запуск онлайн-магазина</li>
+                    <li><strong>2015:</strong> Открытие ресторанного комплекса на 7 этаже</li>
+                    <li><strong>2018:</strong> Внедрение омниканальной стратегии</li>
+                    <li><strong>2023:</strong> Запуск программы устойчивого развития</li>
+                </ul>
+                
+                <p>ЦУМ продолжает развиваться, сохраняя свою уникальность и следуя современным трендам ритейла.</p>
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button id="prevBtn" onclick="previousSection()" disabled>Назад</button>
+            <button id="nextBtn" onclick="nextSection()">Далее</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentSection = 1;
+        const totalSections = 4;
+        let startTime = new Date();
+        let cmi5;
+        
+        // Initialize cmi5
+        window.onload = function() {
+            if (window.cmi5) {
+                cmi5 = new Cmi5();
+                cmi5.initialize().then(() => {
+                    console.log('Cmi5 initialized');
+                    sendStatement('initialized');
+                }).catch(err => {
+                    console.log('Running in standalone mode');
+                });
+            }
+            updateProgress();
+        };
+        
+        function updateProgress() {
+            const progress = Math.round((currentSection / totalSections) * 100);
+            document.getElementById('progress').style.width = progress + '%';
+            document.getElementById('progress').textContent = progress + '%';
+        }
+        
+        function showSection(num) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.querySelector(`[data-section="${num}"]`).style.display = 'block';
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = num === 1;
+            document.getElementById('nextBtn').textContent = num === totalSections ? 'Завершить' : 'Далее';
+            
+            updateProgress();
+            sendStatement('progressed', { section: num });
+        }
+        
+        function nextSection() {
+            if (currentSection < totalSections) {
+                currentSection++;
+                showSection(currentSection);
+            } else {
+                completeModule();
+            }
+        }
+        
+        function previousSection() {
+            if (currentSection > 1) {
+                currentSection--;
+                showSection(currentSection);
+            }
+        }
+        
+        function completeModule() {
+            const endTime = new Date();
+            const duration = Math.round((endTime - startTime) / 1000);
+            
+            sendStatement('completed', { duration: duration });
+            
+            alert('Поздравляем! Вы завершили модуль "История ЦУМ"');
+            
+            if (cmi5) {
+                cmi5.terminate();
+            }
+            
+            // In a real implementation, this would close the window or redirect
+            document.getElementById('nextBtn').disabled = true;
+        }
+        
+        function sendStatement(verb, extensions = {}) {
+            if (!cmi5) return;
+            
+            const statement = {
+                verb: {
+                    id: `http://adlnet.gov/expapi/verbs/${verb}`,
+                    display: { "en-US": verb }
+                },
+                object: {
+                    id: window.location.href,
+                    definition: {
+                        name: { "ru": "История ЦУМ" },
+                        description: { "ru": "Модуль об истории ЦУМ" }
+                    }
+                },
+                result: {
+                    extensions: extensions
+                }
+            };
+            
+            if (verb === 'completed') {
+                statement.result.completion = true;
+                statement.result.success = true;
+                statement.result.score = {
+                    scaled: 1.0
+                };
+            }
+            
+            cmi5.sendStatement(statement);
+        }
+    </script>
+</body>
+</html> 

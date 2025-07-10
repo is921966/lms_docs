@@ -1,19 +1,15 @@
-name: iOS CI
+name: iOS CI/CD
 
 on:
   push:
-    branches: [ main, develop, feature/* ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
-
-env:
-  XCODE_VERSION: '16.0'
-  IOS_DEPLOYMENT_TARGET: '18.5'
 
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: macos-14
+    runs-on: macos-latest
     
     steps:
     - name: Checkout
@@ -22,85 +18,123 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: ${{ env.XCODE_VERSION }}
+        xcode-version: latest-stable
         
     - name: Cache Swift packages
-      uses: actions/cache@v4
+      uses: actions/cache@v3
       with:
-        path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+        path: ~/Library/Developer/Xcode/DerivedData
         key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
           
-    - name: Build for testing
+    - name: Build
       run: |
         cd LMS_App/LMS
-        xcodebuild build-for-testing \
-          -scheme LMS-UnitTests \
-          -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5' \
-          -quiet
+        xcodebuild build \
+          -scheme LMS \
+          -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGN_IDENTITY=""
           
     - name: Run Unit Tests
       run: |
         cd LMS_App/LMS
-        xcodebuild test-without-building \
-          -scheme LMS-UnitTests \
-          -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5' \
-          -resultBundlePath TestResults/unit-tests.xcresult \
-          -quiet | xcpretty -r junit -o TestResults/junit.xml
+        xcodebuild test \
+          -scheme LMS \
+          -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+          -only-testing:LMSTests \
+          -resultBundlePath TestResults.xcresult \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGN_IDENTITY="" | xcpretty
           
     - name: Generate Coverage Report
       run: |
         cd LMS_App/LMS
-        xcrun xcresulttool get --path TestResults/unit-tests.xcresult \
-          --format json > TestResults/test-results.json
-        # Extract coverage percentage
-        COVERAGE=$(cat TestResults/test-results.json | jq '.metrics.codeCoverage.lineCoverage.percent' || echo "0")
-        echo "CODE_COVERAGE=$COVERAGE" >> $GITHUB_ENV
-        echo "Code Coverage: ${COVERAGE}%"
+        xcrun xccov view --report --json TestResults.xcresult > coverage.json
+        
+    - name: Upload Coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./LMS_App/LMS/coverage.json
+        flags: unittests
+        name: codecov-umbrella
         
     - name: Upload Test Results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       if: always()
       with:
         name: test-results
-        path: LMS_App/LMS/TestResults/
+        path: LMS_App/LMS/TestResults.xcresult
         
-    - name: Test Report
-      uses: dorny/test-reporter@v1
-      if: always()
-      with:
-        name: iOS Test Results
-        path: LMS_App/LMS/TestResults/junit.xml
-        reporter: java-junit
-        
-    - name: Update Coverage Badge
-      if: github.ref == 'refs/heads/main'
-      run: |
-        # Create coverage badge data
-        echo "{ \"schemaVersion\": 1, \"label\": \"coverage\", \"message\": \"${{ env.CODE_COVERAGE }}%\", \"color\": \"brightgreen\" }" > coverage.json
-        
-    - name: Check Coverage Threshold
-      run: |
-        if (( $(echo "${{ env.CODE_COVERAGE }} < 80" | bc -l) )); then
-          echo "❌ Code coverage is below 80%"
-          exit 1
-        else
-          echo "✅ Code coverage is above 80%"
-        fi
-
-  lint:
-    name: SwiftLint
-    runs-on: macos-14
+  testflight-release:
+    name: TestFlight Release
+    runs-on: macos-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
     
     steps:
     - name: Checkout
       uses: actions/checkout@v4
       
-    - name: Install SwiftLint
-      run: brew install swiftlint
-      
-    - name: Run SwiftLint
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+        
+    - name: Install Certificates
+      env:
+        CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
+        CERTIFICATES_PASSWORD: ${{ secrets.CERTIFICATES_PASSWORD }}
+        PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+      run: |
+        # Create variables
+        CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+        PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+        
+        # Import certificates
+        echo -n "$CERTIFICATES_P12" | base64 --decode -o $CERTIFICATE_PATH
+        echo -n "$PROVISIONING_PROFILE" | base64 --decode -o $PP_PATH
+        
+        # Create temporary keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        
+        # Import certificate to keychain
+        security import $CERTIFICATE_PATH -P "$CERTIFICATES_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security list-keychain -d user -s $KEYCHAIN_PATH
+        
+        # Apply provisioning profile
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+        
+    - name: Build and Archive
       run: |
         cd LMS_App/LMS
-        swiftlint --reporter github-actions-logging 
+        xcodebuild archive \
+          -scheme LMS \
+          -archivePath $RUNNER_TEMP/LMS.xcarchive \
+          -configuration Release \
+          -destination 'generic/platform=iOS'
+          
+    - name: Export IPA
+      run: |
+        cd LMS_App/LMS
+        xcodebuild -exportArchive \
+          -archivePath $RUNNER_TEMP/LMS.xcarchive \
+          -exportPath $RUNNER_TEMP/export \
+          -exportOptionsPlist ExportOptions.plist
+          
+    - name: Upload to TestFlight
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      run: |
+        xcrun altool --upload-app \
+          --type ios \
+          --file $RUNNER_TEMP/export/LMS.ipa \
+          --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
+          --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" 

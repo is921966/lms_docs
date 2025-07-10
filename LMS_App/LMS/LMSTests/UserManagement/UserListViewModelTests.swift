@@ -292,21 +292,77 @@ class UserListViewModelTests: XCTestCase {
     
     // MARK: - Pagination Tests
     
-    func testLoadMoreUsers() async {
-        // Given
-        let testUsers = createTestUsers()
-        mockRepository.mockUsers = testUsers
+    func testLoadMoreUsersWithPagination() async throws {
+        // Setup: Create users for multiple pages
+        let usersPerPage = 20
+        let totalUsers = 45
+        
+        // Create test users
+        var allUsers: [DomainUser] = []
+        for i in 1...totalUsers {
+            let user = DomainUser(
+                id: "user-\(i)",
+                email: "user\(i)@example.com",
+                firstName: "User",
+                lastName: "\(i)",
+                role: .student,
+                isActive: true,
+                profileImageUrl: nil,
+                phoneNumber: nil,
+                department: nil,
+                position: nil,
+                lastLoginAt: nil,
+                createdAt: Date(),
+                updatedAt: Date()
+            )
+            allUsers.append(user)
+        }
+        
+        // Mock first page
+        let firstPageUsers = Array(allUsers.prefix(usersPerPage))
+        mockRepository.mockUsers = allUsers // Mock the repository directly
+        
+        // Load first page
         await viewModel.loadUsers()
         
-        // Simulate having more pages
-        viewModel.hasMorePages = true
+        // Verify first page loaded
+        XCTAssertEqual(viewModel.users.count, usersPerPage)
+        XCTAssertEqual(viewModel.currentPage, 1)
         
-        // When
+        // Mock second page
+        let secondPageUsers = Array(allUsers.dropFirst(usersPerPage).prefix(usersPerPage))
+        mockRepository.mockUsers = allUsers // Mock the repository directly
+        
+        // Load second page
         await viewModel.loadMoreUsers()
         
-        // Then
-        XCTAssertFalse(viewModel.isLoadingMore)
-        // Additional assertions based on mock behavior
+        // Verify second page loaded
+        XCTAssertEqual(viewModel.users.count, usersPerPage * 2)
+        XCTAssertEqual(viewModel.currentPage, 2)
+        
+        // Mock third page (partial)
+        let thirdPageUsers = Array(allUsers.dropFirst(usersPerPage * 2))
+        mockRepository.mockUsers = allUsers // Mock the repository directly
+        
+        // Load third page
+        await viewModel.loadMoreUsers()
+        
+        // Verify all users loaded
+        XCTAssertEqual(viewModel.users.count, totalUsers)
+        XCTAssertEqual(viewModel.currentPage, 3)
+        // Remove hasReachedEnd check as it doesn't exist in UserListViewModel
+    }
+    
+    func testPaginationRequestParameters() async throws {
+        let page = 2
+        let pageSize = 30
+        let pagination = PaginationRequest(page: page, limit: pageSize)
+        
+        // Verify pagination parameters
+        XCTAssertEqual(pagination.page, page)
+        XCTAssertEqual(pagination.limit, pageSize)
+        XCTAssertEqual(pagination.pageSize, pageSize) // Computed property
+        XCTAssertEqual(pagination.offset, (page - 1) * pageSize)
     }
     
     // MARK: - Statistics Tests
@@ -472,7 +528,7 @@ class MockUserRepository: DomainUserRepositoryProtocol {
         }
         
         let page = pagination.page
-        let limit = pagination.pageSize
+        let limit = pagination.limit
         let startIndex = (page - 1) * limit
         let endIndex = min(startIndex + limit, mockUsers.count)
         
@@ -491,7 +547,7 @@ class MockUserRepository: DomainUserRepositoryProtocol {
     }
     
     func findAll(page: Int, pageSize: Int) async throws -> PaginatedResult<DomainUser> {
-        let pagination = PaginationRequest(page: page, pageSize: pageSize)
+        let pagination = PaginationRequest(page: page, limit: pageSize)
         return try await findAll(pagination: pagination)
     }
     
@@ -549,7 +605,7 @@ class MockUserRepository: DomainUserRepositoryProtocol {
         let filtered = try await search(query)
         
         let page = pagination.page
-        let limit = pagination.pageSize
+        let limit = pagination.limit
         let startIndex = (page - 1) * limit
         let endIndex = min(startIndex + limit, filtered.count)
         
@@ -568,7 +624,7 @@ class MockUserRepository: DomainUserRepositoryProtocol {
     }
     
     func search(_ query: String, page: Int, pageSize: Int) async throws -> PaginatedResult<DomainUser> {
-        let pagination = PaginationRequest(page: page, pageSize: pageSize)
+        let pagination = PaginationRequest(page: page, limit: pageSize)
         return try await search(query, pagination: pagination)
     }
     

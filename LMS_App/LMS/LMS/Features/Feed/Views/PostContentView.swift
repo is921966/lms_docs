@@ -10,9 +10,9 @@ struct PostContentView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             // Tags
-            if !post.tags.isEmpty {
+            if let tags = post.tags, !tags.isEmpty {
                 FeedFlowLayout(spacing: 8) {
-                    ForEach(post.tags, id: \.self) { tag in
+                    ForEach(tags, id: \.self) { tag in
                         Text(tag)
                             .font(.caption)
                             .foregroundColor(.blue)
@@ -183,12 +183,12 @@ struct PostStatsView: View {
 
     var body: some View {
         HStack {
-            if post.likesCount > 0 {
+            if post.likes.count > 0 {
                 HStack(spacing: 4) {
                     Image(systemName: "hand.thumbsup.fill")
                         .font(.caption)
                         .foregroundColor(.blue)
-                    Text("\(post.likesCount)")
+                    Text("\(post.likes.count)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -196,8 +196,8 @@ struct PostStatsView: View {
 
             Spacer()
 
-            if post.commentsCount > 0 {
-                Text("\(post.commentsCount) комментариев")
+            if post.comments.count > 0 {
+                Text("\(post.comments.count) комментариев")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -218,9 +218,9 @@ struct PostCommentsPreview: View {
                 FeedCommentPreviewView(comment: comment)
             }
 
-            if post.commentsCount > 2 {
+            if post.comments.count > 2 {
                 Button(action: { showingComments = true }) {
-                    Text("Показать все комментарии (\(post.commentsCount))")
+                    Text("Показать все комментарии (\(post.comments.count))")
                         .font(.caption)
                         .foregroundColor(.blue)
                 }
@@ -240,13 +240,13 @@ struct FeedCommentPreviewView: View {
                 .fill(Color.gray.opacity(0.3))
                 .frame(width: 32, height: 32)
                 .overlay(
-                    Text(comment.authorName.prefix(1).uppercased())
+                    Text(comment.author.name.prefix(1).uppercased())
                         .font(.caption)
                         .fontWeight(.semibold)
                 )
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(comment.authorName)
+                Text(comment.author.name)
                     .font(.subheadline)
                     .fontWeight(.medium)
 

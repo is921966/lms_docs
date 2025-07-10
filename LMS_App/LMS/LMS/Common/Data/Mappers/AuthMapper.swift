@@ -239,12 +239,24 @@ public struct AuthMapper {
                 return "Server error. Please try again"
             case .noData:
                 return "No response from server. Please try again"
-            case .decodingError:
+            case .decodingError, .decodingFailed:
                 return "Invalid server response. Please try again"
             case .invalidURL:
                 return "Invalid server configuration. Please contact support"
-            case .unknown:
+            case .invalidResponse:
+                return "Invalid response from server"
+            case .unauthorized:
+                return "Authentication required"
+            case .forbidden:
+                return "Access denied"
+            case .notFound:
+                return "Resource not found"
+            case .apiError(let message, _):
+                return message
+            case .unknown, .unknown(statusCode: _):
                 return "Login failed. Please try again"
+            case .underlying(let error):
+                return error.localizedDescription
             }
         }
         

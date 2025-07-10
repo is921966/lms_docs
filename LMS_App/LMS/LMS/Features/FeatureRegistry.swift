@@ -205,6 +205,53 @@ struct PlaceholderView: View {
 
 /// Расширение для управления feature flags
 extension Feature {
+    /// Отображаемое имя модуля
+    var displayName: String {
+        return self.rawValue
+    }
+    
+    /// Описание модуля
+    var description: String {
+        switch self {
+        case .auth: return "Вход в систему"
+        case .users: return "Управление пользователями"
+        case .courses: return "Просмотр и прохождение курсов"
+        case .profile: return "Личный кабинет пользователя"
+        case .settings: return "Настройки приложения"
+        case .tests: return "Прохождение тестов и экзаменов"
+        case .analytics: return "Статистика и отчеты"
+        case .onboarding: return "Программы адаптации"
+        case .competencies: return "Управление компетенциями"
+        case .positions: return "Управление должностями"
+        case .feed: return "Лента новостей и объявлений"
+        case .cmi5: return "Интерактивные учебные материалы"
+        case .certificates: return "Выдача сертификатов"
+        case .gamification: return "Игровые механики"
+        case .notifications: return "Push-уведомления"
+        }
+    }
+    
+    /// Цвет модуля
+    var color: Color {
+        switch self {
+        case .auth: return .blue
+        case .users: return .orange
+        case .courses: return .green
+        case .profile: return .purple
+        case .settings: return .gray
+        case .tests: return .red
+        case .analytics: return .indigo
+        case .onboarding: return .yellow
+        case .competencies: return .teal
+        case .positions: return .brown
+        case .feed: return .pink
+        case .cmi5: return .cyan
+        case .certificates: return .purple
+        case .gamification: return .orange
+        case .notifications: return .red
+        }
+    }
+    
     /// Включить модуль
     static func enable(_ feature: Feature) {
         UserDefaults.standard.set(true, forKey: "feature_\(feature.rawValue)")

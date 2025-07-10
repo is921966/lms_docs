@@ -517,6 +517,14 @@
       "day_in_sprint": 4,
       "date": "2025-07-09",
       "end_time": "2025-07-09T14:07:39.504399"
+    },
+    "day_20": {
+      "calendar_day": 20,
+      "project_day": 105,
+      "sprint_number": 21,
+      "day_in_sprint": 5,
+      "date": "2025-07-10",
+      "end_time": "2025-07-10T15:07:47.788657"
     }
   },
   "sprints": {
@@ -599,6 +607,11 @@
       "sprint_number": 46,
       "start_time": "2025-07-04T12:20:01.917792",
       "start_date": "2025-07-04"
+    },
+    "sprint_21": {
+      "sprint_number": 21,
+      "end_time": "2025-07-10T15:07:47.788657",
+      "end_date": "2025-07-10"
     }
   },
   "project_start": "2025-06-21T09:00:00",

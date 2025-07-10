@@ -7,275 +7,226 @@
 
 import SwiftUI
 
-/// Основной экран для управления Cmi5 пакетами
 struct Cmi5ManagementView: View {
-    @StateObject private var service = Cmi5Service()
+    @StateObject private var viewModel = Cmi5ManagementViewModel()
+    @State private var searchText = ""
     @State private var showingImport = false
     @State private var selectedPackage: Cmi5Package?
-    @State private var searchText = ""
-    @State private var isLoading = false
-    @State private var error: String?
+    @State private var showingAnalytics = false
+    
+    var filteredPackages: [Cmi5Package] {
+        if searchText.isEmpty {
+            return viewModel.packages
+        }
+        return viewModel.packages.filter { package in
+            package.title.localizedCaseInsensitiveContains(searchText) ||
+            package.description?.localizedCaseInsensitiveContains(searchText) ?? false
+        }
+    }
     
     var body: some View {
-        NavigationStack {
-            content
-                .navigationTitle("Cmi5 Контент")
-                .navigationBarTitleDisplayMode(.large)
-                .toolbar {
-                    toolbarContent
+        VStack(spacing: 0) {
+            // Statistics
+            HStack(spacing: 20) {
+                Cmi5StatCard(title: "Всего пакетов:", value: "\(viewModel.packages.count)", color: .blue)
+                    .accessibilityIdentifier("totalPackagesStat")
+                Cmi5StatCard(title: "Активных:", value: "\(viewModel.activePackagesCount)", color: .green)
+                    .accessibilityIdentifier("activePackagesStat")
+            }
+            .padding()
+            
+            // Search and import button
+            HStack {
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    TextField("Поиск пакетов", text: $searchText)
+                        .accessibilityIdentifier("packageSearchField")
                 }
-                .searchable(text: $searchText, prompt: "Поиск пакетов")
-                .refreshable {
-                    await loadPackages()
+                .padding(10)
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
+                
+                Button(action: { showingImport = true }) {
+                    HStack {
+                        Image(systemName: "square.and.arrow.down")
+                        Text("Импортировать пакет")
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
                 }
-                .sheet(isPresented: $showingImport) {
-                    Cmi5ImportView(courseId: nil) { package in
-                        // Обновляем список после импорта
-                        Task {
-                            await loadPackages()
+                .accessibilityIdentifier("importPackageButton")
+            }
+            .padding()
+            
+            // Package list
+            if filteredPackages.isEmpty {
+                VStack(spacing: 20) {
+                    Image(systemName: "cube.box")
+                        .font(.system(size: 60))
+                        .foregroundColor(.gray)
+                    
+                    Text("Нет Cmi5 пакетов")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Импортируйте первый пакет для начала работы")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .accessibilityIdentifier("emptyState")
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(filteredPackages) { package in
+                            Cmi5PackageCard(package: package) {
+                                selectedPackage = package
+                            }
+                            .accessibilityIdentifier("packageCard_\(package.id)")
                         }
                     }
+                    .padding()
                 }
-                .sheet(item: $selectedPackage) { package in
-                    Cmi5PackagePreviewView(package: package)
+                .accessibilityIdentifier("packageListScrollView")
+            }
+        }
+        .navigationTitle("Управление Cmi5")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: { showingAnalytics = true }) {
+                    Label("Аналитика Cmi5", systemImage: "chart.bar")
                 }
-                .task {
-                    await loadPackages()
+                .accessibilityIdentifier("analyticsButton")
+            }
+        }
+        .sheet(isPresented: $showingImport) {
+            NavigationView {
+                Cmi5ImportView(courseId: nil) { package in
+                    Task {
+                        await viewModel.loadPackages()
+                    }
                 }
+            }
+        }
+        .sheet(item: $selectedPackage) { package in
+            NavigationView {
+                Cmi5PackagePreviewView(package: package)
+            }
+        }
+        .sheet(isPresented: $showingAnalytics) {
+            NavigationView {
+                AnalyticsDashboardView()
+            }
+        }
+        .onAppear {
+            Task {
+                await viewModel.loadPackages()
+            }
         }
     }
+}
+
+// MARK: - Cmi5 Stat Card
+struct Cmi5StatCard: View {
+    let title: String
+    let value: String
+    let color: Color
     
-    // MARK: - Content
-    
-    @ViewBuilder
-    private var content: some View {
-        if isLoading && service.packages.isEmpty {
-            ProgressView("Загрузка пакетов...")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if service.packages.isEmpty {
-            emptyState
-        } else {
-            packageList
-        }
-    }
-    
-    private var emptyState: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "cube.box")
-                .font(.system(size: 80))
-                .foregroundColor(.secondary)
-            
-            Text("Нет Cmi5 пакетов")
-                .font(.title2)
-                .foregroundColor(.secondary)
-            
-            Text("Импортируйте первый Cmi5 пакет для начала работы")
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
             
-            Button(action: { showingImport = true }) {
-                Label("Импортировать пакет", systemImage: "plus.circle.fill")
-                    .font(.headline)
-            }
-            .buttonStyle(.borderedProminent)
-            
-            Spacer()
+            Text(value)
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(color)
         }
-        .padding(.top, 100)
-    }
-    
-    private var packageList: some View {
-        List {
-            ForEach(filteredPackages) { package in
-                PackageRow(package: package)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selectedPackage = package
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            Task {
-                                await deletePackage(package)
-                            }
-                        } label: {
-                            Label("Удалить", systemImage: "trash")
-                        }
-                    }
-                    .swipeActions(edge: .leading) {
-                        if package.courseId == nil {
-                            Button {
-                                // TODO: Показать выбор курса для привязки
-                            } label: {
-                                Label("Привязать к курсу", systemImage: "link")
-                            }
-                            .tint(.blue)
-                        }
-                    }
-            }
-        }
-        .listStyle(.insetGrouped)
-    }
-    
-    // MARK: - Toolbar
-    
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            Button(action: { showingImport = true }) {
-                Image(systemName: "plus")
-            }
-        }
-        
-        ToolbarItem(placement: .navigationBarLeading) {
-            Menu {
-                Button(action: { /* TODO: Сортировка по дате */ }) {
-                    Label("По дате", systemImage: "calendar")
-                }
-                Button(action: { /* TODO: Сортировка по названию */ }) {
-                    Label("По названию", systemImage: "textformat")
-                }
-                Button(action: { /* TODO: Сортировка по размеру */ }) {
-                    Label("По размеру", systemImage: "doc")
-                }
-            } label: {
-                Image(systemName: "arrow.up.arrow.down")
-            }
-        }
-    }
-    
-    // MARK: - Filtered Data
-    
-    private var filteredPackages: [Cmi5Package] {
-        if searchText.isEmpty {
-            return service.packages
-        } else {
-            return service.packages.filter { package in
-                package.title.localizedCaseInsensitiveContains(searchText) ||
-                package.packageId.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-    }
-    
-    // MARK: - Actions
-    
-    private func loadPackages() async {
-        isLoading = true
-        await service.loadPackages()
-        isLoading = false
-    }
-    
-    private func deletePackage(_ package: Cmi5Package) async {
-        do {
-            try await service.deletePackage(id: package.id)
-            await loadPackages()
-        } catch {
-            self.error = error.localizedDescription
-        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(10)
     }
 }
 
-// MARK: - Package Row
-
-private struct PackageRow: View {
+// MARK: - Cmi5 Package Card
+struct Cmi5PackageCard: View {
     let package: Cmi5Package
+    let onTap: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Title и version
+        Button(action: onTap) {
             HStack {
-                Text(package.title)
-                    .font(.headline)
-                    .lineLimit(1)
+                // Package icon
+                Image(systemName: "cube.box.fill")
+                    .font(.title2)
+                    .foregroundColor(.blue)
+                    .frame(width: 50)
                 
-                Spacer()
-                
-                Text("v\(package.version)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            // Description
-            if let description = package.description {
-                Text(description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-            }
-            
-            // Metadata
-            HStack(spacing: 16) {
-                // Размер
-                Label(formatFileSize(package.size), systemImage: "doc")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                
-                // Количество активностей
-                Label("\(countActivities(in: package))", systemImage: "list.bullet")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                
-                // Статус
-                if package.isValid {
-                    Label("Валидный", systemImage: "checkmark.circle.fill")
-                        .font(.caption2)
-                        .foregroundColor(.green)
-                } else {
-                    Label("Ошибки", systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption2)
-                        .foregroundColor(.red)
+                // Package info
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(package.title)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                        .accessibilityIdentifier("packageTitle")
+                    
+                    if let description = package.description {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(2)
+                    }
+                    
+                    HStack(spacing: 12) {
+                        Label("\(package.activities.count) активностей", systemImage: "play.circle")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        
+                        Label("v\(package.version)", systemImage: "info.circle")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
                 Spacer()
                 
-                // Курс
-                if let courseId = package.courseId {
-                    Label("Привязан", systemImage: "link")
+                // Status indicator
+                VStack {
+                    Image(systemName: package.isActive ? "checkmark.circle.fill" : "clock.fill")
+                        .foregroundColor(package.isActive ? .green : .orange)
+                    
+                    Text(package.isActive ? "Активен" : "Неактивен")
                         .font(.caption2)
-                        .foregroundColor(.blue)
-                } else {
-                    Label("Не привязан", systemImage: "link.badge.plus")
-                        .font(.caption2)
-                        .foregroundColor(.orange)
+                        .foregroundColor(package.isActive ? .green : .orange)
                 }
+                .accessibilityIdentifier("packageStatus")
             }
-            
-            // Дата загрузки
-            Text("Загружен: \(package.uploadedAt.formatted(date: .abbreviated, time: .shortened))")
-                .font(.caption2)
-                .foregroundColor(.secondary)
+            .padding()
+            .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
         }
-        .padding(.vertical, 4)
-    }
-    
-    private func countActivities(in package: Cmi5Package) -> Int {
-        guard let rootBlock = package.manifest.rootBlock else { return 0 }
-        
-        var count = 0
-        
-        func countInBlock(_ block: Cmi5Block) {
-            count += block.activities.count
-            for subBlock in block.blocks {
-                countInBlock(subBlock)
-            }
-        }
-        
-        countInBlock(rootBlock)
-        return count
-    }
-    
-    private func formatFileSize(_ bytes: Int64) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: bytes)
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
-// MARK: - Preview
+// MARK: - Extension for Cmi5Package
+extension Cmi5Package {
+    var isActive: Bool {
+        // Mock implementation
+        return activities.count > 0
+    }
+}
 
-struct Cmi5ManagementView_Previews: PreviewProvider {
-    static var previews: some View {
+#Preview {
+    NavigationView {
         Cmi5ManagementView()
     }
 } 

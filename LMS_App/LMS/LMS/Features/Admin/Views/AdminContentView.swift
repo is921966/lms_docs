@@ -149,6 +149,7 @@ struct AdminCourseListView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
                     TextField("Поиск курсов", text: $searchText)
+                        .accessibilityIdentifier("courseSearchField")
                 }
                 .padding(10)
                 .background(Color(.systemGray6))
@@ -161,6 +162,7 @@ struct AdminCourseListView: View {
                         .font(.title2)
                         .foregroundColor(.blue)
                 }
+                .accessibilityIdentifier("addCourseButton")
             }
             .padding()
 
@@ -171,10 +173,12 @@ struct AdminCourseListView: View {
                         AdminCourseCard(course: course) {
                             selectedCourse = course
                         }
+                        .accessibilityIdentifier("courseCard_\(course.id)")
                     }
                 }
                 .padding()
             }
+            .accessibilityIdentifier("courseListScrollView")
         }
         .sheet(isPresented: $showingAddCourse) {
             NavigationView {
@@ -365,6 +369,7 @@ struct AdminCourseCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(course.title)
                     .font(.headline)
+                    .accessibilityIdentifier("courseTitle")
 
                 HStack(spacing: 12) {
                     if let categoryId = course.categoryId,
@@ -391,6 +396,7 @@ struct AdminCourseCard: View {
                     Text(course.isPublished ? "Опубликован" : "Черновик")
                         .font(.caption)
                         .foregroundColor(course.isPublished ? .green : .orange)
+                        .accessibilityIdentifier("courseStatus")
                 }
             }
 
@@ -401,6 +407,7 @@ struct AdminCourseCard: View {
                     .font(.title2)
                     .foregroundColor(.blue)
             }
+            .accessibilityIdentifier("editCourseButton")
         }
         .padding()
         .background(Color(.systemGray6))

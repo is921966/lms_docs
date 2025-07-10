@@ -40,3 +40,9 @@ struct UsersResponse: Decodable {
     let pagination: PaginationInfo
 }
 
+struct AvatarUploadResponse: Decodable {
+    let url: String
+    let size: Int64
+    let mimeType: String
+}
+

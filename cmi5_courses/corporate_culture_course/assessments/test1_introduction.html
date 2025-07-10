@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест: Знакомство с компанией</title>
+    <script src="https://unpkg.com/@xapi/cmi5@latest/dist/cmi5.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #9b59b6;
+            padding-bottom: 10px;
+        }
+        .test-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #9b59b6;
+        }
+        .question-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        .question-container.active {
+            display: block;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .question-number {
+            background: #9b59b6;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .option {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .option:hover {
+            border-color: #9b59b6;
+            transform: translateX(5px);
+        }
+        .option.selected {
+            border-color: #9b59b6;
+            background: #f3e5f5;
+        }
+        .option.correct {
+            border-color: #27ae60;
+            background: #e8f8f5;
+        }
+        .option.incorrect {
+            border-color: #e74c3c;
+            background: #ffe5e5;
+        }
+        .option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+        }
+        .progress-container {
+            margin: 20px 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #9b59b6;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .timer {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #7f8c8d;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 20px;
+        }
+        button {
+            background: #9b59b6;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            flex: 1;
+        }
+        button:hover {
+            background: #8e44ad;
+        }
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            font-weight: bold;
+            color: white;
+        }
+        .score-circle.pass {
+            background: #27ae60;
+        }
+        .score-circle.fail {
+            background: #e74c3c;
+        }
+        .feedback {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Тест: Знакомство с компанией</h1>
+        
+        <div class="test-info" id="testInfo">
+            <h2>Информация о тесте</h2>
+            <ul>
+                <li>Количество вопросов: 10</li>
+                <li>Проходной балл: 75%</li>
+                <li>Время на выполнение: 10 минут</li>
+                <li>Попытки: неограниченно</li>
+            </ul>
+            <button onclick="startTest()" style="margin-top: 20px;">Начать тест</button>
+        </div>
+        
+        <div id="testContent" style="display: none;">
+            <div class="timer" id="timer">Время: 10:00</div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress">0%</div>
+                </div>
+            </div>
+            
+            <!-- Questions -->
+            <div class="question-container active" data-question="1">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 1 из 10</span>
+                </div>
+                <div class="question-text">В каком году был основан торговый дом "Мюр и Мерилиз"?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q1" value="1">
+                        <span>1847</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="2">
+                        <span>1857</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="3">
+                        <span>1867</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="4">
+                        <span>1877</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question-container" data-question="2">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 2 из 10</span>
+                </div>
+                <div class="question-text">Кто был архитектором здания ЦУМ в стиле модерн?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q2" value="1">
+                        <span>Федор Шехтель</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="2">
+                        <span>Роман Клейн</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="3">
+                        <span>Алексей Щусев</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="4">
+                        <span>Константин Мельников</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question-container" data-question="3">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 3 из 10</span>
+                </div>
+                <div class="question-text">Сколько квадратных метров составляет торговая площадь современного ЦУМ?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q3" value="1">
+                        <span>Более 80 000 м²</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="2">
+                        <span>Более 100 000 м²</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="3">
+                        <span>Более 120 000 м²</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="4">
+                        <span>Более 150 000 м²</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question-container" data-question="4">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 4 из 10</span>
+                </div>
+                <div class="question-text">Какая из перечисленных ценностей НЕ является ключевой для ЦУМ?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q4" value="1">
+                        <span>Совершенство</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="2">
+                        <span>Минимализм</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="3">
+                        <span>Инновации</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="4">
+                        <span>Партнерство</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question-container" data-question="5">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 5 из 10</span>
+                </div>
+                <div class="question-text">В каком году произошла полная реконструкция здания ЦУМ?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q5" value="1">
+                        <span>2005</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="2">
+                        <span>2008</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="3">
+                        <span>2010</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="4">
+                        <span>2012</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question-container" data-question="6">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 6 из 10</span>
+                </div>
+                <div class="question-text">Сколько этажей премиального шопинга в ЦУМ?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q6" value="1">
+                        <span>5 этажей</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="2">
+                        <span>6 этажей</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="3">
+                        <span>7 этажей</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="4">
+                        <span>8 этажей</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question-container" data-question="7">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 7 из 10</span>
+                </div>
+                <div class="question-text">Что означает аббревиатура ЦУМ?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q7" value="1">
+                        <span>Центральный универсальный магазин</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="2">
+                        <span>Центр универсальной моды</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="3">
+                        <span>Центральный универмаг Москвы</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="4">
+                        <span>Центр уникальных магазинов</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question-container" data-question="8">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 8 из 10</span>
+                </div>
+                <div class="question-text">Какое количество брендов представлено в ЦУМ?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q8" value="1">
+                        <span>Более 1000</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="2">
+                        <span>Более 1500</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="3">
+                        <span>Более 2000</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="4">
+                        <span>Более 2500</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question-container" data-question="9">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 9 из 10</span>
+                </div>
+                <div class="question-text">В каком году был запущен онлайн-магазин ЦУМ?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q9" value="1">
+                        <span>2010</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="2">
+                        <span>2012</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="3">
+                        <span>2014</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="4">
+                        <span>2016</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question-container" data-question="10">
+                <div class="question-header">
+                    <span class="question-number">Вопрос 10 из 10</span>
+                </div>
+                <div class="question-text">Какая ценность является основой для работы с клиентами в ЦУМ?</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q10" value="1">
+                        <span>Экономия</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="2">
+                        <span>Скорость</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="3">
+                        <span>Персональный подход</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="4">
+                        <span>Массовость</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button id="prevBtn" onclick="previousQuestion()" disabled>Предыдущий</button>
+                <button id="nextBtn" onclick="nextQuestion()">Следующий</button>
+            </div>
+        </div>
+        
+        <div class="results" id="results">
+            <div class="score-circle" id="scoreCircle">0%</div>
+            <h2 id="resultTitle">Результат теста</h2>
+            <div class="feedback" id="feedback"></div>
+            <button onclick="retakeTest()">Пройти тест заново</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentQuestion = 1;
+        const totalQuestions = 10;
+        const passingScore = 0.75;
+        let startTime;
+        let timerInterval;
+        let timeRemaining = 600; // 10 minutes in seconds
+        let cmi5;
+        let answers = {};
+        
+        const correctAnswers = {
+            q1: '2', // 1857
+            q2: '2', // Роман Клейн
+            q3: '3', // Более 120 000 м²
+            q4: '2', // Минимализм
+            q5: '2', // 2008
+            q6: '3', // 7 этажей
+            q7: '1', // Центральный универсальный магазин
+            q8: '3', // Более 2000
+            q9: '2', // 2012
+            q10: '3' // Персональный подход
+        };
+        
+        // Initialize cmi5
+        window.onload = function() {
+            if (window.cmi5) {
+                cmi5 = new Cmi5();
+                cmi5.initialize().then(() => {
+                    console.log('Cmi5 initialized');
+                    sendStatement('initialized');
+                }).catch(err => {
+                    console.log('Running in standalone mode');
+                });
+            }
+        };
+        
+        function startTest() {
+            document.getElementById('testInfo').style.display = 'none';
+            document.getElementById('testContent').style.display = 'block';
+            startTime = new Date();
+            startTimer();
+            updateProgress();
+            sendStatement('attempted');
+        }
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                document.getElementById('timer').textContent = 
+                    `Время: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    finishTest();
+                }
+            }, 1000);
+        }
+        
+        function updateProgress() {
+            const progress = Math.round((currentQuestion / totalQuestions) * 100);
+            document.getElementById('progress').style.width = progress + '%';
+            document.getElementById('progress').textContent = progress + '%';
+        }
+        
+        function showQuestion(num) {
+            document.querySelectorAll('.question-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            document.querySelector(`[data-question="${num}"]`).classList.add('active');
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = num === 1;
+            document.getElementById('nextBtn').textContent = 
+                num === totalQuestions ? 'Завершить тест' : 'Следующий';
+            
+            // Restore selected answer if exists
+            const questionName = `q${num}`;
+            if (answers[questionName]) {
+                const radio = document.querySelector(`input[name="${questionName}"][value="${answers[questionName]}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    radio.closest('.option').classList.add('selected');
+                }
+            }
+        }
+        
+        function nextQuestion() {
+            saveAnswer();
+            
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+                updateProgress();
+            } else {
+                finishTest();
+            }
+        }
+        
+        function previousQuestion() {
+            saveAnswer();
+            
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+                updateProgress();
+            }
+        }
+        
+        function saveAnswer() {
+            const questionName = `q${currentQuestion}`;
+            const selected = document.querySelector(`input[name="${questionName}"]:checked`);
+            if (selected) {
+                answers[questionName] = selected.value;
+            }
+        }
+        
+        // Handle option selection
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'radio') {
+                const option = e.target.closest('.option');
+                const container = option.closest('.options');
+                
+                container.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                option.classList.add('selected');
+            }
+        });
+        
+        function finishTest() {
+            clearInterval(timerInterval);
+            saveAnswer();
+            
+            // Calculate score
+            let correctCount = 0;
+            for (let i = 1; i <= totalQuestions; i++) {
+                const questionName = `q${i}`;
+                if (answers[questionName] === correctAnswers[questionName]) {
+                    correctCount++;
+                }
+            }
+            
+            const score = correctCount / totalQuestions;
+            const percentage = Math.round(score * 100);
+            const passed = score >= passingScore;
+            
+            // Show results
+            document.getElementById('testContent').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            
+            const scoreCircle = document.getElementById('scoreCircle');
+            scoreCircle.textContent = percentage + '%';
+            scoreCircle.className = passed ? 'score-circle pass' : 'score-circle fail';
+            
+            document.getElementById('resultTitle').textContent = 
+                passed ? 'Поздравляем! Вы успешно прошли тест!' : 'К сожалению, тест не пройден';
+            
+            const feedback = document.getElementById('feedback');
+            feedback.innerHTML = `
+                <p>Вы ответили правильно на ${correctCount} из ${totalQuestions} вопросов.</p>
+                <p>Проходной балл: ${passingScore * 100}%</p>
+                ${passed ? 
+                    '<p>Вы продемонстрировали хорошее знание истории и ценностей ЦУМ!</p>' :
+                    '<p>Рекомендуем повторить материалы модулей и пройти тест еще раз.</p>'
+                }
+            `;
+            
+            // Send completion statement
+            const endTime = new Date();
+            const duration = Math.round((endTime - startTime) / 1000);
+            
+            sendStatement('completed', {
+                score: score,
+                passed: passed,
+                duration: duration,
+                correctAnswers: correctCount
+            });
+        }
+        
+        function retakeTest() {
+            // Reset everything
+            currentQuestion = 1;
+            timeRemaining = 600;
+            answers = {};
+            
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('testInfo').style.display = 'block';
+        }
+        
+        function sendStatement(verb, extensions = {}) {
+            if (!cmi5) return;
+            
+            const statement = {
+                verb: {
+                    id: `http://adlnet.gov/expapi/verbs/${verb}`,
+                    display: { "en-US": verb }
+                },
+                object: {
+                    id: window.location.href,
+                    definition: {
+                        name: { "ru": "Тест: Знакомство с компанией" },
+                        description: { "ru": "Тест по истории и ценностям ЦУМ" },
+                        type: "http://adlnet.gov/expapi/activities/assessment"
+                    }
+                },
+                result: {
+                    extensions: extensions
+                }
+            };
+            
+            if (verb === 'completed') {
+                statement.result.completion = true;
+                statement.result.success = extensions.passed;
+                statement.result.score = {
+                    scaled: extensions.score,
+                    raw: extensions.correctAnswers,
+                    max: totalQuestions
+                };
+                statement.result.duration = `PT${extensions.duration}S`;
+            }
+            
+            cmi5.sendStatement(statement);
+        }
+    </script>
+</body>
+</html> 

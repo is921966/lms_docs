@@ -9,21 +9,21 @@ struct PostHeaderView: View {
         HStack {
             // Author avatar
             Circle()
-                .fill(roleColor(for: post.authorRole))
+                .fill(roleColor(for: post.author.role))
                 .frame(width: 40, height: 40)
                 .overlay(
-                    Text(post.authorName.prefix(1).uppercased())
+                    Text(post.author.name.prefix(1).uppercased())
                         .font(.headline)
                         .foregroundColor(.white)
                 )
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                    Text(post.authorName)
+                    Text(post.author.name)
                         .font(.subheadline)
                         .fontWeight(.semibold)
 
-                    if post.authorRole == .admin {
+                    if post.author.role == .admin {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.caption)
                             .foregroundColor(.blue)
@@ -42,13 +42,13 @@ struct PostHeaderView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    if post.isEdited {
-                        Text("•")
-                            .foregroundColor(.secondary)
-                        Text("изменено")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+//                    if post.isEdited {
+//                        Text("•")
+//                            .foregroundColor(.secondary)
+//                        Text("изменено")
+//                            .font(.caption)
+//                            .foregroundColor(.secondary)
+//                    }
                 }
             }
 
@@ -87,3 +87,30 @@ struct PostHeaderView: View {
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
+
+#if DEBUG
+struct PostHeaderView_Previews: PreviewProvider {
+    static var previews: some View {
+        let samplePost = FeedPost(
+            id: "1",
+            author: UserResponse(id: "user1", email: "test@test.com", name: "Иван Петров", role: .instructor),
+            content: "Это пример поста для превью.",
+            images: [],
+            attachments: [],
+            createdAt: Date().addingTimeInterval(-3600),
+            visibility: .everyone,
+            likes: ["user2", "user3"],
+            comments: []
+        )
+
+        PostHeaderView(
+            post: samplePost,
+            showingOptions: .constant(false),
+            canShowOptions: true
+        )
+        .padding()
+        .previewLayout(.sizeThatFits)
+        .background(Color(.systemBackground))
+    }
+}
+#endif

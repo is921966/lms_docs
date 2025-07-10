@@ -51,14 +51,36 @@ extension ViewInspectorTests {
     }
     
     /// Создаем тестового пользователя
-    static func mockUser(role: UserRole = .student) -> AuthUser {
-        // Используем MockAuthUser из Helpers/MockAuthUser.swift
-        MockAuthUser(
-            id: "test-user",
-            email: "test@example.com",
-            firstName: "Тест",
-            lastName: "Пользователь",
-            role: role
-        ).toAuthUser()
+    static func mockUser(role: UserRole = .student) -> UserResponse {
+        // Используем TestUserResponseFactory
+        switch role {
+        case .student:
+            return TestUserResponseFactory.createStudent(
+                id: "test-user",
+                name: "Тест Пользователь"
+            )
+        case .instructor:
+            return TestUserResponseFactory.createInstructor(
+                id: "test-user",
+                name: "Тест Инструктор"
+            )
+        case .admin:
+            return TestUserResponseFactory.createAdmin(
+                id: "test-user",
+                name: "Тест Админ"
+            )
+        case .manager:
+            return TestUserResponseFactory.createManager(
+                id: "test-user",
+                name: "Тест Менеджер"
+            )
+        case .superAdmin:
+            return TestUserResponseFactory.createUser(
+                id: "test-user",
+                email: "superadmin@test.com",
+                name: "Тест СуперАдмин",
+                role: .superAdmin
+            )
+        }
     }
 } 

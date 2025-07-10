@@ -182,7 +182,7 @@ class MockAuthService: ObservableObject, AuthServiceProtocol {
 
     // MARK: - Check Status
     private func checkAuthenticationStatus() {
-        isAuthenticated = TokenManager.shared.isAuthenticated
+        isAuthenticated = TokenManager.shared.hasValidTokens()
 
         if isAuthenticated {
             // Restore mock user

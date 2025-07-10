@@ -2,107 +2,124 @@
 //  NotificationRepositoryQuickTest.swift
 //  LMSTests
 //
-//  Quick test for notification repository functionality
+//  Created by LMS Team on 13.01.2025.
 //
 
 import XCTest
 @testable import LMS
 
+@MainActor
 final class NotificationRepositoryQuickTest: XCTestCase {
     
     func testBasicRepositoryCreation() {
-        // Test creating repository
+        // This test should compile and run quickly
         let repository = MockNotificationRepository()
         XCTAssertNotNil(repository)
     }
     
-    func testNotificationCreationAndFetch() async throws {
-        // Given
+    func testNotificationOperations() async throws {
         let repository = MockNotificationRepository()
-        let userId = UUID()
+        
+        // Create notification
         let notification = Notification(
-            userId: userId,
+            id: UUID(),
+            userId: UUID(),
             type: .courseAssigned,
-            title: "Test Course",
-            body: "Test Body"
+            title: "Test",
+            body: "Test body",
+            isRead: false,
+            createdAt: Date(),
+            metadata: nil
         )
         
-        // When
         let created = try await repository.createNotification(notification)
+        XCTAssertEqual(created.id, notification.id)
+        
+        // Fetch notifications
         let response = try await repository.fetchNotifications(
-            for: userId,
+            for: notification.userId,
             filter: nil,
             pagination: nil
         )
         
-        // Then
-        XCTAssertNotNil(created)
-        XCTAssertTrue(response.items.contains { $0.id == created.id })
+        XCTAssertEqual(response.items.count, 1)
+        XCTAssertEqual(response.items.first?.id, notification.id)
+    }
+    
+    func testPushTokenOperations() async throws {
+        let repository = MockNotificationRepository()
+        
+        let token = PushToken(
+            id: UUID(),
+            userId: UUID(),
+            token: "test-token",
+            deviceId: "test-device",
+            platform: .ios,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+        
+        let saved = try await repository.savePushToken(token)
+        XCTAssertEqual(saved.token, "test-token")
+        
+        // Get tokens
+        let tokens = try await repository.getPushTokens(for: token.userId)
+        XCTAssertEqual(tokens.count, 1)
+        XCTAssertEqual(tokens.first?.token, "test-token")
+    }
+    
+    func testNotificationPreferences() async throws {
+        let repository = MockNotificationRepository()
+        
+        let userId = UUID()
+        let prefs = NotificationPreferences(
+            userId: userId,
+            channelPreferences: [
+                .courseAssigned: [.email, .push],
+                .testResult: [.push]
+            ],
+            isEnabled: true,
+            quietHoursStart: nil,
+            quietHoursEnd: nil
+        )
+        
+        let saved = try await repository.savePreferences(prefs)
+        XCTAssertEqual(saved.userId, userId)
+        
+        // Get preferences
+        let fetched = try await repository.getPreferences(for: userId)
+        XCTAssertEqual(fetched.userId, userId)
+        XCTAssertEqual(fetched.isEnabled, true)
+        XCTAssertEqual(fetched.channelPreferences[.courseAssigned]?.contains(.email), true)
+        XCTAssertEqual(fetched.channelPreferences[.courseAssigned]?.contains(.push), true)
+        XCTAssertEqual(fetched.channelPreferences[.testResult]?.contains(.push), true)
     }
     
     func testMarkAsRead() async throws {
-        // Given
         let repository = MockNotificationRepository()
-        let userId = UUID()
+        
         let notification = Notification(
-            userId: userId,
+            id: UUID(),
+            userId: UUID(),
             type: .testDeadline,
-            title: "Test Deadline",
-            body: "Test is due soon",
-            isRead: false
+            title: "Deadline",
+            body: "Test deadline approaching",
+            isRead: false,
+            createdAt: Date()
         )
         
-        // When
-        let created = try await repository.createNotification(notification)
-        try await repository.markAsRead(notificationId: created.id)
+        _ = try await repository.createNotification(notification)
         
-        // Then
+        // Mark as read
+        try await repository.markAsRead(notificationId: notification.id)
+        
+        // Verify it's marked as read
         let response = try await repository.fetchNotifications(
-            for: userId,
+            for: notification.userId,
             filter: nil,
             pagination: nil
         )
-        let updated = response.items.first { $0.id == created.id }
-        XCTAssertTrue(updated?.isRead ?? false)
-    }
-    
-    func testPushTokenStorage() async throws {
-        // Given
-        let repository = MockNotificationRepository()
-        let userId = UUID()
-        let token = PushToken(
-            userId: userId,
-            token: "test-token-abc123",
-            deviceId: "test-device-123"
-        )
         
-        // When
-        let saved = try await repository.savePushToken(token)
-        let tokens = try await repository.getPushTokens(for: userId)
-        
-        // Then
-        XCTAssertEqual(saved.token, token.token)
-        XCTAssertTrue(tokens.contains { $0.id == saved.id })
-    }
-    
-    func testPreferencesUpdate() async throws {
-        // Given
-        let repository = MockNotificationRepository()
-        let userId = UUID()
-        let preferences = NotificationPreferences(
-            userId: userId,
-            channelPreferences: [
-                .courseAssigned: [.push, .email]
-            ],
-            isEnabled: true
-        )
-        
-        // When
-        let updated = try await repository.updatePreferences(preferences)
-        let fetched = try await repository.getPreferences(for: userId)
-        
-        // Then
-        XCTAssertEqual(updated.userId, userId)
-        XCTAssertEqual(fetched.channelPreferences[.courseAssigned], [.push, .email])
+        XCTAssertEqual(response.items.first?.isRead, true)
     }
 } 

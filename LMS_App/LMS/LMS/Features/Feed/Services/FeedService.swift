@@ -17,12 +17,13 @@ class FeedService: ObservableObject {
     }
 
     private func setupPermissions() {
-        // For main actor properties, we need to handle this differently
         Task { @MainActor in
-            // Listen to auth changes and update permissions
             MockAuthService.shared.$currentUser
                 .sink { [weak self] user in
-                    guard let user = user else { return }
+                    guard let user = user else {
+                        self?.permissions = .studentDefault
+                        return
+                    }
                     self?.updatePermissions(for: user)
                 }
                 .store(in: &cancellables)
@@ -30,8 +31,7 @@ class FeedService: ObservableObject {
     }
 
     private func updatePermissions(for user: UserResponse) {
-        // Check user roles
-        if user.roles.contains("admin") || user.roles.contains("superAdmin") {
+        if user.role == .admin || user.role == .superAdmin {
             permissions = .adminDefault
         } else {
             permissions = .studentDefault
@@ -53,23 +53,16 @@ class FeedService: ObservableObject {
             throw FeedError.notAuthenticated
         }
 
-        // Determine role from user roles array
-        let userRole: UserRole = currentUser.roles.contains("admin") ? .admin : .student
-
         let newPost = FeedPost(
             id: UUID().uuidString,
-            authorId: currentUser.id,
-            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
-            authorRole: userRole,
-            authorAvatar: currentUser.avatar,
+            author: currentUser,
             content: content,
             images: images,
             attachments: attachments,
             createdAt: Date(),
-            updatedAt: Date(),
+            visibility: visibility,
             likes: [],
             comments: [],
-            visibility: visibility,
             tags: extractTags(from: content),
             mentions: extractMentions(from: content)
         )
@@ -77,11 +70,8 @@ class FeedService: ObservableObject {
         await MainActor.run {
             self.posts.insert(newPost, at: 0)
         }
-
-        // Send notifications for mentions
-        for userId in newPost.mentions {
-            await sendMentionNotification(to: userId, post: newPost)
-        }
+        
+        // Mentions are not implemented yet in this mock service
     }
 
     func deletePost(_ postId: String) async throws {
@@ -95,8 +85,7 @@ class FeedService: ObservableObject {
 
         let post = posts[postIndex]
 
-        // Check permissions
-        guard permissions.canDelete || post.authorId == currentUser.id else {
+        guard permissions.canDelete || post.author.id == currentUser.id else {
             throw FeedError.noPermission
         }
 
@@ -123,7 +112,6 @@ class FeedService: ObservableObject {
                 self.posts[postIndex].likes.removeAll { $0 == currentUser.id }
             } else {
                 self.posts[postIndex].likes.append(currentUser.id)
-                // Send notification
                 Task {
                     await self.sendLikeNotification(post: self.posts[postIndex])
                 }
@@ -147,9 +135,7 @@ class FeedService: ObservableObject {
         let newComment = FeedComment(
             id: UUID().uuidString,
             postId: postId,
-            authorId: currentUser.id,
-            authorName: "\(currentUser.firstName) \(currentUser.lastName)",
-            authorAvatar: currentUser.avatar,
+            author: currentUser,
             content: content,
             createdAt: Date(),
             likes: []
@@ -159,7 +145,6 @@ class FeedService: ObservableObject {
             self.posts[postIndex].comments.append(newComment)
         }
 
-        // Send notification
         await sendCommentNotification(post: posts[postIndex], comment: newComment)
     }
 
@@ -177,71 +162,66 @@ class FeedService: ObservableObject {
     }
 
     private func extractMentions(from content: String) -> [String] {
-        // In real app, would parse @mentions and convert to user IDs
-        []
+        let pattern = "@\\w+"
+        let regex = try? NSRegularExpression(pattern: pattern)
+        let matches = regex?.matches(in: content, range: NSRange(content.startIndex..., in: content)) ?? []
+
+        return matches.compactMap { match in
+            guard let range = Range(match.range, in: content) else { return nil }
+            let mention = String(content[range])
+            // Remove @ symbol and return just the username
+            return String(mention.dropFirst())
+        }
     }
 
     private func sendMentionNotification(to userId: String, post: FeedPost) async {
-        // Notification temporarily disabled
-        // TODO: Re-implement when notification system is restored
-        print("Mention notification would be sent to user \(userId) for post by \(post.authorName)")
+        print("Mention notification would be sent to user \(userId) for post by \(post.author.name)")
     }
 
     private func sendLikeNotification(post: FeedPost) async {
         guard let currentUser = await MockAuthService.shared.currentUser,
-              currentUser.id != post.authorId else { return }
-
-        // Notification temporarily disabled
-        // TODO: Re-implement when notification system is restored
-        print("Like notification would be sent for post by \(post.authorName)")
+              currentUser.id != post.author.id else { return }
+        print("Like notification would be sent for post by \(post.author.name)")
     }
 
     private func sendCommentNotification(post: FeedPost, comment: FeedComment) async {
-        guard comment.authorId != post.authorId else { return }
-        
-        // Notification temporarily disabled
-        // TODO: Re-implement when notification system is restored
-        print("Comment notification would be sent for post by \(post.authorName)")
+        guard comment.author.id != post.author.id else { return }
+        print("Comment notification would be sent for post by \(post.author.name)")
     }
 
     // MARK: - Mock Data
 
     private func loadMockData() {
-        posts = [
+        let adminUser = UserResponse(id: "admin1", email: "admin@tsum.ru", name: "Администратор", role: .admin)
+        let hrUser = UserResponse(id: "hr1", email: "hr@tsum.ru", name: "HR Отдел", role: .manager)
+        let user1 = UserResponse(id: "user1", email: "ivanov@tsum.ru", name: "Иван Иванов", role: .student)
+        let user2 = UserResponse(id: "user2", email: "petrova@tsum.ru", name: "Мария Петрова", role: .student)
+
+        self.posts = [
             FeedPost(
                 id: "1",
-                authorId: "admin1",
-                authorName: "Администратор системы",
-                authorRole: .admin,
-                authorAvatar: nil,
+                author: adminUser,
                 content: "🎉 Добро пожаловать в корпоративный университет ЦУМ! Здесь вы найдете все необходимые курсы для вашего профессионального развития. #обучение #развитие",
                 images: [],
                 attachments: [],
                 createdAt: Date().addingTimeInterval(-86_400),
-                updatedAt: Date().addingTimeInterval(-86_400),
-                likes: ["user1", "user2", "user3"],
+                visibility: .everyone,
+                likes: [user1.id, user2.id],
                 comments: [
                     FeedComment(
                         id: "c1",
                         postId: "1",
-                        authorId: "user1",
-                        authorName: "Иван Иванов",
-                        authorAvatar: nil,
+                        author: user1,
                         content: "Отличная платформа! Уже начал проходить курсы.",
                         createdAt: Date().addingTimeInterval(-3_600),
-                        likes: ["admin1"]
+                        likes: [adminUser.id]
                     )
                 ],
-                visibility: .everyone,
-                tags: ["#обучение", "#развитие"],
-                mentions: []
+                tags: ["#обучение", "#развитие"]
             ),
             FeedPost(
                 id: "2",
-                authorId: "hr1",
-                authorName: "HR отдел",
-                authorRole: .admin,
-                authorAvatar: nil,
+                author: hrUser,
                 content: "📚 Новый курс 'Эффективная коммуникация' уже доступен! Курс поможет улучшить навыки общения с клиентами и коллегами. Записывайтесь!",
                 images: [],
                 attachments: [
@@ -255,40 +235,31 @@ class FeedService: ObservableObject {
                     )
                 ],
                 createdAt: Date().addingTimeInterval(-7_200),
-                updatedAt: Date().addingTimeInterval(-7_200),
-                likes: ["user1", "user2", "user3", "user4", "user5"],
-                comments: [],
                 visibility: .everyone,
-                tags: [],
-                mentions: []
+                likes: [user1.id, user2.id, adminUser.id],
+                comments: [],
+                tags: []
             ),
             FeedPost(
                 id: "3",
-                authorId: "user2",
-                authorName: "Мария Петрова",
-                authorRole: .student,
-                authorAvatar: nil,
+                author: user2,
                 content: "Только что завершила курс по работе с клиентами! Получила сертификат с отличием 🏆 Спасибо преподавателям за отличный материал!",
                 images: [],
                 attachments: [],
                 createdAt: Date().addingTimeInterval(-10_800),
-                updatedAt: Date().addingTimeInterval(-10_800),
-                likes: ["admin1", "hr1", "user1", "user3"],
+                visibility: .everyone,
+                likes: [adminUser.id, hrUser.id, user1.id],
                 comments: [
                     FeedComment(
                         id: "c2",
                         postId: "3",
-                        authorId: "hr1",
-                        authorName: "HR отдел",
-                        authorAvatar: nil,
+                        author: hrUser,
                         content: "Поздравляем! Так держать! 👏",
                         createdAt: Date().addingTimeInterval(-9_000),
-                        likes: ["user2"]
+                        likes: [user2.id]
                     )
                 ],
-                visibility: .everyone,
-                tags: [],
-                mentions: []
+                tags: []
             )
         ]
     }
