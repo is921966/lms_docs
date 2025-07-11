@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 struct Cmi5ImportView: View {
     @StateObject private var viewModel = Cmi5ImportViewModel()
     @Environment(\.dismiss) private var dismiss
+    @State private var showingDocumentPicker = false
     
     let courseId: UUID?
     var onImportComplete: ((Cmi5Package) -> Void)?
@@ -25,8 +26,8 @@ struct Cmi5ImportView: View {
                     // Инструкции
                     instructionsSection
                     
-                    // Зона загрузки файла
-                    uploadSection
+                    // Кнопка выбора файла
+                    fileSelectionSection
                     
                     // Информация о загруженном файле
                     if let fileInfo = viewModel.selectedFileInfo {
@@ -35,7 +36,7 @@ struct Cmi5ImportView: View {
                     
                     // Прогресс парсинга
                     if viewModel.isProcessing {
-                        processingSection
+                        processingSection()
                     }
                     
                     // Результат парсинга
@@ -50,7 +51,7 @@ struct Cmi5ImportView: View {
                     
                     // Предупреждения валидации
                     if !viewModel.validationWarnings.isEmpty {
-                        warningsSection
+                        warningsSection()
                     }
                 }
                 .padding()
@@ -59,6 +60,13 @@ struct Cmi5ImportView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 toolbarContent
+            }
+            .fileImporter(
+                isPresented: $showingDocumentPicker,
+                allowedContentTypes: [.zip, .archive],
+                allowsMultipleSelection: false
+            ) { result in
+                handleFileSelection(result)
             }
         }
         .onAppear {
@@ -88,92 +96,102 @@ struct Cmi5ImportView: View {
         .cornerRadius(12)
     }
     
-    private var uploadSection: some View {
+    private var fileSelectionSection: some View {
         VStack(spacing: 16) {
-            // Drag & Drop зона
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8]))
-                    .foregroundColor(.accentColor)
-                    .frame(height: 150)
-                
+            Button(action: {
+                showingDocumentPicker = true
+            }) {
                 VStack(spacing: 12) {
-                    Image(systemName: "square.and.arrow.up.circle.fill")
+                    Image(systemName: "folder.badge.plus")
                         .font(.system(size: 48))
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.white)
                     
-                    Text("Перетащите файл сюда")
+                    Text("Выбрать файл")
                         .font(.headline)
+                        .foregroundColor(.white)
                     
-                    Text("или")
+                    Text("Нажмите для выбора ZIP архива")
                         .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Button(action: selectFile) {
-                        Label("Выбрать файл", systemImage: "folder")
-                            .font(.callout)
-                    }
-                    .buttonStyle(.bordered)
+                        .foregroundColor(.white.opacity(0.8))
                 }
+                .frame(maxWidth: .infinity)
+                .frame(height: 150)
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.blue, Color.blue.opacity(0.8)]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .cornerRadius(12)
             }
-            .onDrop(of: [.fileURL], isTargeted: nil) { providers in
-                handleDrop(providers: providers)
-                return true
-            }
+            .buttonStyle(PlainButtonStyle())
         }
     }
     
-    private func fileInfoSection(_ info: FileInfo) -> some View {
+    private func fileInfoSection(_ fileInfo: FileInfo) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Информация о файле", systemImage: "doc.fill")
-                .font(.headline)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Название:")
-                        .foregroundColor(.secondary)
-                    Text(info.name)
-                        .fontWeight(.medium)
+            HStack {
+                Image(systemName: "doc.zipper.fill")
+                    .font(.title2)
+                    .foregroundColor(.blue)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(fileInfo.name)
+                        .font(.headline)
+                        .lineLimit(1)
+                    
+                    HStack {
+                        Text(fileInfo.formattedSize)
+                        Text("•")
+                        Text(fileInfo.type)
+                    }
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                 }
                 
-                HStack {
-                    Text("Размер:")
-                        .foregroundColor(.secondary)
-                    Text(info.formattedSize)
-                        .fontWeight(.medium)
-                }
+                Spacer()
                 
-                HStack {
-                    Text("Тип:")
+                Button(action: {
+                    viewModel.clearSelection()
+                }) {
+                    Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.secondary)
-                    Text(info.type)
-                        .fontWeight(.medium)
                 }
             }
-            .font(.callout)
+            
+            if viewModel.parsedPackage == nil && viewModel.error == nil && !viewModel.isProcessing {
+                Button(action: {
+                    Task {
+                        await viewModel.processSelectedFile()
+                    }
+                }) {
+                    Label("Проверить пакет", systemImage: "checkmark.shield")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+            }
         }
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(12)
     }
     
-    private var processingSection: some View {
+    private func processingSection() -> some View {
         VStack(spacing: 16) {
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(1.5)
             
-            Text("Обработка пакета...")
+            Text(viewModel.processingProgress ?? "Обработка файла...")
                 .font(.headline)
             
-            if let progress = viewModel.processingProgress {
-                Text(progress)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
+            Text("Это может занять несколько секунд")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
-        .padding()
         .frame(maxWidth: .infinity)
+        .padding(32)
         .background(Color(.systemGray6))
         .cornerRadius(12)
     }
@@ -231,32 +249,39 @@ struct Cmi5ImportView: View {
     }
     
     private func errorSection(_ error: String) -> some View {
-        HStack {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(.red)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Ошибка")
-                    .font(.headline)
-                    .foregroundColor(.red)
-                
-                Text(error)
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            
-            Spacer()
-        }
-        .padding()
-        .background(Color(.systemRed).opacity(0.1))
-        .cornerRadius(12)
-    }
-    
-    private var warningsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.red)
+                
+                Text("Ошибка")
+                    .font(.headline)
+                    .foregroundColor(.red)
+            }
+            
+            Text(error)
+                .font(.callout)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            
+            Button(action: {
+                viewModel.clearError()
+            }) {
+                Text("Попробовать снова")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(.red)
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+    }
+    
+    private func warningsSection() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(.orange)
                 
                 Text("Предупреждения")
@@ -265,13 +290,15 @@ struct Cmi5ImportView: View {
             }
             
             ForEach(viewModel.validationWarnings, id: \.self) { warning in
-                Text("• \(warning)")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                HStack(alignment: .top) {
+                    Text("•")
+                    Text(warning)
+                        .font(.caption)
+                }
             }
         }
         .padding()
-        .background(Color(.systemOrange).opacity(0.1))
+        .background(Color(.systemGray6))
         .cornerRadius(12)
     }
     
@@ -297,21 +324,16 @@ struct Cmi5ImportView: View {
     
     // MARK: - Actions
     
-    private func selectFile() {
-        // В реальном приложении здесь будет документ пикер
-        // Для демонстрации используем заглушку
-        viewModel.selectDemoFile()
-    }
-    
-    private func handleDrop(providers: [NSItemProvider]) {
-        guard let provider = providers.first else { return }
-        
-        provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
-            guard let url = item as? URL else { return }
-            
-            DispatchQueue.main.async {
-                viewModel.processFile(at: url)
+    private func handleFileSelection(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            if let url = urls.first {
+                Task {
+                    await viewModel.processFile(at: url)
+                }
             }
+        case .failure(let error):
+            viewModel.error = "Ошибка выбора файла: \(error.localizedDescription)"
         }
     }
     

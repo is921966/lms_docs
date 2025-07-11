@@ -132,7 +132,9 @@ struct LearningListView: View {
         }
         .sheet(isPresented: $showingEditView) {
             if let course = courseToEdit {
-                CourseEditView(course: course)
+                NavigationView {
+                    CourseEditView(course: course)
+                }
             }
         }
         .sheet(isPresented: $showingAddCourse) {

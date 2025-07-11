@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FeedView: View {
-    @StateObject private var feedService = FeedService.shared
+    @StateObject private var feedService = MockFeedService.shared
     @StateObject private var authService = MockAuthService.shared
     @State private var showingCreatePost = false
     @State private var showingSettings = false

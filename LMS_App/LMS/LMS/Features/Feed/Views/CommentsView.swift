@@ -3,7 +3,7 @@ import SwiftUI
 struct CommentsView: View {
     let post: FeedPost
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var feedService = FeedService.shared
+    @StateObject private var feedService = MockFeedService.shared
     @State private var newComment = ""
     @State private var isAddingComment = false
 
@@ -151,7 +151,7 @@ struct PostPreviewInComments: View {
 // MARK: - Comment View
 struct CommentView: View {
     let comment: FeedComment
-    @StateObject private var feedService = FeedService.shared
+    @StateObject private var feedService = MockFeedService.shared
     @StateObject private var authService = MockAuthService.shared
 
     var isLiked: Bool {

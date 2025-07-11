@@ -2,12 +2,51 @@ import SwiftUI
 
 struct PostContentView: View {
     let post: FeedPost
+    @State private var isExpanded = false
+    
+    // Константы для управления сворачиванием
+    private let collapsedLineLimit = 3
+    private let characterLimit = 200
+    
+    private var isLongPost: Bool {
+        post.content.count > characterLimit || post.content.components(separatedBy: .newlines).count > collapsedLineLimit
+    }
+    
+    private var displayedContent: String {
+        if isExpanded || !isLongPost {
+            return post.content
+        } else {
+            // Обрезаем контент для свернутого вида
+            let truncated = String(post.content.prefix(characterLimit))
+            if let lastSpace = truncated.lastIndex(of: " ") {
+                return String(truncated[..<lastSpace]) + "..."
+            }
+            return truncated + "..."
+        }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(post.content)
+            // Контент поста
+            Text(displayedContent)
                 .font(.body)
                 .fixedSize(horizontal: false, vertical: true)
+                .animation(.easeInOut(duration: 0.2), value: isExpanded)
+            
+            // Кнопка "Показать больше" / "Свернуть"
+            if isLongPost {
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isExpanded.toggle()
+                    }
+                }) {
+                    Text(isExpanded ? "Свернуть" : "Показать больше")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
+                }
+                .padding(.top, 2)
+            }
 
             // Tags
             if let tags = post.tags, !tags.isEmpty {
@@ -22,6 +61,7 @@ struct PostContentView: View {
                             .cornerRadius(12)
                     }
                 }
+                .padding(.top, 4)
             }
         }
         .padding(.horizontal)

@@ -11,6 +11,8 @@ import Combine
 @MainActor
 class MockFeedService: ObservableObject {
     
+    static let shared = MockFeedService()
+    
     @Published var posts: [FeedPost] = []
     @Published var isLoading = false
     @Published var error: FeedError?
@@ -31,6 +33,7 @@ class MockFeedService: ObservableObject {
     init() {
         setupAuthObserver()
         loadMockData()
+        checkAndAddReleaseNews()
     }
     
     private func setupAuthObserver() {
@@ -138,6 +141,84 @@ class MockFeedService: ObservableObject {
         ]
     }
     
+    private func checkAndAddReleaseNews() {
+        // Проверяем флаг новой версии в Info.plist
+        let hasNewRelease = Bundle.main.infoDictionary?["LMSHasNewRelease"] as? Bool ?? false
+        
+        // Получаем текущую версию
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        
+        // Проверяем, есть ли уже новость о релизе в текущих постах
+        let releasePostId = "release-\(currentVersion)-\(currentBuild)"
+        let releaseNewsExists = posts.contains { $0.id == releasePostId }
+        
+        if hasNewRelease && !releaseNewsExists {
+            // Пытаемся загрузить release notes из bundle
+            var releaseContent = ""
+            
+            if let releaseNotesPath = Bundle.main.path(forResource: "RELEASE_NOTES", ofType: "md"),
+               let content = try? String(contentsOfFile: releaseNotesPath) {
+                // Используем содержимое из файла
+                releaseContent = content
+            } else {
+                // Используем дефолтное содержимое
+                releaseContent = """
+                🚀 Новая версия \(currentVersion) (Build \(currentBuild))
+                
+                ## 🎯 Основные изменения
+                
+                ### ✨ Sprint 46: Perplexity-Style Redesign
+                • Создана базовая инфраструктура Perplexity-стиля
+                • Новые компоненты: PerplexityTheme, PerplexitySearchBar, PerplexityCard
+                • Подготовка к постепенной интеграции нового дизайна
+                
+                ### 🔧 Технические улучшения
+                • Исправлена тестовая инфраструктура
+                • Все 43 UI теста теперь работают корректно
+                • Оптимизирована навигация в тестах
+                
+                ## 📋 Что нового для тестировщиков
+                
+                ### Проверьте следующие функции:
+                • Стабильность приложения
+                • Корректность отображения всех экранов
+                • Работу навигации между разделами
+                
+                ## 🐛 Известные проблемы
+                • Perplexity компоненты пока не интегрированы в основное приложение
+                • Продолжается работа над новым дизайном
+                
+                #release #update #testflight
+                """
+            }
+            
+            let releasePost = FeedPost(
+                id: releasePostId,
+                author: UserResponse(
+                    id: "system",
+                    email: "system@lms.com",
+                    name: "Команда разработки",
+                    role: .admin,
+                    isActive: true,
+                    createdAt: Date()
+                ),
+                content: releaseContent,
+                images: [],
+                attachments: [],
+                createdAt: Date(),
+                visibility: .everyone,
+                likes: [],
+                comments: [],
+                tags: ["#release", "#update", "#testflight"],
+                mentions: []
+            )
+            
+            // Добавляем в начало ленты
+            posts.insert(releasePost, at: 0)
+        }
+    }
+    
     // MARK: - Public Methods
     
     func createPost(
@@ -238,6 +319,7 @@ class MockFeedService: ObservableObject {
     
     func refresh() {
         loadMockData()
+        checkAndAddReleaseNews()
     }
     
     // MARK: - Helper Methods

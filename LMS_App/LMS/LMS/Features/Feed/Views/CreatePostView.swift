@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CreatePostView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var feedService = FeedService.shared
+    @StateObject private var feedService = MockFeedService.shared
     @StateObject private var authService = MockAuthService.shared
 
     @State private var postContent = ""

@@ -33,11 +33,11 @@ struct CertificateTemplate: Identifiable, Codable {
 
     // Computed properties
     var primarySwiftUIColor: Color {
-        Color(hex: primaryColor) ?? .blue
+        Color(hex: primaryColor)
     }
 
     var secondarySwiftUIColor: Color {
-        Color(hex: secondaryColor) ?? .gray
+        Color(hex: secondaryColor)
     }
 }
 

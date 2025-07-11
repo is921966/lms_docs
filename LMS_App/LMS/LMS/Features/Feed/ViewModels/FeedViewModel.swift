@@ -27,7 +27,7 @@ class FeedViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var selectedVisibilityFilter: FeedVisibility?
     
-    private let feedService: FeedService
+    private let feedService: MockFeedService
     private var cancellables = Set<AnyCancellable>()
     
     var filteredPosts: [FeedPost] {
@@ -51,7 +51,7 @@ class FeedViewModel: ObservableObject {
         return filtered
     }
     
-    init(feedService: FeedService = .shared) {
+    init(feedService: MockFeedService = .shared) {
         self.feedService = feedService
         setupBindings()
     }
@@ -65,6 +65,7 @@ class FeedViewModel: ObservableObject {
             .assign(to: &$isLoading)
         
         feedService.$error
+            .compactMap { $0?.localizedDescription }
             .assign(to: &$error)
         
         feedService.$permissions

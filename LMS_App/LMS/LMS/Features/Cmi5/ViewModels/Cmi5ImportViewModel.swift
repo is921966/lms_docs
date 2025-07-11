@@ -9,6 +9,31 @@ import Foundation
 import SwiftUI
 import Combine
 
+/// Ошибки валидации
+enum ValidationError: LocalizedError {
+    case fileAccessDenied
+    case fileTooLarge(size: Int64, maxSize: Int64)
+    case invalidFormat
+    case missingManifest
+    
+    var errorDescription: String? {
+        switch self {
+        case .fileAccessDenied:
+            return "Нет доступа к файлу. Пожалуйста, выберите файл заново."
+        case .fileTooLarge(let size, let maxSize):
+            let formatter = ByteCountFormatter()
+            formatter.countStyle = .file
+            let sizeStr = formatter.string(fromByteCount: size)
+            let maxSizeStr = formatter.string(fromByteCount: maxSize)
+            return "Файл слишком большой (\(sizeStr)). Максимальный размер: \(maxSizeStr)"
+        case .invalidFormat:
+            return "Неверный формат файла. Ожидается ZIP архив с Cmi5 пакетом."
+        case .missingManifest:
+            return "В архиве отсутствует файл манифеста cmi5.xml"
+        }
+    }
+}
+
 /// Информация о файле
 struct FileInfo {
     let name: String
@@ -55,55 +80,127 @@ final class Cmi5ImportViewModel: ObservableObject {
     // MARK: - Public Methods
     
     /// Обрабатывает выбранный файл
-    func processFile(at url: URL) {
-        reset()
+    func processFile(at url: URL) async {
+        await MainActor.run {
+            self.error = nil
+            self.validationWarnings = []
+            self.isProcessing = true
+            self.processingProgress = "Чтение файла..."
+        }
         
-        // Проверяем размер файла
         do {
+            // Получаем доступ к файлу
+            guard url.startAccessingSecurityScopedResource() else {
+                throw ValidationError.fileAccessDenied
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+            
+            // Получаем информацию о файле
             let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
             let fileSize = attributes[.size] as? Int64 ?? 0
             
+            // Проверяем размер файла
             if fileSize > maxFileSize {
-                error = "Файл слишком большой. Максимальный размер: 500 МБ"
-                return
+                throw ValidationError.fileTooLarge(size: fileSize, maxSize: maxFileSize)
             }
             
-            selectedFileInfo = FileInfo(
+            // Создаем FileInfo
+            let fileInfo = FileInfo(
                 name: url.lastPathComponent,
                 size: fileSize,
-                type: "ZIP архив",
+                type: "ZIP Archive",
                 url: url
             )
             
-            // Начинаем парсинг
-            Task {
-                await parsePackage(from: url)
+            await MainActor.run {
+                self.selectedFileInfo = fileInfo
+                self.processingProgress = "Проверка архива..."
+            }
+            
+            // Парсим пакет
+            let parseResult = try await parser.parsePackage(from: url)
+            
+            await MainActor.run {
+                self.parsedPackage = parseResult
+                self.validationWarnings = []
+                self.isProcessing = false
+                self.processingProgress = nil
             }
             
         } catch {
-            self.error = "Не удалось прочитать файл: \(error.localizedDescription)"
+            await MainActor.run {
+                self.error = error.localizedDescription
+                self.isProcessing = false
+                self.processingProgress = nil
+            }
         }
     }
     
-    /// Выбирает демо-файл для тестирования
+    /// Обрабатывает уже выбранный файл
+    func processSelectedFile() async {
+        guard let fileInfo = selectedFileInfo else { return }
+        await processFile(at: fileInfo.url)
+    }
+    
+    /// Очищает выбранный файл
+    func clearSelection() {
+        selectedFileInfo = nil
+        parsedPackage = nil
+        error = nil
+        validationWarnings = []
+    }
+    
+    /// Очищает ошибку
+    func clearError() {
+        error = nil
+    }
+    
+    /// Выбирает демо файл для тестирования
     func selectDemoFile() {
-        // Создаем демо пакет для тестирования
-        let demoPackage = createDemoPackage()
-        parsedPackage = demoPackage
-        
-        // Валидируем пакет
-        let validationResult = parser.validatePackage(demoPackage)
-        if !validationResult.isValid {
-            error = validationResult.errors.first
-        }
-        validationWarnings = validationResult.warnings
-        
-        selectedFileInfo = FileInfo(
-            name: "demo-course.zip",
-            size: 1024 * 1024 * 5, // 5 MB
-            type: "ZIP архив",
-            url: URL(fileURLWithPath: "/demo/path")
+        // Эмулируем выбор файла для демо
+        let demoUrl = URL(fileURLWithPath: "/demo/sample-cmi5.zip")
+        let demoFileInfo = FileInfo(
+            name: "sample-cmi5-course.zip",
+            size: 25 * 1024 * 1024, // 25 MB
+            type: "ZIP Archive",
+            url: demoUrl
         )
+        
+        selectedFileInfo = demoFileInfo
+        
+        // Эмулируем парсинг
+        Task {
+            isProcessing = true
+            processingProgress = "Обработка демо пакета..."
+            
+            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 секунды
+            
+            // Создаем демо пакет
+            let demoManifest = Cmi5Manifest(
+                identifier: "demo-course-001",
+                title: "Демо курс Cmi5",
+                description: "Пример Cmi5 курса для тестирования",
+                version: "1.0",
+                course: nil
+            )
+            
+            parsedPackage = Cmi5Package(
+                packageId: demoManifest.identifier,
+                title: demoManifest.title,
+                description: demoManifest.description,
+                courseId: courseId,
+                manifest: demoManifest,
+                filePath: "/demo/sample-cmi5",
+                size: demoFileInfo.size,
+                uploadedBy: UUID(),
+                version: demoManifest.version ?? "1.0",
+                isValid: true,
+                validationErrors: []
+            )
+            
+            isProcessing = false
+            processingProgress = nil
+        }
     }
     
     /// Импортирует пакет в систему
@@ -154,21 +251,11 @@ final class Cmi5ImportViewModel: ObservableObject {
         
         do {
             // Парсим пакет
-            let package = try await parser.parsePackage(from: url)
-            
-            processingProgress = "Валидация пакета..."
-            
-            // Валидируем
-            let validationResult = parser.validatePackage(package)
+            let parseResult = try await parser.parsePackage(from: url)
             
             await MainActor.run {
-                self.parsedPackage = package
-                self.validationWarnings = validationResult.warnings
-                
-                if !validationResult.isValid {
-                    self.error = validationResult.errors.joined(separator: "\n")
-                }
-                
+                self.parsedPackage = parseResult
+                self.validationWarnings = []
                 self.isProcessing = false
                 self.processingProgress = nil
             }

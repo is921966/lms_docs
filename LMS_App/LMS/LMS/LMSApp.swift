@@ -21,6 +21,7 @@ struct LMSApp: App {
     init() {
         setupAppearance()
         setupFeedback()
+        setupReleaseNewsService() // Добавляем инициализацию сервиса новостей о релизах
 
         // Enable battery monitoring for device info
         UIDevice.current.isBatteryMonitoringEnabled = true
