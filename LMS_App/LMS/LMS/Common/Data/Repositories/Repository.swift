@@ -10,52 +10,7 @@
 import Foundation
 import Combine
 
-// MARK: - Pagination Request
-
-/// Request parameters for pagination
-public struct PaginationRequest {
-    public let page: Int
-    public let pageSize: Int
-    public let sortBy: String?
-    public let sortDirection: SortDirection
-    
-    public init(
-        page: Int = 1,
-        pageSize: Int = 20,
-        sortBy: String? = nil,
-        sortDirection: SortDirection = .ascending
-    ) {
-        self.page = max(1, page) // Ensure page is at least 1
-        self.pageSize = max(1, min(100, pageSize)) // Limit between 1 and 100
-        self.sortBy = sortBy
-        self.sortDirection = sortDirection
-    }
-    
-    /// Calculate offset for database queries
-    public var offset: Int {
-        (page - 1) * pageSize
-    }
-    
-    /// Create next page request
-    public func nextPage() -> PaginationRequest {
-        return PaginationRequest(
-            page: page + 1,
-            pageSize: pageSize,
-            sortBy: sortBy,
-            sortDirection: sortDirection
-        )
-    }
-    
-    /// Create previous page request
-    public func previousPage() -> PaginationRequest {
-        return PaginationRequest(
-            page: max(1, page - 1),
-            pageSize: pageSize,
-            sortBy: sortBy,
-            sortDirection: sortDirection
-        )
-    }
-}
+// MARK: - Sort Direction
 
 /// Sort direction for pagination
 public enum SortDirection: String, CaseIterable {

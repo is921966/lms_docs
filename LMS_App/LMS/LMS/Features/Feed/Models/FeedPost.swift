@@ -2,38 +2,33 @@ import Foundation
 import SwiftUI
 
 // MARK: - Feed Post Model
-struct FeedPost: Identifiable, Codable {
-    let id: String
-    let authorId: String
-    let authorName: String
-    let authorRole: UserRole
-    let authorAvatar: String?
-    let content: String
-    let images: [String]
-    let attachments: [FeedAttachment]
-    let createdAt: Date
-    let updatedAt: Date
-    var likes: [String] // User IDs who liked
+struct FeedPost: Identifiable, Codable, Equatable {
+    var id: String
+    var author: UserResponse
+    var content: String
+    var images: [String]
+    var attachments: [FeedAttachment]
+    var createdAt: Date
+    var visibility: FeedVisibility
+    var likes: [String] // Array of user IDs
     var comments: [FeedComment]
-    let visibility: FeedVisibility
-    let tags: [String]
-    let mentions: [String] // User IDs mentioned
+    var tags: [String]?
+    var mentions: [String]?
 
-    var likesCount: Int { likes.count }
-    var commentsCount: Int { comments.count }
-    var isEdited: Bool { updatedAt > createdAt }
+    // Equatable conformance
+    static func == (lhs: FeedPost, rhs: FeedPost) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 // MARK: - Feed Comment
 struct FeedComment: Identifiable, Codable {
     let id: String
     let postId: String
-    let authorId: String
-    let authorName: String
-    let authorAvatar: String?
+    let author: UserResponse
     let content: String
     let createdAt: Date
-    var likes: [String]
+    var likes: [String] // Array of user IDs
 
     var likesCount: Int { likes.count }
 }
@@ -113,6 +108,39 @@ struct FeedPermissions: Codable {
         canEdit: true,
         canModerate: true,
         visibilityOptions: FeedVisibility.allCases
+    )
+    
+    static let instructorDefault = FeedPermissions(
+        canPost: true,
+        canComment: true,
+        canLike: true,
+        canShare: true,
+        canDelete: true,
+        canEdit: true,
+        canModerate: false,
+        visibilityOptions: [.everyone, .students]
+    )
+    
+    static let managerDefault = FeedPermissions(
+        canPost: true,
+        canComment: true,
+        canLike: true,
+        canShare: true,
+        canDelete: true,
+        canEdit: true,
+        canModerate: true,
+        visibilityOptions: [.everyone, .students, .specific]
+    )
+    
+    static let guestDefault = FeedPermissions(
+        canPost: false,
+        canComment: false,
+        canLike: false,
+        canShare: false,
+        canDelete: false,
+        canEdit: false,
+        canModerate: false,
+        visibilityOptions: []
     )
 }
 

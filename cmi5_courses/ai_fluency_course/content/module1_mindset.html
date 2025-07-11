@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Правильный подход к ИИ</title>
+    <script src="https://unpkg.com/@xapi/cmi5@latest/dist/cmi5.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            font-size: 1.8em;
+        }
+        .mindset-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .mindset-card {
+            padding: 25px;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+        .mindset-card:hover {
+            transform: translateY(-5px);
+        }
+        .old-mindset {
+            background: #ffebee;
+            border: 2px solid #ef5350;
+        }
+        .new-mindset {
+            background: #e8f5e9;
+            border: 2px solid #66bb6a;
+        }
+        .mindset-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .principle-box {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a56 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(255, 106, 86, 0.3);
+        }
+        .principle-box h3 {
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        .interactive-scenario {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        .scenario-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .option-button {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        .option-button:hover {
+            border-color: #ff9a56;
+            transform: translateX(5px);
+        }
+        .option-button.selected {
+            border-color: #66bb6a;
+            background: #e8f5e9;
+        }
+        .option-button.incorrect {
+            border-color: #ef5350;
+            background: #ffebee;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .feedback.correct {
+            background: #e8f5e9;
+            border: 2px solid #66bb6a;
+        }
+        .feedback.incorrect {
+            background: #ffebee;
+            border: 2px solid #ef5350;
+        }
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        .tip-card {
+            background: #fff3e0;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #ff9a56;
+        }
+        .tip-card h4 {
+            color: #ff6a56;
+            margin-top: 0;
+        }
+        .progress-section {
+            margin: 40px 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff9a56 0%, #ff6a56 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 20px;
+        }
+        button {
+            background: #ff9a56;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #ff6a56;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .icon {
+            font-size: 1.5em;
+        }
+        .checklist {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .checklist-item:hover {
+            transform: translateX(5px);
+        }
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .checklist-item.checked {
+            background: #e8f5e9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Правильный подход к ИИ</h1>
+        
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress">0%</div>
+            </div>
+        </div>
+        
+        <div id="content">
+            <!-- Раздел 1: Смена парадигмы -->
+            <div class="section active" data-section="1">
+                <h2>Смена парадигмы мышления</h2>
+                
+                <p>Для эффективной работы с ИИ необходимо изменить привычные подходы к решению задач. Давайте сравним старое и новое мышление:</p>
+                
+                <div class="mindset-comparison">
+                    <div class="mindset-card old-mindset">
+                        <h3><span class="icon">❌</span> Старое мышление</h3>
+                        <ul>
+                            <li>ИИ — это просто поисковик</li>
+                            <li>Один запрос = один ответ</li>
+                            <li>ИИ должен угадать, что мне нужно</li>
+                            <li>Если не получилось — ИИ плохой</li>
+                            <li>Боязнь экспериментировать</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mindset-card new-mindset">
+                        <h3><span class="icon">✅</span> Новое мышление</h3>
+                        <ul>
+                            <li>ИИ — это интеллектуальный партнер</li>
+                            <li>Диалог и итерации ведут к результату</li>
+                            <li>Я направляю ИИ четкими инструкциями</li>
+                            <li>Неудача — повод улучшить промпт</li>
+                            <li>Эксперименты раскрывают возможности</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="principle-box">
+                    <h3>💡 Ключевой принцип</h3>
+                    <p>ИИ — это не волшебная палочка, а мощный инструмент. Как и любой инструмент, он требует навыка использования. Чем лучше вы им владеете, тем впечатляющее результаты.</p>
+                </div>
+            </div>
+            
+            <!-- Раздел 2: 5 принципов эффективной работы -->
+            <div class="section" data-section="2">
+                <h2>5 принципов эффективной работы с ИИ</h2>
+                
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h4>1. Будьте конкретны</h4>
+                        <p>Вместо "напиши текст про кошек" скажите "напиши информативную статью на 500 слов о правильном питании домашних кошек для блога ветеринарной клиники".</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h4>2. Предоставляйте контекст</h4>
+                        <p>Объясните ИИ, кто вы, для кого создается контент, какая цель преследуется. Контекст помогает ИИ настроиться на нужную волну.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h4>3. Итерируйте и уточняйте</h4>
+                        <p>Не ожидайте идеального результата с первого раза. Будьте готовы сказать: "Хорошо, но давай сделаем более формальным" или "Добавь больше примеров".</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h4>4. Используйте примеры</h4>
+                        <p>Покажите ИИ, что вы хотите получить. "Напиши в стиле этого текста:" или "Вот пример хорошего результата:".</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h4>5. Проверяйте и дорабатывайте</h4>
+                        <p>ИИ — помощник, а не замена вашему мышлению. Всегда проверяйте факты и адаптируйте результат под свои нужды.</p>
+                    </div>
+                </div>
+                
+                <div class="interactive-scenario">
+                    <h3>🎯 Сценарий: Выберите лучший подход</h3>
+                    <p>Вам нужно подготовить презентацию для руководства. Какой подход к работе с ИИ будет наиболее эффективным?</p>
+                    
+                    <div class="scenario-options">
+                        <div class="option-button" onclick="checkAnswer(this, false, 'a')">
+                            <strong>Вариант А:</strong> "Сделай мне презентацию для начальства"
+                        </div>
+                        
+                        <div class="option-button" onclick="checkAnswer(this, false, 'b')">
+                            <strong>Вариант Б:</strong> "Мне нужна презентация на 20 слайдов с графиками и диаграммами"
+                        </div>
+                        
+                        <div class="option-button" onclick="checkAnswer(this, true, 'c')">
+                            <strong>Вариант В:</strong> "Помоги создать структуру презентации для квартального отчета отдела продаж. Аудитория - топ-менеджмент. Фокус на росте выручки и новых клиентах. Нужно 10-12 слайдов."
+                        </div>
+                    </div>
+                    
+                    <div class="feedback" id="scenarioFeedback"></div>
+                </div>
+            </div>
+            
+            <!-- Раздел 3: Практические советы -->
+            <div class="section" data-section="3">
+                <h2>Практические советы для развития AI-мышления</h2>
+                
+                <div class="checklist">
+                    <h3>📋 Чек-лист правильного подхода</h3>
+                    <p>Отметьте пункты, которые вы уже применяете:</p>
+                    
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" id="check1">
+                        <label for="check1">Я всегда указываю цель и контекст в своих запросах</label>
+                    </div>
+                    
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" id="check2">
+                        <label for="check2">Я готов итерировать и улучшать результаты</label>
+                    </div>
+                    
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" id="check3">
+                        <label for="check3">Я экспериментирую с разными формулировками</label>
+                    </div>
+                    
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" id="check4">
+                        <label for="check4">Я проверяю информацию от ИИ перед использованием</label>
+                    </div>
+                    
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" id="check5">
+                        <label for="check5">Я воспринимаю ИИ как партнера, а не слугу</label>
+                    </div>
+                    
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" id="check6">
+                        <label for="check6">Я учусь на каждом взаимодействии с ИИ</label>
+                    </div>
+                </div>
+                
+                <h2>Развивайте AI-интуицию</h2>
+                <p>Со временем вы начнете интуитивно понимать:</p>
+                <ul>
+                    <li>Какие задачи ИИ решает блестяще, а какие — посредственно</li>
+                    <li>Как формулировать запросы для разных типов задач</li>
+                    <li>Когда стоит использовать ИИ, а когда — традиционные методы</li>
+                    <li>Как комбинировать сильные стороны ИИ и человека</li>
+                </ul>
+            </div>
+            
+            <!-- Раздел 4: Заключение -->
+            <div class="section" data-section="4">
+                <h2>Ваш новый подход к работе</h2>
+                
+                <div class="principle-box">
+                    <h3>🚀 Помните главное</h3>
+                    <p>AI Fluency — это не о технических знаниях, а о правильном мышлении. Относитесь к ИИ как к талантливому стажеру: он многое умеет, но нуждается в четких инструкциях и проверке результатов.</p>
+                </div>
+                
+                <h3>Что делать дальше?</h3>
+                <ol>
+                    <li><strong>Практикуйтесь ежедневно</strong> — даже 15 минут в день дадут результат</li>
+                    <li><strong>Начните с простых задач</strong> — постепенно усложняйте</li>
+                    <li><strong>Делитесь опытом</strong> — обсуждайте с коллегами успехи и неудачи</li>
+                    <li><strong>Будьте терпеливы</strong> — мастерство приходит с опытом</li>
+                </ol>
+                
+                <div style="text-align: center; margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 15px;">
+                    <h3>🎉 Отличная работа!</h3>
+                    <p>Вы освоили основы правильного подхода к работе с ИИ. В следующем модуле мы погрузимся в искусство создания эффективных промптов!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button id="prevBtn" onclick="previousSection()" disabled>Назад</button>
+            <button id="nextBtn" onclick="nextSection()">Далее</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentSection = 1;
+        const totalSections = 4;
+        let startTime = new Date();
+        let cmi5;
+        let scenarioAnswered = false;
+        
+        // Initialize cmi5
+        window.onload = function() {
+            if (window.cmi5) {
+                cmi5 = new Cmi5();
+                cmi5.initialize().then(() => {
+                    console.log('Cmi5 initialized');
+                    sendStatement('initialized');
+                }).catch(err => {
+                    console.log('Running in standalone mode');
+                });
+            }
+            updateProgress();
+        };
+        
+        function updateProgress() {
+            const progress = Math.round((currentSection / totalSections) * 100);
+            document.getElementById('progress').style.width = progress + '%';
+            document.getElementById('progress').textContent = progress + '%';
+        }
+        
+        function showSection(num) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            setTimeout(() => {
+                document.querySelector(`[data-section="${num}"]`).classList.add('active');
+            }, 100);
+            
+            document.getElementById('prevBtn').disabled = num === 1;
+            document.getElementById('nextBtn').textContent = num === totalSections ? 'Завершить' : 'Далее';
+            
+            updateProgress();
+            sendStatement('progressed', { section: num });
+        }
+        
+        function nextSection() {
+            if (currentSection < totalSections) {
+                currentSection++;
+                showSection(currentSection);
+            } else {
+                completeModule();
+            }
+        }
+        
+        function previousSection() {
+            if (currentSection > 1) {
+                currentSection--;
+                showSection(currentSection);
+            }
+        }
+        
+        function checkAnswer(element, isCorrect, option) {
+            if (scenarioAnswered) return;
+            
+            // Reset all options
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('selected', 'incorrect');
+            });
+            
+            // Mark selected option
+            if (isCorrect) {
+                element.classList.add('selected');
+            } else {
+                element.classList.add('incorrect');
+            }
+            
+            // Show feedback
+            const feedback = document.getElementById('scenarioFeedback');
+            feedback.className = isCorrect ? 'feedback correct' : 'feedback incorrect';
+            
+            if (isCorrect) {
+                feedback.innerHTML = `
+                    <h4>✅ Правильно!</h4>
+                    <p>Вариант В демонстрирует идеальный подход: четкий контекст, конкретная аудитория, 
+                    определенный фокус и разумные ограничения. Такой запрос поможет ИИ создать 
+                    действительно полезную структуру презентации.</p>
+                `;
+                scenarioAnswered = true;
+            } else {
+                if (option === 'a') {
+                    feedback.innerHTML = `
+                        <h4>❌ Слишком общий запрос</h4>
+                        <p>Этот запрос не дает ИИ никакой информации о теме, аудитории, цели или формате. 
+                        Результат будет случайным и вряд ли полезным.</p>
+                    `;
+                } else if (option === 'b') {
+                    feedback.innerHTML = `
+                        <h4>❌ Фокус на форме, а не на содержании</h4>
+                        <p>Указано количество слайдов и наличие графиков, но нет информации о теме, 
+                        цели и аудитории. ИИ не сможет создать релевантный контент.</p>
+                    `;
+                }
+            }
+            
+            feedback.style.display = 'block';
+            sendStatement('answered', { correct: isCorrect, option: option });
+        }
+        
+        function toggleCheck(item) {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                item.classList.add('checked');
+            } else {
+                item.classList.remove('checked');
+            }
+            
+            // Check if all items are checked
+            const allChecked = document.querySelectorAll('.checklist-item input:checked').length;
+            const total = document.querySelectorAll('.checklist-item').length;
+            
+            sendStatement('interacted', { 
+                activity: 'checklist', 
+                completed: allChecked,
+                total: total 
+            });
+        }
+        
+        function completeModule() {
+            const endTime = new Date();
+            const duration = Math.round((endTime - startTime) / 1000);
+            
+            sendStatement('completed', { duration: duration });
+            
+            alert('Превосходно! Вы освоили правильный подход к работе с ИИ. Готовы изучать искусство промптинга?');
+            
+            if (cmi5) {
+                cmi5.terminate();
+            }
+            
+            document.getElementById('nextBtn').disabled = true;
+        }
+        
+        function sendStatement(verb, extensions = {}) {
+            if (!cmi5) return;
+            
+            const statement = {
+                verb: {
+                    id: `http://adlnet.gov/expapi/verbs/${verb}`,
+                    display: { "en-US": verb }
+                },
+                object: {
+                    id: window.location.href,
+                    definition: {
+                        name: { "ru": "Правильный подход к ИИ" },
+                        description: { "ru": "Формирование продуктивного мышления для работы с ИИ" }
+                    }
+                },
+                result: {
+                    extensions: extensions
+                }
+            };
+            
+            if (verb === 'completed') {
+                statement.result.completion = true;
+                statement.result.success = true;
+                statement.result.score = {
+                    scaled: 1.0
+                };
+            }
+            
+            cmi5.sendStatement(statement);
+        }
+    </script>
+</body>
+</html> 

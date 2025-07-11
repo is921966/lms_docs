@@ -72,8 +72,8 @@ class GitHubFeedbackService {
             title: title,
             description: body,
             type: FeedbackType(rawValue: type) ?? .bug,
-            author: MockAuthService.shared.currentUser?.email ?? "Anonymous",
-            authorId: MockAuthService.shared.currentUser?.id ?? "unknown",
+            author: await MockAuthService.shared.currentUser?.email ?? "Anonymous",
+            authorId: await MockAuthService.shared.currentUser?.id ?? "unknown",
             isOwnFeedback: true
         )
 

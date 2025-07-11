@@ -1,0 +1,263 @@
+{
+  "": {
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/master.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Alamofire.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Alamofire.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Alamofire.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Alamofire~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Alamofire.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/AFError.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AFError.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AFError.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AFError~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AFError.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/DataRequest.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DataRequest.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DataRequest.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DataRequest~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DataRequest.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/DataStreamRequest.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DataStreamRequest.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DataStreamRequest.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DataStreamRequest~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DataStreamRequest.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/DownloadRequest.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DownloadRequest.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DownloadRequest.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DownloadRequest~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DownloadRequest.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/HTTPHeaders.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/HTTPHeaders.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/HTTPHeaders.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/HTTPHeaders~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/HTTPHeaders.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/HTTPMethod.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/HTTPMethod.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/HTTPMethod.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/HTTPMethod~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/HTTPMethod.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/Notifications.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Notifications.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Notifications.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Notifications~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Notifications.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/ParameterEncoder.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ParameterEncoder.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ParameterEncoder.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ParameterEncoder~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ParameterEncoder.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/ParameterEncoding.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ParameterEncoding.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ParameterEncoding.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ParameterEncoding~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ParameterEncoding.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/Protected.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Protected.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Protected.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Protected~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Protected.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/Request.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Request.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Request.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Request~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Request.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/RequestTaskMap.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestTaskMap.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestTaskMap.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestTaskMap~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestTaskMap.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/Response.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Response.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Response.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Response~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Response.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/Session.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Session.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Session.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Session~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Session.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/SessionDelegate.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/SessionDelegate.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/SessionDelegate.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/SessionDelegate~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/SessionDelegate.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/URLConvertible+URLRequestConvertible.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLConvertible+URLRequestConvertible.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLConvertible+URLRequestConvertible.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLConvertible+URLRequestConvertible~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLConvertible+URLRequestConvertible.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/UploadRequest.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/UploadRequest.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/UploadRequest.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/UploadRequest~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/UploadRequest.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Core/WebSocketRequest.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/WebSocketRequest.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/WebSocketRequest.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/WebSocketRequest~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/WebSocketRequest.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Extensions/DispatchQueue+Alamofire.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DispatchQueue+Alamofire.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DispatchQueue+Alamofire.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DispatchQueue+Alamofire~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DispatchQueue+Alamofire.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Extensions/OperationQueue+Alamofire.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/OperationQueue+Alamofire.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/OperationQueue+Alamofire.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/OperationQueue+Alamofire~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/OperationQueue+Alamofire.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Extensions/Result+Alamofire.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Result+Alamofire.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Result+Alamofire.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Result+Alamofire~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Result+Alamofire.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Extensions/StringEncoding+Alamofire.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/StringEncoding+Alamofire.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/StringEncoding+Alamofire.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/StringEncoding+Alamofire~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/StringEncoding+Alamofire.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Extensions/URLRequest+Alamofire.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLRequest+Alamofire.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLRequest+Alamofire.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLRequest+Alamofire~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLRequest+Alamofire.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Extensions/URLSessionConfiguration+Alamofire.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLSessionConfiguration+Alamofire.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLSessionConfiguration+Alamofire.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLSessionConfiguration+Alamofire~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLSessionConfiguration+Alamofire.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/AlamofireExtended.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AlamofireExtended.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AlamofireExtended.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AlamofireExtended~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AlamofireExtended.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/AuthenticationInterceptor.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AuthenticationInterceptor.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AuthenticationInterceptor.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AuthenticationInterceptor~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/AuthenticationInterceptor.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/CachedResponseHandler.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/CachedResponseHandler.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/CachedResponseHandler.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/CachedResponseHandler~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/CachedResponseHandler.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/Combine.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Combine.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Combine.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Combine~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Combine.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/Concurrency.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Concurrency.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Concurrency.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Concurrency~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Concurrency.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/EventMonitor.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/EventMonitor.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/EventMonitor.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/EventMonitor~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/EventMonitor.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/MultipartFormData.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/MultipartFormData.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/MultipartFormData.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/MultipartFormData~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/MultipartFormData.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/MultipartUpload.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/MultipartUpload.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/MultipartUpload.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/MultipartUpload~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/MultipartUpload.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/NetworkReachabilityManager.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/NetworkReachabilityManager.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/NetworkReachabilityManager.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/NetworkReachabilityManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/NetworkReachabilityManager.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/RedirectHandler.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RedirectHandler.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RedirectHandler.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RedirectHandler~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RedirectHandler.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/RequestCompression.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestCompression.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestCompression.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestCompression~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestCompression.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/RequestInterceptor.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestInterceptor.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestInterceptor.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestInterceptor~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RequestInterceptor.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/ResponseSerialization.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ResponseSerialization.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ResponseSerialization.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ResponseSerialization~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ResponseSerialization.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/RetryPolicy.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RetryPolicy.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RetryPolicy.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RetryPolicy~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/RetryPolicy.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/ServerTrustEvaluation.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ServerTrustEvaluation.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ServerTrustEvaluation.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ServerTrustEvaluation~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/ServerTrustEvaluation.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/URLEncodedFormEncoder.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLEncodedFormEncoder.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLEncodedFormEncoder.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLEncodedFormEncoder~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/URLEncodedFormEncoder.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/checkouts/Alamofire/Source/Features/Validation.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Validation.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Validation.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Validation~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/Validation.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/DerivedSources/resource_bundle_accessor.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/resource_bundle_accessor.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/Alamofire.build/resource_bundle_accessor.swiftdeps"
+  }
+}

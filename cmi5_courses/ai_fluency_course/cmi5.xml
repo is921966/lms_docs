@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<courseStructure xmlns="https://w3id.org/xapi/profiles/cmi5/v1/CourseStructure.xsd">
+    <course id="course_ai_fluency_v1">
+        <title>
+            <langstring lang="ru">AI Fluency: Эффективное взаимодействие с ИИ</langstring>
+            <langstring lang="en">AI Fluency: Effective AI Interaction</langstring>
+        </title>
+        <description>
+            <langstring lang="ru">Практический курс по развитию навыков эффективной работы с системами искусственного интеллекта. Основан на методологии Anthropic для достижения AI Fluency.</langstring>
+            <langstring lang="en">Practical course on developing skills for effective work with AI systems. Based on Anthropic's methodology for achieving AI Fluency.</langstring>
+        </description>
+        
+        <!-- Модуль 1: Основы AI Fluency -->
+        <block id="block_1_foundations">
+            <title>
+                <langstring lang="ru">Модуль 1: Основы AI Fluency</langstring>
+            </title>
+            <description>
+                <langstring lang="ru">Понимание концепции AI Fluency и базовых принципов взаимодействия с ИИ</langstring>
+            </description>
+            
+            <au id="au_1_1_intro" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Что такое AI Fluency?</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Введение в концепцию свободного владения ИИ-инструментами</langstring>
+                </description>
+                <url>content/module1_intro.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_1_2_mindset" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Правильный подход к ИИ</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Формирование продуктивного мышления для работы с ИИ</langstring>
+                </description>
+                <url>content/module1_mindset.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_1_test" moveOn="passed" masteryScore="0.75">
+                <title>
+                    <langstring lang="ru">Тест: Основы AI Fluency</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Проверка понимания базовых концепций</langstring>
+                </description>
+                <url>assessments/test1_foundations.html</url>
+                <launchMethod>OwnWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/assessment</activityType>
+            </au>
+        </block>
+        
+        <!-- Модуль 2: Искусство написания промптов -->
+        <block id="block_2_prompting">
+            <title>
+                <langstring lang="ru">Модуль 2: Мастерство создания промптов</langstring>
+            </title>
+            <description>
+                <langstring lang="ru">Техники и стратегии эффективного общения с ИИ</langstring>
+            </description>
+            
+            <au id="au_2_1_basics" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Основы промпт-инжиниринга</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Структура эффективных запросов к ИИ</langstring>
+                </description>
+                <url>content/module2_prompt_basics.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_2_2_advanced" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Продвинутые техники промптинга</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Chain-of-thought, few-shot learning и другие методы</langstring>
+                </description>
+                <url>content/module2_advanced_prompting.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_2_3_practice" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Практикум: Создание промптов</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Интерактивные упражнения по написанию эффективных промптов</langstring>
+                </description>
+                <url>content/module2_practice.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/simulation</activityType>
+            </au>
+            
+            <au id="au_2_test" moveOn="passed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Тест: Промпт-инжиниринг</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Оценка навыков создания эффективных промптов</langstring>
+                </description>
+                <url>assessments/test2_prompting.html</url>
+                <launchMethod>OwnWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/assessment</activityType>
+            </au>
+        </block>
+        
+        <!-- Модуль 3: Практическое применение -->
+        <block id="block_3_applications">
+            <title>
+                <langstring lang="ru">Модуль 3: ИИ в повседневной работе</langstring>
+            </title>
+            <description>
+                <langstring lang="ru">Применение ИИ для решения реальных задач</langstring>
+            </description>
+            
+            <au id="au_3_1_writing" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">ИИ для создания контента</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Использование ИИ для написания текстов, email, документации</langstring>
+                </description>
+                <url>content/module3_writing.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_3_2_analysis" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">ИИ для анализа и исследований</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Анализ данных, исследование тем, подготовка отчетов</langstring>
+                </description>
+                <url>content/module3_analysis.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_3_3_coding" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">ИИ для программирования</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Использование ИИ-ассистентов для написания и отладки кода</langstring>
+                </description>
+                <url>content/module3_coding.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_3_4_case_studies" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Кейсы успешного применения</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Реальные примеры эффективного использования ИИ</langstring>
+                </description>
+                <url>content/module3_cases.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+        </block>
+        
+        <!-- Модуль 4: Этика и будущее -->
+        <block id="block_4_ethics_future">
+            <title>
+                <langstring lang="ru">Модуль 4: Этика и развитие навыков</langstring>
+            </title>
+            <description>
+                <langstring lang="ru">Ответственное использование ИИ и постоянное развитие</langstring>
+            </description>
+            
+            <au id="au_4_1_ethics" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Этические аспекты использования ИИ</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Ответственный подход, ограничения, проверка информации</langstring>
+                </description>
+                <url>content/module4_ethics.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_4_2_limitations" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Понимание ограничений ИИ</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Когда не стоит полагаться на ИИ и как проверять результаты</langstring>
+                </description>
+                <url>content/module4_limitations.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_4_3_future" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Развитие AI Fluency</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Как продолжать развивать навыки работы с ИИ</langstring>
+                </description>
+                <url>content/module4_future.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <au id="au_4_final" moveOn="passed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Итоговая оценка AI Fluency</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Комплексная проверка всех полученных навыков</langstring>
+                </description>
+                <url>assessments/final_assessment.html</url>
+                <launchMethod>OwnWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/assessment</activityType>
+            </au>
+        </block>
+        
+    </course>
+    
+    <vendor>
+        <name>AI Learning Lab</name>
+        <url>https://ailearning.example.com</url>
+        <email>support@ailearning.example.com</email>
+    </vendor>
+</courseStructure>

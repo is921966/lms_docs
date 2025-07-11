@@ -1,0 +1,61 @@
+{
+    "$schema": "https://raw.githubusercontent.com/infection/infection/master/resources/schema.json",
+    "source": {
+        "directories": [
+            "src/User/Domain",
+            "src/User/Application",
+            "src/Competency/Domain",
+            "src/Competency/Application",
+            "src/Learning/Domain",
+            "src/Learning/Application",
+            "src/Position/Domain",
+            "src/Position/Application",
+            "src/Program/Domain",
+            "src/Program/Application",
+            "src/Notification/Domain",
+            "src/Notification/Application"
+        ],
+        "excludes": [
+            "src/**/Infrastructure",
+            "src/**/Http/Controllers",
+            "src/**/Exceptions",
+            "src/**/Interfaces",
+            "src/**/Traits",
+            "src/**/ValueObjects/Identifiers.php"
+        ]
+    },
+    "logs": {
+        "text": "reports/mutation/infection.log",
+        "html": "reports/mutation/infection.html",
+        "summary": "reports/mutation/summary.log",
+        "json": "reports/mutation/infection.json",
+        "perMutator": "reports/mutation/per-mutator.md",
+        "badge": {
+            "branch": "main"
+        }
+    },
+    "mutators": {
+        "@default": true,
+        "@function_signature": false,
+        "Plus": {
+            "ignore": [
+                "src/**/Calculator*.php"
+            ]
+        },
+        "MethodCallRemoval": {
+            "ignore": [
+                "src/**/Logger*.php"
+            ]
+        }
+    },
+    "testFramework": "phpunit",
+    "testFrameworkOptions": "--configuration=phpunit.xml",
+    "minMsi": 80,
+    "minCoveredMsi": 90,
+    "timeout": 10,
+    "threads": 4,
+    "phpUnit": {
+        "configDir": ".",
+        "customPath": "./vendor/bin/phpunit"
+    }
+} 

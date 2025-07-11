@@ -49,7 +49,7 @@ final class DebugUITest: XCTestCase {
         // Проверяем наличие табов
         print("\n=== TAB BARS ===")
         print("Tab bars count: \(app.tabBars.count)")
-        if !app.tabBars.isEmpty {
+        if app.tabBars.count > 0 {
             let tabBar = app.tabBars.firstMatch
             print("Tab buttons count: \(tabBar.buttons.count)")
         }

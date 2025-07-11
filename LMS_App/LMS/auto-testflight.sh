@@ -59,16 +59,20 @@ upload_to_testflight() {
         CHANGELOG=$(cat TESTFLIGHT_CHANGELOG.md | sed 's/^#.*//g' | tr '\n' ' ')
     fi
     
-    # Увеличение build number
-    local CURRENT_BUILD=$(date +%Y%m%d%H%M)
+    # Получаем следующий номер билда
+    local CURRENT_BUILD=$(./scripts/get-next-build-number.sh increment)
     
     echo "🔨 Начинаю сборку и загрузку..."
     echo "   Build: $CURRENT_BUILD"
     echo "   Время: $TIME_SLOT"
     echo ""
     
+    # Обновляем номер билда в проекте
+    xcrun agvtool new-version -all $CURRENT_BUILD
+    
     # Запуск fastlane
     export TESTFLIGHT_CHANGELOG="$CHANGELOG"
+    export MANUAL_BUILD_NUMBER="$CURRENT_BUILD"
     
     # Сначала пробуем fastlane
     if command -v fastlane &> /dev/null; then
@@ -87,7 +91,7 @@ upload_to_testflight() {
         
         # Отправка уведомления (если настроено)
         if command -v terminal-notifier &> /dev/null; then
-            terminal-notifier -title "TestFlight Upload" -message "✅ $TIME_SLOT билд загружен успешно!" -sound default
+            terminal-notifier -title "TestFlight Upload" -message "✅ $TIME_SLOT билд $CURRENT_BUILD загружен успешно!" -sound default
         fi
     else
         log_upload "FAILED $TIME_SLOT build:$CURRENT_BUILD"
@@ -123,6 +127,8 @@ case "${1:-check}" in
             grep "^$TODAY" "$UPLOAD_LOG"
         fi
         
+        echo ""
+        echo "Текущий номер билда: $(./scripts/get-next-build-number.sh get)"
         echo ""
         echo "📅 История за последние 7 дней:"
         if [ -f "$UPLOAD_LOG" ]; then

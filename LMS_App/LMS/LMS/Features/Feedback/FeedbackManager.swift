@@ -140,8 +140,8 @@ class FeedbackManager: ObservableObject {
                 locale: Locale.current.identifier,
                 screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
             ),
-            userId: MockAuthService.shared.currentUser?.id,
-            userEmail: MockAuthService.shared.currentUser?.email,
+            userId: await MockAuthService.shared.currentUser?.id,
+            userEmail: await MockAuthService.shared.currentUser?.email,
             appContext: AppContext.current()
         )
 

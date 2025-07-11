@@ -354,7 +354,7 @@ final class ComprehensiveUITests: XCTestCase {
             XCTAssertTrue(app.staticTexts["Мои достижения"].waitForExistence(timeout: 5))
 
             // Проверяем наличие достижений
-            XCTAssertTrue(!app.images.isEmpty, "Должны быть иконки достижений")
+            XCTAssertTrue(app.images.count > 0, "Должны быть иконки достижений")
         }
     }
 
@@ -408,7 +408,7 @@ final class ComprehensiveUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Ожидающие одобрения"].waitForExistence(timeout: 5))
 
         // Проверяем наличие пользователей
-        if !app.cells.isEmpty {
+        if app.cells.count > 0 {
             // Выбираем первого пользователя
             app.cells.firstMatch.tap()
 
@@ -448,7 +448,7 @@ final class ComprehensiveUITests: XCTestCase {
                 app.cells["Уведомления"].tap()
 
                 // Проверяем настройки уведомлений
-                XCTAssertTrue(!app.switches.isEmpty, "Должны быть переключатели уведомлений")
+                XCTAssertTrue(app.switches.count > 0, "Должны быть переключатели уведомлений")
             }
         }
     }

@@ -39,6 +39,8 @@ enum Feature: String, CaseIterable {
     case competencies = "Компетенции"
     case positions = "Должности"
     case feed = "Новости"
+    case cmi5 = "Cmi5 Контент"  // НОВЫЙ МОДУЛЬ
+    case courseManagement = "Управление курсами"  // Управление курсами для админов
 
     // Будущие модули
     case certificates = "Сертификаты"
@@ -76,6 +78,8 @@ enum Feature: String, CaseIterable {
         case .competencies: return "lightbulb"
         case .positions: return "briefcase"
         case .feed: return "newspaper"
+        case .cmi5: return "cube.box"  // НОВАЯ ИКОНКА
+        case .courseManagement: return "folder.badge.gearshape"  // Иконка для управления курсами
         case .certificates: return "rosette"
         case .gamification: return "gamecontroller"
         case .notifications: return "bell"
@@ -111,6 +115,12 @@ enum Feature: String, CaseIterable {
         case .feed:
             // Wrapper view для FeedView чтобы передать environment object
             FeedWrapper()
+        case .cmi5:
+            // НОВЫЙ VIEW - Cmi5 управление
+            Cmi5ManagementView()
+        case .courseManagement:
+            // Управление курсами для админов
+            CourseManagementView()
         case .certificates:
             PlaceholderView(title: "Сертификаты", icon: "rosette")
         case .gamification:
@@ -200,6 +210,55 @@ struct PlaceholderView: View {
 
 /// Расширение для управления feature flags
 extension Feature {
+    /// Отображаемое имя модуля
+    var displayName: String {
+        return self.rawValue
+    }
+    
+    /// Описание модуля
+    var description: String {
+        switch self {
+        case .auth: return "Вход в систему"
+        case .users: return "Управление пользователями"
+        case .courses: return "Просмотр и прохождение курсов"
+        case .profile: return "Личный кабинет пользователя"
+        case .settings: return "Настройки приложения"
+        case .tests: return "Прохождение тестов и экзаменов"
+        case .analytics: return "Статистика и отчеты"
+        case .onboarding: return "Программы адаптации"
+        case .competencies: return "Управление компетенциями"
+        case .positions: return "Управление должностями"
+        case .feed: return "Лента новостей и объявлений"
+        case .cmi5: return "Интерактивные учебные материалы"
+        case .courseManagement: return "Управление курсами и модулями"
+        case .certificates: return "Выдача сертификатов"
+        case .gamification: return "Игровые механики"
+        case .notifications: return "Push-уведомления"
+        }
+    }
+    
+    /// Цвет модуля
+    var color: Color {
+        switch self {
+        case .auth: return .blue
+        case .users: return .orange
+        case .courses: return .green
+        case .profile: return .purple
+        case .settings: return .gray
+        case .tests: return .red
+        case .analytics: return .indigo
+        case .onboarding: return .yellow
+        case .competencies: return .teal
+        case .positions: return .brown
+        case .feed: return .pink
+        case .cmi5: return .cyan
+        case .courseManagement: return .mint
+        case .certificates: return .purple
+        case .gamification: return .orange
+        case .notifications: return .red
+        }
+    }
+    
     /// Включить модуль
     static func enable(_ feature: Feature) {
         UserDefaults.standard.set(true, forKey: "feature_\(feature.rawValue)")
@@ -230,11 +289,13 @@ extension Feature {
         Feature.enable(.competencies)
         Feature.enable(.positions)
         Feature.enable(.feed)
+        Feature.enable(.cmi5)  // ВКЛЮЧАЕМ CMI5
 
         print("✅ Готовые модули включены:")
         print("  - Компетенции")
         print("  - Должности")
         print("  - Новости")
+        print("  - Cmi5 Контент")  // НОВЫЙ МОДУЛЬ
 
         // КРИТИЧЕСКИ ВАЖНО: Уведомляем UI об изменениях
         FeatureRegistryManager.shared.refresh()

@@ -33,9 +33,22 @@
 		B8E410E02E0AE6EA00ED8A6F /* LMSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LMSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B84DF62E2E1D97C5001587AF /* Exceptions for "LMS" folder in "LMS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				App/Info.plist,
+			);
+			target = B8E410C82E0AE6E900ED8A6F /* LMS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B8E410CB2E0AE6E900ED8A6F /* LMS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B84DF62E2E1D97C5001587AF /* Exceptions for "LMS" folder in "LMS" target */,
+			);
 			path = LMS;
 			sourceTree = "<group>";
 		};

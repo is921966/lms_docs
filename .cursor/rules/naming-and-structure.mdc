@@ -1,347 +1,357 @@
-# Naming and Structure Rules for LMS iOS App
+---
+description:
+globs:
+alwaysApply: false
+---
+# Naming and Project Structure Guidelines
 
 ## Swift Naming Conventions
 
-### General Principles
-- **Clarity at the point of use** is the most important goal
-- **Clarity is more important than brevity**
-- **Use camelCase** for function and variable names
-- **Use PascalCase** for types and protocols
-- **Avoid abbreviations** unless they are widely known (URL, ID, API)
+### General Rules
+Придерживайтесь стандартов кодирования Swift при именовании:
+- **Types** (classes, structs, enums, protocols): `UpperCamelCase`
+- **Variables, functions, properties**: `lowerCamelCase`
+- **Constants**: `lowerCamelCase` (not UPPER_SNAKE_CASE)
+- **Acronyms**: Treat as words (e.g., `UrlSession` ❌, `URLSession` ✅)
 
-### Types and Protocols
+### Type Naming
 ```swift
-// GOOD - Clear, descriptive names
-protocol AuthenticationServiceProtocol { }
-struct UserCredentials { }
-class CourseListViewModel { }
-enum NetworkError { }
+// ✅ Good
+struct UserProfile { }
+class NetworkManager { }
+enum PaymentStatus { }
+protocol Cacheable { }
 
-// BAD - Unclear abbreviations
-protocol AuthSvcProt { }  // ❌
-struct UserCreds { }      // ❌
-class CLViewModel { }     // ❌
+// ❌ Bad
+struct user_profile { }
+class NetworkMngr { }
+enum payment_status { }
+protocol CacheableProtocol { } // избегайте суффикса Protocol
 ```
 
-### Functions and Methods
+### Variable and Function Naming
 ```swift
-// GOOD - Read like English sentences
-func enrollUser(in course: Course) -> EnrollmentResult
-func calculateProgress(for modules: [Module]) -> Double
-func fetchCourses(matching query: String) async throws -> [Course]
+// ✅ Good
+var userEmail: String
+func calculateTotalPrice(for items: [Item]) -> Decimal
+func configure(with settings: Settings)
 
-// BAD - Unclear or redundant
-func enroll(_ user: User, _ course: Course)  // ❌ Missing labels
-func getCoursesData()                         // ❌ Redundant "Data"
-func calc(_ m: [Module])                      // ❌ Abbreviated
+// ❌ Bad
+var usrEml: String
+func calc(x: [Item]) -> Decimal
+func config(_ s: Settings)
 ```
 
-### Properties and Variables
-```swift
-// GOOD - Clear intent
-var isLoading = false
-let maximumRetryCount = 3
-private var cachedCourses: [Course] = []
+## Apple API Design Guidelines
 
-// BAD - Unclear or Hungarian notation
-var flag = false        // ❌ What flag?
-let kMaxRetries = 3     // ❌ Hungarian notation
-var arrCourses: [Course] // ❌ Type prefix
+### Clarity at the Point of Use
+Имена должны быть выразительными и читаться как фраза:
+```swift
+// ✅ Good - читается как предложение
+x.insert(y, at: z)          // "x, insert y at z"
+x.subviews(havingColor: y)  // "x's subviews having color y"
+x.capitalizingNouns()       // "x, capitalizing nouns"
+
+// ❌ Bad - неясное намерение
+x.insert(y, z)
+x.subviews(color: y)
+x.nounCapitalize()
 ```
 
-### Boolean Naming
+### Use of Prepositions
 ```swift
-// GOOD - Reads as assertion
-var isAuthenticated: Bool
-var hasCompletedOnboarding: Bool
-var canAccessPremiumContent: Bool
-var shouldRefreshData: Bool
+// ✅ Good
+func move(from start: Point, to end: Point)
+func fadeIn(with duration: TimeInterval)
+func convert(_ value: Double, from source: Unit, to target: Unit)
 
-// BAD - Unclear state
-var authenticated: Bool    // ❌ Is this a command?
-var completed: Bool       // ❌ Completed what?
-var premium: Bool        // ❌ Is premium what?
+// ❌ Bad
+func move(start: Point, end: Point)
+func fadeIn(duration: TimeInterval)
+func convert(_ value: Double, source: Unit, target: Unit)
 ```
 
-### Collection Naming
+### Boolean Properties and Functions
 ```swift
-// GOOD - Plural for arrays, descriptive for dictionaries
-var courses: [Course]
-var enrolledUsers: Set<User>
-var coursesByCategory: [Category: [Course]]
-var userProgress: [UserID: CourseProgress]
+// ✅ Good - читаются как утверждения
+var isEnabled: Bool
+var hasCompleted: Bool
+func canEdit() -> Bool
+func shouldRefresh() -> Bool
 
-// BAD - Singular or unclear
-var course: [Course]           // ❌ Singular name
-var dict: [String: Any]       // ❌ What dictionary?
-var userData: [UserID: User]  // ❌ Redundant "Data"
+// ❌ Bad
+var enabled: Bool
+var completed: Bool
+func edit() -> Bool
+func refresh() -> Bool
 ```
 
 ## Project Structure
 
-### Directory Organization
+### Модульная организация
+Структурируйте проект по функциональным областям и слоям:
+
 ```
-LMS_App/LMS/
-├── App/                          # App lifecycle and configuration
-│   ├── LMSApp.swift             # Main app entry point
-│   ├── AppDelegate.swift        # App delegate if needed
-│   └── Configuration/           # App configuration files
-│       ├── Config.swift
-│       └── Environment.swift
-├── Core/                        # Core business logic (Domain layer)
-│   ├── Entities/               # Domain entities
-│   │   ├── User.swift
-│   │   ├── Course.swift
-│   │   └── Competency.swift
-│   ├── UseCases/              # Business rules
-│   │   ├── Authentication/
-│   │   ├── Enrollment/
-│   │   └── Progress/
-│   └── Interfaces/            # Protocol definitions
-│       ├── Repositories/
-│       └── Services/
-├── Data/                       # Data layer
-│   ├── Repositories/          # Repository implementations
-│   │   ├── UserRepository.swift
-│   │   └── CourseRepository.swift
-│   ├── Network/              # API clients
-│   │   ├── APIClient.swift
-│   │   ├── Endpoints/
-│   │   └── DTOs/
-│   └── Persistence/          # Local storage
-│       ├── CoreData/
-│       └── UserDefaults/
-├── Presentation/              # UI layer
-│   ├── Views/                # SwiftUI views
-│   │   ├── Authentication/
-│   │   │   ├── LoginView.swift
-│   │   │   └── Components/
-│   │   ├── Courses/
-│   │   │   ├── CourseListView.swift
-│   │   │   ├── CourseDetailView.swift
-│   │   │   └── Components/
-│   │   └── Shared/          # Reusable views
-│   │       ├── LoadingView.swift
-│   │       └── ErrorView.swift
-│   ├── ViewModels/          # View models
-│   │   ├── LoginViewModel.swift
-│   │   └── CourseListViewModel.swift
-│   └── Navigation/          # Navigation logic
-│       └── AppCoordinator.swift
-├── Design/                    # Design system
-│   ├── Tokens/              # Design tokens
-│   │   ├── Colors.swift
-│   │   ├── Typography.swift
-│   │   └── Spacing.swift
-│   ├── Theme/               # Theme management
-│   │   └── ThemeEnvironment.swift
-│   └── Components/          # Design components
-│       ├── Buttons/
-│       └── Cards/
-├── Resources/                # Assets and resources
-│   ├── Assets.xcassets
-│   ├── Localizable.strings
-│   └── LaunchScreen.storyboard
-├── Utilities/               # Helper functions and extensions
-│   ├── Extensions/
-│   │   ├── View+Extensions.swift
-│   │   └── String+Extensions.swift
-│   └── Helpers/
-│       ├── DateFormatter+Helpers.swift
-│       └── ValidationHelper.swift
-└── Tests/                   # Test files
-    ├── UnitTests/
-    ├── IntegrationTests/
-    └── UITests/
+LMS_App/
+├── LMS/
+│   ├── App/                      # App lifecycle, configuration
+│   │   ├── LMSApp.swift
+│   │   ├── AppDelegate.swift
+│   │   └── Configuration/
+│   │
+│   ├── Domain/                   # Business logic layer
+│   │   ├── Entities/
+│   │   ├── UseCases/
+│   │   ├── Repositories/
+│   │   └── ValueObjects/
+│   │
+│   ├── Application/              # Application services
+│   │   ├── Services/
+│   │   ├── DTOs/
+│   │   └── Mappers/
+│   │
+│   ├── Presentation/             # UI layer
+│   │   ├── Screens/              # Grouped by feature
+│   │   │   ├── Authentication/
+│   │   │   │   ├── Login/
+│   │   │   │   │   ├── LoginView.swift
+│   │   │   │   │   └── LoginViewModel.swift
+│   │   │   │   └── Registration/
+│   │   │   │
+│   │   │   ├── Courses/
+│   │   │   │   ├── List/
+│   │   │   │   └── Details/
+│   │   │   │
+│   │   │   └── Profile/
+│   │   │
+│   │   ├── Components/           # Reusable UI components
+│   │   │   ├── Buttons/
+│   │   │   ├── Cards/
+│   │   │   └── Forms/
+│   │   │
+│   │   └── DesignSystem/         # UI tokens and themes
+│   │       ├── Tokens.swift
+│   │       ├── Theme.swift
+│   │       └── Modifiers/
+│   │
+│   ├── Infrastructure/           # External dependencies
+│   │   ├── Network/
+│   │   │   ├── APIClient.swift
+│   │   │   ├── Endpoints/
+│   │   │   └── Interceptors/
+│   │   │
+│   │   ├── Persistence/
+│   │   │   ├── CoreData/
+│   │   │   └── UserDefaults/
+│   │   │
+│   │   └── DI/                   # Dependency Injection
+│   │       └── AppContainer.swift
+│   │
+│   ├── Resources/                # Assets, localization
+│   │   ├── Assets.xcassets
+│   │   ├── Localizable.xcstrings
+│   │   └── Fonts/
+│   │
+│   └── Support/                  # Utilities, extensions
+│       ├── Extensions/
+│       ├── Helpers/
+│       └── Constants/
+│
+├── LMSTests/                     # Unit tests
+│   ├── Domain/
+│   ├── Application/
+│   ├── Presentation/
+│   └── Infrastructure/
+│
+├── LMSUITests/                   # UI tests
+│   ├── Screens/
+│   ├── Helpers/
+│   └── TestData/
+│
+└── LMSSnapshotTests/            # Snapshot tests
 ```
 
-### File Naming Conventions
-
-#### View Files
+### Правило "один файл - одна сущность"
 ```swift
-// Pattern: [Feature][Type]View.swift
-LoginView.swift           // Main view
-LoginFormView.swift       // Specific form
-LoginButtonView.swift     // Component
+// ✅ Good - User.swift
+struct User {
+    let id: UUID
+    let email: String
+    let name: String
+}
 
-// Components in subfolders
-Components/CourseCard.swift
-Components/ProgressBar.swift
+// ❌ Bad - Models.swift containing multiple types
+struct User { }
+struct Course { }
+struct Lesson { }
 ```
 
-#### ViewModel Files
+### Группировка связанных файлов
+```
+// ✅ Good - связанные файлы рядом
+CourseList/
+├── CourseListView.swift
+├── CourseListViewModel.swift
+├── CourseListModels.swift
+└── CourseRowView.swift
+
+// ❌ Bad - разбросаны по проекту
+Views/CourseListView.swift
+ViewModels/CourseListViewModel.swift
+Models/CourseListModels.swift
+Components/CourseRowView.swift
+```
+
+## Test Organization
+
+### Зеркальная структура
+Тесты должны повторять структуру основного кода:
+```
+// Source
+LMS/Domain/Entities/User.swift
+LMS/Domain/UseCases/LoginUserUseCase.swift
+
+// Tests
+LMSTests/Domain/Entities/UserTests.swift
+LMSTests/Domain/UseCases/LoginUserUseCaseTests.swift
+```
+
+### Test Naming
 ```swift
-// Pattern: [Feature]ViewModel.swift
-LoginViewModel.swift
-CourseListViewModel.swift
-ProfileViewModel.swift
+// Pattern: test_[Method]_[State]_[ExpectedResult]
+func test_login_withValidCredentials_returnsUser()
+func test_login_withInvalidEmail_throwsValidationError()
+func test_calculatePrice_withDiscount_appliesCorrectAmount()
 
-// Avoid redundancy
-CourseViewModel.swift     // ✅ For CourseView
-CourseViewViewModel.swift // ❌ Redundant
+// BDD Style
+func test_givenValidUser_whenLogin_thenReturnsToken()
 ```
 
-#### Model Files
-```swift
-// Entities - singular
-User.swift
-Course.swift
-Module.swift
+## File Templates
 
-// DTOs - with DTO suffix
-UserDTO.swift
-CourseResponseDTO.swift
-
-// Value Objects - descriptive
-EmailAddress.swift
-CourseProgress.swift
-```
-
-#### Service and Repository Files
-```swift
-// Services - with Service suffix
-AuthenticationService.swift
-NetworkService.swift
-CacheService.swift
-
-// Repositories - with Repository suffix
-UserRepository.swift
-CourseRepository.swift
-
-// Protocols - with Protocol suffix
-UserRepositoryProtocol.swift
-AuthServiceProtocol.swift
-```
-
-## Code Organization Within Files
-
-### Standard File Structure
+### View File Template
 ```swift
 //
-//  FileName.swift
+//  LoginView.swift
 //  LMS
 //
-//  Created by Developer on MM/DD/YY.
+//  Created by [Author] on [Date].
 //
 
 import SwiftUI
-import Combine
 
-// MARK: - Protocols
-
-protocol SomeProtocol {
-    // Protocol definition
-}
-
-// MARK: - Main Type
-
-struct MainView: View {
-    // MARK: - Properties
+struct LoginView: View {
+    @StateObject private var viewModel: LoginViewModel
     
-    @StateObject private var viewModel: MainViewModel
-    @State private var isLoading = false
-    
-    // MARK: - Body
-    
-    var body: some View {
-        content
-            .onAppear(perform: viewModel.loadData)
+    init(viewModel: LoginViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
-    // MARK: - Subviews
-    
-    private var content: some View {
-        // Content implementation
-    }
-}
-
-// MARK: - Supporting Types
-
-private struct SupportingView: View {
     var body: some View {
         // Implementation
     }
 }
 
-// MARK: - Preview
-
+// MARK: - Previews
 #if DEBUG
-struct MainView_Previews: PreviewProvider {
+struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        MainView()
+        LoginView(viewModel: .preview)
     }
 }
 #endif
 ```
 
-### Extension Organization
+### ViewModel File Template
 ```swift
-// MARK: - String Extensions
+//
+//  LoginViewModel.swift
+//  LMS
+//
+//  Created by [Author] on [Date].
+//
 
-extension String {
-    // Group related functionality
+import Foundation
+import Combine
+
+@MainActor
+final class LoginViewModel: ObservableObject {
+    // MARK: - Published Properties
+    @Published var email = ""
+    @Published var password = ""
+    @Published var isLoading = false
+    @Published var error: Error?
     
-    // MARK: Validation
+    // MARK: - Dependencies
+    private let loginUseCase: LoginUserUseCaseProtocol
     
-    var isValidEmail: Bool {
-        // Implementation
+    // MARK: - Initialization
+    init(loginUseCase: LoginUserUseCaseProtocol) {
+        self.loginUseCase = loginUseCase
     }
     
-    var isValidPassword: Bool {
-        // Implementation
-    }
-    
-    // MARK: Formatting
-    
-    func formatted(as format: StringFormat) -> String {
+    // MARK: - Methods
+    func login() async {
         // Implementation
     }
 }
+
+// MARK: - Preview Support
+#if DEBUG
+extension LoginViewModel {
+    static var preview: LoginViewModel {
+        LoginViewModel(loginUseCase: MockLoginUseCase())
+    }
+}
+#endif
 ```
 
-## Module Organization
+## Constants and Magic Numbers
 
-### Feature Modules
-Each feature should be self-contained:
-```
-Features/Authentication/
-├── Domain/
-│   ├── Entities/
-│   │   └── Credentials.swift
-│   └── UseCases/
-│       └── LoginUseCase.swift
-├── Data/
-│   ├── AuthRepository.swift
-│   └── AuthAPIClient.swift
-├── Presentation/
-│   ├── Views/
-│   │   ├── LoginView.swift
-│   │   └── Components/
-│   └── ViewModels/
-│       └── LoginViewModel.swift
-└── DI/
-    └── AuthenticationContainer.swift
+### Use Named Constants
+```swift
+// ✅ Good
+enum Layout {
+    static let defaultPadding: CGFloat = 16
+    static let cornerRadius: CGFloat = 12
+    static let animationDuration: TimeInterval = 0.3
+}
+
+view.padding(Layout.defaultPadding)
+
+// ❌ Bad
+view.padding(16)
 ```
 
-### Shared Modules
-```
-Shared/
-├── UI/
-│   ├── Components/    # Reusable UI components
-│   ├── Modifiers/     # Custom view modifiers
-│   └── Styles/        # Button styles, etc.
-├── Networking/
-│   ├── Base/          # Base networking classes
-│   └── Interceptors/  # Request/response interceptors
-└── Extensions/        # Global extensions
+### API Constants
+```swift
+// ✅ Good
+enum API {
+    static let baseURL = URL(string: "https://api.example.com/v1")!
+    
+    enum Timeout {
+        static let `default`: TimeInterval = 30
+        static let upload: TimeInterval = 300
+    }
+    
+    enum HTTPHeader {
+        static let contentType = "Content-Type"
+        static let authorization = "Authorization"
+    }
+}
+
+// ❌ Bad
+let url = "https://api.example.com/v1/users"
+request.timeoutInterval = 30
 ```
 
 ## Import Organization
 
-### Import Order
+### Order and Grouping
 ```swift
 // 1. System frameworks
 import Foundation
+import UIKit
 import SwiftUI
 import Combine
 
@@ -349,171 +359,50 @@ import Combine
 import Alamofire
 import SwiftyJSON
 
-// 3. Internal modules
-import Core
-import Data
-import Design
+// 3. Local modules
+import Domain
+import Application
 
-// 4. Test imports (only in test files)
+// 4. Test imports (in test files)
 @testable import LMS
+import XCTest
 ```
 
-## Constants and Magic Numbers
+## Documentation Comments
 
-### Global Constants
+### Use Swift Documentation Format
 ```swift
-// Constants.swift
-enum Constants {
-    enum API {
-        static let baseURL = "https://api.lms.com"
-        static let timeout: TimeInterval = 30
-    }
-    
-    enum UI {
-        static let animationDuration = 0.3
-        static let cornerRadius: CGFloat = 8
-    }
-    
-    enum Validation {
-        static let minimumPasswordLength = 8
-        static let maximumNameLength = 50
-    }
+/// Authenticates a user with the provided credentials.
+/// - Parameters:
+///   - email: The user's email address
+///   - password: The user's password
+/// - Returns: An authenticated User object
+/// - Throws: `AuthenticationError` if credentials are invalid
+func authenticate(email: String, password: String) async throws -> User {
+    // Implementation
 }
 ```
 
-### Local Constants
+### MARK Comments for Organization
 ```swift
-struct CourseListView: View {
-    // Local constants at the top
-    private let gridColumns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-    private let itemSpacing: CGFloat = 16
-    
-    var body: some View {
-        // Use constants
-        LazyVGrid(columns: gridColumns, spacing: itemSpacing) {
-            // Content
-        }
-    }
-}
+// MARK: - Properties
+// MARK: - Lifecycle
+// MARK: - Public Methods
+// MARK: - Private Methods
+// MARK: - Actions
+// MARK: - Helpers
 ```
 
-## Type Safety
+## AI Code Generation Rules
 
-### Strong Typing Over Primitives
-```swift
-// GOOD - Type-safe identifiers
-struct UserID: Hashable {
-    let value: String
-}
+When generating code:
 
-struct CourseID: Hashable {
-    let value: String
-}
+1. **Follow Swift conventions** strictly
+2. **Use descriptive names** - no abbreviations
+3. **Organize by feature** not by type
+4. **One type per file** always
+5. **Mirror test structure** to source
+6. **Document public APIs** with doc comments
+7. **Group related functionality** with MARK comments
 
-func enrollUser(userId: UserID, in courseId: CourseID)
-
-// BAD - Primitive obsession
-func enrollUser(userId: String, in courseId: String) // ❌ Easy to mix up
-```
-
-### Enum for Fixed Values
-```swift
-// GOOD - Type-safe options
-enum UserRole {
-    case student
-    case instructor
-    case admin
-}
-
-enum CourseStatus {
-    case draft
-    case published
-    case archived
-}
-
-// BAD - String literals
-let role = "student"  // ❌ Typo-prone
-let status = "active" // ❌ What are valid values?
-```
-
-## Comments and Documentation
-
-### Documentation Comments
-```swift
-/// Manages user authentication and session state
-///
-/// This service handles login, logout, and token refresh operations.
-/// It maintains the current authentication state and notifies observers
-/// of any changes.
-class AuthenticationService {
-    
-    /// Authenticates a user with the provided credentials
-    /// - Parameters:
-    ///   - email: The user's email address
-    ///   - password: The user's password
-    /// - Returns: Authenticated user information
-    /// - Throws: `AuthError` if authentication fails
-    func login(email: String, password: String) async throws -> User {
-        // Implementation
-    }
-}
-```
-
-### Inline Comments
-```swift
-// GOOD - Explains why, not what
-// Delay to ensure animation completes before navigation
-DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-    navigator.push(.courseDetail(course))
-}
-
-// BAD - Explains what (obvious from code)
-// Set loading to true
-isLoading = true  // ❌ Redundant
-```
-
-## Error Handling
-
-### Error Types
-```swift
-// Define specific error types
-enum NetworkError: LocalizedError {
-    case noInternet
-    case timeout
-    case serverError(Int)
-    case decodingFailed
-    
-    var errorDescription: String? {
-        switch self {
-        case .noInternet:
-            return "No internet connection"
-        case .timeout:
-            return "Request timed out"
-        case .serverError(let code):
-            return "Server error: \(code)"
-        case .decodingFailed:
-            return "Failed to process server response"
-        }
-    }
-}
-```
-
-## AI Code Generation Instructions
-
-When generating code structure:
-
-1. **Follow Swift API Design Guidelines** strictly
-2. **Use descriptive names** - clarity over brevity
-3. **Organize by feature** - keep related code together
-4. **One type per file** - except small supporting types
-5. **Group with MARK comments** - improve navigation
-6. **Use type safety** - prefer custom types over primitives
-7. **Document public APIs** - use documentation comments
-8. **Keep files focused** - single responsibility
-9. **Consistent ordering** - properties, init, methods
-10. **Meaningful groups** - organize large codebases by feature
-
-Remember: Good structure makes code self-documenting and easy to navigate. 
+Remember: Good naming and organization makes code self-documenting and reduces cognitive load for the entire team.

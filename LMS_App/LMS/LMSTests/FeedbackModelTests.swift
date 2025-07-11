@@ -11,6 +11,7 @@ import XCTest
 class FeedbackModelTests: XCTestCase {
     // MARK: - Test Properties
     private var sampleDeviceInfo: DeviceInfo!
+    private var sampleAppContext: AppContext!
 
     override func setUpWithError() throws {
         super.setUp()
@@ -21,8 +22,17 @@ class FeedbackModelTests: XCTestCase {
             osVersion: "18.5",
             appVersion: "1.0.0",
             buildNumber: "100",
-            screenSize: "414x896",
-            locale: "en_US"
+            locale: "en_US",
+            screenSize: "414x896"
+        )
+        
+        // Create sample app context
+        sampleAppContext = AppContext(
+            currentScreen: "Home",
+            previousScreen: "Login",
+            sessionDuration: 300,
+            memoryUsage: 1024 * 1024 * 50, // 50MB
+            batteryLevel: 0.75
         )
     }
 
@@ -34,24 +44,30 @@ class FeedbackModelTests: XCTestCase {
         let feedbackType = "bug"
         let userId = "user123"
         let userEmail = "test@example.com"
+        let screenshot = "base64encodedscreenshot"
 
         // When
         let feedback = FeedbackModel(
             type: feedbackType,
             text: feedbackText,
+            screenshot: screenshot,
             deviceInfo: sampleDeviceInfo,
             userId: userId,
-            userEmail: userEmail
+            userEmail: userEmail,
+            appContext: sampleAppContext
         )
 
         // Then
         XCTAssertNotNil(feedback.id)
         XCTAssertEqual(feedback.type, feedbackType)
         XCTAssertEqual(feedback.text, feedbackText)
+        XCTAssertEqual(feedback.screenshot, screenshot)
         XCTAssertEqual(feedback.deviceInfo.model, sampleDeviceInfo.model)
         XCTAssertEqual(feedback.userId, userId)
         XCTAssertEqual(feedback.userEmail, userEmail)
         XCTAssertNotNil(feedback.timestamp)
+        XCTAssertNotNil(feedback.appContext)
+        XCTAssertEqual(feedback.appContext?.currentScreen, "Home")
     }
 
     func testFeedbackModelCodable() throws {
@@ -59,9 +75,11 @@ class FeedbackModelTests: XCTestCase {
         let feedback = FeedbackModel(
             type: "bug",
             text: "Test encoding/decoding",
+            screenshot: "base64screenshot",
             deviceInfo: sampleDeviceInfo,
             userId: "test-user",
-            userEmail: "test@test.com"
+            userEmail: "test@test.com",
+            appContext: sampleAppContext
         )
 
         // When - Encode
@@ -81,8 +99,10 @@ class FeedbackModelTests: XCTestCase {
         XCTAssertEqual(decodedFeedback.id, feedback.id)
         XCTAssertEqual(decodedFeedback.type, feedback.type)
         XCTAssertEqual(decodedFeedback.text, feedback.text)
+        XCTAssertEqual(decodedFeedback.screenshot, feedback.screenshot)
         XCTAssertEqual(decodedFeedback.userId, feedback.userId)
         XCTAssertEqual(decodedFeedback.userEmail, feedback.userEmail)
+        XCTAssertEqual(decodedFeedback.appContext?.currentScreen, feedback.appContext?.currentScreen)
     }
 
     func testDeviceInfoInitialization() {
@@ -91,7 +111,9 @@ class FeedbackModelTests: XCTestCase {
             model: "iPhone 16 Pro",
             osVersion: "18.5",
             appVersion: "1.0.0",
-            buildNumber: "100"
+            buildNumber: "100",
+            locale: "en_US",
+            screenSize: "414x896"
         )
 
         // Then
@@ -99,8 +121,41 @@ class FeedbackModelTests: XCTestCase {
         XCTAssertEqual(deviceInfo.osVersion, "18.5")
         XCTAssertEqual(deviceInfo.appVersion, "1.0.0")
         XCTAssertEqual(deviceInfo.buildNumber, "100")
-        XCTAssertNotNil(deviceInfo.screenSize)
-        XCTAssertNotNil(deviceInfo.locale)
+        XCTAssertEqual(deviceInfo.locale, "en_US")
+        XCTAssertEqual(deviceInfo.screenSize, "414x896")
+    }
+    
+    func testAppContextInitialization() {
+        // When
+        let appContext = AppContext(
+            currentScreen: "Settings",
+            previousScreen: "Profile",
+            sessionDuration: 600,
+            memoryUsage: 1024 * 1024 * 100,
+            batteryLevel: 0.5
+        )
+        
+        // Then
+        XCTAssertEqual(appContext.currentScreen, "Settings")
+        XCTAssertEqual(appContext.previousScreen, "Profile")
+        XCTAssertEqual(appContext.sessionDuration, 600)
+        XCTAssertEqual(appContext.memoryUsage, 1024 * 1024 * 100)
+        XCTAssertEqual(appContext.batteryLevel, 0.5)
+    }
+    
+    func testFeedbackModelWithoutOptionalFields() {
+        // When
+        let feedback = FeedbackModel(
+            type: "suggestion",
+            text: "Minimal feedback",
+            deviceInfo: sampleDeviceInfo
+        )
+        
+        // Then
+        XCTAssertNil(feedback.screenshot)
+        XCTAssertNil(feedback.userId)
+        XCTAssertNil(feedback.userEmail)
+        XCTAssertNil(feedback.appContext)
     }
 
     func testFeedbackModelPerformance() {

@@ -1,0 +1,32 @@
+{
+  "name": "ai-fluency-course",
+  "version": "1.0.0",
+  "title": "AI Fluency: Эффективное взаимодействие с ИИ",
+  "description": "Практический курс по развитию навыков эффективной работы с системами искусственного интеллекта",
+  "author": "AI Learning Lab",
+  "language": "ru",
+  "duration": "PT2H30M",
+  "keywords": ["AI", "искусственный интеллект", "промпт-инжиниринг", "ChatGPT", "Claude", "productivity"],
+  "targetAudience": "Профессионалы, желающие повысить эффективность работы с ИИ",
+  "prerequisites": "Базовые навыки работы с компьютером и интернетом",
+  "objectives": [
+    "Понять концепцию AI Fluency",
+    "Освоить принципы эффективного промптинга",
+    "Научиться применять ИИ для решения рабочих задач",
+    "Развить критическое мышление при работе с ИИ",
+    "Изучить этические аспекты использования ИИ"
+  ],
+  "structure": {
+    "modules": 4,
+    "activities": 15,
+    "assessments": 3,
+    "passingScore": 0.75
+  },
+  "basedOn": "https://www.anthropic.com/ai-fluency",
+  "metadata": {
+    "created": "2025-07-10",
+    "lastModified": "2025-07-10",
+    "format": "cmi5",
+    "conformance": "https://w3id.org/xapi/profiles/cmi5/v1/"
+  }
+} 

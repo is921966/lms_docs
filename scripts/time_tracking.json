@@ -355,7 +355,176 @@
       "sprint_number": 43,
       "day_in_sprint": 5,
       "start_time": "2025-07-03T08:09:12.367584",
-      "date": "2025-07-03"
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T08:16:41.869074",
+      "duration_hours": 0.12,
+      "duration_formatted": "7м"
+    },
+    "day_131": {
+      "calendar_day": 131,
+      "project_day": 216,
+      "sprint_number": 44,
+      "day_in_sprint": 1,
+      "start_time": "2025-07-03T08:19:11.405346",
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T08:26:06.359258",
+      "duration_hours": 0.12,
+      "duration_formatted": "6м"
+    },
+    "day_132": {
+      "calendar_day": 132,
+      "project_day": 217,
+      "sprint_number": 44,
+      "day_in_sprint": 2,
+      "start_time": "2025-07-03T08:27:35.612580",
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T08:34:34.822224",
+      "duration_hours": 0.12,
+      "duration_formatted": "6м"
+    },
+    "day_133": {
+      "calendar_day": 133,
+      "project_day": 218,
+      "sprint_number": 44,
+      "day_in_sprint": 3,
+      "start_time": "2025-07-03T08:35:31.348178",
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T09:05:37.534409",
+      "duration_hours": 0.5,
+      "duration_formatted": "30м"
+    },
+    "day_134": {
+      "calendar_day": 134,
+      "project_day": 219,
+      "sprint_number": 44,
+      "day_in_sprint": 4,
+      "start_time": "2025-07-03T09:08:43.168995",
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T09:19:12.547212",
+      "duration_hours": 0.17,
+      "duration_formatted": "10м"
+    },
+    "day_135": {
+      "calendar_day": 135,
+      "project_day": 220,
+      "sprint_number": 44,
+      "day_in_sprint": 5,
+      "start_time": "2025-07-03T09:22:29.688685",
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T18:07:59.335987",
+      "duration_hours": 8.76,
+      "duration_formatted": "8ч 45м"
+    },
+    "day_136": {
+      "calendar_day": 136,
+      "project_day": 221,
+      "sprint_number": 45,
+      "day_in_sprint": 1,
+      "start_time": "2025-07-03T09:29:16.839906",
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T09:40:19.172530",
+      "duration_hours": 0.18,
+      "duration_formatted": "11м"
+    },
+    "day_137": {
+      "calendar_day": 137,
+      "project_day": 222,
+      "sprint_number": 45,
+      "day_in_sprint": 2,
+      "start_time": "2025-07-03T11:19:31.274826",
+      "date": "2025-07-03",
+      "end_time": "2025-07-03T11:23:51.156746",
+      "duration_hours": 0.07,
+      "duration_formatted": "4м"
+    },
+    "day_140": {
+      "calendar_day": 140,
+      "project_day": 225,
+      "sprint_number": 45,
+      "day_in_sprint": 5,
+      "start_time": "2025-07-04T12:05:32.851136",
+      "date": "2025-07-04"
+    },
+    "day_141": {
+      "calendar_day": 141,
+      "project_day": 226,
+      "sprint_number": 46,
+      "day_in_sprint": 1,
+      "start_time": "2025-07-04T12:20:01.917792",
+      "date": "2025-07-04",
+      "end_time": "2025-07-04T12:27:34.672806",
+      "duration_hours": 0.13,
+      "duration_formatted": "7м"
+    },
+    "day_142": {
+      "calendar_day": 142,
+      "project_day": 227,
+      "sprint_number": 46,
+      "day_in_sprint": 2,
+      "start_time": "2025-07-04T12:30:21.904859",
+      "date": "2025-07-04",
+      "end_time": "2025-07-04T12:36:34.355466",
+      "duration_hours": 0.1,
+      "duration_formatted": "6м"
+    },
+    "day_143": {
+      "calendar_day": 143,
+      "project_day": 228,
+      "sprint_number": 46,
+      "day_in_sprint": 3,
+      "start_time": "2025-07-04T12:40:24.632966",
+      "date": "2025-07-04",
+      "end_time": "2025-07-04T12:49:30.327758",
+      "duration_hours": 0.15,
+      "duration_formatted": "9м"
+    },
+    "day_14": {
+      "calendar_day": 14,
+      "project_day": 99,
+      "sprint_number": 20,
+      "day_in_sprint": 4,
+      "date": "2025-07-04",
+      "end_time": "2025-07-04T17:50:16.346617"
+    },
+    "day_16": {
+      "calendar_day": 16,
+      "project_day": 101,
+      "sprint_number": 21,
+      "day_in_sprint": 1,
+      "date": "2025-07-06",
+      "end_time": "2025-07-06T15:23:01.964950"
+    },
+    "day_17": {
+      "calendar_day": 17,
+      "project_day": 102,
+      "sprint_number": 21,
+      "day_in_sprint": 2,
+      "date": "2025-07-07",
+      "end_time": "2025-07-07T15:50:09.577898"
+    },
+    "day_18": {
+      "calendar_day": 18,
+      "project_day": 103,
+      "sprint_number": 21,
+      "day_in_sprint": 3,
+      "date": "2025-07-08",
+      "end_time": "2025-07-08T14:45:15.048005"
+    },
+    "day_19": {
+      "calendar_day": 19,
+      "project_day": 104,
+      "sprint_number": 21,
+      "day_in_sprint": 4,
+      "date": "2025-07-09",
+      "end_time": "2025-07-09T14:07:39.504399"
+    },
+    "day_20": {
+      "calendar_day": 20,
+      "project_day": 105,
+      "sprint_number": 21,
+      "day_in_sprint": 5,
+      "date": "2025-07-10",
+      "end_time": "2025-07-10T15:07:47.788657"
     }
   },
   "sprints": {
@@ -412,7 +581,37 @@
     "sprint_43": {
       "sprint_number": 43,
       "start_time": "2025-07-03T07:25:58.723311",
+      "start_date": "2025-07-03",
+      "end_time": "2025-07-03T08:16:41.869074",
+      "end_date": "2025-07-03",
+      "duration_hours": 0.85,
+      "duration_formatted": "50м",
+      "duration_days": 0.04
+    },
+    "sprint_44": {
+      "sprint_number": 44,
+      "start_time": "2025-07-03T08:19:11.405346",
+      "start_date": "2025-07-03",
+      "end_time": "2025-07-03T18:07:59.335987",
+      "end_date": "2025-07-03",
+      "duration_hours": 9.81,
+      "duration_formatted": "9ч 48м",
+      "duration_days": 0.41
+    },
+    "sprint_45": {
+      "sprint_number": 45,
+      "start_time": "2025-07-03T09:29:16.839906",
       "start_date": "2025-07-03"
+    },
+    "sprint_46": {
+      "sprint_number": 46,
+      "start_time": "2025-07-04T12:20:01.917792",
+      "start_date": "2025-07-04"
+    },
+    "sprint_21": {
+      "sprint_number": 21,
+      "end_time": "2025-07-10T15:07:47.788657",
+      "end_date": "2025-07-10"
     }
   },
   "project_start": "2025-06-21T09:00:00",

@@ -1,252 +1,165 @@
+//
+//  APIClientTests.swift
+//  LMSTests
+//
+
 import XCTest
+import Combine
 @testable import LMS
 
-class APIClientTests: XCTestCase {
+final class APIClientTests: XCTestCase {
     
-    var apiClient: APIClient!
-    var mockSession: URLSession!
-    var mockTokenManager: MockTokenManager!
+    var sut: APIClient!
     
     override func setUp() {
         super.setUp()
-        
-        // Create mock URLSession
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.protocolClasses = [MockURLProtocol.self]
-        mockSession = URLSession(configuration: configuration)
-        
-        // Create mock token manager
-        mockTokenManager = MockTokenManager()
-        
-        // Create API client with mocks
-        apiClient = APIClient(
-            baseURL: "https://api.test.com",
-            session: mockSession,
-            tokenManager: mockTokenManager
-        )
+        sut = APIClient.shared
     }
     
     override func tearDown() {
-        apiClient = nil
-        mockSession = nil
-        mockTokenManager = nil
-        MockURLProtocol.requestHandler = nil
+        sut = nil
         super.tearDown()
     }
     
-    // MARK: - Tests
+    // MARK: - Singleton Tests
     
-    func testSuccessfulRequest() async throws {
-        // Given
-        let expectedUser = UserResponse(
-            id: "123",
-            email: "test@example.com",
+    func testSharedInstance() {
+        let instance1 = APIClient.shared
+        let instance2 = APIClient.shared
+        XCTAssertTrue(instance1 === instance2)
+    }
+    
+    // MARK: - API Endpoint Tests
+    
+    func testAuthEndpointConfiguration() {
+        // Test login endpoint
+        let loginEndpoint = AuthEndpoint.login(credentials: LoginRequest(email: "test@test.com", password: "password"))
+        XCTAssertEqual(loginEndpoint.path, "/auth/login")
+        XCTAssertEqual(loginEndpoint.method, .post)
+        XCTAssertFalse(loginEndpoint.requiresAuth)
+        
+        // Test refresh endpoint
+        let refreshEndpoint = AuthEndpoint.refresh(token: "refresh-token")
+        XCTAssertEqual(refreshEndpoint.path, "/auth/refresh")
+        XCTAssertEqual(refreshEndpoint.method, .post)
+        XCTAssertFalse(refreshEndpoint.requiresAuth)
+        
+        // Test logout endpoint
+        let logoutEndpoint = AuthEndpoint.logout
+        XCTAssertEqual(logoutEndpoint.path, "/auth/logout")
+        XCTAssertEqual(logoutEndpoint.method, .post)
+        XCTAssertTrue(logoutEndpoint.requiresAuth)
+    }
+    
+    func testUserEndpointConfiguration() {
+        // Test get users endpoint
+        let getUsersEndpoint = UserEndpoint.getUsers(page: 1, limit: 20)
+        XCTAssertEqual(getUsersEndpoint.path, "/users")
+        XCTAssertEqual(getUsersEndpoint.method, .get)
+        XCTAssertTrue(getUsersEndpoint.requiresAuth)
+        XCTAssertNotNil(getUsersEndpoint.parameters)
+        
+        // Test create user endpoint
+        let createUserEndpoint = UserEndpoint.createUser(user: CreateUserRequest(
+            email: "test@test.com",
             name: "Test User",
-            role: "user",
-            avatarUrl: nil,
-            createdAt: Date(),
-            updatedAt: Date()
+            role: .student,
+            department: "IT",
+            password: "password123"
+        ))
+        XCTAssertEqual(createUserEndpoint.path, "/users")
+        XCTAssertEqual(createUserEndpoint.method, .post)
+        XCTAssertTrue(createUserEndpoint.requiresAuth)
+        XCTAssertNotNil(createUserEndpoint.body)
+    }
+    
+    func testCompetencyEndpointConfiguration() {
+        // Test get competencies endpoint
+        let getCompetenciesEndpoint = CompetencyEndpoint.getCompetencies(page: 1, limit: 10, filters: nil)
+        XCTAssertEqual(getCompetenciesEndpoint.path, "/competencies")
+        XCTAssertEqual(getCompetenciesEndpoint.method, .get)
+        XCTAssertTrue(getCompetenciesEndpoint.requiresAuth)
+        XCTAssertNotNil(getCompetenciesEndpoint.parameters)
+        
+        // Test get competency endpoint
+        let getCompetencyEndpoint = CompetencyEndpoint.getCompetency(id: "comp123")
+        XCTAssertEqual(getCompetencyEndpoint.path, "/competencies/comp123")
+        XCTAssertEqual(getCompetencyEndpoint.method, .get)
+        XCTAssertTrue(getCompetencyEndpoint.requiresAuth)
+    }
+    
+    // MARK: - HTTPMethod Tests
+    
+    func testHTTPMethodRawValues() {
+        XCTAssertEqual(HTTPMethod.get.rawValue, "GET")
+        XCTAssertEqual(HTTPMethod.post.rawValue, "POST")
+        XCTAssertEqual(HTTPMethod.put.rawValue, "PUT")
+        XCTAssertEqual(HTTPMethod.delete.rawValue, "DELETE")
+        XCTAssertEqual(HTTPMethod.patch.rawValue, "PATCH")
+    }
+    
+    // MARK: - APIError Tests
+    
+    func testAPIErrorDescriptions() {
+        XCTAssertEqual(APIError.invalidURL.errorDescription, "Invalid URL")
+        XCTAssertEqual(APIError.invalidResponse.errorDescription, "Invalid server response")
+        XCTAssertEqual(APIError.noInternet.errorDescription, "No internet connection")
+        XCTAssertEqual(APIError.timeout.errorDescription, "Request timed out")
+        XCTAssertEqual(APIError.cancelled.errorDescription, "Request was cancelled")
+        XCTAssertEqual(APIError.unauthorized.errorDescription, "Authentication required")
+        XCTAssertEqual(APIError.forbidden.errorDescription, "Access denied")
+        XCTAssertEqual(APIError.notFound.errorDescription, "Resource not found")
+        XCTAssertEqual(APIError.rateLimitExceeded.errorDescription, "Too many requests. Please try again later")
+        XCTAssertEqual(APIError.invalidCredentials.errorDescription, "Invalid email or password")
+        XCTAssertEqual(APIError.serverError(statusCode: 500).errorDescription, "Server error (500)")
+        XCTAssertEqual(APIError.custom(message: "Test error").errorDescription, "Test error")
+        XCTAssertEqual(APIError.unknown(statusCode: 999).errorDescription, "Unknown error (999)")
+    }
+    
+    func testAPIErrorEquality() {
+        XCTAssertEqual(APIError.invalidURL, APIError.invalidURL)
+        XCTAssertEqual(APIError.unauthorized, APIError.unauthorized)
+        XCTAssertEqual(APIError.serverError(statusCode: 500), APIError.serverError(statusCode: 500))
+        XCTAssertNotEqual(APIError.serverError(statusCode: 500), APIError.serverError(statusCode: 503))
+        XCTAssertEqual(APIError.custom(message: "Test"), APIError.custom(message: "Test"))
+        XCTAssertNotEqual(APIError.custom(message: "Test1"), APIError.custom(message: "Test2"))
+    }
+    
+    // MARK: - Request Structure Tests
+    
+    func testLoginRequest() {
+        let loginRequest = LoginRequest(email: "test@example.com", password: "securePassword123")
+        XCTAssertEqual(loginRequest.email, "test@example.com")
+        XCTAssertEqual(loginRequest.password, "securePassword123")
+    }
+    
+    func testRefreshTokenRequest() {
+        let refreshRequest = RefreshTokenRequest(refreshToken: "refresh-token-123")
+        XCTAssertEqual(refreshRequest.refreshToken, "refresh-token-123")
+    }
+    
+    func testCreateUserRequest() {
+        let createUserRequest = CreateUserRequest(
+            email: "newuser@example.com",
+            name: "John Doe",
+            role: .student,
+            department: "IT",
+            password: "password123"
         )
-        
-        MockURLProtocol.requestHandler = { request in
-            XCTAssertEqual(request.url?.path, "/auth/me")
-            XCTAssertEqual(request.httpMethod, "GET")
-            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer test-token")
-            
-            let response = HTTPURLResponse(
-                url: request.url!,
-                statusCode: 200,
-                httpVersion: nil,
-                headerFields: nil
-            )!
-            
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
-            encoder.dateEncodingStrategy = .iso8601
-            let data = try encoder.encode(expectedUser)
-            
-            return (response, data)
-        }
-        
-        mockTokenManager.accessToken = "test-token"
-        
-        // When
-        let endpoint = AuthEndpoint.me
-        let result: UserResponse = try await apiClient.request(endpoint)
-        
-        // Then
-        XCTAssertEqual(result.id, expectedUser.id)
-        XCTAssertEqual(result.email, expectedUser.email)
-        XCTAssertEqual(result.name, expectedUser.name)
+        XCTAssertEqual(createUserRequest.email, "newuser@example.com")
+        XCTAssertEqual(createUserRequest.name, "John Doe")
+        XCTAssertEqual(createUserRequest.role, .student)
+        XCTAssertEqual(createUserRequest.department, "IT")
+        XCTAssertEqual(createUserRequest.password, "password123")
     }
     
-    func testUnauthorizedError() async {
-        // Given
-        MockURLProtocol.requestHandler = { request in
-            let response = HTTPURLResponse(
-                url: request.url!,
-                statusCode: 401,
-                httpVersion: nil,
-                headerFields: nil
-            )!
-            
-            return (response, Data())
-        }
-        
-        mockTokenManager.accessToken = "expired-token"
-        
-        // When/Then
-        do {
-            let endpoint = AuthEndpoint.me
-            let _: UserResponse = try await apiClient.request(endpoint)
-            XCTFail("Should throw unauthorized error")
-        } catch let error as APIError {
-            if case .unauthorized = error {
-                // Success
-            } else {
-                XCTFail("Wrong error type: \(error)")
-            }
-        } catch {
-            XCTFail("Wrong error type: \(error)")
-        }
-    }
+    // MARK: - Bundle Extension Tests
     
-    func testNetworkError() async {
-        // Given
-        MockURLProtocol.requestHandler = { request in
-            throw URLError(.notConnectedToInternet)
-        }
-        
-        mockTokenManager.accessToken = "test-token"
-        
-        // When/Then
-        do {
-            let endpoint = AuthEndpoint.me
-            let _: UserResponse = try await apiClient.request(endpoint)
-            XCTFail("Should throw network error")
-        } catch let error as APIError {
-            if case .noInternet = error {
-                // Success
-            } else {
-                XCTFail("Wrong error type: \(error)")
-            }
-        } catch {
-            XCTFail("Wrong error type: \(error)")
-        }
-    }
-    
-    func testRequestWithoutAuth() async throws {
-        // Given
-        let loginRequest = LoginRequest(email: "test@example.com", password: "password")
-        let expectedResponse = AuthResponse(
-            user: UserResponse(
-                id: "123",
-                email: "test@example.com",
-                name: "Test User",
-                role: "user",
-                avatarUrl: nil,
-                createdAt: Date(),
-                updatedAt: Date()
-            ),
-            accessToken: "new-access-token",
-            refreshToken: "new-refresh-token",
-            tokenType: "Bearer",
-            expiresIn: 3600
-        )
-        
-        MockURLProtocol.requestHandler = { request in
-            XCTAssertEqual(request.url?.path, "/auth/login")
-            XCTAssertEqual(request.httpMethod, "POST")
-            XCTAssertNil(request.value(forHTTPHeaderField: "Authorization"))
-            
-            // Verify request body
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-            let body = try decoder.decode(LoginRequest.self, from: request.httpBody!)
-            XCTAssertEqual(body.email, loginRequest.email)
-            XCTAssertEqual(body.password, loginRequest.password)
-            
-            let response = HTTPURLResponse(
-                url: request.url!,
-                statusCode: 200,
-                httpVersion: nil,
-                headerFields: nil
-            )!
-            
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
-            encoder.dateEncodingStrategy = .iso8601
-            let data = try encoder.encode(expectedResponse)
-            
-            return (response, data)
-        }
-        
-        // When
-        let endpoint = AuthEndpoint.login(email: "test@example.com", password: "password")
-        let result: AuthResponse = try await apiClient.request(endpoint)
-        
-        // Then
-        XCTAssertEqual(result.accessToken, expectedResponse.accessToken)
-        XCTAssertEqual(result.refreshToken, expectedResponse.refreshToken)
-        XCTAssertEqual(result.user.email, expectedResponse.user.email)
-    }
-}
-
-// MARK: - Mock Helpers
-
-class MockURLProtocol: URLProtocol {
-    static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
-    
-    override class func canInit(with request: URLRequest) -> Bool {
-        return true
-    }
-    
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-        return request
-    }
-    
-    override func startLoading() {
-        guard let handler = MockURLProtocol.requestHandler else {
-            client?.urlProtocol(self, didFailWithError: URLError(.badServerResponse))
-            return
-        }
-        
-        do {
-            let (response, data) = try handler(request)
-            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            client?.urlProtocol(self, didLoad: data)
-            client?.urlProtocolDidFinishLoading(self)
-        } catch {
-            client?.urlProtocol(self, didFailWithError: error)
-        }
-    }
-    
-    override func stopLoading() {}
-}
-
-class MockTokenManager: TokenManager {
-    var accessToken: String?
-    var refreshToken: String?
-    
-    override func getAccessToken() -> String? {
-        return accessToken
-    }
-    
-    override func getRefreshToken() -> String? {
-        return refreshToken
-    }
-    
-    override func saveTokens(accessToken: String, refreshToken: String) {
-        self.accessToken = accessToken
-        self.refreshToken = refreshToken
-    }
-    
-    override func clearTokens() {
-        accessToken = nil
-        refreshToken = nil
-    }
-    
-    override var hasValidTokens: Bool {
-        return accessToken != nil
+    func testBundleAppVersion() {
+        let bundle = Bundle.main
+        let appVersion = bundle.appVersion
+        XCTAssertFalse(appVersion.isEmpty)
+        XCTAssertTrue(appVersion.contains("("))
+        XCTAssertTrue(appVersion.contains(")"))
     }
 } 

@@ -1,0 +1,23 @@
+{
+  "": {
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/master.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Tests/LMSTests/Features/Auth/LoginViewTests.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/LoginViewTests.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/LoginViewTests.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/LoginViewTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/LoginViewTests.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Tests/LMSTests/Features/Users/ViewModels/UserViewModelTests.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UserViewModelTests.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UserViewModelTests.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UserViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UserViewModelTests.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/ios/LMS/Tests/LMSTests/Models/UserTests.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UserTests.d",
+    "object": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UserTests.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UserTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UserTests.swiftdeps"
+  }
+}

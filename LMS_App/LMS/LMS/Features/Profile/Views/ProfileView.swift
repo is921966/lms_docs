@@ -54,7 +54,9 @@ struct ProfileView: View {
 
                     // Logout button
                     Button(action: {
-                        authService.logout()
+                        Task {
+                            try await authService.logout()
+                        }
                     }) {
                         HStack {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
@@ -75,7 +77,7 @@ struct ProfileView: View {
                     .padding(.horizontal)
 
                     // Version info
-                    Text("Версия 2.0.1 (Build 52)")
+                    Text("Версия \(Bundle.main.appVersion)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .padding(.top, 10)
@@ -90,7 +92,9 @@ struct ProfileView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    authService.logout()
+                    Task {
+                        try await authService.logout()
+                    }
                 }) {
                     HStack {
                         Text("Выйти")

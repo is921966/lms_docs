@@ -1,0 +1,117 @@
+# Muter Configuration for LMS iOS App
+# Sprint 28: Mutation Testing Setup
+# Created: 03/07/2025
+
+# Test command configuration
+testCommandExecutable: xcodebuild
+testCommandArguments:
+  - -scheme
+  - LMS
+  - -destination
+  - 'platform=iOS Simulator,name=iPhone 16 Pro'
+  - -quiet
+  - test
+
+# Mutation operators to apply
+mutationOperators:
+  # Relational operators
+  - RelationalOperatorReplacement    # Changes >, <, >=, <= operators
+  
+  # Logical operators
+  - LogicalOperatorReplacement       # Changes &&, || operators
+  
+  # Arithmetic operators
+  - ArithmeticOperatorReplacement    # Changes +, -, *, / operators
+  
+  # Conditional boundaries
+  - ConditionalBoundaryMutator       # Changes >= to >, <= to <
+  
+  # Boolean literals
+  - BooleanLiteralReplacement        # Changes true to false and vice versa
+  
+  # Remove side effects
+  - RemoveSideEffects               # Removes void method calls
+  
+  # Negate conditionals
+  - NegateConditionals              # Negates if conditions
+
+# Files and directories to exclude from mutation
+excludeList:
+  # UI files (not suitable for mutation testing)
+  - '**/*View.swift'
+  - '**/*ViewController.swift'
+  - '**/ContentView.swift'
+  
+  # SwiftUI specific
+  - '**/*ViewModifier.swift'
+  - '**/*ButtonStyle.swift'
+  - '**/*Shape.swift'
+  
+  # Assets and resources
+  - '**/Assets.xcassets/**'
+  - '**/Preview Content/**'
+  
+  # Generated files
+  - '**/Generated/**'
+  - '**/*.generated.swift'
+  
+  # Test files
+  - '**/Tests/**'
+  - '**/*Tests.swift'
+  - '**/*Test.swift'
+  
+  # Mock files
+  - '**/Mock*.swift'
+  - '**/*Mock.swift'
+  
+  # App delegate and scene delegate
+  - '**/AppDelegate.swift'
+  - '**/SceneDelegate.swift'
+  - '**/LMSApp.swift'
+
+# Files to specifically include for mutation (critical business logic)
+includeList:
+  # Authentication
+  - '**/AuthService.swift'
+  - '**/TokenManager.swift'
+  
+  # API Client
+  - '**/APIClient.swift'
+  - '**/NetworkService.swift'
+  
+  # Business Logic
+  - '**/CompetencyProgressCalculator.swift'
+  - '**/EmailValidator.swift'
+  - '**/CourseEnrollmentService.swift'
+  
+  # Models with logic
+  - '**/UserResponse+Compatibility.swift'
+  
+  # Critical services
+  - '**/UserService.swift'
+  - '**/CompetencyService.swift'
+
+# Mutation score thresholds
+mutationScoreThreshold: 60  # Minimum acceptable mutation score
+mutationScoreBreakThreshold: 50  # Build fails if score is below this
+
+# Output configuration
+outputFileType: json
+outputFileName: muter-report.json
+
+# Performance settings
+maxConcurrentTestRuns: 4  # Run tests in parallel
+timeout: 300  # Timeout per test run in seconds
+
+# Reporting
+reportFormat: 
+  - console
+  - json
+  - html
+
+htmlReportPath: reports/mutation/index.html
+
+# Additional settings
+skipCoverage: false  # Don't skip coverage calculation
+dryRun: false       # Actually perform mutations
+logLevel: info      # Logging verbosity 

@@ -4,11 +4,11 @@ import Combine
 // MARK: - APIClient
 
 /// Основной клиент для работы с API Gateway
-final class APIClient {
+public final class APIClient {
     
     // MARK: - Properties
     
-    static let shared = APIClient()
+    public static let shared = APIClient()
     
     private let baseURL: String
     private let session: URLSession
@@ -42,7 +42,7 @@ final class APIClient {
     // MARK: - Public Methods
     
     /// Выполняет запрос к API
-    func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
+    public func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
         // Check network connectivity
         try networkMonitor.checkConnectivity()
         
@@ -57,7 +57,7 @@ final class APIClient {
             
             // Check for token expiration
             if httpResponse.statusCode == 401 && endpoint.requiresAuth {
-                try await refreshTokenAndRetry(endpoint)
+                return try await refreshTokenAndRetry(endpoint)
             }
             
             // Handle response
@@ -72,7 +72,7 @@ final class APIClient {
     }
     
     /// Выполняет запрос без ожидания ответа
-    func requestVoid(_ endpoint: APIEndpoint) async throws {
+    public func requestVoid(_ endpoint: APIEndpoint) async throws {
         // Check network connectivity
         try networkMonitor.checkConnectivity()
         
@@ -93,7 +93,7 @@ final class APIClient {
     }
     
     /// Загружает данные (файлы, изображения)
-    func download(_ endpoint: APIEndpoint) async throws -> Data {
+    public func download(_ endpoint: APIEndpoint) async throws -> Data {
         // Check network connectivity
         try networkMonitor.checkConnectivity()
         
@@ -111,7 +111,7 @@ final class APIClient {
     }
     
     /// Загружает файл на сервер
-    func upload<T: Decodable>(_ endpoint: APIEndpoint, data: Data, mimeType: String) async throws -> T {
+    public func upload<T: Decodable>(_ endpoint: APIEndpoint, data: Data, mimeType: String) async throws -> T {
         // Check network connectivity
         try networkMonitor.checkConnectivity()
         
@@ -271,9 +271,4 @@ struct APIConfig {
     #endif
 }
 
-/// Error response from API
-struct ErrorResponse: Decodable {
-    let message: String
-    let code: String?
-    let details: [String: String]?
-} 
+ 

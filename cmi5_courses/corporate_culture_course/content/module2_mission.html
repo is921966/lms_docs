@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Миссия и ценности ЦУМ</title>
+    <script src="https://unpkg.com/@xapi/cmi5@latest/dist/cmi5.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        .mission-block {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .mission-block h2 {
+            color: white;
+            margin-top: 0;
+        }
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .value-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e74c3c;
+            transition: transform 0.3s ease;
+        }
+        .value-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .value-card h3 {
+            color: #e74c3c;
+            margin-top: 0;
+        }
+        .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .quiz-section {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .quiz-question {
+            margin-bottom: 20px;
+        }
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .quiz-option {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .quiz-option:hover {
+            border-color: #3498db;
+        }
+        .quiz-option.selected {
+            border-color: #e74c3c;
+            background: #ffe5e5;
+        }
+        .quiz-option.correct {
+            border-color: #27ae60;
+            background: #e8f8f5;
+        }
+        .quiz-option.incorrect {
+            border-color: #e74c3c;
+            background: #ffe5e5;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #e74c3c;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #c0392b;
+        }
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Миссия и ценности ЦУМ</h1>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress">0%</div>
+        </div>
+        
+        <div id="content">
+            <div class="section" data-section="1">
+                <div class="mission-block">
+                    <h2>Наша миссия</h2>
+                    <p style="font-size: 1.2em; line-height: 1.8;">
+                        "Создавать уникальное пространство для вдохновения, где каждый клиент находит не просто товары, 
+                        а источник радости, стиля и самовыражения. Мы стремимся быть больше чем магазином — 
+                        мы создаем культурный феномен, объединяющий традиции и инновации."
+                    </p>
+                </div>
+                
+                <h2>Что это означает для нас?</h2>
+                <ul>
+                    <li><strong>Клиентоцентричность:</strong> Каждое наше решение начинается с вопроса "Как это улучшит опыт наших клиентов?"</li>
+                    <li><strong>Инновации:</strong> Мы постоянно ищем новые способы удивить и порадовать</li>
+                    <li><strong>Качество:</strong> Мы предлагаем только лучшее — от товаров до сервиса</li>
+                    <li><strong>Традиции:</strong> Мы чтим нашу историю и строим будущее на прочном фундаменте</li>
+                </ul>
+            </div>
+            
+            <div class="section" data-section="2" style="display: none;">
+                <h2>Наши ценности</h2>
+                <div class="values-grid">
+                    <div class="value-card">
+                        <div class="icon">🎯</div>
+                        <h3>Совершенство</h3>
+                        <p>Мы стремимся к совершенству во всем: от выбора брендов до обслуживания клиентов. 
+                        Каждая деталь имеет значение.</p>
+                    </div>
+                    
+                    <div class="value-card">
+                        <div class="icon">💡</div>
+                        <h3>Инновации</h3>
+                        <p>Мы первыми внедряем новые технологии и подходы в ритейле, 
+                        создавая будущее торговли уже сегодня.</p>
+                    </div>
+                    
+                    <div class="value-card">
+                        <div class="icon">🤝</div>
+                        <h3>Партнерство</h3>
+                        <p>Мы строим долгосрочные отношения с клиентами, брендами и сотрудниками, 
+                        основанные на доверии и взаимном уважении.</p>
+                    </div>
+                    
+                    <div class="value-card">
+                        <div class="icon">🌟</div>
+                        <h3>Вдохновение</h3>
+                        <p>Мы создаем пространство, которое вдохновляет на новые открытия, 
+                        самовыражение и радость от покупок.</p>
+                    </div>
+                    
+                    <div class="value-card">
+                        <div class="icon">🌱</div>
+                        <h3>Устойчивость</h3>
+                        <p>Мы заботимся о будущем, внедряя экологичные практики 
+                        и поддерживая социальные инициативы.</p>
+                    </div>
+                    
+                    <div class="value-card">
+                        <div class="icon">👥</div>
+                        <h3>Команда</h3>
+                        <p>Наши сотрудники — это сердце ЦУМ. Мы инвестируем в их развитие 
+                        и создаем среду для профессионального роста.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" data-section="3" style="display: none;">
+                <h2>Как мы применяем наши ценности?</h2>
+                
+                <h3>В работе с клиентами:</h3>
+                <ul>
+                    <li>Персональный подход к каждому посетителю</li>
+                    <li>Экспертные консультации и стайлинг-сервисы</li>
+                    <li>Программа лояльности с уникальными привилегиями</li>
+                    <li>Омниканальный опыт: магазин, онлайн, мобильное приложение</li>
+                </ul>
+                
+                <h3>В работе с брендами:</h3>
+                <ul>
+                    <li>Тщательный отбор партнеров</li>
+                    <li>Эксклюзивные коллекции и премьеры</li>
+                    <li>Совместные маркетинговые кампании</li>
+                    <li>Поддержка локальных дизайнеров</li>
+                </ul>
+                
+                <h3>В работе команды:</h3>
+                <ul>
+                    <li>Программы обучения и развития</li>
+                    <li>Карьерные возможности внутри компании</li>
+                    <li>Корпоративная культура открытости и инноваций</li>
+                    <li>Социальные гарантии и бенефиты</li>
+                </ul>
+            </div>
+            
+            <div class="section" data-section="4" style="display: none;">
+                <h2>Проверьте свои знания</h2>
+                <div class="quiz-section">
+                    <div class="quiz-question">
+                        <h3>Вопрос: Какая из перечисленных ценностей НЕ является ключевой для ЦУМ?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectAnswer(this, false)">Совершенство</div>
+                            <div class="quiz-option" onclick="selectAnswer(this, false)">Инновации</div>
+                            <div class="quiz-option" onclick="selectAnswer(this, true)">Экономия</div>
+                            <div class="quiz-option" onclick="selectAnswer(this, false)">Партнерство</div>
+                        </div>
+                    </div>
+                    <p id="feedback" style="display: none; margin-top: 20px; font-weight: bold;"></p>
+                </div>
+                
+                <div style="background: #e8f8f5; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                    <h3>Помните!</h3>
+                    <p>Наши ценности — это не просто слова. Это принципы, которыми мы руководствуемся 
+                    каждый день в работе с клиентами, партнерами и друг с другом.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button id="prevBtn" onclick="previousSection()" disabled>Назад</button>
+            <button id="nextBtn" onclick="nextSection()">Далее</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentSection = 1;
+        const totalSections = 4;
+        let startTime = new Date();
+        let cmi5;
+        let quizAnswered = false;
+        
+        // Initialize cmi5
+        window.onload = function() {
+            if (window.cmi5) {
+                cmi5 = new Cmi5();
+                cmi5.initialize().then(() => {
+                    console.log('Cmi5 initialized');
+                    sendStatement('initialized');
+                }).catch(err => {
+                    console.log('Running in standalone mode');
+                });
+            }
+            updateProgress();
+        };
+        
+        function updateProgress() {
+            const progress = Math.round((currentSection / totalSections) * 100);
+            document.getElementById('progress').style.width = progress + '%';
+            document.getElementById('progress').textContent = progress + '%';
+        }
+        
+        function showSection(num) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.querySelector(`[data-section="${num}"]`).style.display = 'block';
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = num === 1;
+            
+            if (num === totalSections) {
+                document.getElementById('nextBtn').textContent = quizAnswered ? 'Завершить' : 'Ответьте на вопрос';
+                document.getElementById('nextBtn').disabled = !quizAnswered;
+            } else {
+                document.getElementById('nextBtn').textContent = 'Далее';
+                document.getElementById('nextBtn').disabled = false;
+            }
+            
+            updateProgress();
+            sendStatement('progressed', { section: num });
+        }
+        
+        function nextSection() {
+            if (currentSection < totalSections) {
+                currentSection++;
+                showSection(currentSection);
+            } else if (quizAnswered) {
+                completeModule();
+            }
+        }
+        
+        function previousSection() {
+            if (currentSection > 1) {
+                currentSection--;
+                showSection(currentSection);
+            }
+        }
+        
+        function selectAnswer(element, isCorrect) {
+            if (quizAnswered) return;
+            
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+            
+            setTimeout(() => {
+                if (isCorrect) {
+                    element.classList.add('correct');
+                    document.getElementById('feedback').textContent = 'Правильно! Экономия важна, но не является нашей ключевой ценностью. Мы фокусируемся на качестве и уникальном опыте.';
+                    document.getElementById('feedback').style.color = '#27ae60';
+                    quizAnswered = true;
+                    document.getElementById('nextBtn').disabled = false;
+                    document.getElementById('nextBtn').textContent = 'Завершить';
+                    sendStatement('answered', { correct: true });
+                } else {
+                    element.classList.add('incorrect');
+                    document.getElementById('feedback').textContent = 'Попробуйте еще раз. Подумайте, какая ценность не соответствует премиальному позиционированию ЦУМ.';
+                    document.getElementById('feedback').style.color = '#e74c3c';
+                    sendStatement('answered', { correct: false });
+                }
+                document.getElementById('feedback').style.display = 'block';
+            }, 500);
+        }
+        
+        function completeModule() {
+            const endTime = new Date();
+            const duration = Math.round((endTime - startTime) / 1000);
+            
+            sendStatement('completed', { duration: duration });
+            
+            alert('Отлично! Вы завершили модуль "Миссия и ценности ЦУМ"');
+            
+            if (cmi5) {
+                cmi5.terminate();
+            }
+            
+            document.getElementById('nextBtn').disabled = true;
+        }
+        
+        function sendStatement(verb, extensions = {}) {
+            if (!cmi5) return;
+            
+            const statement = {
+                verb: {
+                    id: `http://adlnet.gov/expapi/verbs/${verb}`,
+                    display: { "en-US": verb }
+                },
+                object: {
+                    id: window.location.href,
+                    definition: {
+                        name: { "ru": "Миссия и ценности ЦУМ" },
+                        description: { "ru": "Модуль о миссии и ценностях ЦУМ" }
+                    }
+                },
+                result: {
+                    extensions: extensions
+                }
+            };
+            
+            if (verb === 'completed') {
+                statement.result.completion = true;
+                statement.result.success = true;
+                statement.result.score = {
+                    scaled: 1.0
+                };
+            }
+            
+            cmi5.sendStatement(statement);
+        }
+    </script>
+</body>
+</html> 

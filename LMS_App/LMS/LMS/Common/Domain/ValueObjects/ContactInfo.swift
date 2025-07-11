@@ -17,10 +17,31 @@ public struct Email: StringValueObject {
     
     public static let minLength: Int = 3
     public static let maxLength: Int = 254 // RFC 5321
+    // More comprehensive email regex that requires proper TLD
     public static let pattern: String? = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
     
     public init?(_ value: String) {
-        let lowercased = value.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lowercased = trimmed.lowercased()
+        
+        // Additional validation checks
+        guard !lowercased.isEmpty,
+              lowercased.contains("@"),
+              !lowercased.hasPrefix("@"),
+              !lowercased.hasSuffix("@"),
+              !lowercased.contains("@."),
+              !lowercased.contains(".@"),
+              !lowercased.contains(".."),
+              !lowercased.contains(" ") else { return nil }
+        
+        // Check that domain has at least one dot after @
+        let parts = lowercased.split(separator: "@")
+        guard parts.count == 2 else { return nil }
+        let domainPart = String(parts[1])
+        guard domainPart.contains("."),
+              !domainPart.hasPrefix("."),
+              !domainPart.hasSuffix(".") else { return nil }
+        
         guard Self.isValid(lowercased) else { return nil }
         self.value = lowercased
     }
@@ -109,6 +130,13 @@ public struct PhoneNumber: StringValueObject {
         
         // Add more country-specific logic as needed
         return false
+    }
+    
+    // MARK: - Equatable
+    
+    public static func == (lhs: PhoneNumber, rhs: PhoneNumber) -> Bool {
+        // Compare only normalized values, not original input
+        return lhs.value == rhs.value
     }
 }
 

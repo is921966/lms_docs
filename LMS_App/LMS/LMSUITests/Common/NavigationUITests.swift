@@ -132,7 +132,7 @@ final class NavigationUITests: UITestBase {
 
             // Verify we can navigate directly to course
             let coursesList = app.collectionViews[AccessibilityIdentifiers.Courses.coursesList]
-            if !coursesList.cells.isEmpty {
+            if coursesList.cells.count > 0 {
                 coursesList.cells.element(boundBy: 0).tap()
 
                 // Should be in course details
@@ -160,7 +160,7 @@ final class NavigationUITests: UITestBase {
         let testsList = app.collectionViews[AccessibilityIdentifiers.Tests.testsList]
         waitForElement(testsList)
 
-        if !testsList.cells.isEmpty {
+        if testsList.cells.count > 0 {
             let testName = testsList.cells.element(boundBy: 0).staticTexts.firstMatch.label
 
             // Navigate away
@@ -190,7 +190,7 @@ final class NavigationUITests: UITestBase {
         let coursesList = app.collectionViews[AccessibilityIdentifiers.Courses.coursesList]
         waitForElement(coursesList)
 
-        if !coursesList.cells.isEmpty {
+        if coursesList.cells.count > 0 {
             let firstCourse = coursesList.cells.element(boundBy: 0)
             let courseName = firstCourse.staticTexts.firstMatch.label
             firstCourse.tap()

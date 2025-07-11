@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F82" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="PendingStatement" representedClassName="PendingStatement" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="lastError" optional="YES" attributeType="String"/>
+        <attribute name="priority" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="retryCount" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="statementJSON" attributeType="String"/>
+        <attribute name="syncedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="syncStatus" attributeType="String" defaultValueString="pending"/>
+    </entity>
+</model> 

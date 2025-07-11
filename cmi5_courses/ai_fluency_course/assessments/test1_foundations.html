@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест: Основы AI Fluency</title>
+    <script src="https://unpkg.com/@xapi/cmi5@latest/dist/cmi5.min.js"></script>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .question {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .question h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .options label {
+            display: block;
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .options label:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+        .submit-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+        }
+        .submit-button:hover {
+            background: #5a67d8;
+        }
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .score {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .score.pass {
+            color: #66bb6a;
+        }
+        .score.fail {
+            color: #ef5350;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Тест: Основы AI Fluency</h1>
+        
+        <div id="test-content">
+            <div class="question">
+                <h3>1. Что такое AI Fluency?</h3>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="a"> Умение программировать ИИ</label>
+                    <label><input type="radio" name="q1" value="b"> Способность эффективно взаимодействовать с ИИ-системами</label>
+                    <label><input type="radio" name="q1" value="c"> Знание всех ИИ-инструментов</label>
+                    <label><input type="radio" name="q1" value="d"> Понимание математики машинного обучения</label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <h3>2. Какой подход наиболее эффективен при работе с ИИ?</h3>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="a"> Один точный запрос должен дать идеальный результат</label>
+                    <label><input type="radio" name="q2" value="b"> ИИ должен сам понять, что мне нужно</label>
+                    <label><input type="radio" name="q2" value="c"> Итеративный подход с уточнениями и улучшениями</label>
+                    <label><input type="radio" name="q2" value="d"> Использовать только готовые шаблоны</label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <h3>3. Что НЕ является ключевым компонентом AI Fluency?</h3>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="a"> Критическое мышление</label>
+                    <label><input type="radio" name="q3" value="b"> Знание языков программирования</label>
+                    <label><input type="radio" name="q3" value="c"> Эффективная коммуникация</label>
+                    <label><input type="radio" name="q3" value="d"> Этическое использование</label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <h3>4. Какой из примеров демонстрирует правильный подход?</h3>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="a"> "Напиши текст"</label>
+                    <label><input type="radio" name="q4" value="b"> "Сделай презентацию получше"</label>
+                    <label><input type="radio" name="q4" value="c"> "Создай email для отмены встречи, тон вежливый, укажи новое время - четверг 15:00"</label>
+                    <label><input type="radio" name="q4" value="d"> "Реши мою проблему"</label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <h3>5. Как следует относиться к результатам работы ИИ?</h3>
+                <div class="options">
+                    <label><input type="radio" name="q5" value="a"> Полностью доверять, ИИ не ошибается</label>
+                    <label><input type="radio" name="q5" value="b"> Не доверять вообще, все проверять с нуля</label>
+                    <label><input type="radio" name="q5" value="c"> Критически оценивать и адаптировать под свои нужды</label>
+                    <label><input type="radio" name="q5" value="d"> Использовать только если результат идеален</label>
+                </div>
+            </div>
+            
+            <button class="submit-button" onclick="submitTest()">Завершить тест</button>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>Результаты теста</h2>
+            <div class="score" id="score">0%</div>
+            <p id="feedback"></p>
+            <button class="submit-button" onclick="location.reload()">Пройти еще раз</button>
+        </div>
+    </div>
+    
+    <script>
+        let cmi5;
+        const correctAnswers = {
+            q1: 'b',
+            q2: 'c',
+            q3: 'b',
+            q4: 'c',
+            q5: 'c'
+        };
+        
+        window.onload = function() {
+            if (window.Cmi5) {
+                cmi5 = new Cmi5();
+                cmi5.initialize().then(() => {
+                    sendStatement('initialized');
+                }).catch(err => {
+                    console.log('Running in standalone mode');
+                });
+            }
+        };
+        
+        function submitTest() {
+            let correct = 0;
+            const total = Object.keys(correctAnswers).length;
+            
+            for (let question in correctAnswers) {
+                const selected = document.querySelector(`input[name="${question}"]:checked`);
+                if (selected && selected.value === correctAnswers[question]) {
+                    correct++;
+                }
+            }
+            
+            const score = correct / total;
+            const percentage = Math.round(score * 100);
+            const passed = score >= 0.75;
+            
+            document.getElementById('test-content').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            
+            const scoreElement = document.getElementById('score');
+            scoreElement.textContent = percentage + '%';
+            scoreElement.className = passed ? 'score pass' : 'score fail';
+            
+            const feedback = document.getElementById('feedback');
+            if (passed) {
+                feedback.textContent = `Отлично! Вы правильно ответили на ${correct} из ${total} вопросов. Вы готовы к следующему модулю!`;
+            } else {
+                feedback.textContent = `Вы ответили правильно на ${correct} из ${total} вопросов. Рекомендуем повторить материал и пройти тест еще раз.`;
+            }
+            
+            sendStatement('completed', { score: score, passed: passed });
+            
+            if (cmi5) {
+                setTimeout(() => cmi5.terminate(), 2000);
+            }
+        }
+        
+        function sendStatement(verb, result = {}) {
+            if (!cmi5) return;
+            
+            const statement = {
+                verb: {
+                    id: `http://adlnet.gov/expapi/verbs/${verb}`,
+                    display: { "en-US": verb }
+                },
+                object: {
+                    id: window.location.href,
+                    definition: {
+                        name: { "ru": "Тест: Основы AI Fluency" },
+                        type: "http://adlnet.gov/expapi/activities/assessment"
+                    }
+                }
+            };
+            
+            if (verb === 'completed') {
+                statement.result = {
+                    completion: true,
+                    success: result.passed,
+                    score: { scaled: result.score }
+                };
+            }
+            
+            cmi5.sendStatement(statement);
+        }
+    </script>
+</body>
+</html> 

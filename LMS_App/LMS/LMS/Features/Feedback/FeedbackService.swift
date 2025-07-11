@@ -184,7 +184,35 @@ class FeedbackService: ObservableObject {
     // MARK: - Private Methods
 
     private func createMockFeedbacks() -> [FeedbackItem] {
-        [
+        // Создаем тестовое изображение для демонстрации
+        let testScreenshot: String? = {
+            // Создаем простое изображение с текстом для демонстрации
+            let size = CGSize(width: 300, height: 200)
+            let renderer = UIGraphicsImageRenderer(size: size)
+            let image = renderer.image { context in
+                // Фон
+                UIColor.systemGray5.setFill()
+                context.fill(CGRect(origin: .zero, size: size))
+                
+                // Текст
+                let attributes: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 16, weight: .medium),
+                    .foregroundColor: UIColor.label
+                ]
+                let text = "Скриншот ошибки"
+                let textSize = text.size(withAttributes: attributes)
+                let textRect = CGRect(
+                    x: (size.width - textSize.width) / 2,
+                    y: (size.height - textSize.height) / 2,
+                    width: textSize.width,
+                    height: textSize.height
+                )
+                text.draw(in: textRect, withAttributes: attributes)
+            }
+            return image.pngData()?.base64EncodedString()
+        }()
+        
+        return [
             FeedbackItem(
                 title: "Ошибка при загрузке курсов",
                 description: "При попытке открыть раздел Курсы приложение зависает на экране загрузки более 30 секунд.",
@@ -193,6 +221,7 @@ class FeedbackService: ObservableObject {
                 author: "Иван Петров",
                 authorId: "user1",
                 createdAt: Date().addingTimeInterval(-3_600),
+                screenshot: testScreenshot, // Добавляем скриншот
                 reactions: FeedbackReactions(like: 5, dislike: 1, heart: 2, fire: 0),
                 comments: [
                     FeedbackComment(

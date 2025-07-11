@@ -1,0 +1,4 @@
+module LMS {
+    header "/Users/ishirokov/lms_docs/ios/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMS-Swift.h"
+    requires objc
+}

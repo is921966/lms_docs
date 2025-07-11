@@ -6,9 +6,10 @@ struct SettingsView: View {
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
     @AppStorage("darkModeEnabled") private var darkModeEnabled = false
     @AppStorage("autoPlayVideos") private var autoPlayVideos = true
+    @StateObject private var adminService = MockAdminService.shared
 
     var isAdmin: Bool {
-        authService.currentUser?.roles.contains("admin") == true
+        authService.currentUser?.role == .admin || authService.currentUser?.role == .superAdmin
     }
 
     var body: some View {
@@ -110,7 +111,9 @@ struct SettingsView: View {
                 // Logout section
                 Section {
                     Button(action: {
-                        authService.logout()
+                        Task {
+                            try await authService.logout()
+                        }
                     }) {
                         HStack {
                             Spacer()
@@ -126,7 +129,7 @@ struct SettingsView: View {
                     HStack {
                         Text("Версия приложения")
                         Spacer()
-                        Text("2.0.1 (Build 52)")
+                        Text(Bundle.main.appVersion)
                             .foregroundColor(.secondary)
                     }
 
@@ -153,9 +156,9 @@ struct SettingsView: View {
 struct QuickSettingsSection: View {
     @AppStorage("isAdminMode") private var isAdminMode = false
     @EnvironmentObject var authService: MockAuthService
-
+    
     var isAdmin: Bool {
-        authService.currentUser?.roles.contains("admin") == true
+        authService.currentUser?.role == .admin || authService.currentUser?.role == .superAdmin
     }
 
     var body: some View {

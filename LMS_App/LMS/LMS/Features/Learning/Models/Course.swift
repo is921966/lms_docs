@@ -130,7 +130,7 @@ struct CourseAssignment: Identifiable, Codable {
 
 // MARK: - Course Model
 struct Course: Identifiable, Codable {
-    let id = UUID()
+    let id: UUID
     var title: String
     var description: String
     var categoryId: UUID?
@@ -190,6 +190,53 @@ struct Course: Identifiable, Codable {
         // This would be calculated based on user progress
         Double.random(in: 0...1)
     }
+    
+    // Convenience initializer
+    init(
+        id: UUID = UUID(),
+        title: String,
+        description: String,
+        categoryId: UUID? = nil,
+        status: CourseStatus = .draft,
+        type: CourseType = .optional,
+        modules: [Module] = [],
+        materials: [CourseMaterial] = [],
+        testId: UUID? = nil,
+        competencyIds: [UUID] = [],
+        positionIds: [UUID] = [],
+        prerequisiteCourseIds: [UUID] = [],
+        duration: String,
+        estimatedHours: Int = 0,
+        passingScore: Int = 80,
+        certificateTemplateId: UUID? = nil,
+        maxAttempts: Int? = nil,
+        createdBy: UUID = UUID(), // Default to new UUID
+        createdAt: Date = Date(),
+        updatedAt: Date = Date(),
+        publishedAt: Date? = nil
+    ) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.categoryId = categoryId
+        self.status = status
+        self.type = type
+        self.modules = modules
+        self.materials = materials
+        self.testId = testId
+        self.competencyIds = competencyIds
+        self.positionIds = positionIds
+        self.prerequisiteCourseIds = prerequisiteCourseIds
+        self.duration = duration
+        self.estimatedHours = estimatedHours
+        self.passingScore = passingScore
+        self.certificateTemplateId = certificateTemplateId
+        self.maxAttempts = maxAttempts
+        self.createdBy = createdBy
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.publishedAt = publishedAt
+    }
 }
 
 // MARK: - Module Model
@@ -238,6 +285,7 @@ struct Lesson: Identifiable, Codable {
         case interactive = "Интерактив"
         case quiz = "Тест"
         case assignment = "Задание"
+        case cmi5 = "Cmi5"
 
         var icon: String {
             switch self {
@@ -246,6 +294,7 @@ struct Lesson: Identifiable, Codable {
             case .interactive: return "hand.tap.fill"
             case .quiz: return "checkmark.circle.fill"
             case .assignment: return "pencil.circle.fill"
+            case .cmi5: return "cube.box.fill"
             }
         }
     }
@@ -256,6 +305,7 @@ struct Lesson: Identifiable, Codable {
         case interactive(url: String)
         case quiz(questions: [CourseQuizQuestion])
         case assignment(instructions: String, dueDate: Date?)
+        case cmi5(activityId: String, packageId: String)
     }
 
     var isCompleted: Bool {

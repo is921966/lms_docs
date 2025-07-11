@@ -1,7 +1,12 @@
 # TDD Methodology Version
 
-## Current Version: 1.8.0
-**Release Date:** 2025-06-30
+## Current Version: 1.8.10
+**Release Date:** 2025-07-05
+
+## What's New in 1.8.10
+- **CRITICAL**: First step of each day MUST be creating record in project_time_registry
+- Enhanced day start rules - WITHOUT DB RECORD = DAY DOESN'T EXIST
+- Fixed calendar date drift issues
 
 ## What's New in 1.8.0
 - **Comprehensive Cursor Rules System**: 7 specialized rule files for different aspects

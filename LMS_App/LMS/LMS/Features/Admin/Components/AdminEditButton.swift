@@ -113,6 +113,7 @@ struct AdminSectionHeader: View {
 }
 
 // Check if user is admin
+@MainActor
 struct AdminCheck {
     static var isAdmin: Bool {
         if let user = MockAuthService.shared.currentUser {

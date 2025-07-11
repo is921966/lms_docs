@@ -6,7 +6,7 @@ struct PostActionsView: View {
     @Binding var showingComments: Bool
     let onLike: () -> Void
     let onShare: () -> Void
-    @StateObject private var feedService = FeedService.shared
+    @StateObject private var feedService = MockFeedService.shared
 
     var body: some View {
         HStack(spacing: 0) {

@@ -229,6 +229,8 @@ public struct CreateUserDTO: DataTransferObject {
         
         if email.isEmpty {
             errors.append("Email cannot be empty")
+        } else if !isValidEmail(email) {
+            errors.append("Email format is invalid")
         }
         
         if firstName.isEmpty {
@@ -251,6 +253,14 @@ public struct CreateUserDTO: DataTransferObject {
         }
         
         return errors
+    }
+    
+    // MARK: - Private Validation Methods
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        return emailPredicate.evaluate(with: email)
     }
 }
 

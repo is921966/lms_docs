@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct LMSApp: App {
     // let persistenceController = PersistenceController.shared
-    @StateObject private var authService = AuthService.shared
+    @StateObject private var authService = MockAuthService.shared
     @StateObject private var authViewModel = AuthViewModel()
     @StateObject private var adminService = MockAdminService.shared
     @StateObject private var networkMonitor = NetworkMonitor.shared
@@ -21,6 +21,7 @@ struct LMSApp: App {
     init() {
         setupAppearance()
         setupFeedback()
+        setupReleaseNewsService() // Добавляем инициализацию сервиса новостей о релизах
 
         // Enable battery monitoring for device info
         UIDevice.current.isBatteryMonitoringEnabled = true
@@ -40,6 +41,13 @@ struct LMSApp: App {
             // КРИТИЧЕСКИ ВАЖНО: Используем FeatureRegistryManager для уведомления UI
             FeatureRegistryManager.shared.enableReadyModules()
         }
+        
+        // НОВОЕ: Для TestFlight всегда включаем готовые модули
+        // Это позволит тестировщикам видеть весь функционал
+        #if !DEBUG
+        FeatureRegistryManager.shared.enableReadyModules()
+        print("🚀 TestFlight Mode: Все готовые модули включены автоматически")
+        #endif
     }
 
     var body: some Scene {

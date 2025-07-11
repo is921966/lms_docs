@@ -195,7 +195,7 @@ final class CompetencyManagementUITests: XCTestCase {
 
         // Verify matrix cells
         let matrixCells = app.tables["competencyMatrix"].cells
-        XCTAssertTrue(!matrixCells.isEmpty)
+        XCTAssertTrue(matrixCells.count > 0)
 
         // Tap on a cell to see details
         matrixCells.firstMatch.tap()

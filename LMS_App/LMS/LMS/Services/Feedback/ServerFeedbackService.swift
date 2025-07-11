@@ -12,19 +12,24 @@ extension ServerFeedbackService {
         // Скриншот уже в формате base64 строки
         let screenshotBase64 = item.screenshot
 
-        let feedback = FeedbackModel(
-            id: item.id,
-            type: item.type.rawValue,
-            text: item.description,
-            screenshot: screenshotBase64,
-            deviceInfo: DeviceInfo(
+        // Получаем device info в main actor context
+        let deviceInfo = await MainActor.run {
+            DeviceInfo(
                 model: UIDevice.current.model,
                 osVersion: UIDevice.current.systemVersion,
                 appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown",
                 buildNumber: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown",
                 locale: Locale.current.identifier,
                 screenSize: "\(Int(UIScreen.main.bounds.width))x\(Int(UIScreen.main.bounds.height))"
-            ),
+            )
+        }
+
+        let feedback = FeedbackModel(
+            id: item.id,
+            type: item.type.rawValue,
+            text: item.description,
+            screenshot: screenshotBase64,
+            deviceInfo: deviceInfo,
             timestamp: item.createdAt,
             userId: item.authorId,
             userEmail: item.author,

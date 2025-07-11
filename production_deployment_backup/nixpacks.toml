@@ -1,0 +1,19 @@
+# nixpacks.toml
+
+[phases.setup]
+nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_pgsql", "php82Extensions.mbstring", "php82Extensions.xml", "php82Extensions.ctype", "php82Extensions.json", "php82Extensions.tokenizer", "php82Extensions.curl", "php82Extensions.intl", "php82Extensions.redis", "php82Extensions.openssl", "php82Extensions.zip", "nodejs", "postgresql"]
+
+[phases.install]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist",
+    "npm install --production"
+]
+
+[phases.build]
+cmds = [
+    "php bin/console cache:clear --env=prod --no-debug",
+    "php bin/console assets:install --env=prod --no-debug"
+]
+
+[start]
+cmd = "php -S 0.0.0.0:$PORT -t public/" 

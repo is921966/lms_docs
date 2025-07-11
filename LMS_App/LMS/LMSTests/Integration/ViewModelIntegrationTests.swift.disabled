@@ -1,0 +1,345 @@
+import XCTest
+import Combine
+@testable import LMS
+
+final class ViewModelIntegrationTests: XCTestCase {
+    
+    // MARK: - Properties
+    var authViewModel: AuthViewModel!
+    var userViewModel: UserViewModel!
+    var courseViewModel: CourseViewModel!
+    var analyticsViewModel: AnalyticsViewModel!
+    var notificationService: NotificationService!
+    var cancellables: Set<AnyCancellable>!
+    
+    // MARK: - Setup
+    override func setUp() {
+        super.setUp()
+        
+        // Reset all services
+        MockAuthService.shared.resetForTesting()
+        
+        // Initialize components
+        authViewModel = AuthViewModel()
+        userViewModel = UserViewModel()
+        courseViewModel = CourseViewModel()
+        analyticsViewModel = AnalyticsViewModel()
+        notificationService = NotificationService.shared
+        cancellables = []
+    }
+    
+    override func tearDown() {
+        cancellables = nil
+        authViewModel = nil
+        userViewModel = nil
+        courseViewModel = nil
+        analyticsViewModel = nil
+        notificationService = nil
+        MockAuthService.shared.resetForTesting()
+        super.tearDown()
+    }
+    
+    // MARK: - Auth & User Integration Tests
+    
+    func testLoginFlowWithUserDataSync() async throws {
+        // Given
+        let email = "test@example.com"
+        let password = "password123"
+        
+        // When - Login
+        let loginResponse = try await authViewModel.login(email: email, password: password)
+        
+        // Then - Auth state should be updated
+        XCTAssertTrue(authViewModel.isAuthenticated)
+        XCTAssertNotNil(authViewModel.authUser)
+        XCTAssertEqual(authViewModel.authUser?.email, email)
+        
+        // And - UserViewModel should reflect authenticated state
+        await MainActor.run {
+            XCTAssertTrue(userViewModel.isAuthenticated)
+        }
+    }
+    
+    func testLogoutClearsAllUserData() async throws {
+        // Given - User is logged in
+        _ = try await authViewModel.login(email: "admin@example.com", password: "admin123")
+        XCTAssertTrue(authViewModel.isAuthenticated)
+        
+        // When - Logout
+        try await authViewModel.logout()
+        
+        // Then - All user data should be cleared
+        XCTAssertFalse(authViewModel.isAuthenticated)
+        XCTAssertNil(authViewModel.authUser)
+        
+        // And - UserViewModel should also be cleared
+        await MainActor.run {
+            XCTAssertFalse(userViewModel.isAuthenticated)
+            XCTAssertTrue(userViewModel.filteredUsers.isEmpty)
+        }
+    }
+    
+    // MARK: - Course Enrollment & Analytics Integration
+    
+    func testCourseEnrollmentTracksAnalytics() async {
+        // Given
+        let expectation = XCTestExpectation(description: "Analytics tracked")
+        
+        // Login first
+        _ = try? await authViewModel.login(email: "student@example.com", password: "password")
+        
+        // Monitor analytics events
+        var analyticsEventCount = 0
+        analyticsViewModel.$analyticsData
+            .sink { data in
+                analyticsEventCount = data.count
+            }
+            .store(in: &cancellables)
+        
+        // Wait for courses to load
+        await Task.sleep(nanoseconds: 700_000_000) // 0.7 seconds
+        
+        // When - Enroll in a course
+        if let course = courseViewModel.availableCourses.first {
+            let initialAnalyticsCount = analyticsEventCount
+            
+            courseViewModel.enrollInCourse(course)
+            
+            // Then - Analytics should track the enrollment
+            await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+            
+            await MainActor.run {
+                // Analytics service should have tracked the event
+                let newEvent = analyticsViewModel.analyticsData.last
+                XCTAssertNotNil(newEvent)
+                
+                // Event should be course progress type
+                if let event = newEvent {
+                    XCTAssertEqual(event.type, .courseProgress)
+                    XCTAssertEqual(event.metadata?["courseId"], course.id)
+                }
+                
+                expectation.fulfill()
+            }
+        }
+        
+        await fulfillment(of: [expectation], timeout: 2.0)
+    }
+    
+    // MARK: - User Management & Notification Integration
+    
+    func testUserApprovalSendsNotification() async {
+        // Given
+        let expectation = XCTestExpectation(description: "Notification sent")
+        
+        // Login as admin
+        _ = try? await authViewModel.login(email: "admin@example.com", password: "admin")
+        
+        // Monitor notifications
+        let initialNotificationCount = notificationService.notifications.count
+        
+        notificationService.$notifications
+            .dropFirst()
+            .sink { notifications in
+                if notifications.count > initialNotificationCount {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // When - Approve a user
+        let userManagementVM = UserManagementViewModel()
+        await userManagementVM.loadPendingUsers()
+        
+        if let pendingUser = await userManagementVM.pendingUsers.first {
+            await userManagementVM.approveUser(pendingUser)
+            
+            // Then - Notification should be sent
+            await fulfillment(of: [expectation], timeout: 2.0)
+            
+            let latestNotification = notificationService.notifications.first
+            XCTAssertNotNil(latestNotification)
+            XCTAssertTrue(latestNotification?.message.contains("approved") ?? false)
+        }
+    }
+    
+    // MARK: - Analytics Report Generation Integration
+    
+    func testReportGenerationWithRealData() async {
+        // Given
+        let expectation = XCTestExpectation(description: "Report generated")
+        
+        // Generate some test data
+        for i in 1...5 {
+            let event = AnalyticsData(
+                userId: "user-\(i)",
+                timestamp: Date(),
+                type: .courseProgress,
+                metrics: ["progress": Double(i) * 0.2],
+                metadata: ["courseId": "course-\(i)"]
+            )
+            analyticsViewModel.trackEvent(event)
+        }
+        
+        // When - Generate report
+        let report = Report(
+            title: "Integration Test Report",
+            description: "Test report with real data",
+            type: .learningProgress,
+            status: .generating,
+            period: .week,
+            createdBy: "test-user"
+        )
+        
+        analyticsViewModel.generateReport(report)
+            .sink(
+                receiveCompletion: { completion in
+                    if case .failure = completion {
+                        XCTFail("Report generation should not fail")
+                    }
+                },
+                receiveValue: { generatedReport in
+                    // Then
+                    XCTAssertEqual(generatedReport.status, .ready)
+                    XCTAssertFalse(generatedReport.sections.isEmpty)
+                    expectation.fulfill()
+                }
+            )
+            .store(in: &cancellables)
+        
+        await fulfillment(of: [expectation], timeout: 3.0)
+    }
+    
+    // MARK: - Full User Journey Test
+    
+    func testCompleteUserJourney() async throws {
+        // 1. User Registration/Login
+        let loginResponse = try await authViewModel.login(
+            email: "newuser@example.com",
+            password: "password123"
+        )
+        XCTAssertTrue(authViewModel.isAuthenticated)
+        
+        // 2. Load available courses
+        await Task.sleep(nanoseconds: 700_000_000) // Wait for courses to load
+        XCTAssertFalse(courseViewModel.availableCourses.isEmpty)
+        
+        // 3. Enroll in courses
+        let coursesToEnroll = Array(courseViewModel.availableCourses.prefix(3))
+        for course in coursesToEnroll {
+            courseViewModel.enrollInCourse(course)
+            await Task.sleep(nanoseconds: 100_000_000) // Small delay between enrollments
+        }
+        
+        // 4. Check analytics tracking
+        await Task.sleep(nanoseconds: 700_000_000) // Wait for reload
+        let userEvents = analyticsViewModel.analyticsData.filter { 
+            $0.userId == loginResponse.user.id 
+        }
+        XCTAssertGreaterThan(userEvents.count, 0)
+        
+        // 5. Check notifications
+        let userNotifications = notificationService.notifications.filter {
+            $0.type == .courseAssigned
+        }
+        XCTAssertGreaterThan(userNotifications.count, 0)
+        
+        // 6. Generate user performance report
+        let performance = analyticsViewModel.getUserPerformance(
+            userId: loginResponse.user.id,
+            period: .week
+        )
+        XCTAssertNotNil(performance)
+        XCTAssertGreaterThan(performance?.completedCourses ?? 0, 0)
+        
+        // 7. Logout
+        try await authViewModel.logout()
+        XCTAssertFalse(authViewModel.isAuthenticated)
+    }
+    
+    // MARK: - Error Handling Integration
+    
+    func testErrorPropagationAcrossViewModels() async {
+        // Given - Force auth service to fail
+        MockAuthService.shared.shouldFail = true
+        MockAuthService.shared.authError = APIError.serverError(500)
+        
+        // When - Try to login
+        do {
+            _ = try await authViewModel.login(email: "test@example.com", password: "password")
+            XCTFail("Login should fail")
+        } catch {
+            // Then - Error should be properly handled
+            XCTAssertNotNil(authViewModel.errorMessage)
+            XCTAssertFalse(authViewModel.isAuthenticated)
+            
+            // And - Other ViewModels should remain in consistent state
+            XCTAssertFalse(userViewModel.isAuthenticated)
+            XCTAssertTrue(courseViewModel.enrolledCourses.isEmpty)
+        }
+        
+        // Cleanup
+        MockAuthService.shared.shouldFail = false
+        MockAuthService.shared.authError = nil
+    }
+    
+    // MARK: - Concurrent Operations Test
+    
+    func testConcurrentViewModelOperations() async {
+        // Given
+        let expectation = XCTestExpectation(description: "Concurrent operations")
+        expectation.expectedFulfillmentCount = 4
+        
+        // When - Perform multiple operations concurrently
+        Task {
+            _ = try? await authViewModel.login(email: "user1@example.com", password: "pass")
+            expectation.fulfill()
+        }
+        
+        Task {
+            await userViewModel.loadUsers()
+            expectation.fulfill()
+        }
+        
+        Task {
+            courseViewModel.loadCourses()
+            await Task.sleep(nanoseconds: 600_000_000)
+            expectation.fulfill()
+        }
+        
+        Task {
+            let summary = analyticsViewModel.getAnalyticsSummary(for: .week)
+            XCTAssertNotNil(summary)
+            expectation.fulfill()
+        }
+        
+        // Then - All operations should complete without deadlock
+        await fulfillment(of: [expectation], timeout: 3.0)
+    }
+    
+    // MARK: - Memory Management Test
+    
+    func testViewModelMemoryManagement() {
+        // Given
+        weak var weakAuthVM = authViewModel
+        weak var weakCourseVM = courseViewModel
+        weak var weakAnalyticsVM = analyticsViewModel
+        
+        let expectation = XCTestExpectation(description: "Memory released")
+        
+        // When - Release strong references
+        authViewModel = nil
+        courseViewModel = nil
+        analyticsViewModel = nil
+        
+        // Then - Objects should be deallocated
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertNil(weakAuthVM)
+            XCTAssertNil(weakCourseVM)
+            XCTAssertNil(weakAnalyticsVM)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
+} 

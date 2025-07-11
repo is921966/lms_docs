@@ -33,6 +33,8 @@ struct CourseEditView: View {
         self._selectedType = State(initialValue: course.type)
         self._selectedStatus = State(initialValue: course.status)
         self._modules = State(initialValue: course.modules)
+        
+        print("CourseEditView initialized with course: \(course.title)")
     }
 
     var selectedCategory: CourseCategory? {
@@ -40,7 +42,13 @@ struct CourseEditView: View {
     }
 
     var body: some View {
-        NavigationView {
+        VStack {
+            // Debug header
+            Text("DEBUG: CourseEditView")
+                .font(.caption)
+                .foregroundColor(.red)
+                .padding(.top)
+            
             Form {
                 // Basic info section
                 Section("Основная информация") {
@@ -189,46 +197,49 @@ struct CourseEditView: View {
                     )
                 }
             }
-            .navigationTitle("Редактирование курса")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Отмена") {
-                        dismiss()
-                    }
-                }
-
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Сохранить") {
-                        saveCourse()
-                    }
-                    .fontWeight(.bold)
-                }
-            }
-            .sheet(isPresented: $showingAddModule) {
-                AddModuleView { newModule in
-                    modules.append(newModule)
-                }
-            }
-            .sheet(isPresented: $showingCompetencyLink) {
-                CourseCompetencyLinkView(course: $course)
-            }
-            .sheet(isPresented: $showingPositionLink) {
-                CoursePositionLinkView(course: $course)
-            }
-            .sheet(isPresented: $showingTestLink) {
-                CourseTestLinkView(course: $course)
-            }
-            .sheet(isPresented: $showingMaterialsManagement) {
-                CourseMaterialsView(course: $course)
-            }
-            .alert("Изменения сохранены", isPresented: $showingSaveAlert) {
-                Button("OK") {
+        }
+        .navigationTitle("Редактирование курса")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Отмена") {
                     dismiss()
                 }
-            } message: {
-                Text("Курс успешно обновлен")
             }
+
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Сохранить") {
+                    saveCourse()
+                }
+                .fontWeight(.bold)
+            }
+        }
+        .sheet(isPresented: $showingAddModule) {
+            AddModuleView { newModule in
+                modules.append(newModule)
+            }
+        }
+        .sheet(isPresented: $showingCompetencyLink) {
+            CourseCompetencyLinkView(course: $course)
+        }
+        .sheet(isPresented: $showingPositionLink) {
+            CoursePositionLinkView(course: $course)
+        }
+        .sheet(isPresented: $showingTestLink) {
+            CourseTestLinkView(course: $course)
+        }
+        .sheet(isPresented: $showingMaterialsManagement) {
+            CourseMaterialsView(course: $course)
+        }
+        .alert("Изменения сохранены", isPresented: $showingSaveAlert) {
+            Button("OK") {
+                dismiss()
+            }
+        } message: {
+            Text("Курс успешно обновлен")
+        }
+        .onAppear {
+            print("CourseEditView appeared with course: \(course.title)")
         }
     }
 
@@ -442,5 +453,27 @@ struct CoursePreviewCard: View {
         .padding()
         .background(Color.gray.opacity(0.05))
         .cornerRadius(15)
+    }
+}
+
+#Preview {
+    NavigationView {
+        CourseEditView(course: Course(
+            title: "Тестовый курс",
+            description: "Описание тестового курса",
+            categoryId: CourseCategory.categories.first?.id,
+            status: .published,
+            type: .mandatory,
+            modules: [
+                Module(
+                    title: "Модуль 1",
+                    description: "Первый модуль",
+                    orderIndex: 0,
+                    lessons: []
+                )
+            ],
+            duration: "8 часов",
+            createdBy: UUID()
+        ))
     }
 }

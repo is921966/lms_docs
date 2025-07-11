@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CreatePostView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var feedService = FeedService.shared
+    @StateObject private var feedService = MockFeedService.shared
     @StateObject private var authService = MockAuthService.shared
 
     @State private var postContent = ""
@@ -23,7 +23,7 @@ struct CreatePostView: View {
                     .fill(Color.blue.opacity(0.2))
                     .frame(width: 50, height: 50)
                     .overlay(
-                        Text(authService.currentUser?.firstName.prefix(1).uppercased() ?? "?")
+                        Text((authService.currentUser?.firstName ?? "?").prefix(1).uppercased())
                             .font(.title3)
                             .fontWeight(.semibold)
                             .foregroundColor(.blue)

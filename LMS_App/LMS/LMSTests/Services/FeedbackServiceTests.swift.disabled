@@ -1,0 +1,296 @@
+//
+//  FeedbackServiceTests.swift
+//  LMSTests
+//
+//  Created on 11/07/2025.
+//
+
+import XCTest
+import Combine
+@testable import LMS
+
+final class FeedbackServiceTests: XCTestCase {
+    private var sut: FeedbackService!
+    private var cancellables: Set<AnyCancellable>!
+    
+    override func setUp() {
+        super.setUp()
+        sut = FeedbackService.shared
+        sut.feedbacks = [] // Clear any existing feedbacks
+        sut.pendingFeedbacks = []
+        cancellables = Set<AnyCancellable>()
+    }
+    
+    override func tearDown() {
+        cancellables = nil
+        sut.feedbacks = []
+        sut.pendingFeedbacks = []
+        sut = nil
+        super.tearDown()
+    }
+    
+    // MARK: - Initialization Tests
+    
+    func testSharedInstance() {
+        // Given/When
+        let instance1 = FeedbackService.shared
+        let instance2 = FeedbackService.shared
+        
+        // Then - should be same instance
+        XCTAssertTrue(instance1 === instance2)
+    }
+    
+    func testInitialState() {
+        // Check initial state
+        XCTAssertNotNil(sut.feedbacks)
+        XCTAssertNotNil(sut.pendingFeedbacks)
+        XCTAssertFalse(sut.isLoading)
+        XCTAssertNil(sut.errorMessage)
+        XCTAssertNotNil(sut.performanceMetrics)
+    }
+    
+    // MARK: - Load Feedbacks Tests
+    
+    func testLoadFeedbacks() async {
+        // Given
+        sut.feedbacks = []
+        
+        // When
+        await sut.loadFeedbacks()
+        
+        // Then - should load mock feedbacks
+        XCTAssertFalse(sut.feedbacks.isEmpty)
+        XCTAssertFalse(sut.isLoading)
+    }
+    
+    func testRefreshFeedbacks() async {
+        // Given
+        sut.feedbacks = []
+        
+        // When
+        await sut.refreshFeedbacks()
+        
+        // Then - should refresh feedbacks
+        XCTAssertFalse(sut.feedbacks.isEmpty)
+    }
+    
+    // MARK: - Create Feedback Tests
+    
+    func testCreateFeedback() async {
+        // Given
+        let feedbackModel = FeedbackModel(
+            type: "bug",
+            text: "Test bug report",
+            screenshot: nil
+        )
+        let initialCount = sut.feedbacks.count
+        
+        // When
+        let success = await sut.createFeedback(feedbackModel)
+        
+        // Then
+        XCTAssertTrue(success)
+        XCTAssertEqual(sut.feedbacks.count, initialCount + 1)
+        
+        // Check the created feedback
+        if let createdFeedback = sut.feedbacks.first {
+            XCTAssertEqual(createdFeedback.title, "Bug Report")
+            XCTAssertEqual(createdFeedback.description, "Test bug report")
+            XCTAssertEqual(createdFeedback.type, .bug)
+            XCTAssertTrue(createdFeedback.isOwnFeedback)
+        }
+    }
+    
+    func testCreateFeedbackWithScreenshot() async {
+        // Given
+        let feedbackModel = FeedbackModel(
+            type: "feature",
+            text: "Test feature request",
+            screenshot: "base64_test_screenshot"
+        )
+        
+        // When
+        let success = await sut.createFeedback(feedbackModel)
+        
+        // Then
+        XCTAssertTrue(success)
+        if let createdFeedback = sut.feedbacks.first {
+            XCTAssertEqual(createdFeedback.screenshot, "base64_test_screenshot")
+        }
+    }
+    
+    // MARK: - Reaction Tests
+    
+    func testAddReaction() async {
+        // Given - load feedbacks first
+        await sut.loadFeedbacks()
+        guard let feedback = sut.feedbacks.first else {
+            XCTFail("No feedbacks loaded")
+            return
+        }
+        
+        let initialLikes = feedback.reactions.like
+        
+        // When
+        sut.addReaction(to: feedback.id, reaction: .like)
+        
+        // Then
+        if let updatedFeedback = sut.feedbacks.first(where: { $0.id == feedback.id }) {
+            XCTAssertEqual(updatedFeedback.reactions.like, initialLikes + 1)
+            XCTAssertEqual(updatedFeedback.userReaction, .like)
+        }
+    }
+    
+    func testRemoveReaction() async {
+        // Given - load feedbacks and add reaction first
+        await sut.loadFeedbacks()
+        guard let feedback = sut.feedbacks.first else {
+            XCTFail("No feedbacks loaded")
+            return
+        }
+        
+        // Add reaction
+        sut.addReaction(to: feedback.id, reaction: .heart)
+        
+        // When - add same reaction again (should remove it)
+        sut.addReaction(to: feedback.id, reaction: .heart)
+        
+        // Then
+        if let updatedFeedback = sut.feedbacks.first(where: { $0.id == feedback.id }) {
+            XCTAssertNil(updatedFeedback.userReaction)
+        }
+    }
+    
+    func testChangeReaction() async {
+        // Given - load feedbacks and add reaction first
+        await sut.loadFeedbacks()
+        guard let feedback = sut.feedbacks.first else {
+            XCTFail("No feedbacks loaded")
+            return
+        }
+        
+        // Add initial reaction
+        sut.addReaction(to: feedback.id, reaction: .like)
+        let initialLikes = sut.feedbacks.first(where: { $0.id == feedback.id })?.reactions.like ?? 0
+        
+        // When - change to different reaction
+        sut.addReaction(to: feedback.id, reaction: .heart)
+        
+        // Then
+        if let updatedFeedback = sut.feedbacks.first(where: { $0.id == feedback.id }) {
+            XCTAssertEqual(updatedFeedback.userReaction, .heart)
+            XCTAssertEqual(updatedFeedback.reactions.like, initialLikes - 1)
+            XCTAssertGreaterThan(updatedFeedback.reactions.heart, 0)
+        }
+    }
+    
+    // MARK: - Comment Tests
+    
+    func testAddComment() async {
+        // Given - load feedbacks first
+        await sut.loadFeedbacks()
+        guard let feedback = sut.feedbacks.first else {
+            XCTFail("No feedbacks loaded")
+            return
+        }
+        
+        let initialCommentCount = feedback.comments.count
+        let testComment = "Test comment"
+        
+        // When
+        sut.addComment(to: feedback.id, comment: testComment)
+        
+        // Then
+        if let updatedFeedback = sut.feedbacks.first(where: { $0.id == feedback.id }) {
+            XCTAssertEqual(updatedFeedback.comments.count, initialCommentCount + 1)
+            
+            if let lastComment = updatedFeedback.comments.last {
+                XCTAssertEqual(lastComment.text, testComment)
+                XCTAssertEqual(lastComment.author, "Текущий пользователь")
+            }
+        }
+    }
+    
+    func testAddEmptyComment() async {
+        // Given - load feedbacks first
+        await sut.loadFeedbacks()
+        guard let feedback = sut.feedbacks.first else {
+            XCTFail("No feedbacks loaded")
+            return
+        }
+        
+        let initialCommentCount = feedback.comments.count
+        
+        // When - try to add empty comment
+        sut.addComment(to: feedback.id, comment: "   ")
+        
+        // Then - should not add empty comment
+        if let updatedFeedback = sut.feedbacks.first(where: { $0.id == feedback.id }) {
+            XCTAssertEqual(updatedFeedback.comments.count, initialCommentCount)
+        }
+    }
+    
+    // MARK: - Network Status Tests
+    
+    func testNetworkStatusEnum() {
+        // Test all network status cases
+        XCTAssertEqual(NetworkStatus.connected.emoji, "🟢")
+        XCTAssertEqual(NetworkStatus.disconnected.emoji, "🔴")
+        XCTAssertEqual(NetworkStatus.unknown.emoji, "🟡")
+        
+        XCTAssertEqual(NetworkStatus.connected.description, "Connected")
+        XCTAssertEqual(NetworkStatus.disconnected.description, "Offline")
+        XCTAssertEqual(NetworkStatus.unknown.description, "Unknown")
+    }
+    
+    // MARK: - Performance Metrics Tests
+    
+    func testPerformanceMetricsInitialization() {
+        // Check initial metrics
+        let metrics = sut.performanceMetrics
+        XCTAssertEqual(metrics.averageGitHubCreateTime, 0)
+        XCTAssertEqual(metrics.successRate, 0)
+        XCTAssertEqual(metrics.totalFeedbacksCreated, 0)
+        XCTAssertNil(metrics.lastSyncTime)
+    }
+    
+    // MARK: - Edge Cases
+    
+    func testAddReactionToNonExistentFeedback() {
+        // Given
+        let nonExistentId = UUID()
+        
+        // When - should not crash
+        sut.addReaction(to: nonExistentId, reaction: .like)
+        
+        // Then - nothing should change
+        XCTAssertNotNil(sut)
+    }
+    
+    func testAddCommentToNonExistentFeedback() {
+        // Given
+        let nonExistentId = UUID()
+        
+        // When - should not crash
+        sut.addComment(to: nonExistentId, comment: "Test")
+        
+        // Then - nothing should change
+        XCTAssertNotNil(sut)
+    }
+    
+    // MARK: - Publisher Tests
+    
+    func testIsLoadingPublisher() {
+        let expectation = XCTestExpectation(description: "Publisher emits value")
+        
+        // Subscribe to publisher
+        sut.$isLoading
+            .sink { value in
+                XCTAssertNotNil(value)
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
+} 

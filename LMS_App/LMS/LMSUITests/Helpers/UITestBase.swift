@@ -1,7 +1,7 @@
 import XCTest
 
 class UITestBase: XCTestCase {
-    private var app: XCUIApplication!
+    var app: XCUIApplication!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -19,7 +19,7 @@ class UITestBase: XCTestCase {
 
     // MARK: - Helper Methods
 
-    private func login(as role: UserRole) {
+    func login(as role: UserRole) {
         let email = role == .admin ? "admin@company.com" : "student@company.com"
         let password = "password123"
 
@@ -39,25 +39,25 @@ class UITestBase: XCTestCase {
         waitForElement(app.tabBars.firstMatch)
     }
 
-    private func logout() {
+    func logout() {
         app.tabBars.buttons["Профиль"].tap()
         app.buttons["logoutButton"].tap()
         app.alerts.buttons["Выйти"].tap()
     }
 
-    private func waitForElement(_ element: XCUIElement, timeout: TimeInterval = 5) {
+    func waitForElement(_ element: XCUIElement, timeout: TimeInterval = 5) {
         let exists = element.waitForExistence(timeout: timeout)
         XCTAssertTrue(exists, "Element \(element) did not appear in \(timeout) seconds")
     }
 
-    private func waitForElementToDisappear(_ element: XCUIElement, timeout: TimeInterval = 5) {
+    func waitForElementToDisappear(_ element: XCUIElement, timeout: TimeInterval = 5) {
         let predicate = NSPredicate(format: "exists == false")
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
         let result = XCTWaiter().wait(for: [expectation], timeout: timeout)
         XCTAssertEqual(result, .completed)
     }
 
-    private func clearAndTypeText(_ element: XCUIElement, text: String) {
+    func clearAndTypeText(_ element: XCUIElement, text: String) {
         element.tap()
 
         // Clear existing text
@@ -74,7 +74,7 @@ class UITestBase: XCTestCase {
         }
     }
 
-    private func swipeToElement(_ element: XCUIElement, in scrollView: XCUIElement? = nil, maxSwipes: Int = 10) {
+    func swipeToElement(_ element: XCUIElement, in scrollView: XCUIElement? = nil, maxSwipes: Int = 10) {
         let scrollableElement = scrollView ?? app.scrollViews.firstMatch
         var swipeCount = 0
 
@@ -86,26 +86,26 @@ class UITestBase: XCTestCase {
         XCTAssertTrue(element.isHittable, "Element not found after \(swipeCount) swipes")
     }
 
-    private func takeScreenshot(name: String) {
+    func takeScreenshot(name: String) {
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = name
         screenshot.lifetime = .keepAlways
         add(screenshot)
     }
 
-    private func dismissKeyboard() {
-        if !app.keyboards.isEmpty {
+    func dismissKeyboard() {
+        if app.keyboards.count > 0 {
             app.toolbars.buttons["Done"].tap()
         }
     }
 
-    private func pullToRefresh(in element: XCUIElement? = nil) {
+    func pullToRefresh(in element: XCUIElement? = nil) {
         let scrollView = element ?? app.scrollViews.firstMatch
         scrollView.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1))
             .press(forDuration: 0, thenDragTo: scrollView.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.8)))
     }
 
-    private func checkAlert(title: String, message: String? = nil, dismiss: Bool = true) {
+    func checkAlert(title: String, message: String? = nil, dismiss: Bool = true) {
         let alert = app.alerts[title]
         waitForElement(alert)
 

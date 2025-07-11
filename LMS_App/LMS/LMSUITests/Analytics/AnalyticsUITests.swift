@@ -83,7 +83,7 @@ final class AnalyticsUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Отчет по завершению курсов"].waitForExistence(timeout: 3))
 
         // Verify table with data is shown
-        XCTAssertTrue(!app.tables["courseCompletionReportTable"].cells.isEmpty)
+        XCTAssertTrue(app.tables["courseCompletionReportTable"].cells.count > 0)
     }
 
     // MARK: - Reports Tests

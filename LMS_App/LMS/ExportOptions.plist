@@ -5,14 +5,19 @@
     <key>method</key>
     <string>app-store</string>
     <key>teamID</key>
-    <string>N85286S93X</string>
-    <key>uploadSymbols</key>
+    <string>YOUR_TEAM_ID</string>
+    <key>uploadBitcode</key>
     <true/>
     <key>compileBitcode</key>
-    <false/>
-    <key>stripSwiftSymbols</key>
+    <true/>
+    <key>uploadSymbols</key>
     <true/>
     <key>signingStyle</key>
     <string>automatic</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.yourcompany.lms</key>
+        <string>YOUR_PROVISIONING_PROFILE_NAME</string>
+    </dict>
 </dict>
-</plist>
+</plist> 

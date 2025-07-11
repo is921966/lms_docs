@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<courseStructure xmlns="https://w3id.org/xapi/profiles/cmi5/v1/CourseStructure.xsd">
+    <course id="course_corporate_culture_tsum_v1">
+        <title>
+            <langstring lang="ru">Корпоративная культура ЦУМ</langstring>
+            <langstring lang="en">TSUM Corporate Culture</langstring>
+        </title>
+        <description>
+            <langstring lang="ru">Базовый курс для новых сотрудников о корпоративной культуре, ценностях и принципах работы в ЦУМ</langstring>
+            <langstring lang="en">Basic course for new employees about corporate culture, values and work principles at TSUM</langstring>
+        </description>
+        
+        <!-- Блок 1: Введение в компанию -->
+        <block id="block_1_introduction">
+            <title>
+                <langstring lang="ru">Модуль 1: Знакомство с ЦУМ</langstring>
+            </title>
+            <description>
+                <langstring lang="ru">История, миссия и ценности компании</langstring>
+            </description>
+            
+            <!-- AU 1: История ЦУМ -->
+            <au id="au_1_history" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">История ЦУМ</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Узнайте об истории создания и развития ЦУМ</langstring>
+                </description>
+                <url>content/module1_history.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <launchParameters></launchParameters>
+                <entitlementKey></entitlementKey>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <!-- AU 2: Миссия и ценности -->
+            <au id="au_2_mission" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Миссия и ценности</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Наша миссия и корпоративные ценности</langstring>
+                </description>
+                <url>content/module2_mission.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <!-- AU 3: Тест по первому модулю -->
+            <au id="au_3_test1" moveOn="passed" masteryScore="0.75">
+                <title>
+                    <langstring lang="ru">Тест: Знакомство с компанией</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Проверьте свои знания о ЦУМ</langstring>
+                </description>
+                <url>assessments/test1_introduction.html</url>
+                <launchMethod>OwnWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/assessment</activityType>
+            </au>
+        </block>
+        
+        <!-- Блок 2: Корпоративная культура -->
+        <block id="block_2_culture">
+            <title>
+                <langstring lang="ru">Модуль 2: Корпоративная культура</langstring>
+            </title>
+            <description>
+                <langstring lang="ru">Принципы работы и корпоративная этика</langstring>
+            </description>
+            
+            <!-- AU 4: Принципы работы -->
+            <au id="au_4_principles" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Принципы работы в ЦУМ</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Основные принципы и правила работы</langstring>
+                </description>
+                <url>content/module3_principles.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <!-- AU 5: Корпоративная этика -->
+            <au id="au_5_ethics" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Корпоративная этика</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Этические нормы и стандарты поведения</langstring>
+                </description>
+                <url>content/module4_ethics.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <!-- AU 6: Видео от руководства -->
+            <au id="au_6_video" moveOn="completed">
+                <title>
+                    <langstring lang="ru">Обращение руководства</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Видеообращение от генерального директора</langstring>
+                </description>
+                <url>media/ceo_message.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/media</activityType>
+            </au>
+        </block>
+        
+        <!-- Блок 3: Практические навыки -->
+        <block id="block_3_practice">
+            <title>
+                <langstring lang="ru">Модуль 3: Практические навыки</langstring>
+            </title>
+            <description>
+                <langstring lang="ru">Практические аспекты работы в ЦУМ</langstring>
+            </description>
+            
+            <!-- AU 7: Работа с клиентами -->
+            <au id="au_7_customers" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Работа с клиентами</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Стандарты обслуживания клиентов ЦУМ</langstring>
+                </description>
+                <url>content/module5_customers.html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <!-- AU 8: Итоговый тест -->
+            <au id="au_8_final_test" moveOn="passed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">Итоговый тест</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">Комплексная проверка знаний по всему курсу</langstring>
+                </description>
+                <url>assessments/final_test.html</url>
+                <launchMethod>OwnWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/assessment</activityType>
+            </au>
+        </block>
+    </course>
+    
+    <vendor>
+        <name>ЦУМ Learning & Development</name>
+        <url>https://lms.tsum.ru</url>
+        <email>learning@tsum.ru</email>
+    </vendor>
+</courseStructure> 

@@ -32,6 +32,8 @@ struct AdminDashboardView: View {
                 .padding(.horizontal)
 
                 // Pending approvals alert
+                // TODO: Implement pending approvals functionality
+                /*
                 if notificationService.pendingApprovals > 0 {
                     Button(action: {
                         showingPendingUsers = true
@@ -61,6 +63,7 @@ struct AdminDashboardView: View {
                     }
                     .padding(.horizontal)
                 }
+                */
 
                 // System statistics
                 SystemStatsSection()
@@ -92,10 +95,10 @@ struct AdminDashboardView: View {
                         if notificationService.unreadCount > 0 {
                             Circle()
                                 .fill(Color.red)
-                                .frame(width: 16, height: 16)
+                                .frame(width: 12, height: 12)
                                 .overlay(
                                     Text("\(notificationService.unreadCount)")
-                                        .font(.system(size: 10, weight: .bold))
+                                        .font(.system(size: 8, weight: .bold))
                                         .foregroundColor(.white)
                                 )
                                 .offset(x: 8, y: -8)

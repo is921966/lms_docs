@@ -99,7 +99,7 @@ class UserListViewModel: ObservableObject {
         clearError()
         
         do {
-            let pagination = PaginationRequest(page: currentPage, pageSize: pageSize)
+            let pagination = PaginationRequest(page: currentPage, limit: pageSize)
             let result = try await userRepository.findAll(pagination: pagination)
             
             users = result.items
@@ -120,7 +120,7 @@ class UserListViewModel: ObservableObject {
         
         do {
             let nextPage = currentPage + 1
-            let pagination = PaginationRequest(page: nextPage, pageSize: pageSize)
+            let pagination = PaginationRequest(page: nextPage, limit: pageSize)
             
             let result: PaginatedResult<DomainUser>
             
@@ -224,7 +224,7 @@ class UserListViewModel: ObservableObject {
         hasMorePages = true
         
         do {
-            let pagination = PaginationRequest(page: currentPage, pageSize: pageSize)
+            let pagination = PaginationRequest(page: currentPage, limit: pageSize)
             let result = try await performFilteredSearch(pagination: pagination)
             
             filteredUsers = result.items

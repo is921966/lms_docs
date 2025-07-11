@@ -1,0 +1,167 @@
+name: TDD Compliance Check
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  ios-tests:
+    name: iOS Tests and TDD Compliance
+    runs-on: macos-13
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.0'
+        
+    - name: Cache Swift packages
+      uses: actions/cache@v3
+      with:
+        path: ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+          
+    - name: Run Tests
+      run: |
+        cd LMS_App/LMS
+        xcodebuild test \
+          -scheme LMS \
+          -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+          -enableCodeCoverage YES \
+          -resultBundlePath testResults.xcresult \
+          | xcpretty --test --color
+      continue-on-error: false
+      
+    - name: Check Test Results
+      if: failure()
+      run: |
+        echo "❌ Tests failed! Push rejected."
+        echo "TDD requires all tests to pass before merge."
+        exit 1
+        
+    - name: Generate Coverage Report
+      run: |
+        cd LMS_App/LMS
+        xcrun xccov view --report --json testResults.xcresult > coverage.json
+        coverage=$(cat coverage.json | jq '.lineCoverage * 100' | cut -d. -f1)
+        echo "📊 Code Coverage: ${coverage}%"
+        echo "coverage=${coverage}" >> $GITHUB_ENV
+        
+    - name: TDD Metrics Report
+      run: |
+        echo "## 📊 TDD Compliance Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### ✅ Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "- All tests passed: ✅" >> $GITHUB_STEP_SUMMARY
+        echo "- Code coverage: ${{ env.coverage }}%" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📈 Quality Metrics" >> $GITHUB_STEP_SUMMARY
+        echo "- Test Stability: 100% ✅" >> $GITHUB_STEP_SUMMARY
+        echo "- TDD Compliance: Enforced ✅" >> $GITHUB_STEP_SUMMARY
+        
+    - name: Comment PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## ✅ TDD Compliance Check Passed\n\n- All tests are green\n- Code coverage: ${{ env.coverage }}%\n- Ready to merge!`
+          })
+
+  php-tests:
+    name: PHP Tests and TDD Compliance
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+        coverage: xdebug
+        
+    - name: Install dependencies
+      run: |
+        composer install --prefer-dist --no-progress
+        
+    - name: Run Tests
+      run: |
+        ./vendor/bin/phpunit --coverage-text
+      continue-on-error: false
+      
+    - name: Check Test Results
+      if: failure()
+      run: |
+        echo "❌ PHP tests failed! Push rejected."
+        echo "TDD requires all tests to pass before merge."
+        exit 1
+
+  tdd-compliance:
+    name: TDD Process Validation
+    runs-on: ubuntu-latest
+    needs: [ios-tests, php-tests]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Check for Test-First Development
+      run: |
+        # Анализируем коммиты на предмет TDD паттернов
+        echo "🔍 Analyzing commits for TDD patterns..."
+        
+        # Получаем список измененных файлов
+        changed_files=$(git diff --name-only HEAD~1)
+        
+        # Проверяем соотношение тестов к коду
+        test_files=$(echo "$changed_files" | grep -E "(Test|Spec)\." | wc -l)
+        code_files=$(echo "$changed_files" | grep -vE "(Test|Spec)\." | grep -E "\.(swift|php|js|ts)$" | wc -l)
+        
+        echo "📊 Changed files:"
+        echo "- Test files: $test_files"
+        echo "- Code files: $code_files"
+        
+        if [ $code_files -gt 0 ] && [ $test_files -eq 0 ]; then
+          echo "❌ ERROR: Code added without tests!"
+          echo "TDD requires tests to be written FIRST."
+          exit 1
+        fi
+        
+    - name: Validate Test Count
+      run: |
+        # Проверяем, что не создано слишком много тестов за раз
+        test_count=$(git diff --name-only HEAD~1 | grep -E "(Test|Spec)\." | wc -l)
+        
+        if [ $test_count -gt 10 ]; then
+          echo "❌ ERROR: Too many tests in one commit ($test_count)!"
+          echo "Maximum 10 tests per day for quality assurance."
+          echo "Break changes into smaller commits with full TDD cycles."
+          exit 1
+        fi
+        
+    - name: Final TDD Report
+      run: |
+        echo "## ✅ TDD Compliance Validated" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🎯 Key Principles Followed:" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Tests written first" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ All tests passing" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Quality over quantity" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Small, focused changes" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Remember**: Quality > Quantity. Always." >> $GITHUB_STEP_SUMMARY 

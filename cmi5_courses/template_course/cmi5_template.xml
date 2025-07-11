@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<courseStructure xmlns="https://w3id.org/xapi/profiles/cmi5/v1/CourseStructure.xsd">
+    <course id="course_template_v1">
+        <title>
+            <langstring lang="ru">[НАЗВАНИЕ ВАШЕГО КУРСА]</langstring>
+            <langstring lang="en">[COURSE TITLE IN ENGLISH]</langstring>
+        </title>
+        <description>
+            <langstring lang="ru">[ОПИСАНИЕ КУРСА]</langstring>
+            <langstring lang="en">[COURSE DESCRIPTION]</langstring>
+        </description>
+        
+        <!-- ШАБЛОН БЛОКА/МОДУЛЯ -->
+        <!-- Скопируйте этот блок для каждого модуля вашего курса -->
+        <block id="block_1">
+            <title>
+                <langstring lang="ru">Модуль 1: [НАЗВАНИЕ МОДУЛЯ]</langstring>
+            </title>
+            <description>
+                <langstring lang="ru">[ОПИСАНИЕ МОДУЛЯ]</langstring>
+            </description>
+            
+            <!-- ШАБЛОН УЧЕБНОЙ АКТИВНОСТИ -->
+            <!-- Типы активностей:
+                 - lesson (урок)
+                 - assessment (тест)
+                 - media (видео/аудио)
+                 - simulation (симуляция)
+                 - interaction (интерактив)
+            -->
+            <au id="au_1_1" moveOn="completed" masteryScore="0.8">
+                <title>
+                    <langstring lang="ru">[НАЗВАНИЕ АКТИВНОСТИ]</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">[ОПИСАНИЕ АКТИВНОСТИ]</langstring>
+                </description>
+                <url>content/[имя_файла].html</url>
+                <launchMethod>AnyWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/lesson</activityType>
+            </au>
+            
+            <!-- ШАБЛОН ТЕСТА -->
+            <au id="au_1_test" moveOn="passed" masteryScore="0.75">
+                <title>
+                    <langstring lang="ru">Тест: [НАЗВАНИЕ ТЕСТА]</langstring>
+                </title>
+                <description>
+                    <langstring lang="ru">[ОПИСАНИЕ ТЕСТА]</langstring>
+                </description>
+                <url>assessments/[имя_теста].html</url>
+                <launchMethod>OwnWindow</launchMethod>
+                <activityType>http://adlnet.gov/expapi/activities/assessment</activityType>
+            </au>
+        </block>
+        
+        <!-- Добавьте больше блоков по необходимости -->
+        
+    </course>
+    
+    <vendor>
+        <name>[НАЗВАНИЕ ОРГАНИЗАЦИИ]</name>
+        <url>[ВАШ САЙТ]</url>
+        <email>[КОНТАКТНЫЙ EMAIL]</email>
+    </vendor>
+</courseStructure> 

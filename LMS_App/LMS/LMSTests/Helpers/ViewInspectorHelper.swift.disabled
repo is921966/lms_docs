@@ -1,0 +1,167 @@
+//
+//  ViewInspectorHelper.swift
+//  LMSTests
+//
+//  Created on 2025-07-06.
+//
+
+import SwiftUI
+import XCTest
+@testable import LMS
+
+// MARK: - Inspectable Extensions
+
+extension LoginView: Inspectable {}
+extension ContentView: Inspectable {}
+extension ProfileView: Inspectable {}
+extension SettingsView: Inspectable {}
+extension CourseListView: Inspectable {}
+extension TestPlayerView: Inspectable {}
+extension OnboardingDashboard: Inspectable {}
+extension AnalyticsDashboard: Inspectable {}
+extension FeedView: Inspectable {}
+extension AdminDashboardView: Inspectable {}
+extension MainTabView: Inspectable {}
+extension UserListView: Inspectable {}
+extension CourseDetailView: Inspectable {}
+extension NotificationListView: Inspectable {}
+extension StudentDashboardView: Inspectable {}
+
+// MARK: - Custom ViewModifiers
+
+extension View {
+    func feedbackEnabled() -> some View {
+        self
+    }
+}
+
+// MARK: - Helper Methods
+
+extension XCTestCase {
+    func findText(_ text: String, in view: InspectableView<ViewType.View<Any>>) throws -> InspectableView<ViewType.Text> {
+        return try view.find(text: text)
+    }
+    
+    func findButton(_ title: String, in view: InspectableView<ViewType.View<Any>>) throws -> InspectableView<ViewType.Button> {
+        return try view.find(button: title)
+    }
+    
+    func findTextField(_ placeholder: String, in view: InspectableView<ViewType.View<Any>>) throws -> InspectableView<ViewType.TextField> {
+        return try view.find(ViewType.TextField.self, where: { view in
+            do {
+                let placeholderText = try view.placeholderText()
+                return placeholderText?.string == placeholder
+            } catch {
+                return false
+            }
+        })
+    }
+    
+    func findSecureField(_ placeholder: String, in view: InspectableView<ViewType.View<Any>>) throws -> InspectableView<ViewType.SecureField> {
+        return try view.find(ViewType.SecureField.self, where: { view in
+            do {
+                let placeholderText = try view.placeholderText()
+                return placeholderText?.string == placeholder
+            } catch {
+                return false
+            }
+        })
+    }
+    
+    func findNavigationLink(_ title: String, in view: InspectableView<ViewType.View<Any>>) throws -> InspectableView<ViewType.NavigationLink> {
+        return try view.find(ViewType.NavigationLink.self, where: { link in
+            do {
+                let label = try link.labelView()
+                if let text = try? label.text().string {
+                    return text == title
+                }
+                if let textInLabel = try? label.find(text: title) {
+                    return true
+                }
+                return false
+            } catch {
+                return false
+            }
+        })
+    }
+    
+    func findList(in view: InspectableView<ViewType.View<Any>>) throws -> InspectableView<ViewType.List> {
+        return try view.find(ViewType.List.self)
+    }
+    
+    func findImage(systemName: String, in view: InspectableView<ViewType.View<Any>>) throws -> InspectableView<ViewType.Image> {
+        return try view.find(ViewType.Image.self, where: { image in
+            do {
+                let imageName = try image.actualImage().name()
+                return imageName == systemName
+            } catch {
+                return false
+            }
+        })
+    }
+}
+
+// MARK: - Async Testing Helpers
+
+extension XCTestCase {
+    func asyncTest<T>(
+        _ expression: @escaping () async throws -> T,
+        timeout: TimeInterval = 5.0,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) async throws -> T {
+        return try await withTimeout(seconds: timeout) {
+            try await expression()
+        }
+    }
+    
+    private func withTimeout<T>(
+        seconds: TimeInterval,
+        operation: @escaping () async throws -> T
+    ) async throws -> T {
+        return try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask {
+                return try await operation()
+            }
+            
+            group.addTask {
+                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+                throw TimeoutError()
+            }
+            
+            let result = try await group.next()!
+            group.cancelAll()
+            return result
+        }
+    }
+}
+
+struct TimeoutError: Error {
+    let description = "The operation timed out"
+}
+
+// MARK: - Mock Helpers
+
+extension XCTestCase {
+    func setupMockAuthService() -> MockAuthService {
+        let authService = MockAuthService.shared
+        authService.reset()
+        return authService
+    }
+    
+    func createMockUser(role: UserRole = .student) -> AuthUser {
+        return AuthUser(
+            id: UUID().uuidString,
+            email: "test@example.com",
+            username: "testuser",
+            firstName: "Test",
+            lastName: "User",
+            role: role,
+            isActive: true,
+            avatar: nil,
+            lastLogin: Date(),
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+    }
+} 

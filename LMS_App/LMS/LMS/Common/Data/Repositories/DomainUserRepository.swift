@@ -269,7 +269,7 @@ open class BaseDomainUserRepository: DomainUserRepositoryProtocol {
     }
     
     open func findAll(page: Int, pageSize: Int) async throws -> PaginatedResult<DomainUser> {
-        let pagination = PaginationRequest(page: page, pageSize: pageSize)
+        let pagination = PaginationRequest(page: page, limit: pageSize)
         return try await findAll(pagination: pagination)
     }
     
@@ -302,7 +302,7 @@ open class BaseDomainUserRepository: DomainUserRepositoryProtocol {
     }
     
     open func search(_ query: String, page: Int, pageSize: Int) async throws -> PaginatedResult<DomainUser> {
-        let pagination = PaginationRequest(page: page, pageSize: pageSize)
+        let pagination = PaginationRequest(page: page, limit: pageSize)
         return try await search(query, pagination: pagination)
     }
     

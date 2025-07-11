@@ -4,6 +4,7 @@ import Combine
 // MARK: - TokenRefreshManager
 
 /// Менеджер для автоматического обновления JWT токенов
+@MainActor
 final class TokenRefreshManager {
     
     // MARK: - Properties
@@ -24,10 +25,6 @@ final class TokenRefreshManager {
         setupTokenRefreshMonitoring()
     }
     
-    deinit {
-        stopTokenRefreshMonitoring()
-    }
-    
     // MARK: - Public Methods
     
     /// Начать мониторинг токенов
@@ -46,7 +43,8 @@ final class TokenRefreshManager {
         guard authService.isAuthenticated else { return }
         
         if authService.needsTokenRefresh() {
-            try await authService.refreshTokenIfNeeded()
+            // Just refresh the token
+            _ = try await authService.refreshToken()
             scheduleNextRefresh()
         }
     }
@@ -90,7 +88,7 @@ final class TokenRefreshManager {
         
         // Schedule refresh
         refreshTimer = Timer.scheduledTimer(withTimeInterval: refreshIn, repeats: false) { [weak self] _ in
-            Task {
+            Task { @MainActor in
                 try? await self?.checkAndRefreshTokenIfNeeded()
             }
         }

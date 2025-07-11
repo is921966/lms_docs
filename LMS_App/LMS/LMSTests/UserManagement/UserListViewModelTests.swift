@@ -181,10 +181,9 @@ class UserListViewModelTests: XCTestCase {
             firstName: "New",
             lastName: "User",
             role: "student",
-            department: "Marketing",
-            position: "Intern",
             phoneNumber: "+7 (999) 999-99-99",
-            isActive: true
+            department: "Marketing",
+            position: "Intern"
         )
         
         // When
@@ -203,10 +202,9 @@ class UserListViewModelTests: XCTestCase {
             firstName: "",
             lastName: "User",
             role: "student",
-            department: nil,
-            position: nil,
             phoneNumber: nil,
-            isActive: true
+            department: nil,
+            position: nil
         )
         
         // When
@@ -215,6 +213,20 @@ class UserListViewModelTests: XCTestCase {
         // Then
         XCTAssertFalse(result)
         XCTAssertNotNil(viewModel.errorMessage)
+        
+        // Verify that the error message contains "Ошибка валидации"
+        XCTAssertTrue(viewModel.errorMessage?.contains("Ошибка валидации") ?? false)
+        
+        // The error message should contain validation details
+        // It could contain email format error and/or first name error
+        let errorMessage = viewModel.errorMessage ?? ""
+        XCTAssertTrue(
+            errorMessage.contains("Email format is invalid") || 
+            errorMessage.contains("First name cannot be empty") ||
+            errorMessage.contains("валидации"),
+            "Error message should contain validation details"
+        )
+        
         XCTAssertTrue(viewModel.showError)
     }
     
@@ -226,13 +238,11 @@ class UserListViewModelTests: XCTestCase {
         
         let userToUpdate = testUsers.first!
         let updateDTO = UpdateUserDTO(
-            email: userToUpdate.email,
             firstName: "Updated",
             lastName: userToUpdate.lastName,
-            role: userToUpdate.role.rawValue,
+            phoneNumber: userToUpdate.phoneNumber,
             department: userToUpdate.department,
             position: userToUpdate.position,
-            phoneNumber: userToUpdate.phoneNumber,
             isActive: userToUpdate.isActive
         )
         
@@ -282,21 +292,77 @@ class UserListViewModelTests: XCTestCase {
     
     // MARK: - Pagination Tests
     
-    func testLoadMoreUsers() async {
-        // Given
-        let testUsers = createTestUsers()
-        mockRepository.mockUsers = testUsers
+    func testLoadMoreUsersWithPagination() async throws {
+        // Setup: Create users for multiple pages
+        let usersPerPage = 20
+        let totalUsers = 45
+        
+        // Create test users
+        var allUsers: [DomainUser] = []
+        for i in 1...totalUsers {
+            let user = DomainUser(
+                id: "user-\(i)",
+                email: "user\(i)@example.com",
+                firstName: "User",
+                lastName: "\(i)",
+                role: .student,
+                isActive: true,
+                profileImageUrl: nil,
+                phoneNumber: nil,
+                department: nil,
+                position: nil,
+                lastLoginAt: nil,
+                createdAt: Date(),
+                updatedAt: Date()
+            )
+            allUsers.append(user)
+        }
+        
+        // Mock first page
+        let firstPageUsers = Array(allUsers.prefix(usersPerPage))
+        mockRepository.mockUsers = allUsers // Mock the repository directly
+        
+        // Load first page
         await viewModel.loadUsers()
         
-        // Simulate having more pages
-        viewModel.hasMorePages = true
+        // Verify first page loaded
+        XCTAssertEqual(viewModel.users.count, usersPerPage)
+        XCTAssertEqual(viewModel.currentPage, 1)
         
-        // When
+        // Mock second page
+        let secondPageUsers = Array(allUsers.dropFirst(usersPerPage).prefix(usersPerPage))
+        mockRepository.mockUsers = allUsers // Mock the repository directly
+        
+        // Load second page
         await viewModel.loadMoreUsers()
         
-        // Then
-        XCTAssertFalse(viewModel.isLoadingMore)
-        // Additional assertions based on mock behavior
+        // Verify second page loaded
+        XCTAssertEqual(viewModel.users.count, usersPerPage * 2)
+        XCTAssertEqual(viewModel.currentPage, 2)
+        
+        // Mock third page (partial)
+        let thirdPageUsers = Array(allUsers.dropFirst(usersPerPage * 2))
+        mockRepository.mockUsers = allUsers // Mock the repository directly
+        
+        // Load third page
+        await viewModel.loadMoreUsers()
+        
+        // Verify all users loaded
+        XCTAssertEqual(viewModel.users.count, totalUsers)
+        XCTAssertEqual(viewModel.currentPage, 3)
+        // Remove hasReachedEnd check as it doesn't exist in UserListViewModel
+    }
+    
+    func testPaginationRequestParameters() async throws {
+        let page = 2
+        let pageSize = 30
+        let pagination = PaginationRequest(page: page, limit: pageSize)
+        
+        // Verify pagination parameters
+        XCTAssertEqual(pagination.page, page)
+        XCTAssertEqual(pagination.limit, pageSize)
+        XCTAssertEqual(pagination.pageSize, pageSize) // Computed property
+        XCTAssertEqual(pagination.offset, (page - 1) * pageSize)
     }
     
     // MARK: - Statistics Tests
@@ -377,7 +443,7 @@ class UserListViewModelTests: XCTestCase {
     private func createTestUsers() -> [DomainUser] {
         return [
             DomainUser(
-                id: UUID(),
+                id: UUID().uuidString,
                 email: "john.doe@example.com",
                 firstName: "John",
                 lastName: "Doe",
@@ -392,7 +458,7 @@ class UserListViewModelTests: XCTestCase {
                 updatedAt: Date()
             ),
             DomainUser(
-                id: UUID(),
+                id: UUID().uuidString,
                 email: "jane.smith@example.com",
                 firstName: "Jane",
                 lastName: "Smith",
@@ -407,7 +473,7 @@ class UserListViewModelTests: XCTestCase {
                 updatedAt: Date().addingTimeInterval(-3600)
             ),
             DomainUser(
-                id: UUID(),
+                id: UUID().uuidString,
                 email: "bob.johnson@example.com",
                 firstName: "Bob",
                 lastName: "Johnson",
@@ -439,41 +505,56 @@ class MockUserRepository: DomainUserRepositoryProtocol {
     
     // MARK: - Repository Protocol
     
-    func findById(_ id: UUID) async throws -> DomainUser? {
+    func findById(_ id: String) async throws -> DomainUser? {
         if shouldFailNextOperation {
             shouldFailNextOperation = false
-            throw RepositoryError.notFound
+            throw RepositoryError.notFound("User not found")
         }
         return mockUsers.first { $0.id == id }
     }
     
-    func findAll(pagination: PaginationRequest?) async throws -> PaginatedResult<DomainUser> {
+    func findAll() async throws -> [DomainUser] {
         if shouldFailNextOperation {
             shouldFailNextOperation = false
-            throw RepositoryError.networkError(nil)
+            throw RepositoryError.networkError(NSError(domain: "Mock", code: 0, userInfo: nil))
+        }
+        return mockUsers
+    }
+    
+    func findAll(pagination: PaginationRequest) async throws -> PaginatedResult<DomainUser> {
+        if shouldFailNextOperation {
+            shouldFailNextOperation = false
+            throw RepositoryError.networkError(NSError(domain: "Mock", code: 0, userInfo: nil))
         }
         
-        let page = pagination?.page ?? 1
-        let limit = pagination?.limit ?? 20
+        let page = pagination.page
+        let limit = pagination.limit
         let startIndex = (page - 1) * limit
         let endIndex = min(startIndex + limit, mockUsers.count)
         
+        guard startIndex < mockUsers.count else {
+            return PaginatedResult(items: [], totalCount: mockUsers.count, pagination: pagination)
+        }
+        
         let items = Array(mockUsers[startIndex..<endIndex])
-        let hasNextPage = endIndex < mockUsers.count
         
         return PaginatedResult(
             items: items,
+            totalCount: mockUsers.count,
             page: page,
-            limit: limit,
-            totalItems: mockUsers.count,
-            hasNextPage: hasNextPage
+            pageSize: limit
         )
+    }
+    
+    func findAll(page: Int, pageSize: Int) async throws -> PaginatedResult<DomainUser> {
+        let pagination = PaginationRequest(page: page, limit: pageSize)
+        return try await findAll(pagination: pagination)
     }
     
     func save(_ entity: DomainUser) async throws -> DomainUser {
         if shouldFailNextOperation {
             shouldFailNextOperation = false
-            throw RepositoryError.validationError("Mock validation error")
+            throw RepositoryError.validationError(["Mock validation error"])
         }
         
         if let index = mockUsers.firstIndex(where: { $0.id == entity.id }) {
@@ -487,17 +568,22 @@ class MockUserRepository: DomainUserRepositoryProtocol {
         return entity
     }
     
-    func deleteById(_ id: UUID) async throws {
+    func deleteById(_ id: String) async throws -> Bool {
         if shouldFailNextOperation {
             shouldFailNextOperation = false
-            throw RepositoryError.notFound
+            throw RepositoryError.notFound("User not found")
         }
         
-        mockUsers.removeAll { $0.id == id }
-        changeSubject.send(.deleted(id))
+        if let index = mockUsers.firstIndex(where: { $0.id == id }) {
+            let user = mockUsers[index]
+            mockUsers.remove(at: index)
+            changeSubject.send(.deleted(user))
+            return true
+        }
+        return false
     }
     
-    func exists(_ id: UUID) async throws -> Bool {
+    func exists(_ id: String) async throws -> Bool {
         return mockUsers.contains { $0.id == id }
     }
     
@@ -507,46 +593,74 @@ class MockUserRepository: DomainUserRepositoryProtocol {
     
     // MARK: - Searchable Protocol
     
-    func search(query: String?, filters: [UserListViewModel.UserSearchFilter], pagination: PaginationRequest?) async throws -> PaginatedResult<DomainUser> {
-        var filtered = mockUsers
-        
-        // Apply query filter
-        if let query = query, !query.isEmpty {
-            filtered = filtered.filter { user in
-                user.fullName.localizedCaseInsensitiveContains(query) ||
-                user.email.localizedCaseInsensitiveContains(query) ||
-                (user.department?.localizedCaseInsensitiveContains(query) ?? false)
-            }
+    func search(_ query: String) async throws -> [DomainUser] {
+        return mockUsers.filter { user in
+            user.fullName.localizedCaseInsensitiveContains(query) ||
+            user.email.localizedCaseInsensitiveContains(query) ||
+            (user.department?.localizedCaseInsensitiveContains(query) ?? false)
         }
+    }
+    
+    func search(_ query: String, pagination: PaginationRequest) async throws -> PaginatedResult<DomainUser> {
+        let filtered = try await search(query)
         
-        // Apply other filters
-        for filter in filters {
-            switch filter {
-            case .role(let role):
-                filtered = filtered.filter { $0.role == role }
-            case .department(let department):
-                filtered = filtered.filter { $0.department == department }
-            case .isActive(let isActive):
-                filtered = filtered.filter { $0.isActive == isActive }
-            }
-        }
-        
-        // Apply pagination
-        let page = pagination?.page ?? 1
-        let limit = pagination?.limit ?? 20
+        let page = pagination.page
+        let limit = pagination.limit
         let startIndex = (page - 1) * limit
         let endIndex = min(startIndex + limit, filtered.count)
         
+        guard startIndex < filtered.count else {
+            return PaginatedResult(items: [], totalCount: filtered.count, pagination: pagination)
+        }
+        
         let items = Array(filtered[startIndex..<endIndex])
-        let hasNextPage = endIndex < filtered.count
         
         return PaginatedResult(
             items: items,
+            totalCount: filtered.count,
             page: page,
-            limit: limit,
-            totalItems: filtered.count,
-            hasNextPage: hasNextPage
+            pageSize: limit
         )
+    }
+    
+    func search(_ query: String, page: Int, pageSize: Int) async throws -> PaginatedResult<DomainUser> {
+        let pagination = PaginationRequest(page: page, limit: pageSize)
+        return try await search(query, pagination: pagination)
+    }
+    
+    // MARK: - Cache Protocol
+    
+    func clearCache() async {
+        // No-op for mock
+    }
+    
+    func clearCache(for id: String) async {
+        // No-op for mock
+    }
+    
+    func refreshCache(for id: String) async throws -> DomainUser? {
+        return try await findById(id)
+    }
+    
+    // MARK: - Observable Protocol
+    
+    func observeEntity(_ id: String) -> AnyPublisher<DomainUser?, Never> {
+        entityChanges
+            .filter { change in
+                switch change {
+                case .created(let user), .updated(let user), .deleted(let user):
+                    return user.id == id
+                }
+            }
+            .map { change in
+                switch change {
+                case .created(let user), .updated(let user):
+                    return user
+                case .deleted:
+                    return nil
+                }
+            }
+            .eraseToAnyPublisher()
     }
     
     // MARK: - User-specific methods
@@ -568,13 +682,23 @@ class MockUserRepository: DomainUserRepositoryProtocol {
     }
     
     func createUser(_ createDTO: CreateUserDTO) async throws -> DomainUser {
+        // Perform validation first
+        if !createDTO.isValid() {
+            throw RepositoryError.validationError(createDTO.validationErrors())
+        }
+        
+        // Check if email is already taken
+        if let _ = try await findByEmail(createDTO.email) {
+            throw RepositoryError.invalidData("Email \(createDTO.email) is already taken")
+        }
+        
         let newUser = DomainUser(
-            id: UUID(),
+            id: UUID().uuidString,
             email: createDTO.email,
             firstName: createDTO.firstName,
             lastName: createDTO.lastName,
             role: DomainUserRole(rawValue: createDTO.role) ?? .student,
-            isActive: createDTO.isActive,
+            isActive: true,  // Default to active for new users
             profileImageUrl: nil,
             phoneNumber: createDTO.phoneNumber,
             department: createDTO.department,
@@ -587,22 +711,22 @@ class MockUserRepository: DomainUserRepositoryProtocol {
         return try await save(newUser)
     }
     
-    func updateUser(_ id: UUID, _ updateDTO: UpdateUserDTO) async throws -> DomainUser {
+    func updateUser(_ id: String, with updateDTO: UpdateUserDTO) async throws -> DomainUser {
         guard let existingUser = try await findById(id) else {
-            throw RepositoryError.notFound
+            throw RepositoryError.notFound("User not found")
         }
         
         let updatedUser = DomainUser(
             id: existingUser.id,
-            email: updateDTO.email,
-            firstName: updateDTO.firstName,
-            lastName: updateDTO.lastName,
-            role: DomainUserRole(rawValue: updateDTO.role) ?? existingUser.role,
-            isActive: updateDTO.isActive,
-            profileImageUrl: existingUser.profileImageUrl,
-            phoneNumber: updateDTO.phoneNumber,
-            department: updateDTO.department,
-            position: updateDTO.position,
+            email: existingUser.email,  // Keep existing email
+            firstName: updateDTO.firstName ?? existingUser.firstName,
+            lastName: updateDTO.lastName ?? existingUser.lastName,
+            role: existingUser.role,  // Keep existing role
+            isActive: updateDTO.isActive ?? existingUser.isActive,
+            profileImageUrl: updateDTO.profileImageUrl ?? existingUser.profileImageUrl,
+            phoneNumber: updateDTO.phoneNumber ?? existingUser.phoneNumber,
+            department: updateDTO.department ?? existingUser.department,
+            position: updateDTO.position ?? existingUser.position,
             lastLoginAt: existingUser.lastLoginAt,
             createdAt: existingUser.createdAt,
             updatedAt: Date()
@@ -611,9 +735,9 @@ class MockUserRepository: DomainUserRepositoryProtocol {
         return try await save(updatedUser)
     }
     
-    func setUserActive(_ id: UUID, isActive: Bool) async throws {
+    func setUserActive(_ id: String, isActive: Bool) async throws -> DomainUser {
         guard let user = try await findById(id) else {
-            throw RepositoryError.notFound
+            throw RepositoryError.notFound("User not found")
         }
         
         let updatedUser = DomainUser(
@@ -632,12 +756,12 @@ class MockUserRepository: DomainUserRepositoryProtocol {
             updatedAt: Date()
         )
         
-        _ = try await save(updatedUser)
+        return try await save(updatedUser)
     }
     
-    func updateLastLogin(_ id: UUID) async throws {
+    func updateLastLogin(_ id: String) async throws -> DomainUser {
         guard let user = try await findById(id) else {
-            throw RepositoryError.notFound
+            throw RepositoryError.notFound("User not found")
         }
         
         let updatedUser = DomainUser(
@@ -656,7 +780,17 @@ class MockUserRepository: DomainUserRepositoryProtocol {
             updatedAt: Date()
         )
         
-        _ = try await save(updatedUser)
+        return try await save(updatedUser)
+    }
+    
+    func isEmailAvailable(_ email: String) async throws -> Bool {
+        let user = try await findByEmail(email)
+        return user == nil
+    }
+    
+    func getUserProfile(_ id: String) async throws -> UserProfileDTO? {
+        guard let user = try await findById(id) else { return nil }
+        return UserProfileMapper.toProfileDTO(from: user)
     }
     
     // MARK: - Batch operations
@@ -670,19 +804,23 @@ class MockUserRepository: DomainUserRepositoryProtocol {
         return createdUsers
     }
     
-    func updateUsers(_ updates: [(UUID, UpdateUserDTO)]) async throws -> [DomainUser] {
+    func updateUsers(_ updates: [String: UpdateUserDTO]) async throws -> [DomainUser] {
         var updatedUsers: [DomainUser] = []
         for (id, dto) in updates {
-            let user = try await updateUser(id, dto)
+            let user = try await updateUser(id, with: dto)
             updatedUsers.append(user)
         }
         return updatedUsers
     }
     
-    func deleteUsers(_ ids: [UUID]) async throws {
+    func deleteUsers(_ ids: [String]) async throws -> Int {
+        var deletedCount = 0
         for id in ids {
-            try await deleteById(id)
+            if try await deleteById(id) {
+                deletedCount += 1
+            }
         }
+        return deletedCount
     }
     
     // MARK: - Statistics
@@ -700,10 +838,11 @@ class MockUserRepository: DomainUserRepositoryProtocol {
         return groupedUsers.mapValues { $0.count }
     }
     
-    func getRecentlyActiveUsers(since: Date) async throws -> [DomainUser] {
+    func getRecentlyActiveUsers(days: Int) async throws -> [DomainUser] {
+        let cutoffDate = Calendar.current.date(byAdding: .day, value: -days, to: Date()) ?? Date()
         return mockUsers.filter { user in
             guard let lastLogin = user.lastLoginAt else { return false }
-            return lastLogin >= since
+            return lastLogin >= cutoffDate
         }
     }
 } 

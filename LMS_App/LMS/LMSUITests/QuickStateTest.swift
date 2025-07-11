@@ -19,15 +19,15 @@ final class QuickStateTest: XCTestCase {
             let tabBar = app.tabBars.firstMatch
             XCTAssertTrue(tabBar.buttons["Обучение"].exists ||
                          tabBar.buttons["Learning"].exists ||
-                         !tabBar.buttons.isEmpty, "Tab bar has buttons")
+                         tabBar.buttons.count > 0, "Tab bar has buttons")
         } else {
             // Неизвестное состояние - делаем скриншот для анализа
             takeScreenshot(named: "Unknown_State")
 
             // Пробуем найти любые элементы
-            let hasButtons = !app.buttons.isEmpty
-            let hasTexts = !app.staticTexts.isEmpty
-            let hasTextFields = !app.textFields.isEmpty
+            let hasButtons = app.buttons.count > 0
+            let hasTexts = app.staticTexts.count > 0
+            let hasTextFields = app.textFields.count > 0
 
             XCTAssertTrue(hasButtons || hasTexts || hasTextFields,
                          "App has some UI elements. Buttons: \(app.buttons.count), Texts: \(app.staticTexts.count)")

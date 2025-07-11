@@ -7,6 +7,22 @@
 
 import SwiftUI
 
+// MARK: - Mock User для демонстрации
+struct MockUser {
+    let id: String
+    let email: String
+    let firstName: String
+    let lastName: String
+    let middleName: String?
+    let position: String?
+    let department: String?
+    let avatar: String?
+    let roles: [String]
+    let permissions: [String]
+    let isApproved: Bool
+    let registrationDate: Date
+}
+
 struct CourseAssignmentView: View {
     let course: Course
     @Environment(\.dismiss) private var dismiss
@@ -19,7 +35,7 @@ struct CourseAssignmentView: View {
 
     // Mock users for demo
     let users = [
-        UserResponse(
+        MockUser(
             id: "1",
             email: "ivan@company.com",
             firstName: "Иван",
@@ -33,7 +49,7 @@ struct CourseAssignmentView: View {
             isApproved: true,
             registrationDate: Date().addingTimeInterval(-365 * 24 * 60 * 60)
         ),
-        UserResponse(
+        MockUser(
             id: "2",
             email: "maria@company.com",
             firstName: "Мария",
@@ -47,7 +63,7 @@ struct CourseAssignmentView: View {
             isApproved: true,
             registrationDate: Date().addingTimeInterval(-180 * 24 * 60 * 60)
         ),
-        UserResponse(
+        MockUser(
             id: "3",
             email: "alexey@company.com",
             firstName: "Алексей",
@@ -61,7 +77,7 @@ struct CourseAssignmentView: View {
             isApproved: true,
             registrationDate: Date().addingTimeInterval(-90 * 24 * 60 * 60)
         ),
-        UserResponse(
+        MockUser(
             id: "4",
             email: "elena@company.com",
             firstName: "Елена",
@@ -75,7 +91,7 @@ struct CourseAssignmentView: View {
             isApproved: true,
             registrationDate: Date().addingTimeInterval(-720 * 24 * 60 * 60)
         ),
-        UserResponse(
+        MockUser(
             id: "5",
             email: "dmitry@company.com",
             firstName: "Дмитрий",
@@ -91,7 +107,7 @@ struct CourseAssignmentView: View {
         )
     ]
 
-    var filteredUsers: [UserResponse] {
+    var filteredUsers: [MockUser] {
         if searchText.isEmpty {
             return users
         }
@@ -176,17 +192,19 @@ struct CourseAssignmentView: View {
                 }
 
                 // User list
-                List(filteredUsers) { user in
-                    UserSelectionRow(
-                        user: user,
-                        isSelected: selectedUsers.contains(user.id)
-                    )                        {
+                List {
+                    ForEach(filteredUsers, id: \.id) { user in
+                        UserSelectionRow(
+                            user: user,
+                            isSelected: selectedUsers.contains(user.id)
+                        ) {
                             if selectedUsers.contains(user.id) {
                                 selectedUsers.remove(user.id)
                             } else {
                                 selectedUsers.insert(user.id)
                             }
                         }
+                    }
                 }
                 .listStyle(PlainListStyle())
 
@@ -250,7 +268,7 @@ struct CourseAssignmentView: View {
 
 // MARK: - User Selection Row
 struct UserSelectionRow: View {
-    let user: UserResponse
+    let user: MockUser
     let isSelected: Bool
     let onToggle: () -> Void
 
