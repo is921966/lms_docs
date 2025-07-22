@@ -1,0 +1,192 @@
+name: Microservices CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'microservices/**'
+      - 'docker-compose.microservices.yml'
+      - '.github/workflows/microservices-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'microservices/**'
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_NAMESPACE: ${{ github.repository_owner }}
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.detect.outputs.services }}
+      matrix: ${{ steps.detect.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      
+      - name: Detect changed services
+        id: detect
+        run: |
+          SERVICES=""
+          for service in auth-service user-service course-service competency-service notification-service orgstructure-service; do
+            if git diff --name-only HEAD^ HEAD | grep -q "microservices/$service"; then
+              SERVICES="${SERVICES}${service} "
+            fi
+          done
+          
+          if [ -z "$SERVICES" ]; then
+            echo "No service changes detected"
+            echo "services=" >> $GITHUB_OUTPUT
+            echo "matrix={\"service\":[]}" >> $GITHUB_OUTPUT
+          else
+            echo "Changed services: $SERVICES"
+            echo "services=$SERVICES" >> $GITHUB_OUTPUT
+            MATRIX_JSON=$(echo $SERVICES | tr ' ' '\n' | grep -v '^$' | jq -R . | jq -s -c '{service: .}')
+            echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+          fi
+
+  test:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.services != ''
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+          coverage: xdebug
+      
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: microservices/${{ matrix.service }}/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles(format('microservices/{0}/composer.lock', matrix.service)) }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+      
+      - name: Install dependencies
+        working-directory: microservices/${{ matrix.service }}
+        run: composer install --prefer-dist --no-progress --no-suggest
+      
+      - name: Run tests
+        working-directory: microservices/${{ matrix.service }}
+        run: |
+          ./vendor/bin/phpunit --coverage-clover coverage.xml
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: microservices/${{ matrix.service }}/coverage.xml
+          flags: ${{ matrix.service }}
+
+  build:
+    needs: [detect-changes, test]
+    if: needs.detect-changes.outputs.services != ''
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_NAMESPACE }}/lms-${{ matrix.service }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: microservices/${{ matrix.service }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VERSION=${{ github.sha }}
+
+  integration-tests:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Start services
+        run: |
+          docker-compose -f docker-compose.microservices.yml up -d
+          sleep 30
+      
+      - name: Run integration tests
+        run: |
+          # Wait for services to be healthy
+          for i in {1..30}; do
+            if curl -f http://localhost:8000/health; then
+              break
+            fi
+            echo "Waiting for services to start..."
+            sleep 5
+          done
+          
+          # Run API tests
+          docker run --rm --network host \
+            -v $PWD/tests/integration:/tests \
+            postman/newman:alpine \
+            run /tests/microservices.postman_collection.json \
+            --environment /tests/environment.json
+      
+      - name: Stop services
+        if: always()
+        run: docker-compose -f docker-compose.microservices.yml down
+
+  deploy:
+    needs: integration-tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to Kubernetes
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          echo "$KUBE_CONFIG" | base64 -d > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+          
+          # Update deployments with new images
+          for service in ${{ needs.detect-changes.outputs.services }}; do
+            kubectl set image deployment/lms-$service \
+              lms-$service=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_NAMESPACE }}/lms-$service:sha-${{ github.sha }} \
+              -n lms-production
+          done
+          
+          # Wait for rollout
+          for service in ${{ needs.detect-changes.outputs.services }}; do
+            kubectl rollout status deployment/lms-$service -n lms-production
+          done 

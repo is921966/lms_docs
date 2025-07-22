@@ -1,0 +1,554 @@
+openapi: 3.0.0
+info:
+  title: Organization Structure API
+  description: API для управления организационной структурой компании
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+  - url: https://api.lms.company.ru/v1
+    description: Production server
+
+paths:
+  /org-structure/departments:
+    get:
+      summary: Получить список подразделений
+      tags:
+        - Departments
+      parameters:
+        - name: parent_id
+          in: query
+          description: ID родительского подразделения (для получения дочерних)
+          schema:
+            type: string
+            format: uuid
+        - name: level
+          in: query
+          description: Уровень в иерархии
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Список подразделений
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Department'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    
+    post:
+      summary: Создать новое подразделение
+      tags:
+        - Departments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDepartmentRequest'
+      responses:
+        '201':
+          description: Подразделение создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Код подразделения уже существует
+  
+  /org-structure/departments/{id}:
+    get:
+      summary: Получить подразделение по ID
+      tags:
+        - Departments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Информация о подразделении
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      summary: Обновить подразделение
+      tags:
+        - Departments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDepartmentRequest'
+      responses:
+        '200':
+          description: Подразделение обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      summary: Удалить подразделение
+      tags:
+        - Departments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Подразделение удалено
+        '400':
+          description: Невозможно удалить (есть дочерние подразделения или сотрудники)
+        '404':
+          $ref: '#/components/responses/NotFound'
+  
+  /org-structure/employees:
+    get:
+      summary: Получить список сотрудников
+      tags:
+        - Employees
+      parameters:
+        - name: department_id
+          in: query
+          description: ID подразделения
+          schema:
+            type: string
+            format: uuid
+        - name: search
+          in: query
+          description: Поиск по ФИО или табельному номеру
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Список сотрудников
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Employee'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    
+    post:
+      summary: Создать сотрудника
+      tags:
+        - Employees
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmployeeRequest'
+      responses:
+        '201':
+          description: Сотрудник создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Табельный номер уже существует
+  
+  /org-structure/employees/{id}:
+    get:
+      summary: Получить сотрудника по ID
+      tags:
+        - Employees
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Информация о сотруднике
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      summary: Обновить сотрудника
+      tags:
+        - Employees
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmployeeRequest'
+      responses:
+        '200':
+          description: Сотрудник обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      summary: Удалить сотрудника
+      tags:
+        - Employees
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Сотрудник удален
+        '404':
+          $ref: '#/components/responses/NotFound'
+  
+  /org-structure/import:
+    post:
+      summary: Импортировать данные из Excel
+      tags:
+        - Import
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Excel файл (.xlsx или .xls)
+                options:
+                  type: object
+                  properties:
+                    updateExisting:
+                      type: boolean
+                      default: false
+                    dryRun:
+                      type: boolean
+                      default: false
+                      description: Проверка без сохранения
+      responses:
+        '200':
+          description: Результат импорта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+        '400':
+          description: Неверный формат файла
+        '413':
+          description: Файл слишком большой (> 10MB)
+
+components:
+  schemas:
+    Department:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        code:
+          type: string
+          pattern: '^АП(\.\d+)*$'
+        parentId:
+          type: string
+          format: uuid
+          nullable: true
+        level:
+          type: integer
+        employeeCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    
+    DepartmentDetail:
+      allOf:
+        - $ref: '#/components/schemas/Department'
+        - type: object
+          properties:
+            parentDepartment:
+              $ref: '#/components/schemas/Department'
+              nullable: true
+            childDepartments:
+              type: array
+              items:
+                $ref: '#/components/schemas/Department'
+            employees:
+              type: array
+              items:
+                $ref: '#/components/schemas/Employee'
+    
+    CreateDepartmentRequest:
+      type: object
+      required:
+        - name
+        - code
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+          pattern: '^АП(\.\d+)*$'
+        parentId:
+          type: string
+          format: uuid
+          nullable: true
+    
+    UpdateDepartmentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        parentId:
+          type: string
+          format: uuid
+          nullable: true
+    
+    Employee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tabNumber:
+          type: string
+          pattern: '^АР\d{8}$'
+        name:
+          type: string
+        position:
+          type: string
+        departmentId:
+          type: string
+          format: uuid
+        department:
+          $ref: '#/components/schemas/Department'
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    
+    EmployeeDetail:
+      allOf:
+        - $ref: '#/components/schemas/Employee'
+        - type: object
+          properties:
+            departmentPath:
+              type: array
+              items:
+                $ref: '#/components/schemas/Department'
+    
+    CreateEmployeeRequest:
+      type: object
+      required:
+        - tabNumber
+        - name
+        - position
+        - departmentId
+      properties:
+        tabNumber:
+          type: string
+          pattern: '^АР\d{8}$'
+        name:
+          type: string
+        position:
+          type: string
+        departmentId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+    
+    UpdateEmployeeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        position:
+          type: string
+        departmentId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+    
+    ImportResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        summary:
+          type: object
+          properties:
+            totalRows:
+              type: integer
+            departmentsCreated:
+              type: integer
+            departmentsUpdated:
+              type: integer
+            employeesCreated:
+              type: integer
+            employeesUpdated:
+              type: integer
+            errors:
+              type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              row:
+                type: integer
+              message:
+                type: string
+              data:
+                type: object
+    
+    PaginationMeta:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+        perPage:
+          type: integer
+        total:
+          type: integer
+        lastPage:
+          type: integer
+    
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+  
+  responses:
+    BadRequest:
+      description: Неверный запрос
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [] 

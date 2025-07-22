@@ -1,7 +1,14 @@
 # TDD Methodology Version
 
-## Current Version: 1.8.10
-**Release Date:** 2025-07-05
+## Current Version: 2.1.0
+**Release Date:** 2025-01-17
+
+## What's New in 2.1.0
+- **UPDATED**: Project Time DB Control Rule (v2.0)
+- Mandatory sequence: start → control → end for daily work
+- Detailed commands for start/end/info/stats operations
+- Sprint number error correction guidelines
+- Enhanced consistency for project data tracking
 
 ## What's New in 1.8.10
 - **CRITICAL**: First step of each day MUST be creating record in project_time_registry

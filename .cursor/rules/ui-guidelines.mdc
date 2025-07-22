@@ -1,3 +1,8 @@
+---
+description:
+globs:
+alwaysApply: false
+---
 # UI/UX Guidelines for LMS iOS App
 
 ## Apple Human Interface Guidelines (HIG) Compliance
@@ -535,4 +540,4 @@ When generating UI code:
 9. **Add smooth animations** - but keep them subtle and purposeful
 10. **Test on all devices** - iPhone SE to iPad Pro
 
-Remember: Great iOS apps feel at home on the platform. When in doubt, refer to Apple's HIG and native iOS apps for guidance. 
+Remember: Great iOS apps feel at home on the platform. When in doubt, refer to Apple's HIG and native iOS apps for guidance.

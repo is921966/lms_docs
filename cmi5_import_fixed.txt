@@ -1,0 +1,368 @@
+✅ Feedback system initialized
+✅ Copied demo course: ai_fluency_course_v1.0
+✅ Copied demo course: single_au_basic_responsive
+✅ Copied demo course: masteryscore_responsive
+✅ Copied demo course: multi_au_framed
+✅ Copied demo course: pre_post_test_framed
+✅ Готовые модули включены:
+  - Компетенции
+  - Должности
+  - Новости
+  - Cmi5 Контент
+  - Управление курсами
+  - Оргструктура
+🔄 UI уведомлен об изменениях Feature Registry
+🔄 FeatureRegistry обновлен - UI получит уведомление
+Mock login successful as Admin
+🔍 CMI5 REPO: Creating demo packages...
+🔍 CMI5 REPO: Created demo package: AI Fluency
+📁 [FileStorageService] Storage directory: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/Cmi5Storage
+🔍 CMI5 MGMT VM: Initializing...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 MGMT VM: Loading packages...
+🔍 CMI5 REPO: getAllPackages() called
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 MGMT VM: Loading packages...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 REPO: Returning 1 packages
+🔍 CMI5 REPO: Returning 1 packages
+🔍 CMI5 REPO: Returning 1 packages
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 CMI5 MGMT VM: Loaded 1 packages
+  - AI Fluency
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 CMI5 MGMT VM: Loaded 1 packages
+  - AI Fluency
+🎯 Cmi5ImportViewModel: Loading demo course: Basic Geology Course
+✅ Demo course found in Documents: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/DemoCourses/single_au_basic_responsive.zip
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/DemoCourses/single_au_basic_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080736 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🎯 Cmi5ImportView: Import button pressed
+🔍 CMI5 VM: Starting import of package: 
+🔍 CMI5 VM: Calling cmi5Service.importPackage()...
+🔍 CMI5 SERVICE: Starting import from single_au_basic_responsive.zip
+🔍 CMI5 SERVICE: Validating archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/DemoCourses/single_au_basic_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080736 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🔍 CMI5 SERVICE: Extracting archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/DemoCourses/single_au_basic_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080736 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🔍 CMI5 SERVICE: Parsing manifest...
+🔍 CMI5 SERVICE: Created package: Introduction to Geology - Responsive Style (ID: DA0D1929-C4CB-42DE-BA7B-D937E60EC7A8)
+🔍 CMI5 SERVICE: Saving package files...
+💾 [FileStorageService] Saving package:
+   - From: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/tmp/cmi5_packages/404AC150-6948-404B-A78F-07F749A22356
+   - To: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/Cmi5Storage/DA0D1929-C4CB-42DE-BA7B-D937E60EC7A8
+✅ [FileStorageService] Package saved successfully
+📂 [FileStorageService] Saved files:
+   - cmi5.xml
+   - video
+   - video/mountains_31175.mp4
+   - index.html
+   - js
+   - js/cmi5.min.js
+   - js/course.js
+   - js/course_cmi5.js
+   - style
+   - style/base.css
+   - img
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+   - img/utahstrat.jpg
+   - img/quartz1.jpg
+   - img/strata1.jpg
+   - img/fault_types.svg
+🔍 CMI5 SERVICE: Saving to repository...
+🔍 CMI5 REPO: createPackage() - Introduction to Geology - Responsive Style
+🔍 CMI5 REPO: Package saved. Total packages: 2
+🔍 CMI5 SERVICE: Creating managed course from Cmi5 package...
+   - Package ID: DA0D1929-C4CB-42DE-BA7B-D937E60EC7A8
+   - Package Title: Introduction to Geology - Responsive Style
+🔄 [Cmi5CourseConverter] Converting package: Introduction to Geology - Responsive Style
+   - Package ID: DA0D1929-C4CB-42DE-BA7B-D937E60EC7A8
+   - Has rootBlock: true
+   - Total activities collected: 1
+     Activity 1:  (ID: https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-basic-responsive/1)
+   - Created 1 modules
+     Module 1: Introduction to Geology - Responsive Style
+       - contentType: cmi5
+       - contentUrl: Optional("https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-basic-responsive/1")
+🔍 CMI5 SERVICE: Converted course:
+   - Course ID: 00F4A2B0-887A-4CB5-A449-06AD3B98AF2E
+   - Course Title: Introduction to Geology - Responsive Style
+   - cmi5PackageId: Optional(DA0D1929-C4CB-42DE-BA7B-D937E60EC7A8)
+   - Modules: 1
+     Module 1: Introduction to Geology - Responsive Style
+       - contentType: cmi5
+       - contentUrl: Optional("https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-basic-responsive/1")
+🔍 CMI5 SERVICE: Calling courseService.createCourse()...
+📚 CourseService.createCourse: Before adding - 3 courses
+📚 CourseService.createCourse: After adding - 4 courses
+📚 CourseService: Created course 'Introduction to Geology - Responsive Style' (ID: 00F4A2B0-887A-4CB5-A449-06AD3B98AF2E)
+   - This course was created from Cmi5 package
+🔍 CMI5 SERVICE: Created managed course: Introduction to Geology - Responsive Style (ID: 00F4A2B0-887A-4CB5-A449-06AD3B98AF2E)
+📚 CourseService.fetchCourses: Returning 4 courses
+🔍 CMI5 SERVICE: Total courses after creation: 4
+🔍 CMI5 SERVICE: ✅ Course found in storage!
+🔍 CMI5 SERVICE: Posting Cmi5CourseImported notification...
+🔍 CMI5 REPO: updatePackage() - Introduction to Geology - Responsive Style
+🔍 CMI5 SERVICE: Package imported successfully! Total packages: 2
+🔍 CMI5 VM: Import successful! Package ID: DA0D1929-C4CB-42DE-BA7B-D937E60EC7A8
+🎯 Cmi5ImportView: Import completed, importedPackage: Introduction to Geology - Responsive Style
+🎯 Cmi5ImportView: Showing success alert
+🔍 CMI5 SERVICE: Posted Cmi5CourseImported notification from MainActor with course info
+🎯 Cmi5ImportView: Alert OK button pressed
+🎯 Cmi5ImportView: Calling onImportComplete with package: Introduction to Geology - Responsive Style
+🔍 CMI5 MGMT VM: Loading packages...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 REPO: Returning 2 packages
+🔍 [Cmi5Service] Loaded 2 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+   Package 2: Introduction to Geology - Responsive Style (ID: DA0D1929-C4CB-42DE-BA7B-D937E60EC7A8)
+     - Activities: 1
+🔍 CMI5 MGMT VM: Loaded 2 packages
+  - AI Fluency
+  - Introduction to Geology - Responsive Style
+🎯 Cmi5ImportViewModel: Loading demo course: Geology Quiz with Mastery Score
+✅ Demo course found in Documents: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/DemoCourses/masteryscore_responsive.zip
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/DemoCourses/masteryscore_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080778 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🎯 Cmi5ImportView: Import button pressed
+🔍 CMI5 VM: Starting import of package: 
+🔍 CMI5 VM: Calling cmi5Service.importPackage()...
+🔍 CMI5 SERVICE: Starting import from masteryscore_responsive.zip
+🔍 CMI5 SERVICE: Validating archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/DemoCourses/masteryscore_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080778 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🔍 CMI5 SERVICE: Extracting archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/DemoCourses/masteryscore_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080778 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🔍 CMI5 SERVICE: Parsing manifest...
+🔍 CMI5 SERVICE: Created package: Introduction to Geology - Responsive Style - Mastery Score (ID: 3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9)
+🔍 CMI5 SERVICE: Saving package files...
+💾 [FileStorageService] Saving package:
+   - From: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/tmp/cmi5_packages/8D080771-8020-4052-8534-A6594EEC5B5C
+   - To: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/Cmi5Storage/3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9
+✅ [FileStorageService] Package saved successfully
+📂 [FileStorageService] Saved files:
+   - cmi5.xml
+   - video
+   - video/mountains_31175.mp4
+   - index.html
+   - js
+   - js/cmi5.min.js
+   - js/course.js
+   - js/course_cmi5.js
+   - style
+   - style/base.css
+   - img
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+   - img/utahstrat.jpg
+   - img/quartz1.jpg
+   - img/strata1.jpg
+   - img/fault_types.svg
+🔍 CMI5 SERVICE: Saving to repository...
+🔍 CMI5 REPO: createPackage() - Introduction to Geology - Responsive Style - Mastery Score
+🔍 CMI5 REPO: Package saved. Total packages: 3
+🔍 CMI5 SERVICE: Creating managed course from Cmi5 package...
+   - Package ID: 3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9
+   - Package Title: Introduction to Geology - Responsive Style - Mastery Score
+🔄 [Cmi5CourseConverter] Converting package: Introduction to Geology - Responsive Style - Mastery Score
+   - Package ID: 3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9
+   - Has rootBlock: true
+   - Total activities collected: 1
+     Activity 1:  (ID: https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1)
+   - Created 1 modules
+     Module 1: Introduction to Geology - Responsive Style - Mastery Score
+       - contentType: cmi5
+       - contentUrl: Optional("https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1")
+🔍 CMI5 SERVICE: Converted course:
+   - Course ID: E36ADD43-38E6-43FB-A907-F68A71D58C95
+   - Course Title: Introduction to Geology - Responsive Style - Mastery Score
+   - cmi5PackageId: Optional(3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9)
+   - Modules: 1
+     Module 1: Introduction to Geology - Responsive Style - Mastery Score
+       - contentType: cmi5
+       - contentUrl: Optional("https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1")
+🔍 CMI5 SERVICE: Calling courseService.createCourse()...
+📚 CourseService.createCourse: Before adding - 4 courses
+📚 CourseService.createCourse: After adding - 5 courses
+📚 CourseService: Created course 'Introduction to Geology - Responsive Style - Mastery Score' (ID: E36ADD43-38E6-43FB-A907-F68A71D58C95)
+   - This course was created from Cmi5 package
+🔍 CMI5 SERVICE: Created managed course: Introduction to Geology - Responsive Style - Mastery Score (ID: E36ADD43-38E6-43FB-A907-F68A71D58C95)
+📚 CourseService.fetchCourses: Returning 5 courses
+🔍 CMI5 SERVICE: Total courses after creation: 5
+🔍 CMI5 SERVICE: ✅ Course found in storage!
+🔍 CMI5 SERVICE: Posting Cmi5CourseImported notification...
+🔍 CMI5 REPO: updatePackage() - Introduction to Geology - Responsive Style - Mastery Score
+🔍 CMI5 SERVICE: Package imported successfully! Total packages: 3
+🔍 CMI5 VM: Import successful! Package ID: 3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9
+🎯 Cmi5ImportView: Import completed, importedPackage: Introduction to Geology - Responsive Style - Mastery Score
+🎯 Cmi5ImportView: Showing success alert
+🔍 CMI5 SERVICE: Posted Cmi5CourseImported notification from MainActor with course info
+🎯 Cmi5ImportView: Alert OK button pressed
+🎯 Cmi5ImportView: Calling onImportComplete with package: Introduction to Geology - Responsive Style - Mastery Score
+🔍 CMI5 MGMT VM: Loading packages...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 REPO: Returning 3 packages
+🔍 [Cmi5Service] Loaded 3 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+   Package 2: Introduction to Geology - Responsive Style (ID: DA0D1929-C4CB-42DE-BA7B-D937E60EC7A8)
+     - Activities: 1
+   Package 3: Introduction to Geology - Responsive Style - Mastery Score (ID: 3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9)
+     - Activities: 1
+🔍 CMI5 MGMT VM: Loaded 3 packages
+  - AI Fluency
+  - Introduction to Geology - Responsive Style
+  - Introduction to Geology - Responsive Style - Mastery Score
+📚 CourseManagementView: onAppear called, loading courses...
+📚 CourseManagementViewModel: loadCourses() called
+📚 CourseManagementViewModel: Fetching courses...
+📚 CourseService.fetchCourses: Returning 5 courses
+📚 CourseManagementViewModel: Loaded 5 courses
+   Course 1: Основы Swift (ID: 09EE73C5-6EF2-434F-9A1F-1C83ACA199FC, Cmi5: false)
+   Course 2: AI Fluency Course (ID: D87EE11F-8A46-48CF-A984-9899704DD2D1, Cmi5: true)
+   Course 3: Архитектура iOS приложений (ID: E207339F-0EF5-4C1C-9281-0332AB5C0478, Cmi5: false)
+   Course 4: Introduction to Geology - Responsive Style (ID: 00F4A2B0-887A-4CB5-A449-06AD3B98AF2E, Cmi5: true)
+   Course 5: Introduction to Geology - Responsive Style - Mastery Score (ID: E36ADD43-38E6-43FB-A907-F68A71D58C95, Cmi5: true)
+📚 CourseService.fetchCourses: Returning 5 courses
+📚 CourseDetailViewModel: Loaded course 'Introduction to Geology - Responsive Style - Mastery Score'
+🔍 CMI5 REPO: Creating demo packages...
+🔍 CMI5 REPO: Created demo package: AI Fluency
+📁 [FileStorageService] Storage directory: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/Cmi5Storage
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 REPO: Returning 1 packages
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🎯 [StudentCoursePreviewView] Initializing with course:
+   - Title: Introduction to Geology - Responsive Style - Mastery Score
+   - ID: E36ADD43-38E6-43FB-A907-F68A71D58C95
+   - cmi5PackageId: Optional(3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9)
+   - Modules count: 1
+   - Module 0: Introduction to Geology - Responsive Style - Mastery Score
+     - contentType: cmi5
+     - contentUrl: Optional("https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1")
+🔄 [CoursePreviewView] Loading Cmi5 packages for preview...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🎯 [StudentCoursePreviewView] Initializing with course:
+   - Title: Introduction to Geology - Responsive Style - Mastery Score
+   - ID: E36ADD43-38E6-43FB-A907-F68A71D58C95
+   - cmi5PackageId: Optional(3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9)
+   - Modules count: 1
+   - Module 0: Introduction to Geology - Responsive Style - Mastery Score
+     - contentType: cmi5
+     - contentUrl: Optional("https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1")
+🔍 CMI5 REPO: Returning 1 packages
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔄 [CoursePreviewView] Cmi5 packages loaded, count: 1
+🎯 [StudentCoursePreviewView] Initializing with course:
+   - Title: Introduction to Geology - Responsive Style - Mastery Score
+   - ID: E36ADD43-38E6-43FB-A907-F68A71D58C95
+   - cmi5PackageId: Optional(3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9)
+   - Modules count: 1
+   - Module 0: Introduction to Geology - Responsive Style - Mastery Score
+     - contentType: cmi5
+     - contentUrl: Optional("https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1")
+🔍 CMI5 REPO: Creating demo packages...
+🔍 CMI5 REPO: Created demo package: AI Fluency
+📁 [FileStorageService] Storage directory: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/72A488EA-E304-4B5F-AABB-0EB25D09427C/Documents/Cmi5Storage
+🔍 [Cmi5Service] loadPackages() started
+🔍 [Cmi5ModulePreview] Loading packages...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 REPO: Returning 1 packages
+🔍 CMI5 REPO: Returning 1 packages
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 [Cmi5ModulePreview] Packages loaded: 1
+🔍 [Cmi5ModulePreview] loadCmi5Activity() started
+   - module.id: E46DFC0E-9AEF-437F-9B2D-02777CC5A28C
+   - module.title: Introduction to Geology - Responsive Style - Mastery Score
+   - module.contentType: cmi5
+   - module.contentUrl: Optional("https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1")
+   - cmi5PackageId: Optional(3EC8C3B9-F3B9-4CEA-B781-A1A19ED411D9)
+✅ [Cmi5ModulePreview] Using activity ID: https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1
+⚠️ [Cmi5ModulePreview] Activity not found in specific package, searching all packages
+🔍 [findActivityInBlock] Searching for activityId: https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1
+   - Block ID: ai_block_1
+   - Block has 2 activities
+   - Checking activity: intro_to_ai == https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1?
+   - Checking activity: ai_applications == https://w3id.org/xapi/cmi5/catapult/lts/course/geology-intro-single-au-mastery-score-responsive/1?
+   - Block has 0 sub-blocks
+   ❌ Activity not found in this block
+❌ [Cmi5ModulePreview] Activity not found in any package, showing simulation
+ru.tsum.lms.igor: 59829

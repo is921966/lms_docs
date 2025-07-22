@@ -1,0 +1,157 @@
+# Organizational Structure API Routes
+orgstructure:
+  resource: App\OrgStructure\Http\Controllers
+  type: attribute
+  prefix: /api/v1/org
+
+# Employee endpoints
+orgstructure_employees:
+  path: /api/v1/org/employees
+  controller: App\OrgStructure\Http\Controllers\EmployeeController
+  methods: [GET, POST]
+  defaults:
+    _format: json
+
+orgstructure_employee_show:
+  path: /api/v1/org/employees/{id}
+  controller: App\OrgStructure\Http\Controllers\EmployeeController::show
+  methods: [GET]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+  defaults:
+    _format: json
+
+orgstructure_employee_update:
+  path: /api/v1/org/employees/{id}
+  controller: App\OrgStructure\Http\Controllers\EmployeeController::update
+  methods: [PUT, PATCH]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+  defaults:
+    _format: json
+
+orgstructure_employee_delete:
+  path: /api/v1/org/employees/{id}
+  controller: App\OrgStructure\Http\Controllers\EmployeeController::destroy
+  methods: [DELETE]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+orgstructure_employee_search:
+  path: /api/v1/org/employees/search
+  controller: App\OrgStructure\Http\Controllers\EmployeeController::search
+  methods: [GET]
+  defaults:
+    _format: json
+
+# Department endpoints
+orgstructure_departments:
+  path: /api/v1/org/departments
+  controller: App\OrgStructure\Http\Controllers\DepartmentController
+  methods: [GET, POST]
+  defaults:
+    _format: json
+
+orgstructure_department_show:
+  path: /api/v1/org/departments/{id}
+  controller: App\OrgStructure\Http\Controllers\DepartmentController::show
+  methods: [GET]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+  defaults:
+    _format: json
+
+orgstructure_department_update:
+  path: /api/v1/org/departments/{id}
+  controller: App\OrgStructure\Http\Controllers\DepartmentController::update
+  methods: [PUT, PATCH]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+  defaults:
+    _format: json
+
+orgstructure_department_delete:
+  path: /api/v1/org/departments/{id}
+  controller: App\OrgStructure\Http\Controllers\DepartmentController::destroy
+  methods: [DELETE]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+orgstructure_department_hierarchy:
+  path: /api/v1/org/departments/{id}/hierarchy
+  controller: App\OrgStructure\Http\Controllers\DepartmentController::hierarchy
+  methods: [GET]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+  defaults:
+    _format: json
+
+# Position endpoints
+orgstructure_positions:
+  path: /api/v1/org/positions
+  controller: App\OrgStructure\Http\Controllers\PositionController
+  methods: [GET, POST]
+  defaults:
+    _format: json
+
+orgstructure_position_show:
+  path: /api/v1/org/positions/{id}
+  controller: App\OrgStructure\Http\Controllers\PositionController::show
+  methods: [GET]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+  defaults:
+    _format: json
+
+orgstructure_position_update:
+  path: /api/v1/org/positions/{id}
+  controller: App\OrgStructure\Http\Controllers\PositionController::update
+  methods: [PUT, PATCH]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+  defaults:
+    _format: json
+
+orgstructure_position_delete:
+  path: /api/v1/org/positions/{id}
+  controller: App\OrgStructure\Http\Controllers\PositionController::destroy
+  methods: [DELETE]
+  requirements:
+    id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+# Import endpoints
+orgstructure_import:
+  path: /api/v1/org/import
+  controller: App\OrgStructure\Http\Controllers\ImportController::importEmployees
+  methods: [POST]
+  defaults:
+    _format: json
+
+orgstructure_import_template:
+  path: /api/v1/org/import/template
+  controller: App\OrgStructure\Http\Controllers\ImportController::getTemplate
+  methods: [GET]
+  defaults:
+    _format: csv
+
+orgstructure_import_validate:
+  path: /api/v1/org/import/validate
+  controller: App\OrgStructure\Http\Controllers\ImportController::validateCsv
+  methods: [POST]
+  defaults:
+    _format: json
+
+# LDAP sync endpoints
+orgstructure_ldap_sync:
+  path: /api/v1/org/ldap/sync
+  controller: App\OrgStructure\Http\Controllers\LdapController::sync
+  methods: [POST]
+  defaults:
+    _format: json
+
+orgstructure_ldap_test:
+  path: /api/v1/org/ldap/test
+  controller: App\OrgStructure\Http\Controllers\LdapController::testConnection
+  methods: [GET]
+  defaults:
+    _format: json 

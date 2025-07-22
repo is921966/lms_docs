@@ -1,0 +1,45 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: lms
+
+resources:
+  - infrastructure.yaml
+  - api-gateway.yaml
+  - course-service.yaml
+  - competency-service.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: lms
+  app.kubernetes.io/managed-by: kustomize
+
+configMapGenerator:
+- name: app-config
+  literals:
+  - environment=base
+  - log_level=info
+  - metrics_enabled=true
+
+secretGenerator:
+- name: postgres-secret
+  literals:
+  - username=postgres
+  - password=postgres123  # Will be overridden in overlays
+- name: rabbitmq-secret
+  literals:
+  - username=rabbitmq
+  - password=rabbitmq123  # Will be overridden in overlays
+  - erlang-cookie=SWQOKODSQALRPCLNMEQG
+- name: jwt-secret
+  literals:
+  - secret=base64-encoded-secret  # Will be overridden in overlays
+- name: course-db-secret
+  literals:
+  - host=postgres
+  - username=course_user
+  - password=course_pass  # Will be overridden in overlays
+- name: competency-db-secret
+  literals:
+  - host=postgres
+  - username=competency_user
+  - password=competency_pass  # Will be overridden in overlays 

@@ -5,6 +5,26 @@ All notable changes to the TDD Methodology will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-01-17
+
+### Changed
+- **Major Update**: Project Time DB Control Rule upgraded to v2.0
+- Mandatory workflow sequence: start → control → end
+- Enhanced command documentation with examples
+- Added sprint number error correction procedures
+
+### Added
+- Detailed command reference for project_time_db.py
+- show_last_10_days.py script documentation
+- fix_sprint_numbers.py usage guidelines
+- Complete workflow examples for daily operations
+
+### Improved
+- Consistency of project data tracking
+- Automatic file naming generation
+- Real-time work tracking accuracy
+- Sprint/day numbering problem detection
+
 ## [1.8.10] - 2025-07-05
 
 ### Added

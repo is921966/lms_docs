@@ -7,7 +7,20 @@
     }
   ],
   "copyCommands" : {
-
+    "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation_ZIPFoundation.bundle/PrivacyInfo.xcprivacy" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Resources/PrivacyInfo.xcprivacy"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation_ZIPFoundation.bundle/PrivacyInfo.xcprivacy"
+        }
+      ]
+    }
   },
   "explicitTargetDependencyImportCheckingMode" : {
     "none" : {
@@ -32,11 +45,27 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/App/LMSApp+ReleaseNews.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LMSButton.swift"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LoadingView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexityCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySearchBar.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySidebar.swift"
         },
         {
           "kind" : "file",
@@ -145,6 +174,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Styles/Typography.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Theme/PerplexityTheme.swift"
         },
         {
           "kind" : "file",
@@ -316,6 +349,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/DemoCourse.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/XAPIModels.swift"
         },
         {
@@ -329,6 +366,14 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5ArchiveHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5CourseConverter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5DemoContent.swift"
         },
         {
           "kind" : "file",
@@ -384,7 +429,15 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Utils/DemoCourseManager.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ImportViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ManagementViewModel.swift"
         },
         {
           "kind" : "file",
@@ -413,6 +466,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5PlayerView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/DemoCourseSelectorView.swift"
         },
         {
           "kind" : "file",
@@ -448,6 +505,94 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/ManagedCourse.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/Student.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/CourseService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/MockCourseService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/AssignCourseViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CompetencyBindingViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseDetailViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseFilterViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseManagementViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/ModuleManagementViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/AssignCourseView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/BulkOperationsToolbar.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CompetencyBindingView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseFilterView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseManagementView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CoursePreviewView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CreateCourseView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/EditCourseView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ManagedCourseDetailView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleContentPreviews.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleManagementView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/StudentCoursePreviewView.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/Services/CourseMockService.swift"
         },
         {
@@ -464,6 +609,18 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/BuildReleaseNews.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedItem.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedPost.swift"
         },
         {
@@ -473,6 +630,26 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/MockFeedService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/ReleaseNewsService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Models/FeedChannel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/ChannelAvatar.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/FeedChannelCell.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/UnreadBadge.swift"
         },
         {
           "kind" : "file",
@@ -496,11 +673,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPostComponents.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedSettingsView.swift"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/HTMLContentView.swift"
         },
         {
           "kind" : "file",
@@ -709,6 +894,58 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingTemplateListView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Department.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Employee.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/ImportResult.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/CSVParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureAPIClient.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentDetailView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentTreeView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeDetailView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeRowView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgImportView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgStructureView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Perplexity/Views/PerplexityHomeView.swift"
         },
         {
           "kind" : "file",
@@ -1012,6 +1249,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Cmi5/MockCmi5Service.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Common/Logger.swift"
         },
         {
@@ -1092,6 +1333,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/Modules/ZIPFoundation.swiftmodule"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/sources"
         }
       ],
@@ -1100,8 +1345,12 @@
       "moduleOutputPath" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/Modules/LMS.swiftmodule",
       "objects" : [
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+PushNotifications.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+ReleaseNews.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoadingView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityCard.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySearchBar.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySidebar.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserCard.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthDTO.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyDTO.swift.o",
@@ -1129,6 +1378,7 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PaginationModels.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Colors.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityTheme.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/TypeAliases.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OfflineIndicator.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AppConfig.swift.o",
@@ -1171,10 +1421,13 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LearningMetrics.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models+Extensions.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourse.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIModels.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportGenerator.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportTemplates.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ArchiveHandler.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5CourseConverter.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5DemoContent.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5FullParser.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Parser.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Service.swift.o",
@@ -1188,7 +1441,9 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/SyncManager.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIStatementBuilder.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnyCodable.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseManager.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ManagementViewModel.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsDashboardView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ActivitySelector.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportView.swift.o",
@@ -1196,6 +1451,7 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ManagementView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PackagePreviewView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PlayerView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseSelectorView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportExportView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Competency.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyLevel.swift.o",
@@ -1204,20 +1460,52 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyDetailView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyEditView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyListView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourse.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Student.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseService.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCourseService.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseViewModel.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingViewModel.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseDetailViewModel.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterViewModel.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementViewModel.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementViewModel.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BulkOperationsToolbar.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CoursePreviewView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CreateCourseView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EditCourseView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourseDetailView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleContentPreviews.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCoursePreviewView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseMockService.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseViewModel.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PDFExportService.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeatureRegistry.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BuildReleaseNews.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedError.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedItem.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPost.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedService.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReleaseNewsService.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannel.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ChannelAvatar.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannelCell.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UnreadBadge.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedViewModel.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CommentsView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CreatePostView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPermissionsView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostCard.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostComponents.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedSettingsView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/HTMLContentView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PostActionsView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PostContentView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PostHeaderView.swift.o",
@@ -1270,6 +1558,19 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OnboardingStageView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OnboardingTaskView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OnboardingTemplateListView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Department.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Employee.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ImportResult.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CSVParser.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureAPIClient.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureService.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentDetailView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentTreeView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeDetailView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeRowView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgImportView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureView.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityHomeView.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CareerPath.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Position.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PositionMockService.swift.o",
@@ -1345,6 +1646,7 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthService.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AuthenticationService.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CacheService.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCmi5Service.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Logger.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyService.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ErrorRecoveryService.swift.o",
@@ -1383,7 +1685,6 @@
         "-emit-objc-header",
         "-emit-objc-header-path",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMS-Swift.h",
-        "-color-diagnostics",
         "-swift-version",
         "5",
         "-sdk",
@@ -1424,11 +1725,27 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+ReleaseNews.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton.swift.o"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoadingView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySearchBar.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySidebar.swift.o"
         },
         {
           "kind" : "file",
@@ -1537,6 +1854,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityTheme.swift.o"
         },
         {
           "kind" : "file",
@@ -1708,6 +2029,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourse.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIModels.swift.o"
         },
         {
@@ -1721,6 +2046,14 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ArchiveHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5CourseConverter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5DemoContent.swift.o"
         },
         {
           "kind" : "file",
@@ -1776,7 +2109,15 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseManager.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ManagementViewModel.swift.o"
         },
         {
           "kind" : "file",
@@ -1805,6 +2146,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PlayerView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseSelectorView.swift.o"
         },
         {
           "kind" : "file",
@@ -1840,6 +2185,94 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourse.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Student.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCourseService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseDetailViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BulkOperationsToolbar.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CoursePreviewView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CreateCourseView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EditCourseView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourseDetailView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleContentPreviews.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCoursePreviewView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseMockService.swift.o"
         },
         {
@@ -1856,6 +2289,18 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BuildReleaseNews.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedItem.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPost.swift.o"
         },
         {
@@ -1865,6 +2310,26 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReleaseNewsService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ChannelAvatar.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannelCell.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UnreadBadge.swift.o"
         },
         {
           "kind" : "file",
@@ -1888,11 +2353,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostComponents.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedSettingsView.swift.o"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/HTMLContentView.swift.o"
         },
         {
           "kind" : "file",
@@ -2101,6 +2574,58 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OnboardingTemplateListView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Department.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Employee.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ImportResult.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CSVParser.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureAPIClient.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentDetailView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentTreeView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeDetailView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeRowView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgImportView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityHomeView.swift.o"
         },
         {
           "kind" : "file",
@@ -2404,6 +2929,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCmi5Service.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Logger.swift.o"
         },
         {
@@ -2486,8 +3015,12 @@
       "prepareForIndexing" : false,
       "sources" : [
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/App/LMSApp+PushNotifications.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/App/LMSApp+ReleaseNews.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LMSButton.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LoadingView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexityCard.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySearchBar.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySidebar.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/UserCard.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/DTOs/AuthDTO.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/DTOs/CompetencyDTO.swift",
@@ -2515,6 +3048,7 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Models/PaginationModels.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Styles/Colors.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Styles/Typography.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Theme/PerplexityTheme.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Types/TypeAliases.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Views/OfflineIndicator.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Config/AppConfig.swift",
@@ -2557,10 +3091,13 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Analytics/LearningMetrics.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/Cmi5Models+Extensions.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/Cmi5Models.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/DemoCourse.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/XAPIModels.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Reports/ReportGenerator.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Reports/ReportTemplates.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5ArchiveHandler.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5CourseConverter.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5DemoContent.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5FullParser.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5Parser.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5Service.swift",
@@ -2574,7 +3111,9 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/SyncManager.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/XAPIStatementBuilder.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Utils/AnyCodable.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Utils/DemoCourseManager.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ImportViewModel.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ManagementViewModel.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/AnalyticsDashboardView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5ActivitySelector.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5ImportView.swift",
@@ -2582,6 +3121,7 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5ManagementView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5PackagePreviewView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5PlayerView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/DemoCourseSelectorView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/ReportExportView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Models/Competency.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Models/CompetencyLevel.swift",
@@ -2590,20 +3130,52 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Views/CompetencyDetailView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Views/CompetencyEditView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Views/CompetencyListView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/ManagedCourse.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/Student.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/CourseService.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/MockCourseService.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/AssignCourseViewModel.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CompetencyBindingViewModel.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseDetailViewModel.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseFilterViewModel.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseManagementViewModel.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/ModuleManagementViewModel.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/AssignCourseView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/BulkOperationsToolbar.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CompetencyBindingView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseFilterView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseManagementView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CoursePreviewView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CreateCourseView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/EditCourseView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ManagedCourseDetailView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleContentPreviews.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleManagementView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/StudentCoursePreviewView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/Services/CourseMockService.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/ViewModels/CourseViewModel.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Export/Services/PDFExportService.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/FeatureRegistry.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/BuildReleaseNews.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedError.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedItem.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedPost.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/MockFeedService.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/ReleaseNewsService.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Models/FeedChannel.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/ChannelAvatar.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/FeedChannelCell.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/UnreadBadge.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/ViewModels/FeedViewModel.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CommentsView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CreatePostView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPermissionsView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPostCard.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPostComponents.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedSettingsView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/HTMLContentView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostActionsView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostContentView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostHeaderView.swift",
@@ -2656,6 +3228,19 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingStageView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingTaskView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingTemplateListView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Department.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Employee.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/ImportResult.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/CSVParser.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureAPIClient.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureService.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentDetailView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentTreeView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeDetailView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeRowView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgImportView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgStructureView.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Perplexity/Views/PerplexityHomeView.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Models/CareerPath.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Models/Position.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Services/PositionMockService.swift",
@@ -2731,6 +3316,7 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/AuthService.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/AuthenticationService.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/CacheService.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Cmi5/MockCmi5Service.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Common/Logger.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Competency/CompetencyService.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/ErrorRecoveryService.swift",
@@ -2802,7 +3388,6 @@
         "-emit-objc-header",
         "-emit-objc-header-path",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSPackageTests.build/LMSPackageTests-Swift.h",
-        "-color-diagnostics",
         "-sdk",
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
         "-F",
@@ -2890,11 +3475,71 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Auth/AutoLoginTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ComprehensiveTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ImportIntegrationTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ServiceTests.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Services/ConflictResolverTests.swift"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Services/LRSServiceTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/BulkOperationsTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ContentUrlIntegrationTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ContentUrlTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ModulePreviewTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CompetencyBindingTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CourseDuplicationTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CourseFilterTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/ModuleManagementTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/StudentCoursePreviewTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/BuildReleaseNewsTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/HTMLContentViewTests.swift"
         },
         {
           "kind" : "file",
@@ -2926,6 +3571,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/ReleaseNewsServiceTests.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Security/FeedSecurityTests.swift"
         },
         {
@@ -2935,6 +3584,18 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Services/FeedServiceTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/FeedChannelCellTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/FeedChannelTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/UnreadBadgeTests.swift"
         },
         {
           "kind" : "file",
@@ -3015,6 +3676,18 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OnboardingTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Models/DepartmentTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Models/OrgEmployeeTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Services/OrgStructureServiceTests.swift"
         },
         {
           "kind" : "file",
@@ -3181,8 +3854,23 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UserDTOTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ContactInfoTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/TestBuildersExampleTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/AutoLoginTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ComprehensiveTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ImportIntegrationTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ServiceTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ConflictResolverTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/LRSServiceTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/BulkOperationsTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ContentUrlIntegrationTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ContentUrlTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ModulePreviewTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CompetencyBindingTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CourseDuplicationTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CourseFilterTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ModuleManagementTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/StudentCoursePreviewTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/BuildReleaseNewsTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/HTMLContentViewTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedUITestCase.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedIntegrationE2ETests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedIntegrationTests.swift.o",
@@ -3190,9 +3878,13 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedCommentTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedPermissionsTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedPostTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ReleaseNewsServiceTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedSecurityTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedServiceExtendedTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedServiceTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedChannelCellTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedChannelTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UnreadBadgeTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CommentsViewUITests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedPostCardUITests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedViewTests.swift.o",
@@ -3213,6 +3905,9 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedbackModelsTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/TestCourse.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/OnboardingTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/DepartmentTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/OrgEmployeeTests.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/OrgStructureServiceTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/SanityCheckTest.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/APIClientTests.swift.o",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/AnalyticsServiceExtendedTests.swift.o",
@@ -3265,7 +3960,6 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ModuleCache",
         "-parseable-output",
         "-parse-as-library",
-        "-color-diagnostics",
         "-swift-version",
         "5",
         "-sdk",
@@ -3334,11 +4028,71 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/AutoLoginTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ComprehensiveTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ImportIntegrationTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ServiceTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ConflictResolverTests.swift.o"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/LRSServiceTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/BulkOperationsTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ContentUrlIntegrationTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ContentUrlTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ModulePreviewTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CompetencyBindingTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CourseDuplicationTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CourseFilterTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ModuleManagementTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/StudentCoursePreviewTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/BuildReleaseNewsTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/HTMLContentViewTests.swift.o"
         },
         {
           "kind" : "file",
@@ -3370,6 +4124,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ReleaseNewsServiceTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedSecurityTests.swift.o"
         },
         {
@@ -3379,6 +4137,18 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedServiceTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedChannelCellTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedChannelTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UnreadBadgeTests.swift.o"
         },
         {
           "kind" : "file",
@@ -3459,6 +4229,18 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/OnboardingTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/DepartmentTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/OrgEmployeeTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/OrgStructureServiceTests.swift.o"
         },
         {
           "kind" : "file",
@@ -3611,8 +4393,23 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Common/Data/UserDTOTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Common/Domain/ValueObjects/ContactInfoTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Examples/TestBuildersExampleTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Auth/AutoLoginTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ComprehensiveTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ImportIntegrationTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ServiceTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Services/ConflictResolverTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Services/LRSServiceTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/BulkOperationsTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ContentUrlIntegrationTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ContentUrlTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ModulePreviewTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CompetencyBindingTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CourseDuplicationTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CourseFilterTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/ModuleManagementTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/StudentCoursePreviewTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/BuildReleaseNewsTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/HTMLContentViewTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Helpers/FeedUITestCase.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Integration/FeedIntegrationE2ETests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Integration/FeedIntegrationTests.swift",
@@ -3620,9 +4417,13 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Models/FeedCommentTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Models/FeedPermissionsTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Models/FeedPostTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/ReleaseNewsServiceTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Security/FeedSecurityTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Services/FeedServiceExtendedTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Services/FeedServiceTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/FeedChannelCellTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/FeedChannelTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/UnreadBadgeTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Views/CommentsViewUITests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Views/FeedPostCardUITests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Views/FeedViewTests.swift",
@@ -3643,6 +4444,9 @@
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Models/FeedbackModelsTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Models/TestCourse.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OnboardingTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Models/DepartmentTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Models/OrgEmployeeTests.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Services/OrgStructureServiceTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/SanityCheckTest.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Services/APIClientTests.swift",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Services/AnalyticsServiceExtendedTests.swift",
@@ -4338,7 +5142,6 @@
         "-emit-objc-header",
         "-emit-objc-header-path",
         "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ViewInspector.build/ViewInspector-Swift.h",
-        "-color-diagnostics",
         "-swift-version",
         "5",
         "-sdk",
@@ -5004,6 +5807,313 @@
       ],
       "tempsPath" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ViewInspector.build",
       "wholeModuleOptimization" : false
+    },
+    "C.ZIPFoundation-arm64-apple-macosx15.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/sources",
+      "importPath" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+BackingConfiguration.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Deprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Helpers.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+MemoryFile.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Progress.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Reading.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ReadingDeprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Writing.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+WritingDeprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ZIP64.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Compression.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+CompressionDeprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Serialization.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Date+ZIP.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+Serialization.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+ZIP64.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIP.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/URL+ZIP.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/DerivedSources/resource_bundle_accessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<ZIPFoundation-arm64-apple-macosx15.0-debug.module-resources>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "ZIPFoundation",
+      "moduleOutputPath" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/Modules/ZIPFoundation.swiftmodule",
+      "objects" : [
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+BackingConfiguration.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Deprecated.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Helpers.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+MemoryFile.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Progress.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Reading.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ReadingDeprecated.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Writing.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+WritingDeprecated.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ZIP64.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Compression.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+CompressionDeprecated.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Serialization.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Date+ZIP.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+Serialization.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+ZIP64.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIP.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIPDeprecated.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/URL+ZIP.swift.o",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/resource_bundle_accessor.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx10.13",
+        "-enable-batch-mode",
+        "-index-store-path",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j12",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-module-cache-path",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/ZIPFoundation-Swift.h",
+        "-swift-version",
+        "5",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-suppress-warnings",
+        "-package-name",
+        "zipfoundation"
+      ],
+      "outputFileMapPath" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+BackingConfiguration.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Deprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Helpers.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+MemoryFile.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Progress.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Reading.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ReadingDeprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Writing.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+WritingDeprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ZIP64.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Compression.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+CompressionDeprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Serialization.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Date+ZIP.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+Serialization.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+ZIP64.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIP.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIPDeprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/URL+ZIP.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/Modules/ZIPFoundation.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+BackingConfiguration.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Deprecated.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Helpers.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+MemoryFile.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Progress.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Reading.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ReadingDeprecated.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Writing.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+WritingDeprecated.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ZIP64.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Compression.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+CompressionDeprecated.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Serialization.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Date+ZIP.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+Serialization.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+ZIP64.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIP.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/URL+ZIP.swift",
+        "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/DerivedSources/resource_bundle_accessor.swift"
+      ],
+      "tempsPath" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build",
+      "wholeModuleOptimization" : false
     }
   },
   "swiftFrontendCommands" : {
@@ -5019,8 +6129,12 @@
       "-incremental",
       "-c",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/App/LMSApp+PushNotifications.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/App/LMSApp+ReleaseNews.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LMSButton.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LoadingView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexityCard.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySearchBar.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySidebar.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/UserCard.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/DTOs/AuthDTO.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Data/DTOs/CompetencyDTO.swift",
@@ -5048,6 +6162,7 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Models/PaginationModels.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Styles/Colors.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Styles/Typography.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Theme/PerplexityTheme.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Types/TypeAliases.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Views/OfflineIndicator.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Config/AppConfig.swift",
@@ -5090,10 +6205,13 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Analytics/LearningMetrics.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/Cmi5Models+Extensions.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/Cmi5Models.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/DemoCourse.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/XAPIModels.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Reports/ReportGenerator.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Reports/ReportTemplates.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5ArchiveHandler.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5CourseConverter.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5DemoContent.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5FullParser.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5Parser.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5Service.swift",
@@ -5107,7 +6225,9 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/SyncManager.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/XAPIStatementBuilder.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Utils/AnyCodable.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Utils/DemoCourseManager.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ImportViewModel.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ManagementViewModel.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/AnalyticsDashboardView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5ActivitySelector.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5ImportView.swift",
@@ -5115,6 +6235,7 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5ManagementView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5PackagePreviewView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5PlayerView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/DemoCourseSelectorView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/ReportExportView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Models/Competency.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Models/CompetencyLevel.swift",
@@ -5123,20 +6244,52 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Views/CompetencyDetailView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Views/CompetencyEditView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Competency/Views/CompetencyListView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/ManagedCourse.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/Student.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/CourseService.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/MockCourseService.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/AssignCourseViewModel.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CompetencyBindingViewModel.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseDetailViewModel.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseFilterViewModel.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseManagementViewModel.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/ModuleManagementViewModel.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/AssignCourseView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/BulkOperationsToolbar.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CompetencyBindingView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseFilterView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseManagementView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CoursePreviewView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CreateCourseView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/EditCourseView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ManagedCourseDetailView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleContentPreviews.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleManagementView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/StudentCoursePreviewView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/Services/CourseMockService.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/ViewModels/CourseViewModel.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Export/Services/PDFExportService.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/FeatureRegistry.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/BuildReleaseNews.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedError.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedItem.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedPost.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/FeedService.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/MockFeedService.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/ReleaseNewsService.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Models/FeedChannel.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/ChannelAvatar.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/FeedChannelCell.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/UnreadBadge.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/ViewModels/FeedViewModel.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CommentsView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/CreatePostView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPermissionsView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPostCard.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPostComponents.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedSettingsView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/HTMLContentView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostActionsView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostContentView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostHeaderView.swift",
@@ -5189,6 +6342,19 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingStageView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingTaskView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingTemplateListView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Department.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Employee.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/ImportResult.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/CSVParser.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureAPIClient.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureService.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentDetailView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentTreeView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeDetailView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeRowView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgImportView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgStructureView.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Perplexity/Views/PerplexityHomeView.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Models/CareerPath.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Models/Position.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Services/PositionMockService.swift",
@@ -5264,6 +6430,7 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/AuthService.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/AuthenticationService.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/CacheService.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Cmi5/MockCmi5Service.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Common/Logger.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Competency/CompetencyService.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/ErrorRecoveryService.swift",
@@ -5302,7 +6469,6 @@
       "-emit-objc-header",
       "-emit-objc-header-path",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMS-Swift.h",
-      "-color-diagnostics",
       "-swift-version",
       "5",
       "-sdk",
@@ -5367,7 +6533,6 @@
       "-emit-objc-header",
       "-emit-objc-header-path",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSPackageTests.build/LMSPackageTests-Swift.h",
-      "-color-diagnostics",
       "-sdk",
       "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
       "-F",
@@ -5416,8 +6581,23 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Common/Data/UserDTOTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Common/Domain/ValueObjects/ContactInfoTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Examples/TestBuildersExampleTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Auth/AutoLoginTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ComprehensiveTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ImportIntegrationTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ServiceTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Services/ConflictResolverTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Services/LRSServiceTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/BulkOperationsTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ContentUrlIntegrationTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ContentUrlTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ModulePreviewTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CompetencyBindingTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CourseDuplicationTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CourseFilterTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/ModuleManagementTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/StudentCoursePreviewTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/BuildReleaseNewsTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/HTMLContentViewTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Helpers/FeedUITestCase.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Integration/FeedIntegrationE2ETests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Integration/FeedIntegrationTests.swift",
@@ -5425,9 +6605,13 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Models/FeedCommentTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Models/FeedPermissionsTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Models/FeedPostTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/ReleaseNewsServiceTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Security/FeedSecurityTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Services/FeedServiceExtendedTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Services/FeedServiceTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/FeedChannelCellTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/FeedChannelTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/UnreadBadgeTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Views/CommentsViewUITests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Views/FeedPostCardUITests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Views/FeedViewTests.swift",
@@ -5448,6 +6632,9 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Models/FeedbackModelsTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Models/TestCourse.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OnboardingTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Models/DepartmentTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Models/OrgEmployeeTests.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Services/OrgStructureServiceTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/SanityCheckTest.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Services/APIClientTests.swift",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Services/AnalyticsServiceExtendedTests.swift",
@@ -5500,7 +6687,6 @@
       "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ModuleCache",
       "-parseable-output",
       "-parse-as-library",
-      "-color-diagnostics",
       "-swift-version",
       "5",
       "-sdk",
@@ -5686,7 +6872,6 @@
       "-emit-objc-header",
       "-emit-objc-header-path",
       "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ViewInspector.build/ViewInspector-Swift.h",
-      "-color-diagnostics",
       "-swift-version",
       "5",
       "-sdk",
@@ -5721,22 +6906,111 @@
       "viewinspector",
       "-driver-use-frontend-path",
       "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "ZIPFoundation" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "ZIPFoundation",
+      "-package-name",
+      "zipfoundation",
+      "-incremental",
+      "-c",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+BackingConfiguration.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Deprecated.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Helpers.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+MemoryFile.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Progress.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Reading.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ReadingDeprecated.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Writing.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+WritingDeprecated.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ZIP64.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Compression.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+CompressionDeprecated.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Serialization.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Date+ZIP.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+Serialization.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+ZIP64.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIP.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/URL+ZIP.swift",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/DerivedSources/resource_bundle_accessor.swift",
+      "-I",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx10.13",
+      "-enable-batch-mode",
+      "-index-store-path",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j12",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-module-cache-path",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/ZIPFoundation-Swift.h",
+      "-swift-version",
+      "5",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-suppress-warnings",
+      "-package-name",
+      "zipfoundation",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
     ]
   },
   "targetDependencyMap" : {
     "LMS" : [
-
+      "ZIPFoundation"
     ],
     "LMSPackageTests" : [
       "LMSTests",
       "ViewInspector",
-      "LMS"
+      "LMS",
+      "ZIPFoundation"
     ],
     "LMSTests" : [
       "ViewInspector",
-      "LMS"
+      "LMS",
+      "ZIPFoundation"
     ],
     "ViewInspector" : [
+
+    ],
+    "ZIPFoundation" : [
 
     ]
   },
@@ -5773,11 +7047,27 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/App/LMSApp+ReleaseNews.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LMSButton.swift"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LoadingView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexityCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySearchBar.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySidebar.swift"
         },
         {
           "kind" : "file",
@@ -5886,6 +7176,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Styles/Typography.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Theme/PerplexityTheme.swift"
         },
         {
           "kind" : "file",
@@ -6057,6 +7351,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/DemoCourse.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/XAPIModels.swift"
         },
         {
@@ -6070,6 +7368,14 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5ArchiveHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5CourseConverter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5DemoContent.swift"
         },
         {
           "kind" : "file",
@@ -6125,7 +7431,15 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Utils/DemoCourseManager.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ImportViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ManagementViewModel.swift"
         },
         {
           "kind" : "file",
@@ -6154,6 +7468,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/Cmi5PlayerView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/DemoCourseSelectorView.swift"
         },
         {
           "kind" : "file",
@@ -6189,6 +7507,94 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/ManagedCourse.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/Student.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/CourseService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/MockCourseService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/AssignCourseViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CompetencyBindingViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseDetailViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseFilterViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseManagementViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/ModuleManagementViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/AssignCourseView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/BulkOperationsToolbar.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CompetencyBindingView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseFilterView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseManagementView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CoursePreviewView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CreateCourseView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/EditCourseView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ManagedCourseDetailView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleContentPreviews.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleManagementView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/StudentCoursePreviewView.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/Services/CourseMockService.swift"
         },
         {
@@ -6205,6 +7611,18 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/BuildReleaseNews.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedItem.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedPost.swift"
         },
         {
@@ -6214,6 +7632,26 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/MockFeedService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/ReleaseNewsService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Models/FeedChannel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/ChannelAvatar.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/FeedChannelCell.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/UnreadBadge.swift"
         },
         {
           "kind" : "file",
@@ -6237,11 +7675,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPostComponents.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedSettingsView.swift"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/HTMLContentView.swift"
         },
         {
           "kind" : "file",
@@ -6450,6 +7896,58 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Onboarding/Views/OnboardingTemplateListView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Department.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Employee.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/ImportResult.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/CSVParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureAPIClient.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentDetailView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentTreeView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeDetailView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeRowView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgImportView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgStructureView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Perplexity/Views/PerplexityHomeView.swift"
         },
         {
           "kind" : "file",
@@ -6753,6 +8251,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Cmi5/MockCmi5Service.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Common/Logger.swift"
         },
         {
@@ -6945,6 +8447,14 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignmentLessonView.swift.o"
         },
         {
@@ -6981,6 +8491,18 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BuildReleaseNews.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BulkOperationsToolbar.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CSVParser.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CacheService.swift.o"
         },
         {
@@ -7009,11 +8531,23 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ChannelAvatar.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ActivitySelector.swift.o"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ArchiveHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5CourseConverter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5DemoContent.swift.o"
         },
         {
           "kind" : "file",
@@ -7038,6 +8572,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ManagementView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ManagementViewModel.swift.o"
         },
         {
           "kind" : "file",
@@ -7082,6 +8620,14 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Competency.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingViewModel.swift.o"
         },
         {
           "kind" : "file",
@@ -7165,11 +8711,31 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseDetailViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseEditView.swift.o"
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseListView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementViewModel.swift.o"
         },
         {
           "kind" : "file",
@@ -7185,11 +8751,23 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CoursePreviewView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseService.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseTestLinkView.swift.o"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CreateCourseView.swift.o"
         },
         {
           "kind" : "file",
@@ -7209,6 +8787,30 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourse.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseSelectorView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Department.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentDetailView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentTreeView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DomainUser.swift.o"
         },
         {
@@ -7221,7 +8823,23 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EditCourseView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EditTemplateView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Employee.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeDetailView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeRowView.swift.o"
         },
         {
           "kind" : "file",
@@ -7237,6 +8855,22 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannelCell.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedItem.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPermissionsView.swift.o"
         },
         {
@@ -7246,6 +8880,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostComponents.swift.o"
         },
         {
           "kind" : "file",
@@ -7305,7 +8943,15 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/HTMLContentView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Identifiers.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ImportResult.swift.o"
         },
         {
           "kind" : "file",
@@ -7322,6 +8968,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+PushNotifications.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+ReleaseNews.swift.o"
         },
         {
           "kind" : "file",
@@ -7381,6 +9031,14 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourse.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourseDetailView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MatchingAnswerView.swift.o"
         },
         {
@@ -7397,6 +9055,14 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCmi5Service.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCourseService.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService.swift.o"
         },
         {
@@ -7410,6 +9076,18 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockNotificationService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleContentPreviews.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementViewModel.swift.o"
         },
         {
           "kind" : "file",
@@ -7509,6 +9187,22 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgImportView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureAPIClient.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PDFExportService.swift.o"
         },
         {
@@ -7522,6 +9216,26 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PendingUsersView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityHomeView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySearchBar.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySidebar.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityTheme.swift.o"
         },
         {
           "kind" : "file",
@@ -7598,6 +9312,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/QuizResultsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReleaseNewsService.swift.o"
         },
         {
           "kind" : "file",
@@ -7701,11 +9419,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Student.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCompetencyView.swift.o"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCourseListView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCoursePreviewView.swift.o"
         },
         {
           "kind" : "file",
@@ -7822,6 +9548,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UnreadBadge.swift.o"
         },
         {
           "kind" : "file",
@@ -7953,11 +9683,51 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/AutoLoginTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/BuildReleaseNewsTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/BulkOperationsTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/BundleExtensionTests.swift.o"
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ComprehensiveTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ContentUrlIntegrationTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ContentUrlTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ImportIntegrationTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ModulePreviewTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/Cmi5ServiceTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CommentsViewUITests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CompetencyBindingTests.swift.o"
         },
         {
           "kind" : "file",
@@ -7997,6 +9767,14 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CourseDuplicationTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CourseFilterTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/CourseViewModelExtendedTests.swift.o"
         },
         {
@@ -8013,6 +9791,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/DepartmentTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/EmailValidatorTests.swift.o"
         },
         {
@@ -8026,6 +9808,14 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedAttachmentTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedChannelCellTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/FeedChannelTests.swift.o"
         },
         {
           "kind" : "file",
@@ -8085,6 +9875,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/HTMLContentViewTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/LMSTests.swift.o"
         },
         {
@@ -8109,6 +9903,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ModuleManagementTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/NetworkMonitorTests.swift.o"
         },
         {
@@ -8129,7 +9927,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/OrgEmployeeTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/OrgStructureServiceTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ProfileViewInspectorTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/ReleaseNewsServiceTests.swift.o"
         },
         {
           "kind" : "file",
@@ -8146,6 +9956,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/SessionManagerTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/StudentCoursePreviewTests.swift.o"
         },
         {
           "kind" : "file",
@@ -8182,6 +9996,10 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/TokenManagerTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSTests.build/UnreadBadgeTests.swift.o"
         },
         {
           "kind" : "file",
@@ -8706,6 +10524,94 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ViewInspector.build/ZStack.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+BackingConfiguration.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Deprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Helpers.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+MemoryFile.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Progress.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Reading.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ReadingDeprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Writing.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+WritingDeprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ZIP64.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Compression.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+CompressionDeprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Serialization.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Date+ZIP.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+Serialization.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+ZIP64.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIP.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIPDeprecated.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/URL+ZIP.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/resource_bundle_accessor.swift.o"
         }
       ],
       "outputFilePath" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMSPackageTests.product/Objects.LinkFileList"
@@ -8751,11 +10657,71 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Auth/AutoLoginTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ComprehensiveTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ImportIntegrationTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Cmi5ServiceTests.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Services/ConflictResolverTests.swift"
         },
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Cmi5/Services/LRSServiceTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/BulkOperationsTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ContentUrlIntegrationTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ContentUrlTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/Cmi5ModulePreviewTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CompetencyBindingTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CourseDuplicationTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/CourseFilterTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/ModuleManagementTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/CourseManagement/StudentCoursePreviewTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/BuildReleaseNewsTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/HTMLContentViewTests.swift"
         },
         {
           "kind" : "file",
@@ -8787,6 +10753,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/ReleaseNewsServiceTests.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Security/FeedSecurityTests.swift"
         },
         {
@@ -8796,6 +10766,18 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/Services/FeedServiceTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/FeedChannelCellTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/FeedChannelTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/Features/Feed/TelegramRedesign/UnreadBadgeTests.swift"
         },
         {
           "kind" : "file",
@@ -8876,6 +10858,18 @@
         {
           "kind" : "file",
           "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OnboardingTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Models/DepartmentTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Models/OrgEmployeeTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/LMSTests/OrgStructure/Services/OrgStructureServiceTests.swift"
         },
         {
           "kind" : "file",
@@ -9521,6 +11515,104 @@
         }
       ],
       "outputFilePath" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ViewInspector.build/sources"
+    },
+    "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+BackingConfiguration.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Deprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Helpers.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+MemoryFile.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Progress.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Reading.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ReadingDeprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Writing.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+WritingDeprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ZIP64.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Compression.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+CompressionDeprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Serialization.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Date+ZIP.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+Serialization.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+ZIP64.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIP.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/URL+ZIP.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/DerivedSources/resource_bundle_accessor.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/sources"
     },
     "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
       "alwaysOutOfDate" : true,

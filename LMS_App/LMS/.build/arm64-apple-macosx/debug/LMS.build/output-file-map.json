@@ -8,6 +8,12 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+PushNotifications~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+PushNotifications.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/App/LMSApp+ReleaseNews.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+ReleaseNews.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+ReleaseNews.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+ReleaseNews~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSApp+ReleaseNews.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/LMSButton.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LMSButton.swift.o",
@@ -19,6 +25,24 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoadingView.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoadingView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/LoadingView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexityCard.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityCard.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityCard.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityCard~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityCard.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySearchBar.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySearchBar.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySearchBar.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySearchBar~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySearchBar.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/PerplexitySidebar.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySidebar.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySidebar.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySidebar~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexitySidebar.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Components/UserCard.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UserCard.d",
@@ -181,6 +205,12 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Typography.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Theme/PerplexityTheme.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityTheme.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityTheme.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityTheme~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityTheme.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Common/Types/TypeAliases.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/TypeAliases.d",
@@ -434,6 +464,12 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5Models.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/DemoCourse.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourse.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourse.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourse~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourse.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Models/XAPIModels.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIModels.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/XAPIModels.swift.o",
@@ -457,6 +493,18 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ArchiveHandler.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ArchiveHandler~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ArchiveHandler.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5CourseConverter.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5CourseConverter.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5CourseConverter.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5CourseConverter~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5CourseConverter.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5DemoContent.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5DemoContent.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5DemoContent.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5DemoContent~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5DemoContent.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Services/Cmi5FullParser.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5FullParser.d",
@@ -536,11 +584,23 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnyCodable~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnyCodable.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Utils/DemoCourseManager.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseManager.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseManager.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseManager.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ImportViewModel.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ImportViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/ViewModels/Cmi5ManagementViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ManagementViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ManagementViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ManagementViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5ManagementViewModel.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/AnalyticsDashboardView.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AnalyticsDashboardView.d",
@@ -583,6 +643,12 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PlayerView.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PlayerView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Cmi5PlayerView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/DemoCourseSelectorView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseSelectorView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseSelectorView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseSelectorView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DemoCourseSelectorView.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Cmi5/Views/ReportExportView.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReportExportView.d",
@@ -632,6 +698,138 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyListView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyListView.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/ManagedCourse.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourse.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourse.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourse~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourse.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Models/Student.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Student.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Student.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Student~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Student.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/CourseService.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseService.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseService.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseService~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Services/MockCourseService.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCourseService.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCourseService.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCourseService~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCourseService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/AssignCourseViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CompetencyBindingViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseDetailViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseDetailViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseDetailViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseDetailViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseDetailViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseFilterViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/CourseManagementViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/ViewModels/ModuleManagementViewModel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementViewModel.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementViewModel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementViewModel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/AssignCourseView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/AssignCourseView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/BulkOperationsToolbar.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BulkOperationsToolbar.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BulkOperationsToolbar.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BulkOperationsToolbar~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BulkOperationsToolbar.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CompetencyBindingView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CompetencyBindingView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseFilterView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseFilterView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CourseManagementView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseManagementView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CoursePreviewView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CoursePreviewView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CoursePreviewView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CoursePreviewView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CoursePreviewView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/CreateCourseView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CreateCourseView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CreateCourseView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CreateCourseView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CreateCourseView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/EditCourseView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EditCourseView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EditCourseView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EditCourseView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EditCourseView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ManagedCourseDetailView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourseDetailView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourseDetailView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourseDetailView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ManagedCourseDetailView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleContentPreviews.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleContentPreviews.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleContentPreviews.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleContentPreviews~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleContentPreviews.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/ModuleManagementView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ModuleManagementView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/CourseManagement/Views/StudentCoursePreviewView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCoursePreviewView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCoursePreviewView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCoursePreviewView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/StudentCoursePreviewView.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Courses/Services/CourseMockService.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseMockService.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CourseMockService.swift.o",
@@ -656,6 +854,24 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeatureRegistry~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeatureRegistry.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/BuildReleaseNews.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BuildReleaseNews.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BuildReleaseNews.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BuildReleaseNews~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/BuildReleaseNews.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedError.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedError.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedError.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedError~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedError.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedItem.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedItem.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedItem.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedItem~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedItem.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Models/FeedPost.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPost.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPost.swift.o",
@@ -673,6 +889,36 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockFeedService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Services/ReleaseNewsService.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReleaseNewsService.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReleaseNewsService.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReleaseNewsService~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ReleaseNewsService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Models/FeedChannel.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannel.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannel.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannel~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannel.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/ChannelAvatar.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ChannelAvatar.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ChannelAvatar.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ChannelAvatar~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ChannelAvatar.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/FeedChannelCell.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannelCell.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannelCell.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannelCell~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedChannelCell.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/TelegramRedesign/Views/UnreadBadge.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UnreadBadge.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UnreadBadge.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UnreadBadge~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/UnreadBadge.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/ViewModels/FeedViewModel.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedViewModel.d",
@@ -704,6 +950,12 @@
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostCard~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostCard.swiftdeps"
   },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedPostComponents.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostComponents.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostComponents.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostComponents~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedPostComponents.swiftdeps"
+  },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/FeedSettingsView.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedSettingsView.d",
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedSettingsView.swift.o",
@@ -715,6 +967,12 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedView.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/FeedView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/HTMLContentView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/HTMLContentView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/HTMLContentView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/HTMLContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/HTMLContentView.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Feed/Views/PostActionsView.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PostActionsView.d",
@@ -1027,6 +1285,84 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OnboardingTemplateListView.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OnboardingTemplateListView~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OnboardingTemplateListView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Department.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Department.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Department.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Department~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Department.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/Employee.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Employee.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Employee.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Employee~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Employee.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Models/ImportResult.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ImportResult.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ImportResult.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ImportResult~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/ImportResult.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/CSVParser.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CSVParser.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CSVParser.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CSVParser~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CSVParser.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureAPIClient.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureAPIClient.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureAPIClient.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureAPIClient~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureAPIClient.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Services/OrgStructureService.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureService.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureService.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureService~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentDetailView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentDetailView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentDetailView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentDetailView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentDetailView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/DepartmentTreeView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentTreeView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentTreeView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentTreeView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/DepartmentTreeView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeDetailView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeDetailView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeDetailView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeDetailView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeDetailView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/EmployeeRowView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeRowView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeRowView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeRowView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/EmployeeRowView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgImportView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgImportView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgImportView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgImportView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgImportView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/OrgStructure/Views/OrgStructureView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/OrgStructureView.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Perplexity/Views/PerplexityHomeView.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityHomeView.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityHomeView.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityHomeView~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/PerplexityHomeView.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Features/Position/Models/CareerPath.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CareerPath.d",
@@ -1477,6 +1813,12 @@
     "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CacheService.swift.o",
     "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CacheService~partial.swiftmodule",
     "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/CacheService.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Cmi5/MockCmi5Service.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCmi5Service.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCmi5Service.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCmi5Service~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/MockCmi5Service.swiftdeps"
   },
   "/Users/ishirokov/lms_docs/LMS_App/LMS/LMS/Services/Common/Logger.swift": {
     "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/LMS.build/Logger.d",

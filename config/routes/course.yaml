@@ -1,0 +1,58 @@
+# Course Service routes
+
+course_controllers:
+    resource: ../../src/Course/Infrastructure/Http/
+    type: annotation
+    prefix: /api/v1
+    
+# Course routes
+courses_list:
+    path: /courses
+    controller: App\Course\Infrastructure\Http\CourseController::list
+    methods: GET
+    
+courses_get:
+    path: /courses/{id}
+    controller: App\Course\Infrastructure\Http\CourseController::get
+    methods: GET
+    
+courses_create:
+    path: /courses
+    controller: App\Course\Infrastructure\Http\CourseController::create
+    methods: POST
+    
+courses_publish:
+    path: /courses/{id}/publish
+    controller: App\Course\Infrastructure\Http\CourseController::publish
+    methods: POST
+    
+courses_archive:
+    path: /courses/{id}/archive
+    controller: App\Course\Infrastructure\Http\CourseController::archive
+    methods: POST
+
+# Enrollment routes
+enrollments_create:
+    path: /enrollments
+    controller: App\Course\Infrastructure\Http\EnrollmentController::enroll
+    methods: POST
+    
+enrollments_user_list:
+    path: /enrollments/user/{userId}
+    controller: App\Course\Infrastructure\Http\EnrollmentController::userEnrollments
+    methods: GET
+    
+enrollments_course_list:
+    path: /enrollments/course/{courseId}
+    controller: App\Course\Infrastructure\Http\EnrollmentController::courseEnrollments
+    methods: GET
+    
+enrollments_update_progress:
+    path: /enrollments/{userId}/{courseId}/progress
+    controller: App\Course\Infrastructure\Http\EnrollmentController::updateProgress
+    methods: PUT
+    
+enrollments_complete:
+    path: /enrollments/{userId}/{courseId}/complete
+    controller: App\Course\Infrastructure\Http\EnrollmentController::complete
+    methods: POST 

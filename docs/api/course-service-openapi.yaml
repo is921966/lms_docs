@@ -1,0 +1,396 @@
+openapi: 3.0.3
+info:
+  title: Course Service API
+  description: API for managing courses and enrollments in LMS
+  version: 1.0.0
+  contact:
+    name: LMS Development Team
+    email: support@lms.example.com
+
+servers:
+  - url: https://api.lms.example.com/api/v1
+    description: Production server
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+tags:
+  - name: courses
+    description: Course management operations
+  - name: enrollments
+    description: Enrollment management operations
+
+paths:
+  /courses:
+    get:
+      tags:
+        - courses
+      summary: List all courses
+      description: Retrieve a list of courses with optional filtering by status
+      parameters:
+        - name: status
+          in: query
+          description: Filter courses by status
+          required: false
+          schema:
+            type: string
+            enum: [draft, published, archived]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        
+    post:
+      tags:
+        - courses
+      summary: Create a new course
+      description: Create a new course with the provided details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseRequest'
+      responses:
+        '201':
+          description: Course created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Course'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+          
+  /courses/{id}:
+    get:
+      tags:
+        - courses
+      summary: Get course by ID
+      description: Retrieve a specific course by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Course ID (format CRS-uuid)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Course'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+  /courses/{id}/publish:
+    post:
+      tags:
+        - courses
+      summary: Publish a course
+      description: Change course status from draft to published
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Course published successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+  /courses/{id}/archive:
+    post:
+      tags:
+        - courses
+      summary: Archive a course
+      description: Archive a published course
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Course archived successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          
+  /enrollments:
+    post:
+      tags:
+        - enrollments
+      summary: Enroll user in a course
+      description: Create a new enrollment for a user in a course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEnrollmentRequest'
+      responses:
+        '201':
+          description: Enrollment created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Enrollment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          
+  /enrollments/user/{userId}:
+    get:
+      tags:
+        - enrollments
+      summary: Get user enrollments
+      description: List all enrollments for a specific user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Enrollment'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        
+  /enrollments/{userId}/{courseId}/progress:
+    put:
+      tags:
+        - enrollments
+      summary: Update enrollment progress
+      description: Update the progress percentage for an enrollment
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - progress_percent
+              properties:
+                progress_percent:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+      responses:
+        '200':
+          description: Progress updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          
+  /enrollments/{userId}/{courseId}/complete:
+    post:
+      tags:
+        - enrollments
+      summary: Complete course enrollment
+      description: Mark an enrollment as completed
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Course completed successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          
+components:
+  schemas:
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          example: CRS-123e4567-e89b-12d3-a456-426614174000
+        code:
+          type: string
+          example: CS101
+        title:
+          type: string
+          example: Introduction to Computer Science
+        description:
+          type: string
+        duration_minutes:
+          type: integer
+          example: 480
+        price:
+          type: object
+          properties:
+            amount:
+              type: number
+              format: float
+              example: 99.99
+            currency:
+              type: string
+              example: USD
+        status:
+          type: string
+          enum: [draft, published, archived]
+        created_at:
+          type: string
+          format: date-time
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+          
+    CreateCourseRequest:
+      type: object
+      required:
+        - code
+        - title
+        - description
+        - duration_minutes
+        - price_amount
+      properties:
+        code:
+          type: string
+          minLength: 3
+          maxLength: 20
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        duration_minutes:
+          type: integer
+          minimum: 1
+        price_amount:
+          type: number
+          format: float
+          minimum: 0
+        price_currency:
+          type: string
+          enum: [USD, EUR, GBP, RUB, JPY]
+          default: USD
+          
+    Enrollment:
+      type: object
+      properties:
+        id:
+          type: string
+        course_id:
+          type: string
+        user_id:
+          type: string
+        course:
+          $ref: '#/components/schemas/Course'
+        status:
+          type: string
+          enum: [active, suspended, completed]
+        progress_percent:
+          type: integer
+        enrolled_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+          
+    CreateEnrollmentRequest:
+      type: object
+      required:
+        - user_id
+        - course_id
+      properties:
+        user_id:
+          type: string
+        course_id:
+          type: string
+          
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error' 

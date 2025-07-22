@@ -6,12 +6,42 @@ struct SettingsView: View {
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
     @AppStorage("darkModeEnabled") private var darkModeEnabled = false
     @AppStorage("autoPlayVideos") private var autoPlayVideos = true
+    @StateObject private var feedDesignManager = FeedDesignManager.shared
     @StateObject private var adminService = MockAdminService.shared
-
+    
+    // Проверка, запущено ли приложение через TestFlight
+    private var isRunningInTestFlight: Bool {
+        guard let appStoreReceiptURL = Bundle.main.appStoreReceiptURL else { return false }
+        return appStoreReceiptURL.lastPathComponent == "sandboxReceipt"
+    }
+    
     var isAdmin: Bool {
         authService.currentUser?.role == .admin || authService.currentUser?.role == .superAdmin
     }
-
+    
+    @ViewBuilder
+    private var developerToolsContent: some View {
+        NavigationLink(destination: CloudServersView()) {
+            Label("Cloud Servers", systemImage: "cloud.fill")
+                .foregroundColor(.blue)
+        }
+        
+        NavigationLink(destination: LogTestView()) {
+            Label("Log Testing", systemImage: "doc.text.magnifyingglass")
+                .foregroundColor(.purple)
+        }
+        
+        NavigationLink(destination: ServerStatusView()) {
+            Label("Server Status", systemImage: "server.rack")
+                .foregroundColor(.green)
+        }
+        
+        NavigationLink(destination: DebugMenuView()) {
+            Label("Debug Menu", systemImage: "hammer.fill")
+                .foregroundColor(.orange)
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             List {
@@ -72,6 +102,11 @@ struct SettingsView: View {
                     Toggle(isOn: $autoPlayVideos) {
                         Label("Автовоспроизведение видео", systemImage: "play.circle")
                     }
+                    
+                    Toggle(isOn: $feedDesignManager.useNewDesign) {
+                        Label("Новый дизайн ленты", systemImage: "newspaper")
+                    }
+                    .tint(.blue)
                 }
 
                 // Learning settings
@@ -98,6 +133,11 @@ struct SettingsView: View {
                     NavigationLink(destination: FeedbackView()) {
                         Label("Отправить отзыв", systemImage: "exclamationmark.bubble")
                     }
+                    
+                    NavigationLink(destination: FeedDesignDiagnosticView()) {
+                        Label("Диагностика ленты", systemImage: "stethoscope")
+                    }
+                    .foregroundColor(.orange)
 
                     NavigationLink(destination: Text("FAQ")) {
                         Label("Часто задаваемые вопросы", systemImage: "questionmark.circle")
@@ -107,6 +147,19 @@ struct SettingsView: View {
                         Label("О приложении", systemImage: "info.circle")
                     }
                 }
+                
+                // Debug Tools section (доступно в TestFlight для тестирования)
+                #if DEBUG
+                Section(header: Text("🛠 Developer Tools")) {
+                    developerToolsContent
+                }
+                #else
+                if isRunningInTestFlight {
+                    Section(header: Text("🛠 Developer Tools (TestFlight)")) {
+                        developerToolsContent
+                    }
+                }
+                #endif
 
                 // Logout section
                 Section {

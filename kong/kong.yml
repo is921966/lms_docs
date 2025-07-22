@@ -1,0 +1,265 @@
+_format_version: "3.0"
+
+services:
+  # Auth Service
+  - name: auth-service
+    url: http://auth-service:80
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    
+  # User Service
+  - name: user-service
+    url: http://user-service:80
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    
+  # Course Service
+  - name: course-service
+    url: http://course-service:80
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    
+  # Competency Service
+  - name: competency-service
+    url: http://competency-service:80
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    
+  # Notification Service
+  - name: notification-service
+    url: http://notification-service:80
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    
+  # OrgStructure Service
+  - name: orgstructure-service
+    url: http://orgstructure-service:80
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+
+routes:
+  # Auth routes
+  - name: auth-login
+    service: auth-service
+    paths:
+      - /api/v1/auth/login
+    methods:
+      - POST
+      
+  - name: auth-refresh
+    service: auth-service
+    paths:
+      - /api/v1/auth/refresh
+    methods:
+      - POST
+      
+  - name: auth-logout
+    service: auth-service
+    paths:
+      - /api/v1/auth/logout
+    methods:
+      - POST
+      
+  - name: auth-me
+    service: auth-service
+    paths:
+      - /api/v1/auth/me
+    methods:
+      - GET
+      
+  # User routes
+  - name: user-routes
+    service: user-service
+    paths:
+      - /api/v1/users
+    strip_path: false
+    
+  # Course routes
+  - name: course-routes
+    service: course-service
+    paths:
+      - /api/v1/courses
+    strip_path: false
+    
+  # Competency routes
+  - name: competency-routes
+    service: competency-service
+    paths:
+      - /api/v1/competencies
+    strip_path: false
+    
+  # Notification routes
+  - name: notification-routes
+    service: notification-service
+    paths:
+      - /api/v1/notifications
+    strip_path: false
+    
+  # OrgStructure routes
+  - name: orgstructure-routes
+    service: orgstructure-service
+    paths:
+      - /api/v1/orgstructure
+    strip_path: false
+
+plugins:
+  # Global plugins
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+        - PATCH
+      headers:
+        - Authorization
+        - Content-Type
+        - X-Requested-With
+      exposed_headers:
+        - X-Total-Count
+        - X-Page
+        - X-Per-Page
+      credentials: true
+      max_age: 3600
+      
+  - name: rate-limiting
+    config:
+      minute: 100
+      hour: 10000
+      policy: local
+      
+  - name: request-transformer
+    config:
+      add:
+        headers:
+          - X-Request-ID: "$(uuid)"
+          - X-Forwarded-Prefix: "/api/v1"
+          
+  - name: response-transformer
+    config:
+      add:
+        headers:
+          - X-Kong-Upstream-Latency: "$(latency)"
+          - X-Kong-Proxy-Latency: "$(kong_latency)"
+          
+  # Auth protection for protected routes
+  - name: jwt
+    service: user-service
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
+        - iat
+      maximum_expiration: 86400
+      
+  - name: jwt
+    service: course-service
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
+        - iat
+      maximum_expiration: 86400
+      
+  - name: jwt
+    service: competency-service
+    config:
+      key_claim_name: kid
+      claims_to_verify:
+        - exp
+        - iat
+      maximum_expiration: 86400
+      
+  # Logging
+  - name: file-log
+    config:
+      path: /var/log/kong/access.log
+      reopen: true
+      
+  # Circuit breaker
+  - name: ldap-auth-advanced
+    service: auth-service
+    route: auth-login
+    config:
+      ldap_host: ldap.tsum.ru
+      ldap_port: 389
+      base_dn: dc=tsum,dc=ru
+      attribute: cn
+      hide_credentials: true
+      
+  # Request validation
+  - name: request-validator
+    service: auth-service
+    route: auth-login
+    config:
+      body_schema: |
+        {
+          "type": "object",
+          "required": ["email", "password"],
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "password": {
+              "type": "string",
+              "minLength": 8
+            }
+          }
+        }
+        
+  # Health checks
+  - name: tcp-log
+    config:
+      host: monitoring
+      port: 5000
+      tls: false
+      
+upstreams:
+  - name: auth-service-upstream
+    targets:
+      - target: auth-service:80
+        weight: 100
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        healthy:
+          interval: 5
+          successes: 1
+        unhealthy:
+          interval: 5
+          tcp_failures: 3
+          http_failures: 3
+          
+  - name: user-service-upstream
+    targets:
+      - target: user-service:80
+        weight: 100
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        healthy:
+          interval: 5
+          successes: 1
+        unhealthy:
+          interval: 5
+          tcp_failures: 3
+          http_failures: 3 
