@@ -9,12 +9,6 @@ struct SettingsView: View {
     @StateObject private var feedDesignManager = FeedDesignManager.shared
     @StateObject private var adminService = MockAdminService.shared
     
-    // Проверка, запущено ли приложение через TestFlight
-    private var isRunningInTestFlight: Bool {
-        guard let appStoreReceiptURL = Bundle.main.appStoreReceiptURL else { return false }
-        return appStoreReceiptURL.lastPathComponent == "sandboxReceipt"
-    }
-    
     var isAdmin: Bool {
         authService.currentUser?.role == .admin || authService.currentUser?.role == .superAdmin
     }
@@ -148,18 +142,12 @@ struct SettingsView: View {
                     }
                 }
                 
-                // Debug Tools section (доступно в TestFlight для тестирования)
-                #if DEBUG
-                Section(header: Text("🛠 Developer Tools")) {
-                    developerToolsContent
-                }
-                #else
-                if isRunningInTestFlight {
-                    Section(header: Text("🛠 Developer Tools (TestFlight)")) {
+                // Developer Tools section (только в админском режиме)
+                if isAdminMode {
+                    Section(header: Text("🛠 Developer Tools")) {
                         developerToolsContent
                     }
                 }
-                #endif
 
                 // Logout section
                 Section {
