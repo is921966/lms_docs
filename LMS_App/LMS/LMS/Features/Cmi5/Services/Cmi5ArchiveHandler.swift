@@ -2,61 +2,58 @@
 //  Cmi5ArchiveHandler.swift
 //  LMS
 //
-//  Created on Sprint 40 Day 3 - ZIP Archive Support
+//  Created on 24.06.2025.
 //
 
 import Foundation
 import UniformTypeIdentifiers
+import ZIPFoundation
 
-/// Обработчик архивов Cmi5 пакетов
-public final class Cmi5ArchiveHandler {
+/// Обработчик ZIP архивов для Cmi5 пакетов
+public class Cmi5ArchiveHandler {
     
     // MARK: - Types
     
-    /// Ошибки при работе с архивом
     public enum ArchiveError: LocalizedError {
         case invalidArchive
-        case manifestNotFound
-        case invalidManifest(String)
         case extractionFailed(String)
         case fileTooLarge(maxSize: Int64)
         case unsupportedFormat
-        case invalidStructure(String)
+        case fileNotFound(String)
+        case temporaryDirectoryError
         
         public var errorDescription: String? {
             switch self {
             case .invalidArchive:
                 return "Недействительный архив. Убедитесь, что файл является корректным ZIP архивом."
-            case .manifestNotFound:
-                return "Манифест cmi5.xml не найден в архиве."
-            case .invalidManifest(let details):
-                return "Недействительный манифест: \(details)"
             case .extractionFailed(let reason):
-                return "Не удалось распаковать архив: \(reason)"
+                return "Ошибка распаковки: \(reason)"
             case .fileTooLarge(let maxSize):
-                return "Файл слишком большой. Максимальный размер: \(maxSize / 1024 / 1024) МБ"
+                let sizeMB = maxSize / 1024 / 1024
+                return "Файл слишком большой. Максимальный размер: \(sizeMB) МБ"
             case .unsupportedFormat:
-                return "Неподдерживаемый формат архива. Поддерживается только ZIP."
-            case .invalidStructure(let details):
-                return "Недействительная структура архива: \(details)"
+                return "Неподдерживаемый формат файла"
+            case .fileNotFound(let filename):
+                return "Файл не найден: \(filename)"
+            case .temporaryDirectoryError:
+                return "Ошибка создания временной директории"
             }
         }
     }
     
-    /// Результат распаковки архива
     public struct ExtractionResult {
-        public let manifestURL: URL
-        public let contentURL: URL
-        public let packageSize: Int64
-        public let fileCount: Int
+        public let packageId: String
         public let extractedPath: URL
+        public let cmi5ManifestPath: URL
+        public let coursePath: URL
+        public let extractedFiles: [String]
     }
     
     // MARK: - Properties
     
     private let fileManager = FileManager.default
-    private let maxArchiveSize: Int64 = 500 * 1024 * 1024 // 500 MB
     private let tempDirectory: URL
+    private let maxArchiveSize: Int64 = 100 * 1024 * 1024 // 100 MB
     
     // MARK: - Initialization
     
@@ -64,7 +61,7 @@ public final class Cmi5ArchiveHandler {
         self.tempDirectory = fileManager.temporaryDirectory
             .appendingPathComponent("cmi5_packages", isDirectory: true)
         
-        // Создаем временную директорию если нужно
+        // Создаем директорию если её нет
         try? fileManager.createDirectory(at: tempDirectory, withIntermediateDirectories: true)
     }
     
@@ -72,23 +69,84 @@ public final class Cmi5ArchiveHandler {
     
     /// Валидирует архив без распаковки
     public func validateArchive(at url: URL) throws {
+        print("🔍 [Cmi5ArchiveHandler] Validating archive at: \(url.path)")
+        
         // Проверяем существование файла
         guard fileManager.fileExists(atPath: url.path) else {
+            print("❌ [Cmi5ArchiveHandler] File does not exist at path: \(url.path)")
             throw ArchiveError.invalidArchive
         }
         
         // Проверяем размер
         let attributes = try fileManager.attributesOfItem(atPath: url.path)
         let fileSize = attributes[.size] as? Int64 ?? 0
+        print("📏 [Cmi5ArchiveHandler] File size: \(fileSize) bytes")
         
         if fileSize > maxArchiveSize {
+            print("❌ [Cmi5ArchiveHandler] File too large: \(fileSize) > \(maxArchiveSize)")
             throw ArchiveError.fileTooLarge(maxSize: maxArchiveSize)
         }
         
-        // Проверяем формат (должен быть ZIP)
-        let type = try url.resourceValues(forKeys: [.contentTypeKey]).contentType
-        guard type == .zip || url.pathExtension.lowercased() == "zip" else {
-            throw ArchiveError.unsupportedFormat
+        // Проверяем доступ к файлу
+        let hasSecurityScope = url.startAccessingSecurityScopedResource()
+        defer { 
+            if hasSecurityScope {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        
+        if !hasSecurityScope {
+            print("⚠️ [Cmi5ArchiveHandler] Could not access security scoped resource - continuing without it")
+        }
+        
+        // Проверяем, что это действительно ZIP файл
+        do {
+            // Дополнительная диагностика - проверяем сигнатуру файла
+            let fileHandle = try FileHandle(forReadingFrom: url)
+            let signature = fileHandle.readData(ofLength: 4)
+            fileHandle.closeFile()
+            
+            // ZIP файлы начинаются с PK (0x504B)
+            if signature.count >= 2 {
+                let bytes = [UInt8](signature)
+                print("📋 [Cmi5ArchiveHandler] File signature: \(bytes.map { String(format: "%02X", $0) }.joined())")
+                if bytes[0] != 0x50 || bytes[1] != 0x4B {
+                    print("❌ [Cmi5ArchiveHandler] Invalid ZIP signature (expected PK/504B)")
+                }
+            }
+            
+            guard let archive = Archive(url: url, accessMode: .read) else {
+                print("❌ [Cmi5ArchiveHandler] Could not open as ZIP archive")
+                throw ArchiveError.invalidArchive
+            }
+            
+            // Проверяем содержимое архива
+            var entryCount = 0
+            var entries: [String] = []
+            for entry in archive {
+                entryCount += 1
+                if entries.count < 5 {
+                    entries.append(entry.path)
+                }
+            }
+            
+            print("📦 [Cmi5ArchiveHandler] Archive entries count: \(entryCount)")
+            if entryCount == 0 {
+                print("❌ [Cmi5ArchiveHandler] Archive is empty")
+                throw ArchiveError.invalidArchive
+            }
+            
+            // Выводим первые несколько файлов для диагностики
+            for path in entries {
+                print("   - \(path)")
+            }
+            
+            print("✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with \(entryCount) entries")
+        } catch {
+            print("❌ [Cmi5ArchiveHandler] Archive validation failed: \(error)")
+            print("   Error type: \(type(of: error))")
+            print("   Error description: \(error.localizedDescription)")
+            throw ArchiveError.invalidArchive
         }
     }
     
@@ -103,77 +161,48 @@ public final class Cmi5ArchiveHandler {
         
         try fileManager.createDirectory(at: extractionPath, withIntermediateDirectories: true)
         
-        // На iOS используем FileManager для работы с архивами
-        // В реальном приложении следует использовать библиотеку типа ZIPFoundation
-        // Для MVP создаем фиктивную структуру
-        
+        // Распаковываем архив с использованием ZIPFoundation
         do {
-            // Создаем базовую структуру для тестирования
-            let contentDir = extractionPath.appendingPathComponent("content", isDirectory: true)
-            try fileManager.createDirectory(at: contentDir, withIntermediateDirectories: true)
+            let hasSecurityScope = url.startAccessingSecurityScopedResource()
+            defer { 
+                if hasSecurityScope {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
             
-            // Создаем манифест
-            let manifestURL = extractionPath.appendingPathComponent("cmi5.xml")
-            let sampleManifest = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <courseStructure xmlns="https://w3id.org/xapi/profiles/cmi5/v1/CourseStructure.xsd">
-                <course id="sample_course">
-                    <title><langstring lang="en">Sample Cmi5 Course</langstring></title>
-                    <description><langstring lang="en">A sample course for testing</langstring></description>
-                </course>
-                <au id="sample_au" launchMethod="OwnWindow">
-                    <title><langstring lang="en">Sample Activity</langstring></title>
-                    <url>content/index.html</url>
-                </au>
-            </courseStructure>
-            """
-            try sampleManifest.write(to: manifestURL, atomically: true, encoding: .utf8)
+            if !hasSecurityScope {
+                print("⚠️ [Cmi5ArchiveHandler] Could not access security scoped resource - attempting extraction anyway")
+            }
             
-            // Создаем пример контента
-            let indexHTML = contentDir.appendingPathComponent("index.html")
-            let sampleHTML = """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Sample Cmi5 Content</title>
-                <script src="cmi5.js"></script>
-            </head>
-            <body>
-                <h1>Sample Cmi5 Activity</h1>
-                <p>This is a sample Cmi5 content for testing.</p>
-            </body>
-            </html>
-            """
-            try sampleHTML.write(to: indexHTML, atomically: true, encoding: .utf8)
-            
+            try fileManager.unzipItem(at: url, to: extractionPath)
         } catch {
-            // Удаляем временную папку
+            // Очищаем временную директорию в случае ошибки
             try? fileManager.removeItem(at: extractionPath)
             throw ArchiveError.extractionFailed(error.localizedDescription)
         }
         
-        // Ищем манифест
-        let manifestURL = try findManifest(in: extractionPath)
+        // Ищем cmi5.xml файл
+        let cmi5ManifestPath = try findCmi5Manifest(in: extractionPath)
         
-        // Определяем директорию с контентом
-        let contentURL = manifestURL.deletingLastPathComponent()
+        // Определяем корневую директорию курса
+        let coursePath = cmi5ManifestPath.deletingLastPathComponent()
         
-        // Считаем файлы и размер
-        let fileCount = try countFiles(in: extractionPath)
-        let packageSize = try calculateSize(of: extractionPath)
+        // Собираем список всех извлеченных файлов
+        let extractedFiles = try listExtractedFiles(at: extractionPath)
         
         return ExtractionResult(
-            manifestURL: manifestURL,
-            contentURL: contentURL,
-            packageSize: packageSize,
-            fileCount: fileCount,
-            extractedPath: extractionPath
+            packageId: packageId,
+            extractedPath: extractionPath,
+            cmi5ManifestPath: cmi5ManifestPath,
+            coursePath: coursePath,
+            extractedFiles: extractedFiles
         )
     }
     
-    /// Очищает временные файлы пакета
-    public func cleanupPackage(at path: URL) {
-        try? fileManager.removeItem(at: path)
+    /// Очищает временные файлы для указанного пакета
+    public func cleanupPackage(packageId: String) {
+        let packagePath = tempDirectory.appendingPathComponent(packageId)
+        try? fileManager.removeItem(at: packagePath)
     }
     
     /// Очищает все временные файлы
@@ -182,23 +211,9 @@ public final class Cmi5ArchiveHandler {
         try? fileManager.createDirectory(at: tempDirectory, withIntermediateDirectories: true)
     }
     
-    /// Копирует распакованный пакет в постоянное хранилище
-    public func moveToStorage(from tempPath: URL, to storagePath: URL) throws {
-        // Создаем директорию если нужно
-        let parentDir = storagePath.deletingLastPathComponent()
-        try fileManager.createDirectory(at: parentDir, withIntermediateDirectories: true)
-        
-        // Перемещаем файлы
-        if fileManager.fileExists(atPath: storagePath.path) {
-            try fileManager.removeItem(at: storagePath)
-        }
-        
-        try fileManager.moveItem(at: tempPath, to: storagePath)
-    }
-    
     // MARK: - Private Methods
     
-    private func findManifest(in directory: URL) throws -> URL {
+    private func findCmi5Manifest(in directory: URL) throws -> URL {
         let enumerator = fileManager.enumerator(
             at: directory,
             includingPropertiesForKeys: [.isRegularFileKey],
@@ -211,178 +226,107 @@ public final class Cmi5ArchiveHandler {
             }
         }
         
-        throw ArchiveError.manifestNotFound
+        throw ArchiveError.fileNotFound("cmi5.xml")
     }
     
-    private func countFiles(in directory: URL) throws -> Int {
+    private func listExtractedFiles(at directory: URL) throws -> [String] {
+        var files: [String] = []
+        
         let enumerator = fileManager.enumerator(
             at: directory,
             includingPropertiesForKeys: [.isRegularFileKey],
             options: [.skipsHiddenFiles]
         )
         
-        var count = 0
         while let fileURL = enumerator?.nextObject() as? URL {
-            let resourceValues = try fileURL.resourceValues(forKeys: [.isRegularFileKey])
-            if resourceValues.isRegularFile == true {
-                count += 1
-            }
+            let relativePath = fileURL.path.replacingOccurrences(
+                of: directory.path + "/",
+                with: ""
+            )
+            files.append(relativePath)
         }
         
-        return count
+        return files
     }
     
-    private func calculateSize(of directory: URL) throws -> Int64 {
-        let enumerator = fileManager.enumerator(
-            at: directory,
-            includingPropertiesForKeys: [.fileSizeKey, .isRegularFileKey],
-            options: [.skipsHiddenFiles]
-        )
+    /// Создает временный демо-пакет для тестирования
+    public func createDemoPackage() async throws -> URL {
+        let demoPackageId = "demo-\(UUID().uuidString)"
+        let demoPath = tempDirectory.appendingPathComponent(demoPackageId, isDirectory: true)
         
-        var totalSize: Int64 = 0
-        while let fileURL = enumerator?.nextObject() as? URL {
-            let resourceValues = try fileURL.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey])
-            if resourceValues.isRegularFile == true {
-                totalSize += Int64(resourceValues.fileSize ?? 0)
-            }
-        }
+        // Создаем структуру директорий
+        try fileManager.createDirectory(at: demoPath, withIntermediateDirectories: true)
         
-        return totalSize
-    }
-}
-
-// MARK: - Archive Validation
-
-extension Cmi5ArchiveHandler {
-    
-    /// Структура валидации архива
-    public struct ValidationResult {
-        public let isValid: Bool
-        public let errors: [String]
-        public let warnings: [String]
-        public let structure: ArchiveStructure?
-    }
-    
-    /// Структура архива
-    public struct ArchiveStructure {
-        public let hasManifest: Bool
-        public let hasContent: Bool
-        public let contentFolders: [String]
-        public let manifestLocation: String?
-        public let estimatedActivities: Int
-    }
-    
-    /// Выполняет полную валидацию архива
-    public func performFullValidation(at url: URL) async throws -> ValidationResult {
-        var errors: [String] = []
-        var warnings: [String] = []
+        // Создаем cmi5.xml с правильной структурой
+        let cmi5Content = """
+        <?xml version="1.0" encoding="utf-8"?>
+        <courseStructure xmlns="https://w3id.org/xapi/profiles/cmi5/v1/coursestructure.xsd" id="demo-course-001">
+            <title>Демонстрационный курс</title>
+            <description>Пример Cmi5 курса для тестирования</description>
+            <course id="demo-course">
+                <title>Демонстрационный курс</title>
+                <description>Пример Cmi5 курса для тестирования</description>
+                <au id="demo-activity" moveOn="Passed" launchMethod="OwnWindow">
+                    <title>Вводный урок</title>
+                    <description>Первый урок демонстрационного курса</description>
+                    <url>index.html</url>
+                </au>
+            </course>
+        </courseStructure>
+        """
         
-        // Базовая валидация
-        do {
-            try validateArchive(at: url)
-        } catch {
-            errors.append(error.localizedDescription)
-            return ValidationResult(isValid: false, errors: errors, warnings: warnings, structure: nil)
-        }
+        let cmi5Path = demoPath.appendingPathComponent("cmi5.xml")
+        try cmi5Content.write(to: cmi5Path, atomically: true, encoding: .utf8)
         
-        // Распаковываем для детальной проверки
-        let extraction: ExtractionResult
-        do {
-            extraction = try await extractArchive(from: url)
-        } catch {
-            errors.append("Не удалось распаковать архив: \(error.localizedDescription)")
-            return ValidationResult(isValid: false, errors: errors, warnings: warnings, structure: nil)
-        }
-        
-        defer {
-            cleanupPackage(at: extraction.extractedPath)
-        }
-        
-        // Проверяем структуру
-        let structure = try analyzeStructure(at: extraction.extractedPath)
-        
-        // Валидация структуры
-        if !structure.hasManifest {
-            errors.append("Манифест cmi5.xml не найден")
-        }
-        
-        if !structure.hasContent {
-            warnings.append("Не найдена папка с контентом")
-        }
-        
-        if structure.contentFolders.isEmpty {
-            warnings.append("Не найдены папки с активностями")
-        }
-        
-        // Проверяем манифест
-        if structure.hasManifest {
-            do {
-                let manifestData = try Data(contentsOf: extraction.manifestURL)
-                let parser = Cmi5Parser()
-                _ = try parser.parseManifest(manifestData, baseURL: extraction.contentURL)
-            } catch {
-                errors.append("Ошибка парсинга манифеста: \(error.localizedDescription)")
-            }
-        }
-        
-        return ValidationResult(
-            isValid: errors.isEmpty,
-            errors: errors,
-            warnings: warnings,
-            structure: structure
-        )
-    }
-    
-    private func analyzeStructure(at path: URL) throws -> ArchiveStructure {
-        var hasManifest = false
-        var manifestLocation: String?
-        var contentFolders: [String] = []
-        var hasContent = false
-        
-        let enumerator = fileManager.enumerator(
-            at: path,
-            includingPropertiesForKeys: [.isDirectoryKey, .isRegularFileKey],
-            options: [.skipsHiddenFiles]
-        )
-        
-        while let fileURL = enumerator?.nextObject() as? URL {
-            let resourceValues = try fileURL.resourceValues(forKeys: [.isDirectoryKey, .isRegularFileKey])
-            
-            // Проверяем манифест
-            if fileURL.lastPathComponent.lowercased() == "cmi5.xml" {
-                hasManifest = true
-                manifestLocation = fileURL.path.replacingOccurrences(of: path.path + "/", with: "")
-            }
-            
-            // Проверяем папки контента
-            if resourceValues.isDirectory == true {
-                let folderName = fileURL.lastPathComponent.lowercased()
-                if folderName == "content" || folderName == "contents" {
-                    hasContent = true
-                    
-                    // Ищем подпапки в content
-                    let contentEnumerator = fileManager.enumerator(
-                        at: fileURL,
-                        includingPropertiesForKeys: [.isDirectoryKey],
-                        options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants]
-                    )
-                    
-                    while let subURL = contentEnumerator?.nextObject() as? URL {
-                        let subResourceValues = try subURL.resourceValues(forKeys: [.isDirectoryKey])
-                        if subResourceValues.isDirectory == true {
-                            contentFolders.append(subURL.lastPathComponent)
-                        }
-                    }
+        // Создаем index.html
+        let indexContent = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Демонстрационный курс</title>
+            <meta charset="utf-8">
+            <style>
+                body { 
+                    font-family: -apple-system, system-ui; 
+                    padding: 20px;
+                    max-width: 800px;
+                    margin: 0 auto;
                 }
-            }
-        }
+                h1 { color: #333; }
+                .button {
+                    background-color: #007AFF;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    margin-top: 20px;
+                }
+                .button:hover {
+                    background-color: #0051D5;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Добро пожаловать в демонстрационный курс!</h1>
+            <p>Это пример Cmi5 курса для тестирования функциональности импорта.</p>
+            <p>В реальном курсе здесь будет образовательный контент, интерактивные элементы и система отслеживания прогресса.</p>
+            <button class="button" onclick="alert('Урок завершен! В реальном курсе здесь будет отправка xAPI statement.')">Завершить урок</button>
+        </body>
+        </html>
+        """
         
-        return ArchiveStructure(
-            hasManifest: hasManifest,
-            hasContent: hasContent,
-            contentFolders: contentFolders,
-            manifestLocation: manifestLocation,
-            estimatedActivities: contentFolders.count
-        )
+        let indexPath = demoPath.appendingPathComponent("index.html")
+        try indexContent.write(to: indexPath, atomically: true, encoding: .utf8)
+        
+        // Создаем ZIP архив
+        let zipPath = tempDirectory.appendingPathComponent("\(demoPackageId).zip")
+        try fileManager.zipItem(at: demoPath, to: zipPath)
+        
+        // Очищаем временную папку
+        try fileManager.removeItem(at: demoPath)
+        
+        return zipPath
     }
 } 

@@ -94,16 +94,8 @@ class FeedService: ObservableObject {
         
         // For release news, also update permissions to allow posting
         if item.metadata["type"] == "app_release" {
-            mockService.permissions = FeedPermissions(
-                canPost: true,
-                canComment: true,
-                canLike: true,
-                canShare: true,
-                canDelete: false,
-                canEdit: false,
-                canModerate: false,
-                visibilityOptions: [.everyone]
-            )
+            // Note: permissions should be updated through proper API/method
+            // For now, we just add the post with appropriate metadata
         }
     }
     

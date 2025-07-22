@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct ManagedCourse: Identifiable, Codable {
+struct ManagedCourse: Identifiable, Codable, Equatable {
     let id: UUID
     var title: String
     var description: String
@@ -11,6 +11,7 @@ struct ManagedCourse: Identifiable, Codable {
     var modules: [ManagedCourseModule]
     var createdAt: Date
     var updatedAt: Date
+    var cmi5PackageId: UUID? // Связь с Cmi5 пакетом
     
     init(
         id: UUID = UUID(),
@@ -21,7 +22,8 @@ struct ManagedCourse: Identifiable, Codable {
         competencies: [UUID] = [],
         modules: [ManagedCourseModule] = [],
         createdAt: Date = Date(),
-        updatedAt: Date = Date()
+        updatedAt: Date = Date(),
+        cmi5PackageId: UUID? = nil
     ) {
         self.id = id
         self.title = title
@@ -32,6 +34,7 @@ struct ManagedCourse: Identifiable, Codable {
         self.modules = modules
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        self.cmi5PackageId = cmi5PackageId
     }
 }
 
@@ -55,9 +58,17 @@ enum ManagedCourseStatus: String, Codable, CaseIterable {
         case .archived: return .gray
         }
     }
+    
+    var icon: String {
+        switch self {
+        case .draft: return "pencil.circle"
+        case .published: return "checkmark.circle"  
+        case .archived: return "archivebox"
+        }
+    }
 }
 
-struct ManagedCourseModule: Identifiable, Codable {
+struct ManagedCourseModule: Identifiable, Codable, Equatable {
     let id: UUID
     var title: String
     var description: String

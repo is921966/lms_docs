@@ -1,0 +1,322 @@
+# API Gateway Routing Configuration
+version: "1.0"
+
+# Service discovery
+services:
+  auth-service:
+    url: http://auth-service:8080
+    timeout: 10s
+    retry:
+      attempts: 3
+      delay: 100ms
+  
+  user-service:
+    url: http://user-service:8080
+    timeout: 10s
+    retry:
+      attempts: 3
+      delay: 100ms
+  
+  course-service:
+    url: http://course-service:8080
+    timeout: 15s
+    retry:
+      attempts: 3
+      delay: 200ms
+  
+  competency-service:
+    url: http://competency-service:8080
+    timeout: 10s
+    retry:
+      attempts: 3
+      delay: 100ms
+  
+  notification-service:
+    url: http://notification-service:8080
+    timeout: 5s
+    retry:
+      attempts: 2
+      delay: 50ms
+  
+  org-structure-service:
+    url: http://org-structure-service:8080
+    timeout: 10s
+    retry:
+      attempts: 3
+      delay: 100ms
+
+# Route definitions
+routes:
+  # Authentication routes
+  - path: /api/v1/auth/login
+    method: POST
+    service: auth-service
+    public: true
+    rateLimit:
+      requests: 5
+      window: 1m
+  
+  - path: /api/v1/auth/logout
+    method: POST
+    service: auth-service
+    auth: required
+  
+  - path: /api/v1/auth/refresh
+    method: POST
+    service: auth-service
+    public: true
+    rateLimit:
+      requests: 10
+      window: 1m
+  
+  - path: /api/v1/auth/verify
+    method: GET
+    service: auth-service
+    auth: required
+  
+  # User management routes
+  - path: /api/v1/users
+    method: GET
+    service: user-service
+    auth: required
+    roles: ["admin", "manager"]
+    cache:
+      ttl: 60s
+  
+  - path: /api/v1/users/:id
+    method: GET
+    service: user-service
+    auth: required
+    cache:
+      ttl: 300s
+  
+  - path: /api/v1/users
+    method: POST
+    service: user-service
+    auth: required
+    roles: ["admin"]
+    validation:
+      body: user-create-schema
+  
+  - path: /api/v1/users/:id
+    method: PUT
+    service: user-service
+    auth: required
+    validation:
+      body: user-update-schema
+  
+  - path: /api/v1/users/:id
+    method: DELETE
+    service: user-service
+    auth: required
+    roles: ["admin"]
+  
+  # Course management routes
+  - path: /api/v1/courses
+    method: GET
+    service: course-service
+    auth: required
+    cache:
+      ttl: 120s
+    transform:
+      response: course-list-transform
+  
+  - path: /api/v1/courses/:id
+    method: GET
+    service: course-service
+    auth: required
+    cache:
+      ttl: 300s
+  
+  - path: /api/v1/courses
+    method: POST
+    service: course-service
+    auth: required
+    roles: ["admin", "manager"]
+    validation:
+      body: course-create-schema
+  
+  - path: /api/v1/courses/:id
+    method: PUT
+    service: course-service
+    auth: required
+    roles: ["admin", "manager"]
+    validation:
+      body: course-update-schema
+  
+  - path: /api/v1/courses/:id/enroll
+    method: POST
+    service: course-service
+    auth: required
+    rateLimit:
+      requests: 10
+      window: 1h
+  
+  - path: /api/v1/courses/:id/progress
+    method: GET
+    service: course-service
+    auth: required
+  
+  - path: /api/v1/courses/:id/complete
+    method: POST
+    service: course-service
+    auth: required
+  
+  # Competency management routes
+  - path: /api/v1/competencies
+    method: GET
+    service: competency-service
+    auth: required
+    cache:
+      ttl: 300s
+  
+  - path: /api/v1/competencies/:id
+    method: GET
+    service: competency-service
+    auth: required
+    cache:
+      ttl: 300s
+  
+  - path: /api/v1/competencies/matrix
+    method: GET
+    service: competency-service
+    auth: required
+    cache:
+      ttl: 600s
+  
+  - path: /api/v1/assessments
+    method: POST
+    service: competency-service
+    auth: required
+    validation:
+      body: assessment-create-schema
+  
+  - path: /api/v1/assessments/:userId
+    method: GET
+    service: competency-service
+    auth: required
+  
+  # Notification routes
+  - path: /api/v1/notifications
+    method: GET
+    service: notification-service
+    auth: required
+    websocket: upgrade
+  
+  - path: /api/v1/notifications/send
+    method: POST
+    service: notification-service
+    auth: required
+    roles: ["admin", "system"]
+    async: true
+  
+  # Organization structure routes
+  - path: /api/v1/org-structure/departments
+    method: GET
+    service: org-structure-service
+    auth: required
+    cache:
+      ttl: 3600s
+  
+  - path: /api/v1/org-structure/positions
+    method: GET
+    service: org-structure-service
+    auth: required
+    cache:
+      ttl: 3600s
+  
+  - path: /api/v1/org-structure/employees
+    method: GET
+    service: org-structure-service
+    auth: required
+    roles: ["admin", "manager", "hr"]
+
+# Middleware configuration
+middleware:
+  - name: cors
+    config:
+      allowedOrigins:
+        - https://lms.tsum.ru
+        - https://app.lms.tsum.ru
+        - capacitor://localhost  # For iOS app
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Request-ID
+      exposedHeaders:
+        - X-Total-Count
+        - X-Page-Count
+      maxAge: 86400
+      credentials: true
+  
+  - name: authentication
+    config:
+      jwtSecret: ${JWT_SECRET}
+      publicPaths:
+        - /api/v1/auth/login
+        - /api/v1/auth/refresh
+        - /health
+        - /ready
+        - /metrics
+  
+  - name: rateLimit
+    config:
+      default:
+        requests: 100
+        window: 1m
+      storage: redis
+      redisUrl: ${RATE_LIMIT_REDIS_URL}
+  
+  - name: requestId
+    config:
+      header: X-Request-ID
+      generateIfAbsent: true
+  
+  - name: logging
+    config:
+      level: ${LOG_LEVEL}
+      format: json
+      includeHeaders:
+        - X-Request-ID
+        - User-Agent
+  
+  - name: compression
+    config:
+      minSize: 1024
+      level: 6
+      types:
+        - application/json
+        - text/plain
+        - text/html
+  
+  - name: timeout
+    config:
+      global: 30s
+      write: 60s
+      read: 60s
+      idle: 120s
+
+# Health check configuration
+health:
+  path: /health
+  interval: 30s
+  timeout: 5s
+  services:
+    - auth-service
+    - user-service
+    - course-service
+    - competency-service
+
+# Metrics configuration
+metrics:
+  path: /metrics
+  enabled: true
+  includeStatusCodes: true
+  includeMethodBreakdown: true
+  includePathBreakdown: true 

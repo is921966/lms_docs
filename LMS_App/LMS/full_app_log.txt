@@ -1,0 +1,74 @@
+✅ Feedback system initialized
+ℹ️ Demo course already exists: ai_fluency_course_v1.0
+ℹ️ Demo course already exists: single_au_basic_responsive
+ℹ️ Demo course already exists: masteryscore_responsive
+ℹ️ Demo course already exists: multi_au_framed
+ℹ️ Demo course already exists: pre_post_test_framed
+✅ Готовые модули включены:
+  - Компетенции
+  - Должности
+  - Новости
+  - Cmi5 Контент
+  - Управление курсами
+  - Оргструктура
+🔄 UI уведомлен об изменениях Feature Registry
+🔄 FeatureRegistry обновлен - UI получит уведомление
+🔐 Simulator Mode: Автоматический вход под администратором
+🔐 Simulator Mode: Автоматический вход под администратором
+Mock login successful as Admin
+Mock login successful as Admin
+🔍 CMI5 REPO: Creating demo packages...
+🔍 CMI5 REPO: Created demo package: AI Fluency
+📁 [FileStorageService] Storage directory: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/4D0774F6-9A71-437D-AA22-24E06F7CD053/Documents/Cmi5Storage
+🔍 CMI5 MGMT VM: Initializing...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 MGMT VM: Loading packages...
+🔍 CMI5 REPO: getAllPackages() called
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 MGMT VM: Loading packages...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 REPO: Returning 1 packages
+🔍 CMI5 REPO: Returning 1 packages
+🔍 CMI5 REPO: Returning 1 packages
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 CMI5 MGMT VM: Loaded 1 packages
+  - AI Fluency
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 CMI5 MGMT VM: Loaded 1 packages
+  - AI Fluency
+🎯 Cmi5ImportViewModel: Loading demo course: Geology Quiz with Mastery Score
+✅ Demo course found in Documents: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/4D0774F6-9A71-437D-AA22-24E06F7CD053/Documents/DemoCourses/masteryscore_responsive.zip
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/4D0774F6-9A71-437D-AA22-24E06F7CD053/Documents/DemoCourses/masteryscore_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080778 bytes
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file
+🎯 Cmi5ImportView: Import button pressed
+🔍 CMI5 VM: Starting import of package: 
+🔍 CMI5 VM: Calling cmi5Service.importPackage()...
+🔍 CMI5 SERVICE: Starting import from masteryscore_responsive.zip
+🔍 CMI5 SERVICE: Validating archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/4D0774F6-9A71-437D-AA22-24E06F7CD053/Documents/DemoCourses/masteryscore_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080778 bytes
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file
+🔍 CMI5 SERVICE: Extracting archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/4D0774F6-9A71-437D-AA22-24E06F7CD053/Documents/DemoCourses/masteryscore_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080778 bytes
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file
+🔍 CMI5 SERVICE: Parsing manifest...
+🔍 CMI5 SERVICE: Created package: Introduction to Geology - Responsive Style - Mastery Score (ID: 099474C1-E17C-4F0B-B344-AD2DDE5FD133)
+🔍 CMI5 SERVICE: Saving package files...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/4D0774F6-9A71-437D-AA22-24E06F7CD053/tmp/cmi5_packages/81DCE635-939C-44B6-9AF5-21F3AC32E5F5
+📏 [Cmi5ArchiveHandler] File size: 256 bytes
+❌ [Cmi5ArchiveHandler] Could not open as ZIP archive
+❌ [Cmi5ArchiveHandler] Archive validation failed: invalidArchive
+🔍 CMI5 VM: Import failed: invalidArchive
+🎯 Cmi5ImportView: Import completed, importedPackage: nil
+ru.tsum.lms.igor: 56277

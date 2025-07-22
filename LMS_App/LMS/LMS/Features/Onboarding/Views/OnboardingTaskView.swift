@@ -65,7 +65,7 @@ struct OnboardingTaskView: View {
         .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         .sheet(isPresented: $showingCourseDetail) {
             if let courseId = task.courseId,
-               let course = CourseMockService.shared.courses.first(where: { $0.id == courseId }) {
+               let course = CourseMockService.shared.courses.first(where: { $0.id == courseId.uuidString }) {
                 NavigationView {
                     CourseDetailView(course: course)
                 }

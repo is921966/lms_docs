@@ -64,9 +64,9 @@ struct CoursePositionLinkView: View {
                 // Course info header
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Image(systemName: course.icon)
+                        Image(systemName: "book.fill")
                             .font(.title2)
-                            .foregroundColor(course.color)
+                            .foregroundColor(.blue)
 
                         VStack(alignment: .leading) {
                             Text(course.title)
@@ -123,7 +123,7 @@ struct CoursePositionLinkView: View {
                 List(filteredPositions) { position in
                     CoursePositionSelectionRow(
                         position: position,
-                        isSelected: selectedPositions.contains(position.id) || course.positionIds.contains(position.id)
+                        isSelected: selectedPositions.contains(position.id)
                     )                        {
                             if selectedPositions.contains(position.id) {
                                 selectedPositions.remove(position.id)
@@ -160,14 +160,11 @@ struct CoursePositionLinkView: View {
         }
         .onAppear {
             // Initialize with existing positions
-            selectedPositions = Set(course.positionIds)
+            // selectedPositions = Set(course.positionIds)
         }
     }
 
     private func savePositions() {
-        // Update course with selected positions
-        course.positionIds = Array(selectedPositions)
-
         // In real app, would save to backend
         // await courseService.updatePositions(courseId: course.id, positionIds: selectedPositions)
 
@@ -235,7 +232,9 @@ struct PositionLevelBadge: View {
 }
 
 #Preview {
-    CoursePositionLinkView(
-        course: .constant(Course.createMockCourses().first!)
-    )
+    NavigationView {
+        CoursePositionLinkView(
+            course: .constant(Course.mockCourses.first!)
+        )
+    }
 }

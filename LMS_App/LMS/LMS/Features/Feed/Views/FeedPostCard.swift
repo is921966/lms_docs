@@ -137,25 +137,10 @@ struct PostDetailView: View {
                     
                     // Full content (always expanded in detail view)
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(post.content)
-                            .font(.body)
-                            .fixedSize(horizontal: false, vertical: true)
+                        // Use PostContentView for proper markdown formatting
+                        PostContentView(post: post)
                         
-                        // Tags
-                        if let tags = post.tags, !tags.isEmpty {
-                            FeedFlowLayout(spacing: 8) {
-                                ForEach(tags, id: \.self) { tag in
-                                    Text(tag)
-                                        .font(.caption)
-                                        .foregroundColor(.blue)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(Color.blue.opacity(0.1))
-                                        .cornerRadius(12)
-                                }
-                            }
-                            .padding(.top, 4)
-                        }
+                        // Tags are already handled in PostContentView, so we don't need them here
                     }
                     .padding()
                     

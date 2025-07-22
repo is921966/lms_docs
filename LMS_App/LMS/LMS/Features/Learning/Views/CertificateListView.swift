@@ -28,7 +28,7 @@ struct CertificateListView: View {
         NavigationView {
             VStack {
                 if certificates.isEmpty {
-                    EmptyStateView(icon: "seal", title: "Нет сертификатов", subtitle: "Завершите курсы чтобы получить сертификаты")
+                    StudentEmptyStateView(icon: "seal", title: "Нет сертификатов", subtitle: "Завершите курсы чтобы получить сертификаты")
                 } else {
                     List {
                         // Statistics

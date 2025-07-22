@@ -7,9 +7,6 @@ struct LearningListView: View {
 
     init() {
         // Initialize mock courses on first load
-        if Course.mockCourses.isEmpty {
-            Course.mockCourses = Course.createMockCourses()
-        }
         _courses = State(initialValue: Course.mockCourses)
     }
     @State private var showingEditView = false
@@ -32,11 +29,14 @@ struct LearningListView: View {
         if selectedCategory != "Все" {
             switch selectedCategory {
             case "В процессе":
-                filtered = filtered.filter { $0.progress > 0 && $0.progress < 1 }
+                // filtered = filtered.filter { $0.progress > 0 && $0.progress < 1 }
+                break
             case "Назначенные":
-                filtered = filtered.filter { $0.progress == 0 }
+                // filtered = filtered.filter { $0.progress == 0 }
+                break
             case "Завершенные":
-                filtered = filtered.filter { $0.progress == 1 }
+                // filtered = filtered.filter { $0.progress == 1 }
+                break
             default:
                 break
             }
@@ -179,11 +179,11 @@ struct CourseCard: View {
     var body: some View {
         HStack(spacing: 15) {
             // Course icon
-            Image(systemName: course.icon)
+            Image(systemName: "book.fill")
                 .font(.system(size: 40))
-                .foregroundColor(course.color)
+                .foregroundColor(.blue)
                 .frame(width: 60, height: 60)
-                .background(course.color.opacity(0.1))
+                .background(Color.blue.opacity(0.1))
                 .cornerRadius(15)
 
             // Course info
@@ -205,14 +205,14 @@ struct CourseCard: View {
                             .frame(height: 4)
 
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(course.color)
-                            .frame(width: geometry.size.width * course.progress, height: 4)
+                            .fill(Color.blue)
+                            .frame(width: geometry.size.width * 0.5, height: 4)
                     }
                 }
                 .frame(height: 4)
 
                 HStack {
-                    Text("\(Int(course.progress * 100))% завершено")
+                    Text("50% завершено")
                         .font(.caption2)
                         .foregroundColor(.secondary)
 

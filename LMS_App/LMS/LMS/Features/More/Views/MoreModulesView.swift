@@ -23,7 +23,22 @@ struct MoreModulesView: View {
             badge: nil
         ))
         
-        // 2. Новости (Feed) - сразу после настроек
+        // 2. Оргструктура - сразу после настроек
+        if Feature.orgStructure.isEnabled {
+            functions.append((
+                title: Feature.orgStructure.displayName,
+                subtitle: Feature.orgStructure.description,
+                icon: Feature.orgStructure.icon,
+                color: Feature.orgStructure.color,
+                action: {
+                    selectedModule = .orgStructure
+                    showingModule = true
+                },
+                badge: nil
+            ))
+        }
+        
+        // 3. Новости (Feed) - после оргструктуры
         if Feature.feed.isEnabled {
             functions.append((
                 title: Feature.feed.displayName,
@@ -40,7 +55,7 @@ struct MoreModulesView: View {
         
         // Для администраторов добавляем админские функции
         if authService.currentUser?.role == .admin {
-            // 3. Новые студенты
+            // 4. Новые студенты
             functions.append((
                 title: "Новые студенты",
                 subtitle: "Одобрение новых пользователей",
@@ -50,7 +65,7 @@ struct MoreModulesView: View {
                 badge: 3  // Количество ожидающих
             ))
             
-            // 4. Управление курсами
+            // 5. Управление курсами
             functions.append((
                 title: "Управление курсами",
                 subtitle: "Создание и редактирование курсов",
@@ -60,7 +75,7 @@ struct MoreModulesView: View {
                 badge: nil
             ))
             
-            // 5. Cmi5 Контент - сразу после курсов
+            // 6. Cmi5 Контент - сразу после курсов
             if Feature.cmi5.isEnabled {
                 functions.append((
                     title: Feature.cmi5.displayName,
@@ -76,11 +91,22 @@ struct MoreModulesView: View {
             }
         }
         
-        // Добавляем все остальные активные модули (кроме cmi5 и feed, которые уже добавлены)
-        let activeModules = Feature.allCases.filter { $0.isEnabled && $0 != .cmi5 && $0 != .feed }
+        // Добавляем все остальные активные модули (исключая уже добавленные)
+        let activeModules = Feature.allCases.filter { 
+            $0.isEnabled && 
+            $0 != .cmi5 && 
+            $0 != .feed && 
+            $0 != .settings &&  // Исключаем settings, так как он уже добавлен вручную
+            $0 != .orgStructure  // Исключаем orgStructure, так как он уже добавлен вручную
+        }
         for module in activeModules {
             // Для администраторов пропускаем модуль "Курсы", так как есть "Управление курсами"
             if authService.currentUser?.role == .admin && module == .courses {
+                continue
+            }
+            
+            // Также пропускаем courseManagement если уже добавили "Управление курсами" выше
+            if authService.currentUser?.role == .admin && module == .courseManagement {
                 continue
             }
             
@@ -163,7 +189,7 @@ struct MoreModulesView: View {
             SettingsView()
         }
         .navigationDestination(isPresented: $showingCourses) {
-            CourseListView()
+            CourseManagementView()
         }
         .navigationDestination(isPresented: $showingPendingUsers) {
             MockPendingUsersView()

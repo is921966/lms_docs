@@ -66,6 +66,7 @@ final class Cmi5ImportViewModel: ObservableObject {
     
     var courseId: UUID?
     private let parser = Cmi5Parser()
+    private let cmi5Service = Cmi5Service.shared // Используем shared instance
     private let maxFileSize: Int64 = 500 * 1024 * 1024 // 500 MB
     
     // MARK: - Computed Properties
@@ -155,79 +156,121 @@ final class Cmi5ImportViewModel: ObservableObject {
         error = nil
     }
     
-    /// Выбирает демо файл для тестирования
-    func selectDemoFile() {
-        // Эмулируем выбор файла для демо
-        let demoUrl = URL(fileURLWithPath: "/demo/sample-cmi5.zip")
-        let demoFileInfo = FileInfo(
-            name: "sample-cmi5-course.zip",
-            size: 25 * 1024 * 1024, // 25 MB
+    // MARK: - File Processing
+    
+    /// Process selected file
+    func processFile(_ url: URL) async {
+        selectedFileInfo = FileInfo(
+            name: url.lastPathComponent,
+            size: (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0,
             type: "ZIP Archive",
-            url: demoUrl
+            url: url
         )
         
-        selectedFileInfo = demoFileInfo
+        isProcessing = true
+        processingProgress = "Обработка файла..."
         
-        // Эмулируем парсинг
-        Task {
-            isProcessing = true
-            processingProgress = "Обработка демо пакета..."
+        do {
+            let parseResult = try await parser.parsePackage(from: url)
+            parsedPackage = parseResult
+            processingProgress = "Файл успешно обработан"
             
-            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 секунды
-            
-            // Создаем демо пакет
-            let demoManifest = Cmi5Manifest(
-                identifier: "demo-course-001",
-                title: "Демо курс Cmi5",
-                description: "Пример Cmi5 курса для тестирования",
-                version: "1.0",
-                course: nil
-            )
-            
-            parsedPackage = Cmi5Package(
-                packageId: demoManifest.identifier,
-                title: demoManifest.title,
-                description: demoManifest.description,
-                courseId: courseId,
-                manifest: demoManifest,
-                filePath: "/demo/sample-cmi5",
-                size: demoFileInfo.size,
-                uploadedBy: UUID(),
-                version: demoManifest.version ?? "1.0",
-                isValid: true,
-                validationErrors: []
-            )
-            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.isProcessing = false
+                self.processingProgress = nil
+            }
+        } catch {
+            self.error = "Ошибка парсинга: \(error.localizedDescription)"
             isProcessing = false
             processingProgress = nil
         }
     }
     
+    // MARK: - Demo Functions
+    
+    /// Load demo course by filename
+    func loadDemoCourse(_ demoCourse: DemoCourse) {
+        print("🎯 Cmi5ImportViewModel: Loading demo course: \(demoCourse.name)")
+        
+        // Пробуем несколько способов получить файл
+        var demoFileURL: URL?
+        
+        // 1. Сначала пробуем получить из Documents (если скопирован)
+        if let documentsURL = DemoCourseManager.shared.getDocumentsURL(for: demoCourse) {
+            print("✅ Demo course found in Documents: \(documentsURL.path)")
+            demoFileURL = documentsURL
+        }
+        // 2. Если не найден в Documents, пробуем из bundle
+        else if let bundleURL = DemoCourseManager.shared.getBundleURL(for: demoCourse) {
+            print("✅ Demo course found in bundle: \(bundleURL.path)")
+            demoFileURL = bundleURL
+        }
+        // 3. Если все еще не найден, создаем временный файл для тестирования
+        else if let tempURL = DemoCourseManager.shared.createTemporaryDemoCourse(for: demoCourse) {
+            print("⚠️ Using temporary demo course: \(tempURL.path)")
+            demoFileURL = tempURL
+        }
+        
+        guard let fileURL = demoFileURL else {
+            print("❌ Demo course file not found anywhere: \(demoCourse.filename)")
+            error = "Demo course file not found"
+            return
+        }
+        
+        // Process the file
+        selectedFileInfo = FileInfo(
+            name: "\(demoCourse.filename).zip",
+            size: (try? FileManager.default.attributesOfItem(atPath: fileURL.path)[.size] as? Int64) ?? 0,
+            type: "ZIP Archive",
+            url: fileURL
+        )
+        
+        Task {
+            await processFile(fileURL)
+        }
+    }
+    
+    /// Select demo file for testing (deprecated - use loadDemoCourse instead)
+    func selectDemoFile() {
+        // For backward compatibility, load the AI Fluency course
+        if let aiCourse = DemoCourse.allCourses.first {
+            loadDemoCourse(aiCourse)
+        }
+    }
+    
     /// Импортирует пакет в систему
     func importPackage() async {
-        guard let package = parsedPackage else { return }
+        guard let package = parsedPackage,
+              let fileInfo = selectedFileInfo else { 
+            print("🔍 CMI5 VM: Import cancelled - no package or file info")
+            return 
+        }
         
+        print("🔍 CMI5 VM: Starting import of package: \(package.title)")
         isProcessing = true
         processingProgress = "Сохранение пакета..."
         
         do {
-            // Симуляция сохранения
-            try await Task.sleep(nanoseconds: 1_000_000_000) // 1 секунда
+            // Используем реальный сервис для импорта
+            print("🔍 CMI5 VM: Calling cmi5Service.importPackage()...")
+            let result = try await cmi5Service.importPackage(
+                from: fileInfo.url,
+                courseId: courseId,
+                uploadedBy: UUID() // В реальном приложении это будет ID текущего пользователя
+            )
             
-            processingProgress = "Создание активностей..."
-            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 секунды
-            
-            processingProgress = "Привязка к курсу..."
-            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 секунды
-            
-            // Создаем новый пакет с обновленными данными
-            var importedPackage = package
-            importedPackage.courseId = courseId
-            
-            self.importedPackage = importedPackage
+            print("🔍 CMI5 VM: Import successful! Package ID: \(result.package.id)")
+            self.importedPackage = result.package
             processingProgress = "Импорт завершен!"
             
+            // Показываем предупреждения, если есть
+            if !result.warnings.isEmpty {
+                print("🔍 CMI5 VM: Import warnings: \(result.warnings)")
+                self.validationWarnings = result.warnings
+            }
+            
         } catch {
+            print("🔍 CMI5 VM: Import failed: \(error)")
             self.error = "Ошибка импорта: \(error.localizedDescription)"
         }
         

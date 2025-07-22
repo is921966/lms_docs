@@ -10,6 +10,10 @@ struct CreateCourseView: View {
     @State private var status: ManagedCourseStatus = .draft
     @State private var showingError = false
     @State private var errorMessage = ""
+    @State private var modules: [ManagedCourseModule] = []
+    @State private var showingModuleManagement = false
+    @State private var competencies: [UUID] = []
+    @State private var showingCompetencyBinding = false
     
     var body: some View {
         NavigationView {
@@ -41,10 +45,31 @@ struct CreateCourseView: View {
                 }
                 
                 Section("Модули") {
+                    if modules.isEmpty {
+                        Text("Модули не добавлены")
+                            .foregroundColor(.secondary)
+                    } else {
+                        Text("\(modules.count) модулей добавлено")
+                    }
+                    
                     Button("Добавить модуль") {
-                        // TODO: Implement module addition
+                        showingModuleManagement = true
                     }
                     .accessibilityIdentifier("addModuleButton")
+                }
+                
+                Section("Компетенции") {
+                    if competencies.isEmpty {
+                        Text("Компетенции не привязаны")
+                            .foregroundColor(.secondary)
+                    } else {
+                        Text("\(competencies.count) компетенций выбрано")
+                    }
+                    
+                    Button("Привязать компетенции") {
+                        showingCompetencyBinding = true
+                    }
+                    .accessibilityIdentifier("bindCompetenciesButton")
                 }
             }
             .navigationTitle("Новый курс")
@@ -59,7 +84,7 @@ struct CreateCourseView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Сохранить") {
-                        saveCourse()
+                        createCourse()
                     }
                     .disabled(title.isEmpty || description.isEmpty || duration.isEmpty)
                     .accessibilityIdentifier("saveCourseButton")
@@ -71,24 +96,64 @@ struct CreateCourseView: View {
                 Text(errorMessage)
             }
         }
+        .sheet(isPresented: $showingModuleManagement) {
+            ModuleManagementView(modules: $modules)
+        }
+        .sheet(isPresented: $showingCompetencyBinding) {
+            let tempCourse = ManagedCourse(
+                title: "Временный курс",
+                description: "",
+                duration: 1,
+                status: .draft,
+                competencies: competencies
+            )
+            CompetencyBindingView(course: tempCourse) { updatedCourse in
+                competencies = updatedCourse.competencies
+            }
+        }
     }
     
-    private func saveCourse() {
+    private func createCourse() {
+        guard !title.isEmpty else {
+            errorMessage = "Введите название курса"
+            showingError = true
+            return
+        }
+        
+        guard !description.isEmpty else {
+            errorMessage = "Введите описание курса"
+            showingError = true
+            return
+        }
+        
         guard let durationInt = Int(duration), durationInt > 0 else {
             errorMessage = "Введите корректную продолжительность"
             showingError = true
             return
         }
         
-        let newCourse = ManagedCourse(
-            title: title,
-            description: description,
-            duration: durationInt,
-            status: status
-        )
-        
-        viewModel.createCourse(newCourse)
-        dismiss()
+        Task {
+            do {
+                let newCourse = try await viewModel.createCourse(
+                    title: title,
+                    description: description,
+                    duration: durationInt
+                )
+                
+                // Update the created course with additional properties
+                var updatedCourse = newCourse
+                updatedCourse.status = status
+                updatedCourse.competencies = competencies
+                updatedCourse.modules = modules
+                
+                _ = try await viewModel.updateCourse(updatedCourse)
+                
+                dismiss()
+            } catch {
+                errorMessage = error.localizedDescription
+                showingError = true
+            }
+        }
     }
 }
 

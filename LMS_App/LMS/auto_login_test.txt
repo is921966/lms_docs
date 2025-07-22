@@ -1,0 +1,16 @@
+✅ Feedback system initialized
+ℹ️ Demo course already exists: ai_fluency_course_v1.0
+ℹ️ Demo course already exists: single_au_basic_responsive
+ℹ️ Demo course already exists: masteryscore_responsive
+ℹ️ Demo course already exists: multi_au_framed
+ℹ️ Demo course already exists: pre_post_test_framed
+✅ Готовые модули включены:
+  - Компетенции
+  - Должности
+  - Новости
+  - Cmi5 Контент
+  - Управление курсами
+  - Оргструктура
+🔄 UI уведомлен об изменениях Feature Registry
+🔄 FeatureRegistry обновлен - UI получит уведомление
+ru.tsum.lms.igor: 55422

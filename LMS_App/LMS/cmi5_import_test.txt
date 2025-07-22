@@ -1,0 +1,141 @@
+✅ Feedback system initialized
+ℹ️ Demo course already exists: ai_fluency_course_v1.0
+ℹ️ Demo course already exists: single_au_basic_responsive
+ℹ️ Demo course already exists: masteryscore_responsive
+ℹ️ Demo course already exists: multi_au_framed
+ℹ️ Demo course already exists: pre_post_test_framed
+✅ Готовые модули включены:
+  - Компетенции
+  - Должности
+  - Новости
+  - Cmi5 Контент
+  - Управление курсами
+  - Оргструктура
+🔄 UI уведомлен об изменениях Feature Registry
+🔄 FeatureRegistry обновлен - UI получит уведомление
+Mock login successful as Admin
+🔍 CMI5 REPO: Creating demo packages...
+🔍 CMI5 REPO: Created demo package: AI Fluency
+📁 [FileStorageService] Storage directory: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/Documents/Cmi5Storage
+🔍 CMI5 MGMT VM: Initializing...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 MGMT VM: Loading packages...
+🔍 CMI5 REPO: getAllPackages() called
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 MGMT VM: Loading packages...
+🔍 [Cmi5Service] loadPackages() started
+🔍 CMI5 REPO: getAllPackages() called
+🔍 CMI5 REPO: Returning 1 packages
+🔍 CMI5 REPO: Returning 1 packages
+🔍 CMI5 REPO: Returning 1 packages
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 CMI5 MGMT VM: Loaded 1 packages
+  - AI Fluency
+🔍 [Cmi5Service] Loaded 1 packages:
+   Package 1: AI Fluency (ID: 550E8400-E29B-41D4-A716-446655440000)
+     - Activities: 2
+🔍 CMI5 MGMT VM: Loaded 1 packages
+  - AI Fluency
+🎯 Cmi5ImportViewModel: Loading demo course: Basic Geology Course
+✅ Demo course found in Documents: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/Documents/DemoCourses/single_au_basic_responsive.zip
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/Documents/DemoCourses/single_au_basic_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080736 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🎯 Cmi5ImportView: Import button pressed
+🔍 CMI5 VM: Starting import of package: 
+🔍 CMI5 VM: Calling cmi5Service.importPackage()...
+🔍 CMI5 SERVICE: Starting import from single_au_basic_responsive.zip
+🔍 CMI5 SERVICE: Validating archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/Documents/DemoCourses/single_au_basic_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080736 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🔍 CMI5 SERVICE: Extracting archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/Documents/DemoCourses/single_au_basic_responsive.zip
+📏 [Cmi5ArchiveHandler] File size: 4080736 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🔍 CMI5 SERVICE: Parsing manifest...
+🔍 CMI5 SERVICE: Created package: Introduction to Geology - Responsive Style (ID: DED9409C-5FCA-47D8-8FB4-4C192C1CB5AE)
+🔍 CMI5 SERVICE: Saving package files...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/tmp/cmi5_packages/9089E602-C6F0-43D7-A8CE-4D4D39C0CBF0
+📏 [Cmi5ArchiveHandler] File size: 256 bytes
+❌ [Cmi5ArchiveHandler] Archive validation failed: Error Domain=NSCocoaErrorDomain Code=4 "The file “9089E602-C6F0-43D7-A8CE-4D4D39C0CBF0” doesn’t exist." UserInfo={NSFilePath=/Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/tmp/cmi5_packages/9089E602-C6F0-43D7-A8CE-4D4D39C0CBF0, NSUnderlyingError=0x600000cba910 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+   Error type: NSError
+   Error description: The file “9089E602-C6F0-43D7-A8CE-4D4D39C0CBF0” doesn’t exist.
+🔍 CMI5 VM: Import failed: invalidArchive
+🎯 Cmi5ImportView: Import completed, importedPackage: nil
+🎯 Cmi5ImportViewModel: Loading demo course: Multi-Module Geology Course
+✅ Demo course found in Documents: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/Documents/DemoCourses/multi_au_framed.zip
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/Documents/DemoCourses/multi_au_framed.zip
+📏 [Cmi5ArchiveHandler] File size: 4081520 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🎯 Cmi5ImportView: Import button pressed
+🔍 CMI5 VM: Starting import of package: 
+🔍 CMI5 VM: Calling cmi5Service.importPackage()...
+🔍 CMI5 SERVICE: Starting import from multi_au_framed.zip
+🔍 CMI5 SERVICE: Validating archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/Documents/DemoCourses/multi_au_framed.zip
+📏 [Cmi5ArchiveHandler] File size: 4081520 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🔍 CMI5 SERVICE: Extracting archive...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/Documents/DemoCourses/multi_au_framed.zip
+📏 [Cmi5ArchiveHandler] File size: 4081520 bytes
+📋 [Cmi5ArchiveHandler] File signature: 504B0304
+📦 [Cmi5ArchiveHandler] Archive entries count: 18
+   - cmi5.xml
+   - img/
+   - img/jordens_inre-numbers.svg
+   - img/earth_timescale.png
+   - img/cycle1.jpg
+✅ [Cmi5ArchiveHandler] Archive is valid ZIP file with 18 entries
+🔍 CMI5 SERVICE: Parsing manifest...
+🔍 CMI5 SERVICE: Created package: Quiz (ID: 8EF860FF-2EA8-416B-8EE7-41D61281C40E)
+🔍 CMI5 SERVICE: Saving package files...
+🔍 [Cmi5ArchiveHandler] Validating archive at: /Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/tmp/cmi5_packages/DBEFD938-95AD-4858-96B5-DEEFDDDFB1CB
+📏 [Cmi5ArchiveHandler] File size: 256 bytes
+❌ [Cmi5ArchiveHandler] Archive validation failed: Error Domain=NSCocoaErrorDomain Code=4 "The file “DBEFD938-95AD-4858-96B5-DEEFDDDFB1CB” doesn’t exist." UserInfo={NSFilePath=/Users/ishirokov/Library/Developer/CoreSimulator/Devices/C0F60722-8F57-46A8-A737-2A1CD8819E8E/data/Containers/Data/Application/E175AE72-4D1A-494B-8E3F-6BDEC7C22314/tmp/cmi5_packages/DBEFD938-95AD-4858-96B5-DEEFDDDFB1CB, NSUnderlyingError=0x600000c60630 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+   Error type: NSError
+   Error description: The file “DBEFD938-95AD-4858-96B5-DEEFDDDFB1CB” doesn’t exist.
+🔍 CMI5 VM: Import failed: invalidArchive
+🎯 Cmi5ImportView: Import completed, importedPackage: nil
+ru.tsum.lms.igor: 58307

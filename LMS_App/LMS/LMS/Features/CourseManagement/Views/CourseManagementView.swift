@@ -2,14 +2,23 @@ import SwiftUI
 
 struct CourseManagementView: View {
     @StateObject private var viewModel = CourseManagementViewModel()
-    @State private var showingCreateCourse = false
     @State private var searchText = ""
-    @State private var selectedCourses = Set<UUID>()
-    @State private var isEditMode = false
+    @State private var showingCreateCourse = false
+    @State private var showingFilter = false
+    
+    // Filter ViewModel
+    @StateObject private var filterViewModel: CourseFilterViewModel
+    
+    init() {
+        _filterViewModel = StateObject(wrappedValue: CourseFilterViewModel(courses: []))
+    }
     
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
+                // Active filters bar
+                ActiveFiltersBar(filterViewModel: filterViewModel)
+                
                 // Search bar
                 HStack {
                     Image(systemName: "magnifyingglass")
@@ -19,64 +28,131 @@ struct CourseManagementView: View {
                         .accessibilityIdentifier("courseSearchField")
                 }
                 .padding(.horizontal)
+                .padding(.vertical, 8)
                 
                 // Course list
-                List(viewModel.filteredCourses(searchText: searchText), selection: $selectedCourses) { course in
-                    CourseRowView(course: course)
-                        .accessibilityIdentifier("courseRow_\(course.id)")
+                List(filteredCoursesWithSearch) { course in
+                    if viewModel.isSelectionMode {
+                        HStack {
+                            Image(systemName: viewModel.selectedCourseIds.contains(course.id) ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(viewModel.selectedCourseIds.contains(course.id) ? .blue : .gray)
+                                .onTapGesture {
+                                    viewModel.toggleCourseSelection(course.id)
+                                }
+                            
+                            CourseRowView(course: course)
+                        }
+                        .accessibilityIdentifier("selectableCourseRow_\(course.id)")
+                    } else {
+                        NavigationLink(destination: ManagedCourseDetailView(courseId: course.id)) {
+                            CourseRowView(course: course)
+                                .accessibilityIdentifier("courseRow_\(course.id)")
+                        }
+                    }
                 }
                 .accessibilityIdentifier("courseList")
                 .listStyle(PlainListStyle())
-                .environment(\.editMode, isEditMode ? .constant(.active) : .constant(.inactive))
                 
                 // Bulk operations toolbar
-                if isEditMode && !selectedCourses.isEmpty {
-                    HStack {
-                        Button("Удалить") {
-                            viewModel.deleteCourses(ids: Array(selectedCourses))
-                            selectedCourses.removeAll()
-                        }
-                        .foregroundColor(.red)
-                        .accessibilityIdentifier("bulkDeleteButton")
-                        
-                        Spacer()
-                        
-                        Button("Архивировать") {
-                            viewModel.archiveCourses(ids: Array(selectedCourses))
-                            selectedCourses.removeAll()
-                        }
-                        .accessibilityIdentifier("bulkArchiveButton")
-                    }
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
+                if viewModel.isSelectionMode && viewModel.isBulkOperationAvailable {
+                    BulkOperationsToolbar(viewModel: viewModel)
                 }
             }
             .navigationTitle("Управление курсами")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(isEditMode ? "Готово" : "Выбрать") {
-                        isEditMode.toggle()
-                        if !isEditMode {
-                            selectedCourses.removeAll()
+                    if viewModel.isSelectionMode {
+                        Button("Отмена") {
+                            viewModel.toggleSelectionMode()
                         }
                     }
-                    .accessibilityIdentifier("editModeButton")
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingCreateCourse = true }) {
-                        Image(systemName: "plus")
+                    HStack {
+                        if viewModel.isSelectionMode {
+                            Button("Выбрать все") {
+                                viewModel.selectAllCourses()
+                            }
+                            .disabled(viewModel.courses.isEmpty)
+                        } else {
+                            Button {
+                                showingFilter = true
+                            } label: {
+                                Image(systemName: filterViewModel.hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                                    .foregroundColor(filterViewModel.hasActiveFilters ? .blue : .primary)
+                            }
+                            .accessibilityIdentifier("filterButton")
+                            
+                            Button {
+                                viewModel.toggleSelectionMode()
+                            } label: {
+                                Label("Выбрать", systemImage: "checkmark.circle")
+                            }
+                            
+                            Button {
+                                showingCreateCourse = true
+                            } label: {
+                                Image(systemName: "plus")
+                            }
+                            .accessibilityIdentifier("addCourseButton")
+                        }
                     }
-                    .accessibilityIdentifier("createCourseButton")
                 }
             }
             .sheet(isPresented: $showingCreateCourse) {
                 CreateCourseView(viewModel: viewModel)
             }
+            .sheet(isPresented: $showingFilter) {
+                CourseFilterView(filterViewModel: filterViewModel)
+            }
         }
         .onAppear {
+            print("📚 CourseManagementView: onAppear called, loading courses...")
             viewModel.loadCourses()
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("Cmi5CourseImported"))) { notification in
+            // Обновляем список курсов после импорта Cmi5
+            print("📚 CourseManagementView: Received Cmi5CourseImported notification")
+            if let userInfo = notification.userInfo,
+               let courseId = userInfo["courseId"] as? UUID,
+               let courseTitle = userInfo["courseTitle"] as? String {
+                print("📚 CourseManagementView: Imported course: \(courseTitle) (ID: \(courseId))")
+            }
+            print("📚 CourseManagementView: Reloading courses...")
+            viewModel.loadCourses()
+        }
+        .refreshable {
+            // Поддержка pull-to-refresh
+            print("📚 CourseManagementView: Pull-to-refresh triggered")
+            viewModel.loadCourses()
+        }
+        .onChange(of: viewModel.courses) { newCourses in
+            // Update filter view model when courses change
+            updateFilterViewModel(with: newCourses)
+        }
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var filteredCoursesWithSearch: [ManagedCourse] {
+        let filtered = filterViewModel.filteredCourses
+        
+        if searchText.isEmpty {
+            return filtered
+        } else {
+            return filtered.filter { course in
+                course.title.localizedCaseInsensitiveContains(searchText) ||
+                course.description.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
+    
+    // MARK: - Methods
+    
+    private func updateFilterViewModel(with courses: [ManagedCourse]) {
+        filterViewModel.updateCourses(courses)
     }
 }
 
@@ -89,6 +165,18 @@ struct CourseRowView: View {
                 Text(course.title)
                     .font(.headline)
                     .accessibilityIdentifier("courseTitle")
+                
+                // Индикатор Cmi5 курса
+                if course.cmi5PackageId != nil {
+                    Label("Cmi5", systemImage: "cube.box.fill")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(4)
+                        .accessibilityIdentifier("cmi5Indicator")
+                }
                 
                 Spacer()
                 
@@ -106,6 +194,12 @@ struct CourseRowView: View {
                 Label("\(course.duration) часов", systemImage: "clock")
                     .font(.caption)
                     .foregroundColor(.secondary)
+                
+                if course.cmi5PackageId != nil {
+                    Label("\(course.modules.count) модулей", systemImage: "rectangle.stack")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
                 
                 Spacer()
                 

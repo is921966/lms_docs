@@ -57,33 +57,95 @@ struct BuildReleaseNews {
     /// Преобразовать в FeedItem для отображения в ленте
     func toFeedItem() -> FeedItem {
         var content = """
-        # 🚀 Новая версия \(version) (Build \(buildNumber))
-        
+        <div style="font-family: -apple-system, system-ui; padding: 10px;">
+            <h1 style="font-size: 24px; margin-bottom: 15px;">
+                🚀 Новая версия \(version) <span style="color: #666; font-size: 18px;">(Build \(buildNumber))</span>
+            </h1>
         """
         
         // Добавляем основные изменения
         for category in mainChanges {
-            content += "\n## \(category.icon) \(category.title)\n"
+            content += """
+            
+            <div style="margin-top: 20px;">
+                <h2 style="font-size: 20px; color: #333; margin-bottom: 10px;">
+                    \(category.icon) \(category.title)
+                </h2>
+                <ul style="margin: 0; padding-left: 20px;">
+            """
+            
             for change in category.changes {
-                content += "• \(change)\n"
+                content += """
+                    <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">\(change)</li>
+                """
             }
+            
+            content += """
+                </ul>
+            </div>
+            """
         }
         
         // Добавляем фокус тестирования
         if !testingFocus.isEmpty {
-            content += "\n## 🔍 Что протестировать\n"
+            content += """
+            
+            <div style="margin-top: 20px;">
+                <h2 style="font-size: 20px; color: #333; margin-bottom: 10px;">
+                    🔍 Что протестировать
+                </h2>
+                <ul style="margin: 0; padding-left: 20px;">
+            """
+            
             for focus in testingFocus {
-                content += "• \(focus)\n"
+                content += """
+                    <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">\(focus)</li>
+                """
             }
+            
+            content += """
+                </ul>
+            </div>
+            """
         }
         
         // Добавляем известные проблемы
         if !knownIssues.isEmpty {
-            content += "\n## ⚠️ Известные проблемы\n"
+            content += """
+            
+            <div style="margin-top: 20px;">
+                <h2 style="font-size: 20px; color: #FF6B6B; margin-bottom: 10px;">
+                    ⚠️ Известные проблемы
+                </h2>
+                <ul style="margin: 0; padding-left: 20px;">
+            """
+            
             for issue in knownIssues {
-                content += "• \(issue)\n"
+                content += """
+                    <li style="margin-bottom: 5px; color: #FF6B6B; line-height: 1.5;">\(issue)</li>
+                """
             }
+            
+            content += """
+                </ul>
+            </div>
+            """
         }
+        
+        // Добавляем техническую информацию
+        content += """
+        
+        <div style="margin-top: 25px; padding: 15px; background-color: #f5f5f5; border-radius: 8px;">
+            <h3 style="font-size: 16px; color: #666; margin-bottom: 8px;">📱 Техническая информация</h3>
+            <p style="margin: 3px 0; color: #888; font-size: 14px;">
+                Минимальная версия iOS: \(technicalInfo.minIOSVersion)<br>
+                Рекомендуемая версия iOS: \(technicalInfo.recommendedIOSVersion)<br>
+                Размер приложения: \(technicalInfo.appSize)
+            </p>
+        </div>
+        
+        </div>
+        """
         
         return FeedItem(
             id: id,
@@ -98,7 +160,8 @@ struct BuildReleaseNews {
             metadata: [
                 "version": version,
                 "build": buildNumber,
-                "type": "app_release"
+                "type": "app_release",
+                "contentType": "html"
             ]
         )
     }

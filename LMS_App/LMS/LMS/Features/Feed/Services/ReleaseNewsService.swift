@@ -112,30 +112,62 @@ class ReleaseNewsService: ObservableObject {
     
     private func generateDefaultReleaseNotes() -> String {
         """
-        # TestFlight Release v\(currentAppVersion)
-        
-        **Build**: \(currentBuildNumber)
-        
-        ## 🎯 Основные изменения
-        
-        ### ✨ Новые функции
-        - Обновленный интерфейс
-        - Улучшенная производительность
-        - Исправлены ошибки
-        
-        ## 📋 Что нового для тестировщиков
-        
-        ### Проверьте следующие функции:
-        - Общая стабильность приложения
-        - Корректность отображения данных
-        - Скорость загрузки
-        
-        ## 🐛 Известные проблемы
-        - Продолжаем работу над оптимизацией
-        
-        ---
-        
-        Спасибо за участие в тестировании! 🙏
+        <div style="font-family: -apple-system, system-ui; padding: 10px;">
+            <h1 style="font-size: 24px; margin-bottom: 15px;">
+                TestFlight Release v\(currentAppVersion)
+            </h1>
+            
+            <p style="font-size: 18px; color: #666; margin-bottom: 20px;">
+                <strong>Build:</strong> \(currentBuildNumber)
+            </p>
+            
+            <div style="margin-top: 20px;">
+                <h2 style="font-size: 20px; color: #333; margin-bottom: 10px;">
+                    🎯 Основные изменения
+                </h2>
+                
+                <div style="margin-top: 15px;">
+                    <h3 style="font-size: 18px; color: #333; margin-bottom: 8px;">
+                        ✨ Новые функции
+                    </h3>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Обновленный интерфейс</li>
+                        <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Улучшенная производительность</li>
+                        <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Исправлены ошибки</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h2 style="font-size: 20px; color: #333; margin-bottom: 10px;">
+                    📋 Что нового для тестировщиков
+                </h2>
+                
+                <h3 style="font-size: 18px; color: #333; margin-bottom: 8px;">
+                    Проверьте следующие функции:
+                </h3>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Общая стабильность приложения</li>
+                    <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Корректность отображения данных</li>
+                    <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Скорость загрузки</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h2 style="font-size: 20px; color: #FF6B6B; margin-bottom: 10px;">
+                    🐛 Известные проблемы
+                </h2>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li style="margin-bottom: 5px; color: #FF6B6B; line-height: 1.5;">Продолжаем работу над оптимизацией</li>
+                </ul>
+            </div>
+            
+            <hr style="margin: 25px 0; border: none; border-top: 1px solid #e0e0e0;">
+            
+            <p style="text-align: center; color: #666; font-size: 16px; margin-top: 20px;">
+                Спасибо за участие в тестировании! 🙏
+            </p>
+        </div>
         """
     }
     

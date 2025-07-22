@@ -53,22 +53,32 @@ class ServerFeedbackService: FeedbackServiceProtocol {
     // Singleton instance
     static let shared = ServerFeedbackService()
 
-    // Облачный сервер на Render - работает для всех устройств
-    private let serverURL = "https://lms-feedback-server.onrender.com/api/v1/feedback"
-
-    // Для локального тестирования используйте:
-    // private let serverURL = "http://localhost:5001/api/v1/feedback"
-    // Для реального устройства в локальной сети:
-    // private let serverURL = "http://192.168.68.104:5001/api/v1/feedback"
+    // Динамический URL из CloudServerManager
+    private var serverURL: String {
+        CloudServerManager.shared.feedbackAPIEndpoint
+    }
 
     private let session = URLSession.shared
     private let queue = DispatchQueue(label: "feedback.queue")
 
-    private init() {}
+    private init() {
+        // Подписываемся на изменения URL
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(serverURLsChanged),
+            name: NSNotification.Name("cloudServerURLsChanged"),
+            object: nil
+        )
+    }
+
+    @objc private func serverURLsChanged() {
+        // URL обновлен, можно выполнить дополнительные действия если нужно
+        print("📱 Feedback Server URL обновлен: \(serverURL)")
+    }
 
     func submitFeedback(_ feedback: FeedbackModel, completion: @escaping (Result<String, Error>) -> Void) {
         guard let url = URL(string: serverURL) else {
-            completion(.failure(NSError(domain: "ServerFeedbackService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+            completion(.failure(NSError(domain: "ServerFeedbackService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL: \(serverURL)"])))
             return
         }
 

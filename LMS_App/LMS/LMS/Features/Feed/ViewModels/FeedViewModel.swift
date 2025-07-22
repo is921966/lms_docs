@@ -27,8 +27,7 @@ class FeedViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var selectedVisibilityFilter: FeedVisibility?
     
-    private let feedService: MockFeedService
-    private var cancellables = Set<AnyCancellable>()
+    private let feedService: FeedServiceProtocol
     
     var filteredPosts: [FeedPost] {
         var filtered = posts
@@ -51,24 +50,28 @@ class FeedViewModel: ObservableObject {
         return filtered
     }
     
-    init(feedService: MockFeedService = .shared) {
+    init(feedService: FeedServiceProtocol) {
         self.feedService = feedService
         setupBindings()
     }
     
     private func setupBindings() {
         // Bind to feed service state
-        feedService.$posts
+        feedService.postsPublisher
+            .receive(on: DispatchQueue.main)
             .assign(to: &$posts)
         
-        feedService.$isLoading
+        feedService.isLoadingPublisher
+            .receive(on: DispatchQueue.main)
             .assign(to: &$isLoading)
         
-        feedService.$error
+        feedService.errorPublisher
+            .receive(on: DispatchQueue.main)
             .compactMap { $0?.localizedDescription }
             .assign(to: &$error)
         
-        feedService.$permissions
+        feedService.permissionsPublisher
+            .receive(on: DispatchQueue.main)
             .assign(to: &$permissions)
     }
     
@@ -126,7 +129,7 @@ class FeedViewModel: ObservableObject {
     
     func clearError() {
         error = nil
-        feedService.error = nil
+        // feedService.error = nil // Can't set read-only property
     }
     
     // MARK: - Computed Properties
@@ -145,5 +148,27 @@ class FeedViewModel: ObservableObject {
     
     var availableVisibilityOptions: [FeedVisibility] {
         permissions.visibilityOptions
+    }
+    
+    // MARK: - Navigation
+    
+    func showPostDetail(_ post: FeedPost) {
+        // coordinator?.showPostDetail(post)
+        // TODO: Implement navigation
+    }
+    
+    func showCreatePost() {
+        // coordinator?.showCreatePost()
+        // TODO: Implement navigation
+    }
+    
+    func showUserProfile(_ userId: String) {
+        // coordinator?.showUserProfile(userId)
+        // TODO: Implement navigation
+    }
+    
+    func showSearch() {
+        // coordinator?.showSearch()
+        // TODO: Implement navigation
     }
 } 

@@ -1,0 +1,553 @@
+openapi: 3.0.0
+info:
+  title: Competency Service API
+  description: API for managing competencies, assessments, and competency matrices
+  version: 1.0.0
+  contact:
+    name: LMS Team
+    email: lms-team@example.com
+
+servers:
+  - url: http://localhost:8003
+    description: Local development server
+  - url: https://api.lms.example.com/competency
+    description: Production server
+
+tags:
+  - name: Competencies
+    description: Competency management operations
+  - name: Assessments
+    description: Assessment management operations
+  - name: Matrix
+    description: Competency matrix calculations
+
+paths:
+  /api/v1/competencies:
+    get:
+      tags:
+        - Competencies
+      summary: List all competencies
+      description: Retrieve a list of all competencies, optionally filtered by category
+      parameters:
+        - name: category
+          in: query
+          description: Filter competencies by category
+          required: false
+          schema:
+            type: string
+            example: Technical
+      responses:
+        '200':
+          description: List of competencies retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CompetencyDTO'
+                  total:
+                    type: integer
+                    example: 42
+    
+    post:
+      tags:
+        - Competencies
+      summary: Create a new competency
+      description: Create a new competency with optional levels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompetencyRequest'
+      responses:
+        '201':
+          description: Competency created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CompetencyDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /api/v1/competencies/{id}:
+    get:
+      tags:
+        - Competencies
+      summary: Get competency by ID
+      parameters:
+        - $ref: '#/components/parameters/CompetencyId'
+      responses:
+        '200':
+          description: Competency retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CompetencyDTO'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags:
+        - Competencies
+      summary: Update competency
+      parameters:
+        - $ref: '#/components/parameters/CompetencyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompetencyRequest'
+      responses:
+        '200':
+          description: Competency updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CompetencyDTO'
+        '404':
+          $ref: '#/components/responses/NotFound' 
+
+  /api/v1/competencies/{id}/activate:
+    post:
+      tags:
+        - Competencies
+      summary: Activate competency
+      parameters:
+        - $ref: '#/components/parameters/CompetencyId'
+      responses:
+        '200':
+          description: Competency activated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CompetencyDTO'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/competencies/{id}/deactivate:
+    post:
+      tags:
+        - Competencies
+      summary: Deactivate competency
+      parameters:
+        - $ref: '#/components/parameters/CompetencyId'
+      responses:
+        '200':
+          description: Competency deactivated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CompetencyDTO'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/assessments:
+    post:
+      tags:
+        - Assessments
+      summary: Create new assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssessmentRequest'
+      responses:
+        '201':
+          description: Assessment created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/v1/assessments/{id}:
+    get:
+      tags:
+        - Assessments
+      summary: Get assessment by ID
+      parameters:
+        - $ref: '#/components/parameters/AssessmentId'
+      responses:
+        '200':
+          description: Assessment retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentDTO'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/assessments/{id}/complete:
+    post:
+      tags:
+        - Assessments
+      summary: Complete assessment
+      parameters:
+        - $ref: '#/components/parameters/AssessmentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteAssessmentRequest'
+      responses:
+        '200':
+          description: Assessment completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /api/v1/matrix/user/{userId}/matrix/{matrixId}/progress:
+    get:
+      tags:
+        - Matrix
+      summary: Calculate user progress for competency matrix
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/MatrixId'
+      responses:
+        '200':
+          description: Progress calculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatrixProgressResponse'
+        '404':
+          $ref: '#/components/responses/NotFound' 
+
+components:
+  parameters:
+    CompetencyId:
+      name: id
+      in: path
+      description: Competency UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+    
+    AssessmentId:
+      name: id
+      in: path
+      description: Assessment UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    
+    UserId:
+      name: userId
+      in: path
+      description: User identifier
+      required: true
+      schema:
+        type: string
+        example: user-123
+    
+    MatrixId:
+      name: matrixId
+      in: path
+      description: Matrix UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    CompetencyDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          example: TECH-001
+        name:
+          type: string
+          example: Software Development
+        description:
+          type: string
+        category:
+          type: string
+          example: Technical
+        levels:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetencyLevel'
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+    
+    CompetencyLevel:
+      type: object
+      properties:
+        level:
+          type: integer
+          minimum: 1
+          maximum: 10
+        name:
+          type: string
+          example: Beginner
+        description:
+          type: string
+        criteria:
+          type: array
+          items:
+            type: string
+    
+    CreateCompetencyRequest:
+      type: object
+      required:
+        - code
+        - name
+        - description
+        - category
+      properties:
+        code:
+          type: string
+          pattern: '^[A-Z0-9\-]+$'
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        category:
+          type: string
+          maxLength: 100
+        levels:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetencyLevel'
+    
+    UpdateCompetencyRequest:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+    
+    AssessmentDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        competencyId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+        assessorId:
+          type: string
+        status:
+          type: string
+          enum: [pending, completed, cancelled]
+        score:
+          type: object
+          nullable: true
+          properties:
+            level:
+              type: integer
+              minimum: 1
+              maximum: 5
+            feedback:
+              type: string
+            recommendations:
+              type: string
+        cancellationReason:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+    
+    CreateAssessmentRequest:
+      type: object
+      required:
+        - competency_id
+        - user_id
+        - assessor_id
+      properties:
+        competency_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        assessor_id:
+          type: string
+    
+    CompleteAssessmentRequest:
+      type: object
+      required:
+        - level
+        - feedback
+        - recommendations
+      properties:
+        level:
+          type: integer
+          minimum: 1
+          maximum: 5
+        feedback:
+          type: string
+          maxLength: 1000
+        recommendations:
+          type: string
+    
+    MatrixProgressResponse:
+      type: object
+      properties:
+        user_id:
+          type: string
+        matrix_id:
+          type: string
+          format: uuid
+        matrix_name:
+          type: string
+        position_id:
+          type: string
+        completeness:
+          type: object
+          properties:
+            core_percentage:
+              type: number
+              format: float
+            nice_to_have_percentage:
+              type: number
+              format: float
+            overall_percentage:
+              type: number
+              format: float
+            core_met:
+              type: integer
+            core_total:
+              type: integer
+            nice_to_have_met:
+              type: integer
+            nice_to_have_total:
+              type: integer
+            total_met:
+              type: integer
+            total_requirements:
+              type: integer
+        requirements:
+          type: array
+          items:
+            type: object
+            properties:
+              competency_id:
+                type: string
+                format: uuid
+              required_level:
+                type: integer
+              user_level:
+                type: integer
+              type:
+                type: string
+                enum: [core, nice-to-have, optional]
+              is_satisfied:
+                type: boolean
+              gap:
+                type: integer
+        recommendations:
+          type: array
+          items:
+            type: object
+            properties:
+              priority:
+                type: string
+                enum: [high, medium, low]
+              message:
+                type: string
+              competencies:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        calculated_at:
+          type: string
+          format: date-time
+    
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse' 

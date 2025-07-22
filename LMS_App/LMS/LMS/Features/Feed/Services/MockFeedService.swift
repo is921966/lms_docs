@@ -9,14 +9,14 @@ import Foundation
 import Combine
 
 @MainActor
-class MockFeedService: ObservableObject {
+class MockFeedService: ObservableObject, FeedServiceProtocol {
     
     static let shared = MockFeedService()
     
-    @Published var posts: [FeedPost] = []
-    @Published var isLoading = false
-    @Published var error: FeedError?
-    @Published var permissions = FeedPermissions(
+    @Published private(set) var posts: [FeedPost] = []
+    @Published private(set) var isLoading = false
+    @Published var error: Error?
+    @Published private(set) var permissions = FeedPermissions(
         canPost: false,
         canComment: true,
         canLike: true,
@@ -26,6 +26,23 @@ class MockFeedService: ObservableObject {
         canModerate: false,
         visibilityOptions: []
     )
+    
+    // Publishers for protocol conformance
+    var postsPublisher: AnyPublisher<[FeedPost], Never> {
+        $posts.eraseToAnyPublisher()
+    }
+    
+    var isLoadingPublisher: AnyPublisher<Bool, Never> {
+        $isLoading.eraseToAnyPublisher()
+    }
+    
+    var errorPublisher: AnyPublisher<Error?, Never> {
+        $error.eraseToAnyPublisher()
+    }
+    
+    var permissionsPublisher: AnyPublisher<FeedPermissions, Never> {
+        $permissions.eraseToAnyPublisher()
+    }
     
     private let authService = MockAuthService.shared
     private var cancellables = Set<AnyCancellable>()
@@ -72,7 +89,87 @@ class MockFeedService: ObservableObject {
     }
     
     private func loadMockData() {
+        let calendar = Calendar.current
+        
+        // Получаем текущую версию и билд для использования в постах
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        
+        // Контент для релиза Build 213
+        let releaseContent = """
+        📱 **TestFlight Release v2.1.1 Build 213**
+        
+        🎯 **Организационная структура:**
+        • Импорт сотрудников из Excel файла
+        • Визуализация иерархии подразделений  
+        • Просмотр структуры в виде дерева
+        • Поиск сотрудников по имени/табельному номеру
+        • Экспорт шаблона Excel для заполнения
+        
+        📊 **Формат Excel файла:**
+        • Код подразделения (уникальный)
+        • Вышестоящий код (для иерархии)
+        • Название подразделения
+        • ФИО сотрудника
+        • Табельный номер
+        • Должность
+        • Email и телефон (опционально)
+        
+        Спасибо за участие в тестировании! 🙏
+        
+        #testflight #release #оргструктура
+        """
+        
         posts = [
+            // Build 215 - CSV Release
+            FeedPost(
+                id: "build215-release",
+                author: UserResponse(
+                    id: "dev-team",
+                    email: "dev@tsum.ru",
+                    name: "Команда разработки",
+                    role: .admin,
+                    isActive: true,
+                    createdAt: Date()
+                ),
+                content: """
+                🎉 **Релиз версии 2.1.1 (Build 215) - CSV импорт/экспорт**
+                
+                **Мы перешли с Excel на более простой и надежный формат CSV!**
+                
+                📥 **Что нового:**
+                • **CSV вместо Excel** - простой текстовый формат
+                • **Надежность** - нет проблем с парсингом бинарных файлов
+                • **Совместимость** - открывается в любой программе
+                • **Скорость** - быстрый импорт и экспорт
+                
+                🔧 **Как использовать:**
+                1. Откройте раздел "Оргструктура"
+                2. Нажмите кнопку импорта
+                3. Скачайте шаблон CSV
+                4. Заполните данные и сохраните как CSV
+                5. Загрузите файл обратно
+                
+                ⚠️ **Важное изменение:**
+                Теперь требуется **явное указание родительского кода** в колонке "Вышестоящий Код".
+                
+                🔄 **Миграция с Excel:**
+                1. Откройте старый Excel файл
+                2. Сохраните как CSV (UTF-8)
+                3. Добавьте колонку "Вышестоящий Код"
+                4. Импортируйте в приложение
+                
+                Спасибо за терпение! Новый формат должен работать намного надежнее.
+                """,
+                images: [],
+                attachments: [],
+                createdAt: Date(),
+                visibility: .everyone,
+                likes: [],
+                comments: [],
+                tags: ["#релиз", "#обновление", "#csv", "#импорт", "#экспорт"],
+                mentions: []
+            ),
             FeedPost(
                 id: "1",
                 author: UserResponse(
@@ -137,6 +234,75 @@ class MockFeedService: ObservableObject {
                 comments: [],
                 tags: ["#course", "#ios"],
                 mentions: ["students"]
+            ),
+            FeedPost(
+                id: "build214-release",
+                author: UserResponse(
+                    id: "dev-team",
+                    email: "dev@tsum.ru",
+                    name: "Команда разработки",
+                    role: .admin,
+                    isActive: true,
+                    createdAt: Date()
+                ),
+                content: """
+                🔧 **Обновление LMS Build 214**
+                
+                **Исправления в версии 2.1.1 Build 214:**
+                
+                📱 **Экспорт шаблона Excel**
+                • Исправлена проблема с пустым экраном на iPhone/iPad
+                • Улучшена работа share sheet на всех устройствах
+                • Добавлена корректная поддержка iPad
+                • Улучшены сообщения об ошибках
+                
+                **Как проверить:**
+                1. Перейдите в "Ещё" → "Оргструктура"
+                2. Нажмите "Импорт Excel"
+                3. Нажмите "Скачать шаблон Excel"
+                4. Сохраните файл через share sheet
+                
+                Спасибо за обратную связь! 🙏
+                
+                #обновление #bugfix
+                """,
+                images: [],
+                attachments: [],
+                createdAt: calendar.date(from: DateComponents(year: 2025, month: 7, day: 14, hour: 19, minute: 30))!,
+                visibility: .everyone,
+                likes: ["user1", "user2", "user3"],
+                comments: [],
+                tags: ["обновление", "bugfix"],
+                mentions: nil,
+                metadata: ["buildNumber": "214", "version": "2.1.1"]
+            ),
+            
+            // Build 213 Release
+            FeedPost(
+                id: "release-\(currentVersion)-\(currentBuild)",
+                author: UserResponse(
+                    id: "system",
+                    email: "system@lms.com",
+                    name: "Команда разработки",
+                    role: .admin,
+                    isActive: true,
+                    createdAt: Date()
+                ),
+                content: releaseContent,
+                images: [],
+                attachments: [],
+                createdAt: Date(),
+                visibility: .everyone,
+                likes: [],
+                comments: [],
+                tags: ["#release", "#update", "#testflight"],
+                mentions: [],
+                metadata: [
+                    "type": "app_release",
+                    "contentType": "html",
+                    "version": currentVersion,
+                    "build": currentBuild
+                ]
             )
         ]
     }
@@ -162,34 +328,89 @@ class MockFeedService: ObservableObject {
                 // Используем содержимое из файла
                 releaseContent = content
             } else {
-                // Используем дефолтное содержимое
+                // Используем дефолтное содержимое в HTML формате
                 releaseContent = """
-                🚀 Новая версия \(currentVersion) (Build \(currentBuild))
-                
-                ## 🎯 Основные изменения
-                
-                ### ✨ Sprint 46: Perplexity-Style Redesign
-                • Создана базовая инфраструктура Perplexity-стиля
-                • Новые компоненты: PerplexityTheme, PerplexitySearchBar, PerplexityCard
-                • Подготовка к постепенной интеграции нового дизайна
-                
-                ### 🔧 Технические улучшения
-                • Исправлена тестовая инфраструктура
-                • Все 43 UI теста теперь работают корректно
-                • Оптимизирована навигация в тестах
-                
-                ## 📋 Что нового для тестировщиков
-                
-                ### Проверьте следующие функции:
-                • Стабильность приложения
-                • Корректность отображения всех экранов
-                • Работу навигации между разделами
-                
-                ## 🐛 Известные проблемы
-                • Perplexity компоненты пока не интегрированы в основное приложение
-                • Продолжается работа над новым дизайном
-                
-                #release #update #testflight
+                <div style="font-family: -apple-system, system-ui; padding: 10px;">
+                    <h1 style="font-size: 24px; margin-bottom: 15px;">
+                        🚀 Новая версия v2.1.1 <span style="color: #666; font-size: 18px;">(Build 213)</span>
+                    </h1>
+                    
+                    <div style="margin-top: 20px;">
+                        <h2 style="font-size: 20px; color: #333; margin-bottom: 10px;">
+                            🎯 Основные изменения
+                        </h2>
+                        
+                        <div style="margin-top: 15px;">
+                            <h3 style="font-size: 18px; color: #333; margin-bottom: 8px;">
+                                ✨ Новые функции
+                            </h3>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                <li style="margin-bottom: 5px; color: #555; line-height: 1.5;"><strong>Улучшенный импорт оргструктуры</strong> - добавлена обязательная колонка "Вышестоящий Код" для явного указания иерархии подразделений</li>
+                                <li style="margin-bottom: 5px; color: #555; line-height: 1.5;"><strong>Обновленный шаблон Excel</strong> - теперь включает все необходимые колонки с примерами данных</li>
+                                <li style="margin-bottom: 5px; color: #555; line-height: 1.5;"><strong>Улучшенная инструкция по импорту</strong> - добавлено подробное описание всех колонок</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <h3 style="font-size: 18px; color: #333; margin-bottom: 8px;">
+                                🔧 Улучшения
+                            </h3>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                <li style="margin-bottom: 5px; color: #555; line-height: 1.5;"><strong>Надежность импорта</strong> - удалена автоматическая логика определения иерархии по коду, теперь используется явная связь</li>
+                                <li style="margin-bottom: 5px; color: #555; line-height: 1.5;"><strong>Гибкость структуры</strong> - можно использовать любые коды подразделений без привязки к формату</li>
+                                <li style="margin-bottom: 5px; color: #555; line-height: 1.5;"><strong>Скачивание шаблона в симуляторе</strong> - файл сохраняется в Documents с подробной инструкцией</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <h3 style="font-size: 18px; color: #333; margin-bottom: 8px;">
+                                🔨 Исправления
+                            </h3>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Исправлена проблема с открытием диалога сохранения на реальных устройствах</li>
+                                <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Устранены ошибки при парсинге Excel файлов с пустыми строками</li>
+                                <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Исправлено количество элементов в sharedStrings XML</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h2 style="font-size: 20px; color: #333; margin-bottom: 10px;">
+                            📋 Инструкция по работе с оргструктурой
+                        </h2>
+                        
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Скачайте шаблон Excel через кнопку "Скачать шаблон"</li>
+                            <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Заполните колонку "Вышестоящий Код" для всех подразделений кроме корневых</li>
+                            <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Загрузите файл через "Выбрать файл Excel"</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h2 style="font-size: 20px; color: #FF6B6B; margin-bottom: 10px;">
+                            ⚠️ Важно для пользователей
+                        </h2>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li style="margin-bottom: 5px; color: #FF6B6B; line-height: 1.5;">Старые Excel файлы требуют добавления колонки "Вышестоящий Код"</li>
+                            <li style="margin-bottom: 5px; color: #FF6B6B; line-height: 1.5;">Автоматическое определение иерархии по формату кода больше не работает</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-top: 25px; padding: 15px; background-color: #f5f5f5; border-radius: 8px;">
+                        <h3 style="font-size: 16px; color: #666; margin-bottom: 8px;">📱 Техническая информация</h3>
+                        <p style="margin: 3px 0; color: #888; font-size: 14px;">
+                            Минимальная версия iOS: 17.0<br>
+                            Рекомендуемая версия iOS: 18.5<br>
+                            Размер приложения: ~45 MB
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                        <p style="text-align: center; color: #007AFF; font-size: 14px;">
+                            #release #update #testflight #orgstructure
+                        </p>
+                    </div>
+                </div>
                 """
             }
             
@@ -211,7 +432,13 @@ class MockFeedService: ObservableObject {
                 likes: [],
                 comments: [],
                 tags: ["#release", "#update", "#testflight"],
-                mentions: []
+                mentions: [],
+                metadata: [
+                    "type": "app_release",
+                    "contentType": "html",
+                    "version": currentVersion,
+                    "build": currentBuild
+                ]
             )
             
             // Добавляем в начало ленты

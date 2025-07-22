@@ -14,6 +14,7 @@ struct FeedPost: Identifiable, Codable, Equatable {
     var comments: [FeedComment]
     var tags: [String]?
     var mentions: [String]?
+    var metadata: [String: String]?
 
     // Equatable conformance
     static func == (lhs: FeedPost, rhs: FeedPost) -> Bool {

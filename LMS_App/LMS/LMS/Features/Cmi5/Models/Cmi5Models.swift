@@ -16,8 +16,8 @@ public struct Cmi5Package: Identifiable, Codable {
     public let title: String
     public let description: String?
     public var courseId: UUID?
-    public let manifest: Cmi5Manifest
-    public let filePath: String
+    public var manifest: Cmi5Manifest // Изменено на var для обновления активностей
+    public var filePath: String // Изменено на var для возможности обновления пути после сохранения
     public let uploadedAt: Date
     public let size: Int64
     public var uploadedBy: UUID
@@ -61,7 +61,7 @@ public struct Cmi5Package: Identifiable, Codable {
 /// Отдельная учебная активность в Cmi5 пакете
 public struct Cmi5Activity: Identifiable, Codable {
     public let id: UUID
-    public let packageId: UUID
+    public var packageId: UUID // Изменено на var для возможности обновления
     public let activityId: String
     public let title: String
     public let description: String?
@@ -140,7 +140,7 @@ public struct Cmi5Manifest: Codable {
     public let moreInfo: String?
     public let vendor: Cmi5Vendor?
     public let version: String?
-    public var course: Cmi5Course?
+    public var course: Cmi5Course? // Изменено на var для обновления активностей
     public var rootBlock: Cmi5Block? {
         return course?.rootBlock
     }
@@ -172,7 +172,7 @@ public struct Cmi5Course: Codable {
     public let title: [Cmi5LangString]?
     public let description: [Cmi5LangString]?
     public var auCount: Int // Assignable Units count
-    public let rootBlock: Cmi5Block?
+    public var rootBlock: Cmi5Block? // Изменено на var для обновления активностей
     
     public init(
         id: String,

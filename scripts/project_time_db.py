@@ -26,6 +26,8 @@ DB_CONFIG = {
 
 PROJECT_START_DATE = date(2025, 6, 21)
 
+from typing import List, Dict, Optional
+
 class ProjectTimeDB:
     """Database manager for project time registry"""
     
@@ -105,15 +107,16 @@ class ProjectTimeDB:
                 if record:
                     return dict(record)
                 
-                # Create new record without calendar_date (will be set when day starts)
+                # Create new record with calendar_date
                 sprint_number, sprint_day = self.calculate_sprint_info(project_day)
+                calendar_date = self.get_calendar_date_for_project_day(project_day)
                 
                 cursor.execute("""
                     INSERT INTO project_time_registry 
-                    (project_day, sprint_number, sprint_day, status)
-                    VALUES (%s, %s, %s, 'planned')
+                    (project_day, sprint_number, sprint_day, calendar_date, status)
+                    VALUES (%s, %s, %s, %s, 'planned')
                     RETURNING *
-                """, (project_day, sprint_number, sprint_day))
+                """, (project_day, sprint_number, sprint_day, calendar_date))
                 
                 conn.commit()
                 return dict(cursor.fetchone())
@@ -130,7 +133,7 @@ class ProjectTimeDB:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
                 # Check if day already exists
                 cursor.execute("""
-                    SELECT project_day, start_time, daily_report_filename 
+                    SELECT project_day, start_time, daily_report_path 
                     FROM project_time_registry 
                     WHERE project_day = %s
                 """, (project_day,))
@@ -164,8 +167,8 @@ class ProjectTimeDB:
                 result = dict(cursor.fetchone())
                 
                 # Print report filename if available
-                if result.get('daily_report_filename'):
-                    print(f"Report filename: {result['daily_report_filename']}")
+                if result.get('daily_report_path'):
+                    print(f"Report path: {result['daily_report_path']}")
                 
                 return result
     
@@ -202,7 +205,11 @@ class ProjectTimeDB:
                 
                 cursor.execute(sql, values)
                 conn.commit()
-                return dict(cursor.fetchone())
+                result = cursor.fetchone()
+                if result:
+                    return dict(result)
+                else:
+                    raise ValueError(f"Day {project_day} not found in database")
     
     def update_day_info(self, project_day: int, **kwargs) -> Dict:
         """Update day information"""
@@ -237,7 +244,11 @@ class ProjectTimeDB:
                 
                 cursor.execute(sql, values)
                 conn.commit()
-                return dict(cursor.fetchone())
+                result = cursor.fetchone()
+                if result:
+                    return dict(result)
+                else:
+                    raise ValueError(f"Day {project_day} not found in database")
     
     def get_day(self, project_day: int) -> Optional[Dict]:
         """Get day information"""
@@ -447,6 +458,33 @@ class ProjectTimeDB:
                 else:
                     # Generate default filename if not in DB
                     return f"DAY_{project_day}_SUMMARY_{datetime.now().strftime('%Y%m%d')}.md"
+                    
+    def get_all_days(self) -> List[Dict]:
+        """Get all days from registry"""
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("""
+                    SELECT * FROM project_time_registry 
+                    ORDER BY project_day ASC
+                """)
+                return [dict(row) for row in cursor.fetchall()]
+                
+    def get_stats(self) -> Optional[Dict]:
+        """Get project statistics"""
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("""
+                    SELECT 
+                        COUNT(*) as total_days,
+                        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_days,
+                        MAX(sprint_number) as current_sprint,
+                        MAX(project_day) as latest_day,
+                        SUM(commits_count) as total_commits,
+                        SUM(tests_fixed) as total_tests_fixed,
+                        SUM(tasks_completed) as total_tasks_completed
+                    FROM project_time_registry
+                """)
+                return dict(cursor.fetchone() or {})
 
 
 def main():

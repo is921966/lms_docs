@@ -37,6 +37,8 @@ struct LessonView: View {
                             QuizIntroView(showingQuiz: $showingQuiz)
                         case .interactive:
                             InteractiveLessonView()
+                        case .pdf:
+                            PDFLessonView()
                         case .assignment:
                             AssignmentLessonView()
                         case .cmi5:
@@ -82,10 +84,10 @@ struct LessonView: View {
                 }
             }
             .fullScreenCover(isPresented: $showingCmi5Player) {
-                if case .cmi5(let activityId, let packageId) = currentLesson.content,
-                   let activity = getCmi5Activity(activityId: activityId) {
+                if case .cmi5(let activityId, let packageId) = currentLesson.content {
                     Cmi5PlayerView(
-                        activity: activity,
+                        packageId: UUID(uuidString: packageId),
+                        activityId: activityId,
                         sessionId: cmi5SessionId,
                         launchParameters: getLaunchParameters()
                     ) { statement in
@@ -93,13 +95,10 @@ struct LessonView: View {
                         handleCmi5Statement(statement)
                     } onCompletion: { passed in
                         showingCmi5Player = false
-                        if passed {
-                            lessonCompleted = true
+                        if passed && currentLessonIndex < module.lessons.count - 1 {
                             nextLesson()
                         }
                     }
-                    .environmentObject(cmi5Service)
-                    .environmentObject(lrsService)
                 }
             }
         }
@@ -171,21 +170,24 @@ struct LessonView: View {
         module: Module(
             title: "Работа с возражениями",
             description: "Изучение техник работы с возражениями клиентов",
-            orderIndex: 3,
             lessons: [
                 Lesson(
                     title: "Видео: Введение",
+                    description: "Введение в тему работы с возражениями",
                     type: .video,
-                    orderIndex: 1,
-                    duration: 15,
                     content: .video(url: "https://example.com/video1.mp4", subtitlesUrl: nil)
                 ),
                 Lesson(
                     title: "Теория",
+                    description: "Теоретические основы работы с возражениями",
                     type: .text,
-                    orderIndex: 2,
-                    duration: 10,
                     content: .text(html: "<h1>Работа с возражениями</h1><p>Содержание урока...</p>")
+                ),
+                Lesson(
+                    title: "Интерактив",
+                    description: "Интерактивное упражнение",
+                    type: .interactive,
+                    content: .interactive(url: "https://example.com/interactive1")
                 )
             ]
         )
@@ -220,6 +222,37 @@ struct Cmi5IntroView: View {
             
             Button(action: onStart) {
                 Label("Начать урок", systemImage: "play.fill")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+        }
+        .padding()
+    }
+}
+
+// MARK: - PDF Lesson View
+struct PDFLessonView: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "doc.fill")
+                .font(.system(size: 50))
+                .foregroundColor(.blue)
+            
+            Text("PDF документ")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text("Нажмите кнопку ниже, чтобы открыть PDF документ")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            
+            Button(action: {
+                // TODO: Implement PDF viewer
+            }) {
+                Label("Открыть PDF", systemImage: "doc.text.fill")
+                    .font(.headline)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)

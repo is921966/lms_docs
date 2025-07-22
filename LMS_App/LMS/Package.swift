@@ -14,12 +14,16 @@ let package = Package(
     ],
     dependencies: [
         // ViewInspector for SwiftUI testing
-        .package(url: "https://github.com/nalexn/ViewInspector.git", from: "0.9.8")
+        .package(url: "https://github.com/nalexn/ViewInspector.git", from: "0.9.8"),
+        // ZIPFoundation for ZIP archive handling
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.0")
     ],
     targets: [
         .target(
             name: "LMS",
-            dependencies: [],
+            dependencies: [
+                .product(name: "ZIPFoundation", package: "ZIPFoundation")
+            ],
             path: "LMS"
         ),
         .testTarget(

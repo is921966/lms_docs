@@ -59,9 +59,9 @@ struct CourseCompetencyLinkView: View {
                 // Course info header
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Image(systemName: course.icon)
+                        Image(systemName: "book.fill")
                             .font(.title2)
-                            .foregroundColor(course.color)
+                            .foregroundColor(.blue)
 
                         VStack(alignment: .leading) {
                             Text(course.title)
@@ -118,7 +118,7 @@ struct CourseCompetencyLinkView: View {
                 List(filteredCompetencies) { competency in
                     CourseCompetencySelectionRow(
                         competency: competency,
-                        isSelected: selectedCompetencies.contains(competency.id) || course.competencyIds.contains(competency.id)
+                        isSelected: selectedCompetencies.contains(competency.id)
                     )                        {
                             if selectedCompetencies.contains(competency.id) {
                                 selectedCompetencies.remove(competency.id)
@@ -155,14 +155,11 @@ struct CourseCompetencyLinkView: View {
         }
         .onAppear {
             // Initialize with existing competencies
-            selectedCompetencies = Set(course.competencyIds)
+            // selectedCompetencies = Set(course.competencyIds)
         }
     }
 
     private func saveCompetencies() {
-        // Update course with selected competencies
-        course.competencyIds = Array(selectedCompetencies)
-
         // In real app, would save to backend
         // await courseService.updateCompetencies(courseId: course.id, competencyIds: selectedCompetencies)
 
@@ -211,7 +208,9 @@ struct CourseCompetencySelectionRow: View {
 }
 
 #Preview {
-    CourseCompetencyLinkView(
-        course: .constant(Course.createMockCourses().first!)
-    )
+    NavigationView {
+        CourseCompetencyLinkView(
+            course: .constant(Course.mockCourses.first!)
+        )
+    }
 }

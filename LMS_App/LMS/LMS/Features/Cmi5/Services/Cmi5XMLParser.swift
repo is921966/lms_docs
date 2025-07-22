@@ -21,19 +21,41 @@ public final class Cmi5XMLParser: NSObject {
     // MARK: - Public Methods
     
     public func parseManifest(_ data: Data, baseURL: URL) throws -> ParseResult {
+        // Проверим содержимое XML для диагностики
+        if let xmlString = String(data: data, encoding: .utf8) {
+            print("🔍 [Cmi5XMLParser] Parsing XML manifest:")
+            print("   - Size: \(data.count) bytes")
+            print("   - First 500 chars: \(String(xmlString.prefix(500)))")
+        }
+        
         let parser = XMLParser(data: data)
         let delegate = Cmi5XMLParserDelegate(baseURL: baseURL)
         parser.delegate = delegate
         
         guard parser.parse() else {
             let error = parser.parserError?.localizedDescription ?? "Unknown XML parsing error"
+            print("❌ [Cmi5XMLParser] XML parsing failed: \(error)")
+            print("   - Line: \(parser.lineNumber)")
+            print("   - Column: \(parser.columnNumber)")
+            
+            // Попробуем найти проблемное место
+            if let xmlString = String(data: data, encoding: .utf8) {
+                let lines = xmlString.split(separator: "\n")
+                if parser.lineNumber > 0 && parser.lineNumber <= lines.count {
+                    let problemLine = lines[parser.lineNumber - 1]
+                    print("   - Problem line: \(problemLine)")
+                }
+            }
+            
             throw Cmi5Parser.ParsingError.xmlParsingError(error)
         }
         
         guard let result = delegate.buildResult() else {
+            print("❌ [Cmi5XMLParser] Failed to build result from parsed data")
             throw Cmi5Parser.ParsingError.invalidManifest
         }
         
+        print("✅ [Cmi5XMLParser] Successfully parsed manifest")
         return result
     }
 }
@@ -168,12 +190,22 @@ private class Cmi5XMLParserDelegate: NSObject, XMLParserDelegate {
     
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
         elementStack.append(elementName)
-        currentElement = elementName
-        currentText = ""
+        
+        // НЕ очищаем currentText для langstring, так как он может быть вложенным
+        if elementName != "langstring" {
+            currentText = ""
+        }
+        
+        print("🔍 [Cmi5XMLParserDelegate] Start element: \(elementName), attributes: \(attributeDict)")
         
         switch elementName {
         case "courseStructure":
             manifestId = attributeDict["id"] ?? ""
+            if manifestId.isEmpty {
+                // Генерируем ID если не указан
+                manifestId = UUID().uuidString
+                print("⚠️ [Cmi5XMLParserDelegate] courseStructure has no id, generated: \(manifestId)")
+            }
             
         case "course":
             courseId = attributeDict["id"] ?? ""
@@ -218,14 +250,18 @@ private class Cmi5XMLParserDelegate: NSObject, XMLParserDelegate {
     }
     
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        elementStack.removeLast()
-        
+        // ВАЖНО: Обрабатываем элемент ДО удаления из стека
         switch elementName {
         case "title":
             handleTitle()
             
         case "description":
             handleDescription()
+            
+        case "langstring":
+            // langstring больше не обрабатывает title/description самостоятельно
+            // Текст уже накоплен в currentText и будет обработан родительским элементом
+            break
             
         case "url":
             currentActivity?.url = currentText
@@ -241,24 +277,17 @@ private class Cmi5XMLParserDelegate: NSObject, XMLParserDelegate {
                 currentObjectives.append(currentText)
             }
             
-        case "objectives":
-            currentBlock?.objectives = currentObjectives
-            currentObjectives = []
-            
-        case "publisher":
-            metadata["publisher"] = currentText
-            
-        case "rights":
-            metadata["rights"] = currentText
-            
-        case "version":
-            manifestVersion = currentText
-            
         case "au":
-            if let activity = currentActivity?.build() {
+            if let activityBuilder = currentActivity {
+                // Сначала строим activity из builder
+                let activity = activityBuilder.build()
+                
+                // Добавляем objectives к построенному activity (если они есть в модели)
+                // TODO: Возможно нужно будет добавить objectives в Cmi5Activity модель
+                
                 allActivities.append(activity)
                 
-                // Add to current container
+                // Add to current node
                 if let currentNode = nodeStack.last {
                     currentNode.children.append(.activity(activity))
                 } else {
@@ -283,55 +312,104 @@ private class Cmi5XMLParserDelegate: NSObject, XMLParserDelegate {
             if manifestTitle.isEmpty {
                 manifestTitle = courseTitle
             }
-            if manifestDescription == nil {
-                manifestDescription = courseDescription
-            }
+            
+        case "objectives":
+            // End of objectives section
+            break
             
         default:
             break
         }
         
-        currentText = ""
+        // Удаляем элемент из стека ПОСЛЕ обработки
+        elementStack.removeLast()
     }
     
     // MARK: - Helper Methods
     
     private func handleTitle() {
-        let parentElement = elementStack.dropLast().last ?? ""
+        // Ищем правильный контекст
+        var contextElement = ""
         
-        switch parentElement {
+        // Найдем индекс элемента title в стеке
+        if let titleIndex = elementStack.lastIndex(of: "title") {
+            // Ищем родителя title (элемент перед title в стеке)
+            if titleIndex > 0 {
+                contextElement = elementStack[titleIndex - 1]
+            }
+        }
+        
+        print("🔍 [Cmi5XMLParserDelegate] handleTitle: context=\(contextElement), text=\(currentText), stack=\(elementStack)")
+        
+        switch contextElement {
         case "course":
             courseTitle = currentText
+            if manifestTitle.isEmpty {
+                // Если нет отдельного title для courseStructure, используем course title
+                manifestTitle = currentText
+            }
+            
         case "courseStructure":
             manifestTitle = currentText
-        case "block":
-            currentBlock?.title = currentText
+            
         case "au":
             currentActivity?.title = currentText
+            
+        case "block":
+            currentBlock?.title = currentText
+            
         default:
             break
         }
     }
     
     private func handleDescription() {
-        let parentElement = elementStack.dropLast().last ?? ""
+        // Ищем правильный контекст
+        var contextElement = ""
         
-        switch parentElement {
+        // Найдем индекс элемента description в стеке
+        if let descIndex = elementStack.lastIndex(of: "description") {
+            // Ищем родителя description (элемент перед description в стеке)
+            if descIndex > 0 {
+                contextElement = elementStack[descIndex - 1]
+            }
+        }
+        
+        print("🔍 [Cmi5XMLParserDelegate] handleDescription: context=\(contextElement), text=\(currentText)")
+        
+        switch contextElement {
         case "course":
             courseDescription = currentText
+            if manifestDescription == nil {
+                manifestDescription = currentText
+            }
+            
         case "courseStructure":
             manifestDescription = currentText
-        case "block":
-            currentBlock?.description = currentText
+            
         case "au":
             currentActivity?.description = currentText
+            
+        case "block":
+            currentBlock?.description = currentText
+            
         default:
             break
         }
     }
     
     func buildResult() -> Cmi5XMLParser.ParseResult? {
-        guard !manifestId.isEmpty else { return nil }
+        print("🔍 [Cmi5XMLParserDelegate] Building result:")
+        print("   - manifestId: \(manifestId)")
+        print("   - manifestTitle: \(manifestTitle)")
+        print("   - courseTitle: \(courseTitle)")
+        print("   - rootNodes count: \(rootNodes.count)")
+        print("   - allActivities count: \(allActivities.count)")
+        
+        guard !manifestId.isEmpty else { 
+            print("❌ [Cmi5XMLParserDelegate] manifestId is empty")
+            return nil 
+        }
         
         // Найдем первый блок в rootNodes
         var firstBlock: Cmi5Block?
@@ -343,8 +421,8 @@ private class Cmi5XMLParserDelegate: NSObject, XMLParserDelegate {
         
         let manifest = Cmi5Manifest(
             identifier: manifestId,
-            title: manifestTitle,
-            description: manifestDescription,
+            title: manifestTitle.isEmpty ? courseTitle : manifestTitle,  // Используем courseTitle если manifestTitle пустой
+            description: manifestDescription ?? courseDescription,
             course: Cmi5Course(
                 id: courseId,
                 title: courseTitle.isEmpty ? nil : [Cmi5LangString(lang: "en", value: courseTitle)],

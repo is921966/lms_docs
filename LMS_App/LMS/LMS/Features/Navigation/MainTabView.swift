@@ -3,11 +3,26 @@ import SwiftUI
 struct MainTabView: View {
     @StateObject private var authViewModel = AuthViewModel()
     @AppStorage("isAdminMode") private var isAdminMode = false
+    @AppStorage("useNewFeedDesign") private var useNewFeedDesign = false
+    @StateObject private var feedViewModel = TelegramFeedViewModel()
     @State private var selectedTab = 0
     @State private var showingSettings = false
+    @State private var forceRefresh = UUID() // Для принудительного обновления
+    
+    init() {
+        print("📱 MainTabView init")
+    }
     
     var body: some View {
         TabView(selection: $selectedTab) {
+            // Feed Tab (New)
+            feedTab
+                .tabItem {
+                    Label("Лента", systemImage: "newspaper.fill")
+                }
+                .tag(0)
+                .badge(feedViewModel.totalUnreadCount)
+            
             // Courses Tab
             NavigationStack {
                 CourseListView()
@@ -15,7 +30,7 @@ struct MainTabView: View {
             .tabItem {
                 Label("Courses", systemImage: "book.fill")
             }
-            .tag(0)
+            .tag(1)
             .badge(authViewModel.currentUser?.role == .student ? 3 : 0)
             
             // Users Tab (Admin only)
@@ -26,7 +41,7 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Users", systemImage: "person.3.fill")
                 }
-                .tag(1)
+                .tag(2)
             }
             
             // Profile Tab
@@ -36,7 +51,7 @@ struct MainTabView: View {
             .tabItem {
                 Label("Profile", systemImage: "person.crop.circle.fill")
             }
-            .tag(2)
+            .tag(3)
             
             // Settings Tab
             NavigationStack {
@@ -45,16 +60,28 @@ struct MainTabView: View {
             .tabItem {
                 Label("Settings", systemImage: "gearshape.fill")
             }
-            .tag(3)
+            .tag(4)
         }
         .accentColor(isAdminMode ? .purple : .blue)
         .onAppear {
             setupAppearance()
         }
+        .onChange(of: selectedTab) { oldValue, newValue in
+            let tabNames = ["Лента", "Курсы", "Пользователи", "Профиль", "Настройки"]
+            let tabName = tabNames[safe: newValue] ?? "Unknown"
+            NavigationTracker.shared.tabSelected(tabName)
+            
+            ComprehensiveLogger.shared.log(.navigation, .info, "Tab changed", details: [
+                "oldTab": oldValue,
+                "newTab": newValue,
+                "tabName": tabName
+            ])
+        }
         .sheet(isPresented: $authViewModel.showingLogin) {
             LoginView()
                 .interactiveDismissDisabled(true)
         }
+
     }
     
     private func setupAppearance() {
@@ -72,6 +99,43 @@ struct MainTabView: View {
         
         UINavigationBar.appearance().standardAppearance = navAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
+    }
+    
+    // MARK: - Private Views
+    
+    @ViewBuilder
+    private var feedTab: some View {
+        NavigationStack {
+            if useNewFeedDesign {
+                TelegramFeedView()
+                    .onAppear {
+                        print("🆕 TelegramFeedView appeared")
+                        print("   - useNewFeedDesign: \(useNewFeedDesign)")
+                        print("   - UserDefaults useNewFeedDesign: \(UserDefaults.standard.bool(forKey: "useNewFeedDesign"))")
+                        ComprehensiveLogger.shared.log(.ui, .info, "TelegramFeedView shown", details: [
+                            "useNewFeedDesign": useNewFeedDesign,
+                            "userDefaultsValue": UserDefaults.standard.bool(forKey: "useNewFeedDesign")
+                        ])
+                    }
+            } else {
+                FeedView()
+                    .onAppear {
+                        print("📰 Classic FeedView appeared")
+                        print("   - useNewFeedDesign: \(useNewFeedDesign)")
+                        print("   - UserDefaults useNewFeedDesign: \(UserDefaults.standard.bool(forKey: "useNewFeedDesign"))")
+                        ComprehensiveLogger.shared.log(.ui, .info, "Classic FeedView shown", details: [
+                            "useNewFeedDesign": useNewFeedDesign,
+                            "userDefaultsValue": UserDefaults.standard.bool(forKey: "useNewFeedDesign")
+                        ])
+                    }
+            }
+        }
+        .id(forceRefresh) // Используем UUID для гарантированного обновления
+        .onReceive(NotificationCenter.default.publisher(for: FeedDesignManager.feedDesignChangedNotification)) { _ in
+            print("⚡ Feed design changed notification received")
+            // Принудительно обновляем view
+            forceRefresh = UUID()
+        }
     }
 }
 

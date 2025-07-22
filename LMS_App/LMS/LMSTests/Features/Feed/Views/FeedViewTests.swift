@@ -21,7 +21,7 @@ final class FeedViewTests: XCTestCase {
         // Reset state before each test
         try await MockAuthService.shared.logout()
         feedService = MockFeedService()
-        viewModel = FeedViewModel(feedService: FeedService.shared)
+        viewModel = FeedViewModel(feedService: MockFeedService.shared)
     }
     
     // MARK: - FeedView Tests
@@ -41,7 +41,7 @@ final class FeedViewTests: XCTestCase {
         // Login as admin
         _ = try await MockAuthService.shared.login(email: "admin@test.com", password: "password")
         
-        let feedService = FeedService.shared
+        let feedService = MockFeedService.shared
         XCTAssertTrue(feedService.permissions.canPost)
         
         // In real app, we'd verify button is visible
@@ -51,7 +51,7 @@ final class FeedViewTests: XCTestCase {
         // Login as student  
         _ = try await MockAuthService.shared.login(email: "student@test.com", password: "password")
         
-        let feedService = FeedService.shared
+        let feedService = MockFeedService.shared
         XCTAssertFalse(feedService.permissions.canPost)
         
         // In real app, we'd verify button is hidden

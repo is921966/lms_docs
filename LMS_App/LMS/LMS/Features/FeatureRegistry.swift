@@ -41,6 +41,7 @@ enum Feature: String, CaseIterable {
     case feed = "Новости"
     case cmi5 = "Cmi5 Контент"  // НОВЫЙ МОДУЛЬ
     case courseManagement = "Управление курсами"  // Управление курсами для админов
+    case orgStructure = "Оргструктура"  // Организационная структура компании
 
     // Будущие модули
     case certificates = "Сертификаты"
@@ -80,6 +81,7 @@ enum Feature: String, CaseIterable {
         case .feed: return "newspaper"
         case .cmi5: return "cube.box"  // НОВАЯ ИКОНКА
         case .courseManagement: return "folder.badge.gearshape"  // Иконка для управления курсами
+        case .orgStructure: return "person.3" // Новая иконка для оргструктуры
         case .certificates: return "rosette"
         case .gamification: return "gamecontroller"
         case .notifications: return "bell"
@@ -121,6 +123,9 @@ enum Feature: String, CaseIterable {
         case .courseManagement:
             // Управление курсами для админов
             CourseManagementView()
+        case .orgStructure:
+            // Организационная структура компании
+            OrgStructureView()
         case .certificates:
             PlaceholderView(title: "Сертификаты", icon: "rosette")
         case .gamification:
@@ -231,6 +236,7 @@ extension Feature {
         case .feed: return "Лента новостей и объявлений"
         case .cmi5: return "Интерактивные учебные материалы"
         case .courseManagement: return "Управление курсами и модулями"
+        case .orgStructure: return "Управление организационной структурой"
         case .certificates: return "Выдача сертификатов"
         case .gamification: return "Игровые механики"
         case .notifications: return "Push-уведомления"
@@ -253,6 +259,7 @@ extension Feature {
         case .feed: return .pink
         case .cmi5: return .cyan
         case .courseManagement: return .mint
+        case .orgStructure: return .blue // Новый цвет для оргструктуры
         case .certificates: return .purple
         case .gamification: return .orange
         case .notifications: return .red
@@ -290,12 +297,16 @@ extension Feature {
         Feature.enable(.positions)
         Feature.enable(.feed)
         Feature.enable(.cmi5)  // ВКЛЮЧАЕМ CMI5
+        Feature.enable(.courseManagement) // ВКЛЮЧАЕМ Управление курсами
+        Feature.enable(.orgStructure) // ВКЛЮЧАЕМ Оргструктуру
 
         print("✅ Готовые модули включены:")
         print("  - Компетенции")
         print("  - Должности")
         print("  - Новости")
         print("  - Cmi5 Контент")  // НОВЫЙ МОДУЛЬ
+        print("  - Управление курсами")
+        print("  - Оргструктура")
 
         // КРИТИЧЕСКИ ВАЖНО: Уведомляем UI об изменениях
         FeatureRegistryManager.shared.refresh()
@@ -310,6 +321,8 @@ extension Feature {
         Feature.disable(.certificates)
         Feature.disable(.gamification)
         Feature.disable(.notifications)
+        Feature.disable(.courseManagement)
+        Feature.disable(.orgStructure)
 
         print("❌ Дополнительные модули выключены")
     }

@@ -20,54 +20,27 @@ class CourseMockService: ObservableObject {
     }
 
     private func loadMockCourses() {
-        // Get categories
-        let programmingCategory = CourseCategory.categories.first { $0.name == "IT" } ?? CourseCategory.categories[4]
-
         // Create mock courses
         courses = [
             Course(
                 title: "iOS Development Basics",
                 description: "Основы разработки под iOS",
-                categoryId: programmingCategory.id,
+                categoryId: CourseCategory.technical.rawValue,
                 status: .published,
                 type: .optional,
                 modules: [],
-                materials: [],
-                testId: nil,
-                competencyIds: [],
-                positionIds: [],
-                prerequisiteCourseIds: [],
                 duration: "40 часов",
-                estimatedHours: 40,
-                passingScore: 70,
-                certificateTemplateId: nil,
-                maxAttempts: nil,
-                createdBy: UUID(),
-                createdAt: Date().addingTimeInterval(-86_400 * 30),
-                updatedAt: Date().addingTimeInterval(-86_400 * 5),
-                publishedAt: Date().addingTimeInterval(-86_400 * 30)
+                createdBy: UUID()
             ),
             Course(
                 title: "SwiftUI Advanced",
                 description: "Продвинутые техники SwiftUI",
-                categoryId: programmingCategory.id,
+                categoryId: CourseCategory.technical.rawValue,
                 status: .published,
                 type: .optional,
                 modules: [],
-                materials: [],
-                testId: nil,
-                competencyIds: [],
-                positionIds: [],
-                prerequisiteCourseIds: [],
                 duration: "60 часов",
-                estimatedHours: 60,
-                passingScore: 80,
-                certificateTemplateId: nil,
-                maxAttempts: nil,
-                createdBy: UUID(),
-                createdAt: Date().addingTimeInterval(-86_400 * 60),
-                updatedAt: Date().addingTimeInterval(-86_400 * 2),
-                publishedAt: Date().addingTimeInterval(-86_400 * 60)
+                createdBy: UUID()
             )
         ]
 

@@ -1,0 +1,28 @@
+✅ Feedback system initialized
+ℹ️ Demo course already exists: ai_fluency_course_v1.0
+ℹ️ Demo course already exists: single_au_basic_responsive
+ℹ️ Demo course already exists: masteryscore_responsive
+ℹ️ Demo course already exists: multi_au_framed
+ℹ️ Demo course already exists: pre_post_test_framed
+✅ Готовые модули включены:
+  - Компетенции
+  - Должности
+  - Новости
+  - Cmi5 Контент
+  - Управление курсами
+  - Оргструктура
+🔄 UI уведомлен об изменениях Feature Registry
+🔄 FeatureRegistry обновлен - UI получит уведомление
+🔐 Simulator Mode: Принудительный вход под администратором
+🔐 Current auth status: false
+🔐 Current user: none
+🔐 Current role: none
+🔐 Force auto-login in simulator
+🔐 executeMockLogin started, asAdmin: true
+🔐 Mock login successful as Admin
+🔐 isAuthenticated: true
+🔐 currentUser: admin@tsum.ru
+🔐 Auth status after login: true
+🔐 User after login: admin@tsum.ru
+🔐 Role after login: admin
+ru.tsum.lms.igor: 69822

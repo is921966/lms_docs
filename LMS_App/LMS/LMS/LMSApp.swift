@@ -22,6 +22,7 @@ struct LMSApp: App {
         setupAppearance()
         setupFeedback()
         setupReleaseNewsService() // Добавляем инициализацию сервиса новостей о релизах
+        setupDemoCourses() // Добавляем инициализацию демо-курсов
 
         // Enable battery monitoring for device info
         UIDevice.current.isBatteryMonitoringEnabled = true
@@ -48,6 +49,21 @@ struct LMSApp: App {
         FeatureRegistryManager.shared.enableReadyModules()
         print("🚀 TestFlight Mode: Все готовые модули включены автоматически")
         #endif
+        
+        // НОВОЕ: Автоматический логин администратора в симуляторе
+        #if targetEnvironment(simulator)
+        DispatchQueue.main.async {
+            // Проверяем, если уже не залогинен
+            if !MockAuthService.shared.isAuthenticated {
+                print("🔐 Simulator Mode: Автоматический вход под администратором")
+                MockAuthService.shared.mockLogin(asAdmin: true)
+            }
+        }
+        #endif
+        
+        // 🆕 Запуск инкрементной отправки логов
+        LogUploader.shared.startIncrementalUpload()
+        print("📊 Log Uploader: Инкрементная отправка логов запущена (каждые 30 сек)")
     }
 
     var body: some Scene {
@@ -104,6 +120,11 @@ struct LMSApp: App {
         @unknown default:
             break
         }
+    }
+    
+    private func setupDemoCourses() {
+        // Копируем демо-курсы в Documents при первом запуске
+        DemoCourseManager.shared.copyDemoCoursesToDocuments()
     }
 }
 

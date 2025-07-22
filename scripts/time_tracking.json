@@ -525,6 +525,22 @@
       "day_in_sprint": 5,
       "date": "2025-07-10",
       "end_time": "2025-07-10T15:07:47.788657"
+    },
+    "day_26": {
+      "calendar_day": 26,
+      "project_day": 111,
+      "sprint_number": 23,
+      "day_in_sprint": 1,
+      "date": "2025-07-16",
+      "end_time": "2025-07-16T17:56:56.322136"
+    },
+    "day_27": {
+      "calendar_day": 27,
+      "project_day": 112,
+      "sprint_number": 23,
+      "day_in_sprint": 2,
+      "date": "2025-07-17",
+      "end_time": "2025-07-17T15:53:31.835380"
     }
   },
   "sprints": {

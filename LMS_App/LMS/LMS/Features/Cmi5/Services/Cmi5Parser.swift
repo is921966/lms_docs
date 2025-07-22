@@ -61,15 +61,19 @@ public final class Cmi5Parser {
         
         defer {
             // Очищаем временные файлы после парсинга
-            archiveHandler.cleanupPackage(at: extraction.extractedPath)
+            archiveHandler.cleanupPackage(packageId: extraction.packageId)
         }
         
         // Читаем манифест
-        let manifestData = try Data(contentsOf: extraction.manifestURL)
+        let manifestData = try Data(contentsOf: extraction.cmi5ManifestPath)
         let manifest = try parseManifest(from: manifestData)
         
         // Парсим активности
-        let activities = try parseActivities(from: manifestData, baseURL: extraction.contentURL)
+        let activities = try parseActivities(from: manifestData, baseURL: extraction.coursePath)
+        
+        // Вычисляем размер пакета
+        let attributes = try fileManager.attributesOfItem(atPath: fileURL.path)
+        let fileSize = attributes[.size] as? Int64 ?? 0
         
         // Создаем пакет
         let packageId = UUID()
@@ -98,7 +102,7 @@ public final class Cmi5Parser {
             manifest: manifest,
             filePath: fileURL.path,
             uploadedAt: Date(),
-            size: extraction.packageSize,
+            size: fileSize,
             uploadedBy: UUID(), // Should be current user
             version: manifest.version ?? "1.0",
             isValid: true,
@@ -359,32 +363,4 @@ private class Cmi5ActivitiesParserDelegate: NSObject, XMLParserDelegate {
     }
 }
 
-// MARK: - Extension для распаковки архива
-extension FileManager {
-    func unzipItem(at sourceURL: URL, to destinationURL: URL) throws {
-        // В реальном приложении здесь будет использоваться ZIPFoundation
-        // или встроенный unzip через Process
-        // Для демонстрации используем заглушку
-        
-        // Создаем демо структуру для тестирования
-        let demoManifestURL = destinationURL.appendingPathComponent("cmi5.xml")
-        try createDirectory(at: destinationURL, withIntermediateDirectories: true)
-        
-        // Создаем демо манифест
-        let demoManifest = """
-        <?xml version="1.0" encoding="UTF-8"?>
-        <courseStructure id="course_demo_v1" xmlns="https://w3id.org/xapi/profiles/cmi5/v1/CourseStructure.xsd">
-            <course id="course_001">
-                <title>Demo Course</title>
-                <description>Demo course for testing</description>
-                <au id="module_1" launchMethod="AnyWindow" moveOn="CompletedOrPassed">
-                    <title>Module 1</title>
-                    <url>content/module1/index.html</url>
-                </au>
-            </course>
-        </courseStructure>
-        """
-        
-        try demoManifest.write(to: demoManifestURL, atomically: true, encoding: .utf8)
-    }
-} 
+ 

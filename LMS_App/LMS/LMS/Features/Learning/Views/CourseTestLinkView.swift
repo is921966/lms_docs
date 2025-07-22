@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct CourseTestLinkView: View {
-    @Binding var course: Course
+    let course: Course
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTestId: UUID?
     @State private var searchText = ""
     @State private var showingCreateTest = false
+    @State private var selectedTest: Test?
+    @State private var showingTest = false
 
     // Mock tests from TestMockService
     var tests: [Test] {
@@ -32,131 +34,60 @@ struct CourseTestLinkView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Course info header
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: course.icon)
-                            .font(.title2)
-                            .foregroundColor(course.color)
-
-                        VStack(alignment: .leading) {
-                            Text(course.title)
-                                .font(.headline)
-                            Text("Связать с тестом")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-
-                        Spacer()
-                    }
-                    .padding()
-
-                    if let testId = course.testId,
-                       let currentTest = tests.first(where: { $0.id == testId }) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Текущий тест:")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-
-                            HStack {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.green)
-
-                                VStack(alignment: .leading) {
-                                    Text(currentTest.title)
-                                        .font(.subheadline)
-                                        .fontWeight(.medium)
-
-                                    Text("\(currentTest.questions.count) вопросов • \(currentTest.timeLimit ?? 0) мин")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-
-                                Spacer()
-
-                                Button("Удалить") {
-                                    selectedTestId = nil
-                                    saveTest()
-                                }
-                                .font(.caption)
-                                .foregroundColor(.red)
-                            }
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 12)
-                            .background(Color.green.opacity(0.1))
-                            .cornerRadius(8)
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom, 8)
-                    }
-                }
-                .background(Color(.systemGroupedBackground))
-
-                // Search bar
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
-
-                    TextField("Поиск тестов", text: $searchText)
-                        .textFieldStyle(PlainTextFieldStyle())
-
-                    if !searchText.isEmpty {
-                        Button(action: { searchText = "" }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.gray)
-                        }
-                    }
-                }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-                .padding()
-
-                // Create new test button
-                Button(action: { showingCreateTest = true }) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                        Text("Создать новый тест")
-                    }
-                    .foregroundColor(.blue)
-                }
-                .padding(.horizontal)
-                .padding(.bottom, 8)
-
-                // Test list
-                List(filteredTests) { test in
-                    TestSelectionRow(
-                        test: test,
-                        isSelected: selectedTestId == test.id || course.testId == test.id
-                    )                        {
-                            selectedTestId = test.id
-                            saveTest()
-                        }
-                }
-                .listStyle(PlainListStyle())
+                courseHeader
+                testsList
+                    .padding(.top)
             }
-            .navigationTitle("Выбор теста")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Отмена") {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Закрыть") {
                         dismiss()
                     }
                 }
             }
-            .sheet(isPresented: $showingCreateTest) {
-                // In real app, would show TestAddView
-                Text("Создание теста будет доступно в следующей версии")
-                    .padding()
-            }
         }
-        .onAppear {
-            selectedTestId = course.testId
+    }
+    
+    private var courseHeader: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "book.fill")
+                    .font(.title2)
+                    .foregroundColor(.blue)
+                
+                VStack(alignment: .leading) {
+                    Text(course.title)
+                        .font(.headline)
+                    Text("Выберите тест для прохождения")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+            }
+            .padding()
+        }
+        .background(Color(.systemGray6))
+    }
+    
+    private var testsList: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                ForEach(tests) { test in
+                    TestRowView(test: test) {
+                        selectedTest = test
+                        showingTest = true
+                    }
+                    .padding(.horizontal)
+                }
+            }
+            .padding(.vertical)
         }
     }
 
     private func saveTest() {
-        course.testId = selectedTestId
+        // course.testId = selectedTestId
 
         // In real app, would save to backend
         // await courseService.updateTest(courseId: course.id, testId: selectedTestId)
@@ -223,8 +154,45 @@ struct TestSelectionRow: View {
     }
 }
 
+struct TestRowView: View {
+    let test: Test
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(test.title)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    
+                    HStack {
+                        Label("\(test.questions.count) вопросов", systemImage: "questionmark.circle")
+                        if let timeLimit = test.timeLimit {
+                            Label("\(timeLimit) мин", systemImage: "clock")
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.gray)
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
 #Preview {
-    CourseTestLinkView(
-        course: .constant(Course.createMockCourses().first!)
-    )
+    NavigationView {
+        CourseTestLinkView(
+            course: Course.mockCourses.first!
+        )
+    }
 }

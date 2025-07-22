@@ -137,7 +137,7 @@ struct AdminCourseListView: View {
         }
         return viewModel.courses.filter { course in
             course.title.localizedCaseInsensitiveContains(searchText) ||
-            course.category.localizedCaseInsensitiveContains(searchText)
+            (course.category?.displayName ?? "").localizedCaseInsensitiveContains(searchText)
         }
     }
 
@@ -372,9 +372,8 @@ struct AdminCourseCard: View {
                     .accessibilityIdentifier("courseTitle")
 
                 HStack(spacing: 12) {
-                    if let categoryId = course.categoryId,
-                       let category = CourseCategory.categories.first(where: { $0.id == categoryId }) {
-                        Label(category.name, systemImage: "folder")
+                    if let category = course.category {
+                        Label(category.displayName, systemImage: "folder")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -383,7 +382,7 @@ struct AdminCourseCard: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    Label("\(course.totalLessons) уроков", systemImage: "person.2")
+                    Label("\(course.lessonsCount) уроков", systemImage: "person.2")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -391,11 +390,11 @@ struct AdminCourseCard: View {
                 // Status
                 HStack {
                     Circle()
-                        .fill(course.isPublished ? Color.green : Color.orange)
+                        .fill(course.status == .published ? Color.green : Color.orange)
                         .frame(width: 8, height: 8)
-                    Text(course.isPublished ? "Опубликован" : "Черновик")
+                    Text(course.status == .published ? "Опубликован" : "Черновик")
                         .font(.caption)
-                        .foregroundColor(course.isPublished ? .green : .orange)
+                        .foregroundColor(course.status == .published ? .green : .orange)
                         .accessibilityIdentifier("courseStatus")
                 }
             }

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CourseMaterialsView: View {
     @Binding var course: Course
+    @State private var materials: [CourseMaterial] = []
     @State private var showingAddMaterial = false
     @State private var selectedMaterial: CourseMaterial?
     @State private var showingDeleteAlert = false
@@ -18,69 +19,72 @@ struct CourseMaterialsView: View {
     var body: some View {
         NavigationView {
             List {
-                // Course materials
-                Section("Материалы курса") {
-                    if course.materials.isEmpty {
-                        Text("Материалы не добавлены")
-                            .foregroundColor(.secondary)
-                            .italic()
-                    } else {
-                        ForEach(course.materials) { material in
-                            MaterialRow(material: material) {
-                                selectedMaterial = material
-                            } onDelete: {
-                                materialToDelete = material
-                                showingDeleteAlert = true
-                            }
-                        }
-                    }
-
-                    Button(action: { showingAddMaterial = true }) {
-                        Label("Добавить материал", systemImage: "plus.circle.fill")
-                            .foregroundColor(.blue)
-                    }
-                }
-
-                // Module materials
-                ForEach(course.modules.indices, id: \.self) { moduleIndex in
-                    Section("Модуль: \(course.modules[moduleIndex].title)") {
-                        if course.modules[moduleIndex].materials.isEmpty {
-                            Text("Материалы не добавлены")
-                                .foregroundColor(.secondary)
-                                .italic()
-                        } else {
-                            ForEach(course.modules[moduleIndex].materials) { material in
-                                MaterialRow(material: material) {
-                                    selectedMaterial = material
-                                } onDelete: {
-                                    // Remove from module
-                                    course.modules[moduleIndex].materials.removeAll { $0.id == material.id }
-                                }
-                            }
-                        }
-                    }
-                }
+                materialsSection
+                addMaterialSection
             }
             .navigationTitle("Материалы курса")
             .navigationBarTitleDisplayMode(.inline)
-            .sheet(isPresented: $showingAddMaterial) {
-                AddMaterialView { newMaterial in
-                    course.materials.append(newMaterial)
-                }
-            }
-            .sheet(item: $selectedMaterial) { material in
-                MaterialDetailView(material: material)
-            }
-            .alert("Удалить материал?", isPresented: $showingDeleteAlert) {
-                Button("Отмена", role: .cancel) { }
-                Button("Удалить", role: .destructive) {
-                    if let material = materialToDelete {
-                        course.materials.removeAll { $0.id == material.id }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Готово") {
+                        // Dismiss view
                     }
                 }
-            } message: {
+            }
+        }
+        .sheet(isPresented: $showingAddMaterial) {
+            AddMaterialView { newMaterial in
+                materials.append(newMaterial)
+            }
+        }
+        .sheet(item: $selectedMaterial) { material in
+            MaterialDetailView(material: material)
+        }
+        .alert("Удалить материал?", isPresented: $showingDeleteAlert) {
+            Button("Отмена", role: .cancel) { }
+            Button("Удалить", role: .destructive) {
                 if let material = materialToDelete {
-                    Text("Вы уверены, что хотите удалить материал \"\(material.title)\"?")
+                    materials.removeAll { $0.id == material.id }
+                }
+            }
+        } message: {
+            if let material = materialToDelete {
+                Text("Вы действительно хотите удалить \(material.title)?")
+            }
+        }
+    }
+    
+    private var materialsSection: some View {
+        Section("Материалы курса") {
+            if materials.isEmpty {
+                Text("Материалы не добавлены")
+                    .foregroundColor(.secondary)
+                    .italic()
+            } else {
+                ForEach(materials) { material in
+                    MaterialRow(material: material) {
+                        selectedMaterial = material
+                    }
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            materialToDelete = material
+                            showingDeleteAlert = true
+                        } label: {
+                            Label("Удалить", systemImage: "trash")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private var addMaterialSection: some View {
+        Section {
+            Button(action: { showingAddMaterial = true }) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundColor(.blue)
+                    Text("Добавить материал")
                 }
             }
         }
@@ -91,7 +95,6 @@ struct CourseMaterialsView: View {
 struct MaterialRow: View {
     let material: CourseMaterial
     let onTap: () -> Void
-    let onDelete: () -> Void
 
     var body: some View {
         HStack {
@@ -112,14 +115,11 @@ struct MaterialRow: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    if let size = material.fileSize {
-                        Text("• \(formatFileSize(size))")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    // TODO: Add file size when available
 
-                    if let duration = material.duration {
-                        Text("• \(duration) мин")
+                    // TODO: Add duration when available
+                    if false {
+                        Text("• -- мин")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -128,7 +128,7 @@ struct MaterialRow: View {
 
             Spacer()
 
-            Button(action: onDelete) {
+            Button(action: {}) {
                 Image(systemName: "trash")
                     .foregroundColor(.red)
             }
@@ -146,7 +146,7 @@ struct MaterialRow: View {
         case .presentation: return .orange
         case .document: return .green
         case .link: return .purple
-        case .archive: return .gray
+        case .pdf: return .red
         }
     }
 
@@ -161,85 +161,21 @@ struct MaterialRow: View {
 struct AddMaterialView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
-    @State private var selectedType: CourseMaterial.MaterialType = .document
-    @State private var url = ""
-    @State private var duration = ""
-    @State private var selectedItem: PhotosPickerItem?
+    @State private var description = ""
+    @State private var selectedType = CourseMaterial.MaterialType.document
     @State private var showingFilePicker = false
+    @State private var url = ""
 
     let onAdd: (CourseMaterial) -> Void
 
     var body: some View {
         NavigationView {
             Form {
-                Section("Основная информация") {
-                    TextField("Название материала", text: $title)
-
-                    Picker("Тип материала", selection: $selectedType) {
-                        ForEach(CourseMaterial.MaterialType.allCases, id: \.self) { type in
-                            Label(type.rawValue, systemImage: type.icon)
-                                .tag(type)
-                        }
-                    }
-                }
-
-                Section("Файл или ссылка") {
-                    if selectedType == .link {
-                        TextField("URL ссылки", text: $url)
-                            .keyboardType(.URL)
-                            .autocapitalization(.none)
-                    } else {
-                        Button(action: { showingFilePicker = true }) {
-                            HStack {
-                                Image(systemName: "doc.badge.plus")
-                                Text("Выбрать файл")
-                                Spacer()
-                                if !url.isEmpty {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                }
-                            }
-                        }
-
-                        if !url.isEmpty {
-                            Text(url)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-
-                if selectedType == .video {
-                    Section("Дополнительно") {
-                        TextField("Длительность (минуты)", text: $duration)
-                            .keyboardType(.numberPad)
-                    }
-                }
-
-                Section("Поддерживаемые форматы") {
-                    VStack(alignment: .leading, spacing: 8) {
-                        ForEach(CourseMaterial.MaterialType.allCases, id: \.self) { type in
-                            HStack {
-                                Image(systemName: type.icon)
-                                    .foregroundColor(colorForType(type))
-                                    .frame(width: 20)
-
-                                Text(type.rawValue)
-                                    .font(.subheadline)
-
-                                Spacer()
-
-                                if !type.acceptedExtensions.isEmpty {
-                                    Text(type.acceptedExtensions.joined(separator: ", "))
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                        }
-                    }
-                }
+                basicInfoSection
+                materialTypeSection
+                actionSection
             }
-            .navigationTitle("Новый материал")
+            .navigationTitle("Добавить материал")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -247,48 +183,92 @@ struct AddMaterialView: View {
                         dismiss()
                     }
                 }
-
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Добавить") {
-                        let newMaterial = CourseMaterial(
-                            title: title,
-                            type: selectedType,
-                            url: url.isEmpty ? nil : url,
-                            fileSize: nil, // Would be calculated from actual file
-                            duration: Int(duration),
-                            uploadedAt: Date()
-                        )
-                        onAdd(newMaterial)
-                        dismiss()
+                        addMaterial()
                     }
-                    .disabled(title.isEmpty || (selectedType != .link && url.isEmpty))
+                    .disabled(title.isEmpty)
                 }
             }
-            .fileImporter(
-                isPresented: $showingFilePicker,
-                allowedContentTypes: contentTypesForMaterialType(selectedType),
-                allowsMultipleSelection: false
-            ) { result in
-                switch result {
-                case .success(let urls):
-                    if let url = urls.first {
-                        self.url = url.lastPathComponent
-                        // In real app, would upload file and get URL
+        }
+        .fileImporter(
+            isPresented: $showingFilePicker,
+            allowedContentTypes: contentTypesForMaterialType(selectedType),
+            allowsMultipleSelection: false
+        ) { result in
+            handleFileImport(result)
+        }
+    }
+    
+    private var basicInfoSection: some View {
+        Section("Основная информация") {
+            TextField("Название", text: $title)
+            TextField("Описание (необязательно)", text: $description)
+        }
+    }
+    
+    private var materialTypeSection: some View {
+        Section("Тип материала") {
+            Picker("Тип", selection: $selectedType) {
+                ForEach(CourseMaterial.MaterialType.allCases, id: \.self) { type in
+                    Label(type.rawValue, systemImage: iconForMaterialType(type))
+                        .tag(type)
+                }
+            }
+        }
+    }
+    
+    private var actionSection: some View {
+        Section {
+            if selectedType == .link {
+                TextField("URL адрес", text: $url)
+                    .keyboardType(.URL)
+                    .autocapitalization(.none)
+            } else {
+                Button(action: { showingFilePicker = true }) {
+                    HStack {
+                        Image(systemName: "doc.badge.plus")
+                        Text("Выбрать файл")
                     }
-                case .failure(let error):
-                    print("Error selecting file: \(error)")
                 }
             }
         }
     }
 
-    private func colorForType(_ type: CourseMaterial.MaterialType) -> Color {
+    private func addMaterial() {
+        let newMaterial = CourseMaterial(
+            id: UUID().uuidString,
+            title: title,
+            type: selectedType,
+            url: url.isEmpty ? nil : url,
+            description: description.isEmpty ? nil : description,
+            size: nil,
+            uploadedAt: Date()
+        )
+        onAdd(newMaterial)
+        dismiss()
+    }
+
+    private func handleFileImport(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            if let url = urls.first {
+                self.url = url.lastPathComponent
+                // In real app, would upload file and get URL
+            }
+        case .failure(let error):
+            print("Error selecting file: \(error)")
+        }
+    }
+
+    private func iconForMaterialType(_ type: CourseMaterial.MaterialType) -> String {
         switch type {
-        case .video: return .blue
-        case .presentation: return .orange
-        case .document: return .green
-        case .link: return .purple
-        case .archive: return .gray
+        case .video: return "video.slash"
+        case .presentation: return "doc.text.image"
+        case .document: return "doc.text"
+        case .link: return "link"
+        case .pdf: return "doc.text.magnifyingglass"
         }
     }
 
@@ -302,8 +282,8 @@ struct AddMaterialView: View {
             return [.pdf, .text, .plainText]
         case .link:
             return []
-        case .archive:
-            return [.archive, .zip]
+        case .pdf:
+            return [.pdf]
         }
     }
 }
@@ -344,23 +324,25 @@ struct MaterialDetailView: View {
                     }
 
                     HStack(spacing: 20) {
-                        if let size = material.fileSize {
+                        // TODO: Add file size when available
+                        if false {
                             VStack {
                                 Text("Размер")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                                Text(formatFileSize(size))
+                                Text("--")
                                     .font(.body)
                                     .fontWeight(.medium)
                             }
                         }
 
-                        if let duration = material.duration {
+                        // TODO: Add duration when available
+                        if false {
                             VStack {
                                 Text("Длительность")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                                Text("\(duration) мин")
+                                Text("-- мин")
                                     .font(.body)
                                     .fontWeight(.medium)
                             }
@@ -423,7 +405,7 @@ struct MaterialDetailView: View {
         case .presentation: return .orange
         case .document: return .green
         case .link: return .purple
-        case .archive: return .gray
+        case .pdf: return .red
         }
     }
 
@@ -435,5 +417,7 @@ struct MaterialDetailView: View {
 }
 
 #Preview {
-    CourseMaterialsView(course: .constant(Course.mockCourses[0]))
+    NavigationView {
+        CourseMaterialsView(course: .constant(Course.mockCourses[0]))
+    }
 }

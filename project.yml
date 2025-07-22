@@ -1,0 +1,51 @@
+name: LMS
+options:
+  bundleIdPrefix: com.tsum
+  deploymentTarget:
+    iOS: 17.0
+  developmentLanguage: ru
+  xcodeVersion: "15.0"
+  
+settings:
+  base:
+    PRODUCT_NAME: LMS
+    MARKETING_VERSION: 3.0.0
+    CURRENT_PROJECT_VERSION: 300
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: 5.9
+    ENABLE_PREVIEWS: YES
+    DEVELOPMENT_ASSET_PATHS: "LMS/Resources/Preview Content"
+    
+targets:
+  LMS:
+    type: application
+    platform: iOS
+    deploymentTarget: 17.0
+    sources:
+      - path: LMS
+        excludes:
+          - "**/*.md"
+          - "**/Info.plist"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tsum.lms
+        INFOPLIST_FILE: LMS/Resources/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: false
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
+    scheme:
+      testTargets:
+        - LMSTests
+      gatherCoverageData: true
+      
+  LMSTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: LMSTests
+    dependencies:
+      - target: LMS
+    settings:
+      TEST_HOST: $(BUILT_PRODUCTS_DIR)/LMS.app/LMS 

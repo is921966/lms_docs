@@ -1,0 +1,41 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  },
+  "services": {
+    "log-server": {
+      "build": {
+        "buildCommand": "pip install -r requirements.txt"
+      },
+      "deploy": {
+        "startCommand": "gunicorn log_server_cloud:app --bind 0.0.0.0:$PORT",
+        "healthcheckPath": "/health",
+        "healthcheckTimeout": 30
+      },
+      "envVars": {
+        "MAX_LOGS": "10000"
+      }
+    },
+    "feedback-server": {
+      "build": {
+        "buildCommand": "pip install -r requirements.txt"
+      },
+      "deploy": {
+        "startCommand": "gunicorn feedback_server:app --bind 0.0.0.0:$PORT",
+        "healthcheckPath": "/health",
+        "healthcheckTimeout": 30
+      },
+      "envVars": {
+        "GITHUB_TOKEN": "${{GITHUB_TOKEN}}",
+        "GITHUB_OWNER": "is921966",
+        "GITHUB_REPO": "lms_docs"
+      }
+    }
+  }
+} 

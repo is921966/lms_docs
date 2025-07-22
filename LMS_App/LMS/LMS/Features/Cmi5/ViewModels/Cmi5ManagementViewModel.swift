@@ -18,11 +18,13 @@ final class Cmi5ManagementViewModel: ObservableObject {
     
     // MARK: - Properties
     
-    private let service = Cmi5Service()
+    // Используем shared instance для синхронизации данных
+    private let service = Cmi5Service.shared
     
     // MARK: - Initialization
     
     init() {
+        print("🔍 CMI5 MGMT VM: Initializing...")
         Task {
             await loadPackages()
         }
@@ -31,13 +33,19 @@ final class Cmi5ManagementViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func loadPackages() async {
+        print("🔍 CMI5 MGMT VM: Loading packages...")
         isLoading = true
         error = nil
         
         do {
             await service.loadPackages()
             packages = service.packages
+            print("🔍 CMI5 MGMT VM: Loaded \(packages.count) packages")
+            for package in packages {
+                print("  - \(package.title)")
+            }
         } catch {
+            print("🔍 CMI5 MGMT VM: Error loading packages: \(error)")
             self.error = error.localizedDescription
         }
         
@@ -45,10 +53,12 @@ final class Cmi5ManagementViewModel: ObservableObject {
     }
     
     func deletePackage(_ package: Cmi5Package) async {
+        print("🔍 CMI5 MGMT VM: Deleting package: \(package.title)")
         do {
             try await service.deletePackage(id: package.id)
             await loadPackages()
         } catch {
+            print("🔍 CMI5 MGMT VM: Error deleting package: \(error)")
             self.error = error.localizedDescription
         }
     }

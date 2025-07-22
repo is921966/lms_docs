@@ -172,20 +172,51 @@ extension FeedItem {
                 type: .announcement,
                 title: "Доступна новая версия 2.1.1",
                 content: """
-                # 🚀 Новая версия 2.1.1 (Build 206)
-                
-                ## ✅ Исправлена тестовая инфраструктура
-                • Удалены дубликаты файлов тестов
-                • Исправлены все ошибки компиляции UI тестов
-                • Обновлена инфраструктура для 43 UI тестов
-                
-                ## 🔧 Технические улучшения
-                • Оптимизирована навигация в тестах
-                • Добавлена поддержка разных UI структур
+                <div style="font-family: -apple-system, system-ui; padding: 10px;">
+                    <h1 style="font-size: 24px; margin-bottom: 15px;">
+                        🚀 Новая версия 2.1.1 <span style="color: #666; font-size: 18px;">(Build 206)</span>
+                    </h1>
+                    
+                    <div style="margin-top: 20px;">
+                        <h2 style="font-size: 20px; color: #333; margin-bottom: 10px;">
+                            ✅ Исправлена тестовая инфраструктура
+                        </h2>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Удалены дубликаты файлов тестов</li>
+                            <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Исправлены все ошибки компиляции UI тестов</li>
+                            <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Обновлена инфраструктура для 43 UI тестов</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h2 style="font-size: 20px; color: #333; margin-bottom: 10px;">
+                            🔧 Технические улучшения
+                        </h2>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Оптимизирована навигация в тестах</li>
+                            <li style="margin-bottom: 5px; color: #555; line-height: 1.5;">Добавлена поддержка разных UI структур</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-top: 25px; padding: 15px; background-color: #f5f5f5; border-radius: 8px;">
+                        <h3 style="font-size: 16px; color: #666; margin-bottom: 8px;">📱 Техническая информация</h3>
+                        <p style="margin: 3px 0; color: #888; font-size: 14px;">
+                            Минимальная версия iOS: 17.0<br>
+                            Рекомендуемая версия iOS: 18.5<br>
+                            Размер приложения: ~45 MB
+                        </p>
+                    </div>
+                </div>
                 """,
                 author: "Команда разработки",
                 tags: ["release", "update", "testflight"],
-                priority: .high
+                priority: .high,
+                metadata: [
+                    "type": "app_release",
+                    "contentType": "html",
+                    "version": "2.1.1",
+                    "build": "206"
+                ]
             ),
             FeedItem(
                 type: .news,

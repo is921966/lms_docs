@@ -12,6 +12,7 @@ struct ContentView: View {
     @StateObject private var featureRegistry = FeatureRegistryManager.shared
     @State private var selectedTab = 0
     @AppStorage("isAdminMode") private var isAdminMode = false
+    @AppStorage("useNewFeedDesign") private var useNewFeedDesign = false
 
     // Проверяем запущены ли мы в режиме UI тестирования
     private var isUITesting: Bool {
@@ -19,10 +20,35 @@ struct ContentView: View {
     }
 
     var body: some View {
-        if authService.isAuthenticated {
-            authenticatedView
-        } else {
-            MockLoginView()
+        Group {
+            if authService.isAuthenticated {
+                authenticatedView
+            } else {
+                MockLoginView()
+            }
+        }
+        .onAppear {
+            // НОВОЕ: Автоматический вход под администратором в симуляторе
+            #if targetEnvironment(simulator)
+            if !authService.isAuthenticated || authService.currentUser?.role != .admin {
+                print("🔐 Simulator Mode: Принудительный вход под администратором")
+                print("🔐 Current auth status: \(authService.isAuthenticated)")
+                print("🔐 Current user: \(authService.currentUser?.email ?? "none")")
+                print("🔐 Current role: \(authService.currentUser?.role.rawValue ?? "none")")
+                
+                // Используем принудительный автологин для симулятора
+                authService.forceAutoLogin()
+                
+                // Проверяем статус через короткую задержку
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    print("🔐 Auth status after login: \(authService.isAuthenticated)")
+                    print("🔐 User after login: \(authService.currentUser?.email ?? "none")")
+                    print("🔐 Role after login: \(authService.currentUser?.role.rawValue ?? "none")")
+                }
+            } else {
+                print("🔐 Already authenticated as admin: \(authService.currentUser?.email ?? "unknown")")
+            }
+            #endif
         }
     }
 
@@ -30,7 +56,11 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             // Главная - теперь это лента новостей
             NavigationStack {
-                FeedView()
+                if useNewFeedDesign {
+                    TelegramFeedView()
+                } else {
+                    FeedView()
+                }
             }
             .tabItem {
                 Label("Главная", systemImage: "house.fill")

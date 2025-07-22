@@ -49,7 +49,7 @@ struct StudentCourseListView: View {
 
             // Course list
             if filteredCourses.isEmpty {
-                EmptyStateView(
+                                    StudentEmptyStateView(
                     icon: "book.closed",
                     title: selectedTab == 0 ? "Нет активных курсов" : "Нет доступных курсов",
                     subtitle: selectedTab == 0
@@ -89,7 +89,7 @@ struct StudentCourseCard: View {
             // Header
             HStack(alignment: .top) {
                 // Course icon
-                Image(systemName: course.icon ?? "book.fill")
+                Image(systemName: "book.fill")
                     .font(.title2)
                     .foregroundColor(.white)
                     .frame(width: 50, height: 50)
@@ -101,7 +101,7 @@ struct StudentCourseCard: View {
                         .font(.headline)
                         .lineLimit(2)
 
-                    Text(CourseCategory.categories.first { $0.id == course.categoryId }?.name ?? "Общее")
+                    Text(course.category?.displayName ?? "Общее")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -110,7 +110,7 @@ struct StudentCourseCard: View {
 
                 if isEnrolled {
                     // Progress indicator
-                    CircularProgressView(progress: course.progress)
+                    CircularProgressView(progress: 0.0) // TODO: Add course progress
                         .frame(width: 40, height: 40)
                 }
             }
@@ -131,7 +131,7 @@ struct StudentCourseCard: View {
 
                 InfoChip(
                     icon: "chart.bar",
-                    text: course.estimatedHours > 0 ? "\(course.estimatedHours) ч" : course.duration,
+                    text: course.duration,
                     color: .purple
                 )
 
@@ -244,7 +244,7 @@ struct CircularProgressView: View {
 }
 
 // MARK: - Empty State View
-struct EmptyStateView: View {
+struct StudentEmptyStateView: View {
     let icon: String
     let title: String
     let subtitle: String

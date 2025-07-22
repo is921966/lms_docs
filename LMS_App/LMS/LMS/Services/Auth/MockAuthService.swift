@@ -19,7 +19,25 @@ class MockAuthService: ObservableObject, AuthServiceProtocol {
     var hasRefreshedToken = false
 
     private init() {
+        #if targetEnvironment(simulator)
+        // В симуляторе очищаем старые токены для чистого автологина
+        TokenManager.shared.clearTokens()
+        #else
         checkAuthenticationStatus()
+        #endif
+    }
+    
+    // MARK: - Force Auto Login (for simulator)
+    func forceAutoLogin() {
+        #if targetEnvironment(simulator)
+        print("🔐 Force auto-login in simulator")
+        // Очищаем старое состояние
+        TokenManager.shared.clearTokens()
+        isAuthenticated = false
+        currentUser = nil
+        // Выполняем вход
+        mockLogin(asAdmin: true)
+        #endif
     }
 
     // MARK: - Mock Login
@@ -27,38 +45,54 @@ class MockAuthService: ObservableObject, AuthServiceProtocol {
         isLoading = true
         error = nil
 
-        // Simulate network delay
+        // For simulator, execute immediately without any delay
+        #if targetEnvironment(simulator)
+        executeMockLogin(asAdmin: asAdmin)
+        #else
+        // Normal mock login with delay for UI on real device
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.isLoading = false
-
-            // Create mock user
-            let mockUser = UserResponse(
-                id: "mock_user_123",
-                email: asAdmin ? "admin@tsum.ru" : "student@tsum.ru",
-                name: asAdmin ? "Админ Админов" : "Иван Иванов",
-                role: asAdmin ? .admin : .student,
-                firstName: asAdmin ? "Админ" : "Иван",
-                lastName: asAdmin ? "Админов" : "Иванов",
-                department: "IT",
-                isActive: true,
-                createdAt: Date(),
-                updatedAt: Date()
-            )
-
-            // Save mock tokens
-            TokenManager.shared.saveTokens(
-                accessToken: "mock_access_token_\(UUID().uuidString)",
-                refreshToken: "mock_refresh_token_\(UUID().uuidString)"
-            )
-            TokenManager.shared.userId = mockUser.id
-
-            // Update state
-            self.currentUser = mockUser
-            self.isAuthenticated = true
-            self.isApprovedByAdmin = asAdmin // Admins are auto-approved
-
-            print("Mock login successful as \(asAdmin ? "Admin" : "Student")")
+            self.executeMockLogin(asAdmin: asAdmin)
         }
+        #endif
+    }
+    
+    private func executeMockLogin(asAdmin: Bool) {
+        print("🔐 executeMockLogin started, asAdmin: \(asAdmin)")
+        
+        self.isLoading = false
+
+        // Create mock user
+        let mockUser = UserResponse(
+            id: "mock_user_123",
+            email: asAdmin ? "admin@tsum.ru" : "student@tsum.ru",
+            name: asAdmin ? "Админ Админов" : "Иван Иванов",
+            role: asAdmin ? .admin : .student,
+            firstName: asAdmin ? "Админ" : "Иван",
+            lastName: asAdmin ? "Админов" : "Иванов",
+            department: "IT",
+            isActive: true,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+
+        // Save mock tokens
+        TokenManager.shared.saveTokens(
+            accessToken: "mock_access_token_\(UUID().uuidString)",
+            refreshToken: "mock_refresh_token_\(UUID().uuidString)"
+        )
+        TokenManager.shared.userId = mockUser.id
+
+        // Update state
+        self.currentUser = mockUser
+        self.isAuthenticated = true
+        self.isApprovedByAdmin = asAdmin // Admins are auto-approved
+
+        print("🔐 Mock login successful as \(asAdmin ? "Admin" : "Student")")
+        print("🔐 isAuthenticated: \(self.isAuthenticated)")
+        print("🔐 currentUser: \(self.currentUser?.email ?? "none")")
+        
+        // Force UI update
+        objectWillChange.send()
     }
 
     // Alias for UI compatibility

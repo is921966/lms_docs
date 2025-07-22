@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct QuizQuestion {
+struct QuizQuestion: Codable {
     let question: String
     let options: [String]
     let correctAnswer: Int

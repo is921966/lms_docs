@@ -126,9 +126,9 @@ struct CourseAssignmentView: View {
                 // Course info header
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Image(systemName: course.icon)
+                        Image(systemName: "book.fill")
                             .font(.title2)
-                            .foregroundColor(course.color)
+                            .foregroundColor(.blue)
 
                         VStack(alignment: .leading) {
                             Text(course.title)
@@ -248,13 +248,12 @@ struct CourseAssignmentView: View {
 
         for userId in selectedUsers {
             let assignment = CourseAssignment(
+                id: UUID().uuidString,
                 courseId: course.id,
-                userId: UUID(), // In real app, would convert from String
-                assignedBy: UUID(), // In real app, would convert currentUserId
-                assignedAt: Date(),
+                courseName: course.title,
+                assignedDate: Date(),
                 dueDate: dueDate,
-                completedAt: nil,
-                isMandatory: isMandatory
+                completionStatus: .notStarted
             )
             assignments.append(assignment)
         }
@@ -313,7 +312,9 @@ struct UserSelectionRow: View {
 }
 
 #Preview {
-    CourseAssignmentView(
-        course: Course.createMockCourses().first!
-    )
+    NavigationView {
+        CourseAssignmentView(
+            course: Course.mockCourses.first!
+        )
+    }
 }
