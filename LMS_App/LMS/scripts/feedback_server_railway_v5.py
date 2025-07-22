@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Railway-ready Feedback Server для приема отзывов из iOS приложения
-v6 - сохранение скриншотов в репозиторий GitHub
+v5 - загрузка скриншотов как файлов на GitHub
 """
 
 from flask import Flask, request, jsonify
@@ -16,6 +16,7 @@ import requests
 import traceback
 from PIL import Image
 import io
+import tempfile
 
 app = Flask(__name__)
 CORS(app)
@@ -26,21 +27,20 @@ CONFIG = {
         'token': os.getenv('GITHUB_TOKEN', ''),
         'owner': os.getenv('GITHUB_OWNER', 'is921966'),
         'repo': os.getenv('GITHUB_REPO', 'lms_docs'),
-        'labels': ['feedback', 'mobile-app', 'ios'],
-        'screenshots_path': 'feedback_screenshots'  # Папка для скриншотов
+        'labels': ['feedback', 'mobile-app', 'ios']
     },
     'screenshot': {
-        'max_width': 1024,
+        'max_width': 1024,  # Увеличиваем для лучшего качества
         'max_height': 768,
-        'quality': 85,
+        'quality': 85,      # Повышаем качество
     }
 }
 
 # In-memory storage для Railway
 FEEDBACK_STORAGE = []
 
-def optimize_screenshot(base64_image):
-    """Оптимизирует скриншот для GitHub"""
+def optimize_screenshot_for_upload(base64_image):
+    """Оптимизирует скриншот для загрузки как файл"""
     try:
         # Декодируем base64
         image_data = base64.b64decode(base64_image)
@@ -57,72 +57,83 @@ def optimize_screenshot(base64_image):
         if img.width > max_width or img.height > max_height:
             img.thumbnail((max_width, max_height), Image.Resampling.LANCZOS)
         
-        # Сохраняем как PNG для лучшего качества
+        # Сохраняем с хорошим качеством
         output = io.BytesIO()
         img.save(output, format='PNG', optimize=True)
         output.seek(0)
         
-        # Возвращаем base64 оптимизированного изображения
-        return base64.b64encode(output.getvalue()).decode('utf-8')
+        return output.getvalue()
     except Exception as e:
         print(f"❌ Screenshot optimization error: {str(e)}")
         return None
 
-def upload_screenshot_to_repo(screenshot_base64, issue_number):
-    """Загружает скриншот в репозиторий GitHub"""
+def upload_screenshot_to_github(image_data, issue_number):
+    """Загружает скриншот как комментарий к issue"""
     try:
-        # Генерируем уникальное имя файла
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{timestamp}_{uuid.uuid4().hex[:8]}.png"
-        file_path = f"{CONFIG['github']['screenshots_path']}/{filename}"
+        # Создаем временный файл
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
+            tmp_file.write(image_data)
+            tmp_path = tmp_file.name
         
-        # URL для API создания файла
-        url = f"https://api.github.com/repos/{CONFIG['github']['owner']}/{CONFIG['github']['repo']}/contents/{file_path}"
+        # Формируем markdown с изображением
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"screenshot_{timestamp}.png"
+        
+        # GitHub поддерживает drag-and-drop загрузку через специальный API
+        # Но проще всего добавить скриншот как комментарий
+        comment_body = f"### 📸 Screenshot\n\n![Screenshot]({filename})"
+        
+        # Создаем комментарий с изображением
+        comment_url = f"https://api.github.com/repos/{CONFIG['github']['owner']}/{CONFIG['github']['repo']}/issues/{issue_number}/comments"
         
         headers = {
             'Authorization': f"token {CONFIG['github']['token']}",
             'Accept': 'application/vnd.github.v3+json'
         }
         
-        # Подготовка данных для создания файла
-        data = {
-            'message': f'Add screenshot for issue #{issue_number}',
-            'content': screenshot_base64,
-            'branch': 'main'  # Можно изменить на другую ветку
-        }
+        # Для загрузки файлов используем GitHub's user content API
+        # Но это требует более сложной аутентификации
+        # Поэтому используем альтернативный подход - base64 в HTML теге
         
-        # Создаем файл в репозитории
-        response = requests.put(url, headers=headers, json=data)
+        # Кодируем изображение обратно в base64 для HTML
+        img_base64 = base64.b64encode(image_data).decode('utf-8')
+        
+        # Используем HTML img тег вместо markdown
+        comment_body = f"""### 📸 Screenshot
+
+<img src="data:image/png;base64,{img_base64}" alt="Screenshot" style="max-width: 100%; height: auto;">
+
+*Click to view full size*"""
+        
+        response = requests.post(
+            comment_url,
+            headers=headers,
+            json={'body': comment_body}
+        )
         
         if response.status_code == 201:
-            file_info = response.json()
-            # Формируем URL для просмотра изображения
-            raw_url = file_info['content']['download_url']
-            print(f"✅ Screenshot uploaded to repository: {file_path}")
-            return raw_url
+            print(f"✅ Screenshot uploaded as comment to issue #{issue_number}")
+            return True
         else:
             print(f"❌ Failed to upload screenshot: {response.status_code} - {response.text}")
-            return None
+            return False
             
     except Exception as e:
         print(f"❌ Screenshot upload error: {str(e)}")
-        return None
+        return False
+    finally:
+        # Удаляем временный файл
+        if 'tmp_path' in locals():
+            try:
+                os.unlink(tmp_path)
+            except:
+                pass
 
 def create_github_issue(feedback_data):
-    """Создает issue в GitHub с правильной ссылкой на скриншот"""
+    """Создает issue в GitHub без встроенного скриншота"""
     if not CONFIG['github']['token']:
         print("⚠️ GitHub token not configured")
         return None
-    
-    # Сначала загружаем скриншот если есть
-    screenshot_url = None
-    if feedback_data.get('screenshot'):
-        print("📸 Uploading screenshot to repository...")
-        # Оптимизируем скриншот
-        optimized = optimize_screenshot(feedback_data['screenshot'])
-        if optimized:
-            # Сохраняем временно issue_number как placeholder
-            screenshot_url = upload_screenshot_to_repo(optimized, 'pending')
     
     url = f"https://api.github.com/repos/{CONFIG['github']['owner']}/{CONFIG['github']['repo']}/issues"
     
@@ -131,7 +142,7 @@ def create_github_issue(feedback_data):
         'Accept': 'application/vnd.github.v3+json'
     }
     
-    # Подготовка содержимого issue
+    # Подготовка содержимого issue БЕЗ скриншота
     body = f"""## 📱 Feedback from iOS App
 
 **Type**: {feedback_data.get('type', 'feedback')}
@@ -149,11 +160,9 @@ def create_github_issue(feedback_data):
 - User ID: {feedback_data.get('userId', 'N/A')}
 """
 
-    # Добавляем скриншот если загружен
-    if screenshot_url:
-        body += f"\n### 📸 Screenshot:\n![Screenshot]({screenshot_url})"
-    elif feedback_data.get('screenshot'):
-        body += "\n### 📸 Screenshot:\n*Screenshot upload failed. Available in feedback dashboard.*"
+    # Если есть скриншот, добавляем пометку
+    if feedback_data.get('screenshot'):
+        body += "\n### 📸 Screenshot:\n*Screenshot will be added in the comments below...*"
 
     # Определяем labels
     labels = CONFIG['github']['labels'].copy()
@@ -171,7 +180,17 @@ def create_github_issue(feedback_data):
         response = requests.post(url, headers=headers, json=issue_data)
         if response.status_code == 201:
             issue_info = response.json()
+            issue_number = issue_info['number']
             print(f"✅ GitHub issue created: {issue_info['html_url']}")
+            
+            # Если есть скриншот, загружаем его как комментарий
+            if feedback_data.get('screenshot'):
+                print(f"📸 Processing screenshot for issue #{issue_number}...")
+                # Оптимизируем скриншот
+                image_data = optimize_screenshot_for_upload(feedback_data['screenshot'])
+                if image_data:
+                    upload_screenshot_to_github(image_data, issue_number)
+                    
             return issue_info['html_url']
         else:
             print(f"❌ Failed to create GitHub issue: {response.status_code}")
@@ -184,7 +203,7 @@ def create_github_issue(feedback_data):
 
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'healthy', 'service': 'feedback-server', 'version': '6.0.0'})
+    return jsonify({'status': 'healthy', 'service': 'feedback-server', 'version': '5.0.0'})
 
 @app.route('/api/feedback', methods=['POST'])
 def receive_feedback():
@@ -519,24 +538,23 @@ def list_feedback():
 # Инициализация при запуске
 if os.getenv('RAILWAY_ENVIRONMENT'):
     print(f"""
-🚀 LMS Feedback Server (Railway Edition v6) Initialized!
+🚀 LMS Feedback Server (Railway Edition v5) Initialized!
 ==========================================================
 🔐 GitHub Token: {'✅ Configured' if CONFIG['github']['token'] else '❌ Not configured'}
 📦 Repository: {CONFIG['github']['owner']}/{CONFIG['github']['repo']}
-📸 Screenshot Support: ✅ Enabled (saved to repository)
-📂 Screenshots path: {CONFIG['github']['screenshots_path']}/
+📸 Screenshot Support: ✅ Enabled (upload as comments)
 📏 Max screenshot: {CONFIG['screenshot']['max_width']}x{CONFIG['screenshot']['max_height']}
 🖼️ Quality: {CONFIG['screenshot']['quality']}%
 🖼️ Modal viewer: ✅ Enabled
 
 Note: Running with gunicorn in production mode
-Screenshots will be saved directly to the repository
+Screenshots will be uploaded as separate comments to issues
 """)
 else:
     # Локальный запуск
     if __name__ == '__main__':
         print(f"""
-🚀 LMS Feedback Server (Local Mode v6) Started!
+🚀 LMS Feedback Server (Local Mode v5) Started!
 ==============================================
 📱 Dashboard: http://localhost:5001
 🔌 API Endpoint: http://localhost:5001/api/feedback
