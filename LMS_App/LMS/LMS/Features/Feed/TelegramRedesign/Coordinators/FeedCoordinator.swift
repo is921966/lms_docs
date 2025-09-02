@@ -34,23 +34,14 @@ class FeedCoordinator: NSObject, Coordinator {
     
     @MainActor
     func showChannelDetail(_ channel: FeedChannel) {
-        // Use the existing FeedDetailView from Views folder
-        let detailView = FeedDetailView(channel: channel) { [weak self] in
-            self?.navigationController.popViewController(animated: true)
+        // Show posts from the channel
+        if let posts = MockFeedService.shared.channelPosts[channel.id],
+           let firstPost = posts.first {
+            let detailView = TelegramPostDetailView(post: firstPost)
+            let hostingController = UIHostingController(rootView: detailView)
+            hostingController.navigationItem.hidesBackButton = false
+            navigationController.pushViewController(hostingController, animated: true)
         }
-        let hostingController = UIHostingController(rootView: detailView)
-        hostingController.navigationItem.hidesBackButton = true
-        navigationController.pushViewController(hostingController, animated: true)
-    }
-    
-    @MainActor
-    func showFeedSettings() {
-        let settingsView = TelegramFeedSettingsView() { [weak self] in
-            self?.navigationController.popViewController(animated: true)
-        }
-        let hostingController = UIHostingController(rootView: settingsView)
-        hostingController.title = "Настройки уведомлений"
-        navigationController.pushViewController(hostingController, animated: true)
     }
     
     // MARK: - Helper Methods

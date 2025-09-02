@@ -11,158 +11,251 @@ import SwiftUI
 struct TelegramFeedView: View {
     @StateObject private var viewModel = TelegramFeedViewModel()
     @State private var searchText = ""
-    @State private var selectedChannel: FeedChannel?
+    @State private var selectedFolder: FeedFolder = .all
     @State private var showSettings = false
+    @State private var showCreateFolder = false
+    @State private var scrollOffset: CGFloat = 0
+    @State private var selectedChannel: FeedChannel? = nil
+    @State private var showingChannelDetail = false
+    @State private var showDiagnostics = false  // Add this
+    @State private var folderToDelete: FeedFolder? = nil
+    @State private var showDeleteAlert = false
     
     init() {
-        print("🚀 TelegramFeedView init")
-        ComprehensiveLogger.shared.log(.ui, .info, "TelegramFeedView initialized")
+        ComprehensiveLogger.shared.log(.ui, .info, "TelegramFeedView init started", details: [
+            "timestamp": Date().timeIntervalSince1970,
+            "thread": Thread.current.description
+        ])
     }
     
     var body: some View {
-        NavigationView {
-            mainContent
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-        .trackScreen("TelegramFeedView", metadata: [
-            "type": "telegram",
-            "design": "new",
-            "channelsCount": viewModel.channels.count
-        ])
-        .sheet(isPresented: $showSettings) {
-            TelegramFeedSettingsView(onDismiss: {
-                showSettings = false
-            })
-                .onAppear {
-                    NavigationTracker.shared.trackScreen("TelegramFeedSettingsView", metadata: ["parent": "TelegramFeedView"])
-                }
-        }
-        .sheet(item: $selectedChannel) { channel in
-            NavigationView {
-                FeedDetailView(channel: channel, onDismiss: {
-                    selectedChannel = nil
-                })
-                    .onAppear {
-                        NavigationTracker.shared.trackScreen("FeedDetailView", metadata: [
-                            "parent": "TelegramFeedView",
-                            "channelId": channel.id,
-                            "channelName": channel.name
-                        ])
-                    }
-            }
-        }
-        .onAppear {
-            NavigationTracker.shared.trackScreen("TelegramFeedView", metadata: [
-                "channelsCount": viewModel.channels.count,
-                "totalUnread": viewModel.totalUnreadCount
-            ])
-            
-            ComprehensiveLogger.shared.log(.ui, .info, "TelegramFeedView appeared", details: [
-                "channelsCount": viewModel.channels.count,
-                "isLoading": viewModel.isLoading,
-                "totalUnread": viewModel.totalUnreadCount,
-                "design": "telegram",
-                "feedType": "new"
-            ])
-            
-            Task {
-                UIEventLogger.shared.logLoadingState(true, in: "TelegramFeedView", reason: "Loading channels")
-                await viewModel.loadChannels()
-                UIEventLogger.shared.logLoadingState(false, in: "TelegramFeedView", reason: "Channels loaded")
-                
-                ComprehensiveLogger.shared.log(.data, .info, "Channels loaded", details: [
-                    "count": viewModel.channels.count,
-                    "categories": Set(viewModel.channels.map { $0.category.rawValue }).joined(separator: ", ")
-                ])
-            }
-        }
-        .onChange(of: viewModel.channels) { oldValue, newValue in
-            ComprehensiveLogger.shared.logDataChange("FeedChannels", operation: "update", before: oldValue.count, after: newValue.count)
-        }
-        .onChange(of: viewModel.isLoading) { oldValue, newValue in
-            UIEventLogger.shared.logLoadingState(newValue, in: "TelegramFeedView", reason: "Feed state change")
-        }
-    }
-    
-    @ViewBuilder
-    private var mainContent: some View {
         ZStack {
             // Background
             Color(UIColor.systemGroupedBackground)
                 .ignoresSafeArea()
             
-            VStack(spacing: 0) {
-                // Search bar
-                searchBarSection
-                
-                // Channels list
-                channelsListSection
-            }
-            
-            // Refresh view
-            refreshOverlay
+            // Main content with safe area for header
+            postsListSection
+                .safeAreaInset(edge: .top) {
+                    headerSection
+                        .background(Color(UIColor.systemGroupedBackground))
+                }
         }
-        .navigationTitle("Новости")
-        .navigationBarTitleDisplayMode(.large)
-        .navigationBarHidden(false)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { 
-                    UIEventLogger.shared.logButtonTap("BackToClassic", in: "TelegramFeedView")
-                    ComprehensiveLogger.shared.log(.ui, .info, "Switch to classic feed tapped", details: [
-                        "from": "telegram",
-                        "to": "classic"
-                    ])
+        .navigationBarHidden(true)
+        .trackScreen("TelegramFeedView", metadata: [
+            "type": "telegram",
+            "design": "new",
+            "foldersCount": viewModel.folders.count
+        ])
+        .sheet(isPresented: $showSettings) {
+            // Settings view - to be implemented
+            Text("Настройки")
+                .padding()
+                .onAppear {
+                    NavigationTracker.shared.trackScreen("Settings", metadata: ["parent": "TelegramFeedView"])
+                }
+        }
+        .sheet(isPresented: $showCreateFolder) {
+            CreateFolderView(viewModel: viewModel, onDismiss: {
+                showCreateFolder = false
+            })
+        }
+        .sheet(isPresented: $showingChannelDetail) {
+            if let channel = selectedChannel,
+               let posts = viewModel.channelPosts[channel.id] {
+                ChannelDetailView(channel: channel, posts: posts)
+            } else {
+                // Debug view when posts not found
+                VStack(spacing: 20) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(.orange)
                     
-                    // Переключаемся обратно на классическую ленту
-                    UserDefaults.standard.set(false, forKey: "useNewFeedDesign")
-                    FeedDesignManager.shared.setDesign(false)
-                }) {
-                    Label("Классическая лента", systemImage: "newspaper")
+                    Text("Debug: Posts not found")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    if let channel = selectedChannel {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Channel: \(channel.name)")
+                            Text("ID: \(channel.id)")
+                            Text("Type: \(channel.type.rawValue)")
+                            
+                            Divider()
+                            
+                            Text("Available channel IDs:")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            
+                            ForEach(Array(viewModel.channelPosts.keys).sorted(), id: \.self) { key in
+                                HStack {
+                                    Text(key)
+                                        .font(.caption2)
+                                    Spacer()
+                                    Text("\(viewModel.channelPosts[key]?.count ?? 0) posts")
+                                        .font(.caption2)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+                    
+                    Button("Close") {
+                        showingChannelDetail = false
+                    }
+                    .padding()
                 }
+                .padding()
             }
+        }
+        .sheet(isPresented: $showDiagnostics) {
+            NavigationView {
+                FeedDiagnosticView()
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showDiagnostics = false
+                            }
+                        }
+                    }
+            }
+        }
+        .onAppear {
+            ComprehensiveLogger.shared.log(.ui, .info, "TelegramFeedView appeared", details: [
+                "channelsCount": viewModel.channels.count,
+                "foldersCount": viewModel.folders.count,
+                "channelPostsCount": viewModel.channelPosts.count
+            ])
             
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: { 
-                    UIEventLogger.shared.logButtonTap("Settings", in: "TelegramFeedView")
-                    showSettings = true 
-                }) {
-                    Image(systemName: "gearshape")
-                }
+            // Force refresh data
+            Task {
+                await viewModel.loadChannels()
             }
+        }
+        .trackScreen("TelegramFeedView", metadata: [
+            "source": "MainTab",
+            "variant": "telegram_style"
+        ])
+        .alert("Удалить папку?", isPresented: $showDeleteAlert, presenting: folderToDelete) { folder in
+            Button("Отмена", role: .cancel) { }
+            Button("Удалить", role: .destructive) {
+                viewModel.deleteCustomFolder(folder)
+            }
+        } message: { folder in
+            Text("Папка \"\(folder.name)\" будет удалена. Это действие нельзя отменить.")
         }
     }
     
-    @ViewBuilder
-    private var searchBarSection: some View {
-        FeedSearchBar(text: $searchText)
-            .padding(.horizontal)
-            .padding(.top, 8)
-            .onChange(of: searchText) { oldValue, newValue in
-                UIEventLogger.shared.logTextInput("feedSearch", oldValue: oldValue, newValue: newValue, in: "TelegramFeedView")
-            }
-    }
+    // MARK: - Header Section
     
     @ViewBuilder
-    private var channelsListSection: some View {
+    private var headerSection: some View {
+        VStack(spacing: 0) {
+            // Search bar with settings button
+            HStack(spacing: 12) {
+                // Title
+                Text("LMS News")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                // Search button
+                Button(action: {
+                    // TODO: Show search interface
+                }) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 22))
+                        .foregroundColor(.accentColor)
+                        .frame(width: 40, height: 40)
+                        .background(Color(UIColor.systemGray6))
+                        .clipShape(Circle())
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 10)
+            .padding(.bottom, 8)
+            
+            // Folders bar
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(viewModel.folders) { folder in
+                        FolderTab(
+                            folder: folder,
+                            isSelected: selectedFolder.id == folder.id,
+                            unreadCount: viewModel.getUnreadCount(for: folder),
+                            action: {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    selectedFolder = folder
+                                }
+                            },
+                            onLongPress: {
+                                // Показываем алерт подтверждения удаления
+                                if case .custom = folder {
+                                    showDeleteFolderAlert(folder)
+                                }
+                            }
+                        )
+                    }
+                    
+                    // Add folder button
+                    Button(action: {
+                        showCreateFolder = true
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(.accentColor)
+                            .frame(width: 44, height: 44)
+                    }
+                }
+                .padding(.horizontal)
+            }
+            .padding(.vertical, 8)
+            
+            // Separator
+            Divider()
+        }
+        .background(Color(UIColor.systemBackground))
+    }
+    
+    // MARK: - Posts List Section
+    
+    @ViewBuilder
+    private var postsListSection: some View {
         ScrollView {
-            LazyVStack(spacing: 0) {
+            VStack(spacing: 0) {
                 if filteredChannels.isEmpty {
                     emptyStateView
-                        .onAppear {
-                            ComprehensiveLogger.shared.log(.ui, .warning, "Feed is empty", details: [
-                                "totalChannels": viewModel.channels.count,
-                                "isLoading": viewModel.isLoading,
-                                "searchText": searchText
-                            ])
-                        }
+                        .padding(.top, 40)
                 } else {
-                    ForEach(filteredChannels) { channel in
-                        channelRow(for: channel)
+                    ForEach(Array(filteredChannels.enumerated()), id: \.element.id) { index, channel in
+                        FeedChannelCell(channel: channel)
+                            .onTapGesture {
+                                ComprehensiveLogger.shared.log(.ui, .info, "Channel tapped", details: [
+                                    "channelId": channel.id,
+                                    "channelName": channel.name,
+                                    "channelType": channel.type.rawValue
+                                ])
+                                
+                                let postsForChannel = viewModel.channelPosts[channel.id]
+                                
+                                ComprehensiveLogger.shared.log(.ui, .info, "Channel lookup result", details: [
+                                    "channelId": channel.id,
+                                    "postsFound": postsForChannel != nil,
+                                    "postsCount": postsForChannel?.count ?? 0,
+                                    "allChannelIds": Array(viewModel.channelPosts.keys).sorted()
+                                ])
+                                
+                                selectedChannel = channel
+                                showingChannelDetail = true
+                            }
                     }
                 }
             }
-            .padding(.top, 8)
         }
         .refreshable {
             ComprehensiveLogger.shared.log(.ui, .info, "Feed refresh initiated")
@@ -170,226 +263,79 @@ struct TelegramFeedView: View {
         }
     }
     
-    @ViewBuilder
-    private var refreshOverlay: some View {
-        // Loading overlay
-        if viewModel.isLoading && viewModel.channels.isEmpty {
-            FeedLoadingView()
-                .onAppear {
-                    UIEventLogger.shared.logLoadingState(true, in: "TelegramFeedView", reason: "Initial load")
-                }
-        }
-    }
-    
     // MARK: - Empty State View
     
     @ViewBuilder
     private var emptyStateView: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "newspaper.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.gray)
+        VStack(spacing: 16) {
+            Image(systemName: selectedFolder.icon)
+                .font(.system(size: 50))
+                .foregroundColor(.secondary)
             
-            Text("Нет новостей")
-                .font(.title2)
-                .fontWeight(.semibold)
+            Text("Нет каналов")
+                .font(.headline)
+                .foregroundColor(.primary)
             
-            Text("Потяните вниз для обновления")
+            Text("В папке \"\(selectedFolder.name)\" пока нет каналов")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.top, 100)
+        .padding()
     }
     
     // MARK: - Computed Properties
     
     private var filteredChannels: [FeedChannel] {
-        let filtered = searchText.isEmpty 
-            ? viewModel.channels
-            : viewModel.channels.filter { channel in
+        let channels = viewModel.channels
+        
+        // Apply folder filter
+        let folderFiltered: [FeedChannel]
+        switch selectedFolder {
+        case .all:
+            folderFiltered = channels
+        case .sprints:
+            folderFiltered = channels.filter { $0.type == .sprints }
+        case .docs:
+            folderFiltered = channels.filter { $0.type == .methodology }
+        case .system:
+            folderFiltered = channels.filter { $0.type == .releases }
+        case .custom(_, _, let filter):
+            // Use the custom filter function
+            folderFiltered = channels.filter(filter)
+        }
+        
+        // Apply search filter
+        if searchText.isEmpty {
+            return folderFiltered
+        } else {
+            return folderFiltered.filter { channel in
                 channel.name.localizedCaseInsensitiveContains(searchText) ||
-                channel.lastMessage.text.localizedCaseInsensitiveContains(searchText)
+                channel.lastMessage.content.localizedCaseInsensitiveContains(searchText)
             }
-        
-        ComprehensiveLogger.shared.log(.ui, .debug, "Filtered channels", details: [
-            "originalCount": viewModel.channels.count,
-            "filteredCount": filtered.count,
-            "searchText": searchText
-        ])
-        
-        return filtered
+        }
     }
     
     // MARK: - Helper Methods
     
-    @ViewBuilder
-    private func channelRow(for channel: FeedChannel) -> some View {
-        VStack(spacing: 0) {
-            FeedChannelCell(channel: channel)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    UIEventLogger.shared.logListItemTap(channel.name, index: filteredChannels.firstIndex(where: { $0.id == channel.id }) ?? -1, in: "TelegramFeedView", details: [
-                        "channelId": channel.id,
-                        "unreadCount": channel.unreadCount
-                    ])
-                    selectedChannel = channel
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    swipeActions(for: channel)
-                }
-                .contextMenu {
-                    contextMenuItems(for: channel)
-                }
-            
-            if channel.id != filteredChannels.last?.id {
-                Divider()
-                    .padding(.leading, 76)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func swipeActions(for channel: FeedChannel) -> some View {
-        // Delete action
-        Button(role: .destructive) {
-            UIEventLogger.shared.logSwipeAction("delete", on: channel.name, in: "TelegramFeedView")
-            withAnimation {
-                viewModel.deleteChannel(channel)
-            }
-        } label: {
-            Label("Удалить", systemImage: "trash")
-        }
-        
-        // Mark as read
-        if channel.hasUnread {
-            Button {
-                UIEventLogger.shared.logSwipeAction("markAsRead", on: channel.name, in: "TelegramFeedView")
-                viewModel.markAsRead(channel)
-            } label: {
-                Label("Прочитано", systemImage: "envelope.open")
-            }
-            .tint(.blue)
-        }
-        
-        // Pin/Unpin
-        Button {
-            UIEventLogger.shared.logSwipeAction(channel.isPinned ? "unpin" : "pin", on: channel.name, in: "TelegramFeedView")
-            viewModel.togglePin(channel)
-        } label: {
-            Label(channel.isPinned ? "Открепить" : "Закрепить",
-                  systemImage: channel.isPinned ? "pin.slash" : "pin")
-        }
-        .tint(.orange)
-    }
-    
-    @ViewBuilder
-    private func contextMenuItems(for channel: FeedChannel) -> some View {
-        // Mark as read/unread
-        Button {
-            if channel.hasUnread {
-                viewModel.markAsRead(channel)
-            } else {
-                viewModel.markAsUnread(channel)
-            }
-        } label: {
-            Label(channel.hasUnread ? "Отметить как прочитанное" : "Отметить как непрочитанное",
-                  systemImage: channel.hasUnread ? "envelope.open" : "envelope")
-        }
-        
-        // Pin/Unpin
-        Button {
-            viewModel.togglePin(channel)
-        } label: {
-            Label(channel.isPinned ? "Открепить" : "Закрепить",
-                  systemImage: channel.isPinned ? "pin.slash" : "pin")
-        }
-        
-        // Mute/Unmute
-        Button {
-            viewModel.toggleMute(channel)
-        } label: {
-            Label(channel.isMuted ? "Включить уведомления" : "Отключить уведомления",
-                  systemImage: channel.isMuted ? "bell" : "bell.slash")
-        }
-        
-        Divider()
-        
-        // Delete
-        Button(role: .destructive) {
-            viewModel.deleteChannel(channel)
-        } label: {
-            Label("Удалить", systemImage: "trash")
-        }
+    private func showDeleteFolderAlert(_ folder: FeedFolder) {
+        folderToDelete = folder
+        showDeleteAlert = true
     }
 }
 
-// MARK: - Search Bar
 
-struct FeedSearchBar: View {
-    @Binding var text: String
-    @FocusState private var isFocused: Bool
-    
-    var body: some View {
-        HStack {
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary)
-                
-                TextField("Поиск", text: $text)
-                    .focused($isFocused)
-                
-                if !text.isEmpty {
-                    Button(action: { text = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(Color(UIColor.systemGray5))
-            .cornerRadius(10)
-            
-            if isFocused {
-                Button("Отмена") {
-                    text = ""
-                    isFocused = false
-                }
-                .transition(.move(edge: .trailing).combined(with: .opacity))
-            }
-        }
-        .animation(.easeInOut(duration: 0.2), value: isFocused)
-    }
-}
 
-// MARK: - Loading View
 
-struct FeedLoadingView: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            ProgressView()
-                .scaleEffect(1.5)
-            
-            Text("Загрузка каналов...")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .padding()
-        .background(Color(UIColor.systemBackground))
-        .cornerRadius(12)
-        .shadow(radius: 2)
-    }
-}
 
-// MARK: - Settings View (временная заглушка)
 
-// Settings view is in separate file: TelegramFeedSettingsView.swift
 
-// MARK: - Previews
+// MARK: - Preview
 
+#if DEBUG
 struct TelegramFeedView_Previews: PreviewProvider {
     static var previews: some View {
         TelegramFeedView()
     }
-} 
+}
+#endif 

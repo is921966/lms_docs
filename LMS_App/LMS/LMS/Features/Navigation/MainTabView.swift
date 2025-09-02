@@ -21,7 +21,7 @@ struct MainTabView: View {
                     Label("Лента", systemImage: "newspaper.fill")
                 }
                 .tag(0)
-                .badge(feedViewModel.totalUnreadCount)
+                .badge(feedViewModel.channels.reduce(0) { $0 + $1.unreadCount } > 0 ? "\(feedViewModel.channels.reduce(0) { $0 + $1.unreadCount })" : nil)
             
             // Courses Tab
             NavigationStack {

@@ -14,6 +14,8 @@ class MockFeedService: ObservableObject, FeedServiceProtocol {
     static let shared = MockFeedService()
     
     @Published private(set) var posts: [FeedPost] = []
+    @Published private(set) var channels: [FeedChannel] = []
+    @Published private(set) var channelPosts: [String: [FeedPost]] = [:] // channelId -> posts
     @Published private(set) var isLoading = false
     @Published var error: Error?
     @Published private(set) var permissions = FeedPermissions(
@@ -51,6 +53,19 @@ class MockFeedService: ObservableObject, FeedServiceProtocol {
         setupAuthObserver()
         loadMockData()
         checkAndAddReleaseNews()
+        
+        // Force synchronous update to ensure data is available
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            ComprehensiveLogger.shared.log(.data, .info, "MockFeedService: Force update after init", details: [
+                "channelsCount": self.channels.count,
+                "channelPostsCount": self.channelPosts.count,
+                "totalPosts": self.posts.count
+            ])
+            
+            // Force publish updates
+            self.objectWillChange.send()
+        }
     }
     
     private func setupAuthObserver() {
@@ -91,220 +106,76 @@ class MockFeedService: ObservableObject, FeedServiceProtocol {
     private func loadMockData() {
         let calendar = Calendar.current
         
-        // Получаем текущую версию и билд для использования в постах
-        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
-        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        ComprehensiveLogger.shared.log(.data, .info, "MockFeedService: Starting to load data")
         
-        // Контент для релиза Build 213
-        let releaseContent = """
-        📱 **TestFlight Release v2.1.1 Build 213**
+        // First, load real data from documentation and organize by channels
+        let channelData = RealDataFeedService.shared.loadAllChannelPosts()
         
-        🎯 **Организационная структура:**
-        • Импорт сотрудников из Excel файла
-        • Визуализация иерархии подразделений  
-        • Просмотр структуры в виде дерева
-        • Поиск сотрудников по имени/табельному номеру
-        • Экспорт шаблона Excel для заполнения
+        ComprehensiveLogger.shared.log(.data, .info, "MockFeedService: Loaded channel data", details: [
+            "channelTypes": channelData.keys.map { $0.rawValue },
+            "totalChannels": channelData.count
+        ])
         
-        📊 **Формат Excel файла:**
-        • Код подразделения (уникальный)
-        • Вышестоящий код (для иерархии)
-        • Название подразделения
-        • ФИО сотрудника
-        • Табельный номер
-        • Должность
-        • Email и телефон (опционально)
+        // Create channels and populate channelPosts
+        channels = []
+        channelPosts = [:]
         
-        Спасибо за участие в тестировании! 🙏
+        ComprehensiveLogger.shared.log(.data, .info, "Starting to create channels and channelPosts")
         
-        #testflight #release #оргструктура
-        """
-        
-        posts = [
-            // Build 215 - CSV Release
-            FeedPost(
-                id: "build215-release",
-                author: UserResponse(
-                    id: "dev-team",
-                    email: "dev@tsum.ru",
-                    name: "Команда разработки",
-                    role: .admin,
-                    isActive: true,
-                    createdAt: Date()
-                ),
-                content: """
-                🎉 **Релиз версии 2.1.1 (Build 215) - CSV импорт/экспорт**
-                
-                **Мы перешли с Excel на более простой и надежный формат CSV!**
-                
-                📥 **Что нового:**
-                • **CSV вместо Excel** - простой текстовый формат
-                • **Надежность** - нет проблем с парсингом бинарных файлов
-                • **Совместимость** - открывается в любой программе
-                • **Скорость** - быстрый импорт и экспорт
-                
-                🔧 **Как использовать:**
-                1. Откройте раздел "Оргструктура"
-                2. Нажмите кнопку импорта
-                3. Скачайте шаблон CSV
-                4. Заполните данные и сохраните как CSV
-                5. Загрузите файл обратно
-                
-                ⚠️ **Важное изменение:**
-                Теперь требуется **явное указание родительского кода** в колонке "Вышестоящий Код".
-                
-                🔄 **Миграция с Excel:**
-                1. Откройте старый Excel файл
-                2. Сохраните как CSV (UTF-8)
-                3. Добавьте колонку "Вышестоящий Код"
-                4. Импортируйте в приложение
-                
-                Спасибо за терпение! Новый формат должен работать намного надежнее.
-                """,
-                images: [],
-                attachments: [],
-                createdAt: Date(),
-                visibility: .everyone,
-                likes: [],
-                comments: [],
-                tags: ["#релиз", "#обновление", "#csv", "#импорт", "#экспорт"],
-                mentions: []
-            ),
-            FeedPost(
-                id: "1",
-                author: UserResponse(
-                    id: "admin-1",
-                    email: "admin@test.com",
-                    name: "Admin User",
-                    role: .admin,
-                    isActive: true,
-                    createdAt: Date()
-                ),
-                content: "Welcome to our new LMS feed! #announcement",
-                images: [],
-                attachments: [],
-                createdAt: Date().addingTimeInterval(-86400),
-                visibility: .everyone,
-                likes: ["user1", "user2", "user3"],
-                comments: [
-                    FeedComment(
-                        id: "c1",
-                        postId: "1",
-                        author: UserResponse(
-                            id: "student-1",
-                            email: "student@test.com",
-                            name: "Student User",
-                            role: .student,
-                            isActive: true,
-                            createdAt: Date()
-                        ),
-                        content: "Great news!",
-                        createdAt: Date().addingTimeInterval(-3600),
-                        likes: ["user1"]
-                    )
-                ],
-                tags: ["#announcement"],
-                mentions: []
-            ),
-            FeedPost(
-                id: "2",
-                author: UserResponse(
-                    id: "instructor-1",
-                    email: "instructor@test.com",
-                    name: "Instructor User",
-                    role: .instructor,
-                    isActive: true,
-                    createdAt: Date()
-                ),
-                content: "New course materials available for iOS Development! Check them out @students",
-                images: ["course_preview.jpg"],
-                attachments: [
-                    FeedAttachment(
-                        id: "a1",
-                        type: .course,
-                        url: "course://ios-development",
-                        name: "iOS Development Course",
-                        size: nil,
-                        thumbnailUrl: "ios_thumb.jpg"
-                    )
-                ],
-                createdAt: Date().addingTimeInterval(-7200),
-                visibility: .students,
-                likes: ["user2", "user4"],
-                comments: [],
-                tags: ["#course", "#ios"],
-                mentions: ["students"]
-            ),
-            FeedPost(
-                id: "build214-release",
-                author: UserResponse(
-                    id: "dev-team",
-                    email: "dev@tsum.ru",
-                    name: "Команда разработки",
-                    role: .admin,
-                    isActive: true,
-                    createdAt: Date()
-                ),
-                content: """
-                🔧 **Обновление LMS Build 214**
-                
-                **Исправления в версии 2.1.1 Build 214:**
-                
-                📱 **Экспорт шаблона Excel**
-                • Исправлена проблема с пустым экраном на iPhone/iPad
-                • Улучшена работа share sheet на всех устройствах
-                • Добавлена корректная поддержка iPad
-                • Улучшены сообщения об ошибках
-                
-                **Как проверить:**
-                1. Перейдите в "Ещё" → "Оргструктура"
-                2. Нажмите "Импорт Excel"
-                3. Нажмите "Скачать шаблон Excel"
-                4. Сохраните файл через share sheet
-                
-                Спасибо за обратную связь! 🙏
-                
-                #обновление #bugfix
-                """,
-                images: [],
-                attachments: [],
-                createdAt: calendar.date(from: DateComponents(year: 2025, month: 7, day: 14, hour: 19, minute: 30))!,
-                visibility: .everyone,
-                likes: ["user1", "user2", "user3"],
-                comments: [],
-                tags: ["обновление", "bugfix"],
-                mentions: nil,
-                metadata: ["buildNumber": "214", "version": "2.1.1"]
-            ),
+        for (channelType, posts) in channelData {
+            ComprehensiveLogger.shared.log(.data, .debug, "Processing channel type: \(channelType.rawValue)", details: [
+                "postsCount": posts.count
+            ])
             
-            // Build 213 Release
-            FeedPost(
-                id: "release-\(currentVersion)-\(currentBuild)",
-                author: UserResponse(
-                    id: "system",
-                    email: "system@lms.com",
-                    name: "Команда разработки",
-                    role: .admin,
-                    isActive: true,
-                    createdAt: Date()
-                ),
-                content: releaseContent,
-                images: [],
-                attachments: [],
-                createdAt: Date(),
-                visibility: .everyone,
-                likes: [],
-                comments: [],
-                tags: ["#release", "#update", "#testflight"],
-                mentions: [],
-                metadata: [
-                    "type": "app_release",
-                    "contentType": "html",
-                    "version": currentVersion,
-                    "build": currentBuild
-                ]
-            )
-        ]
+            if !posts.isEmpty {
+                if let channel = FeedChannel.fromPosts(posts, type: channelType) {
+                    channels.append(channel)
+                    channelPosts[channel.id] = posts
+                    
+                    // Add all posts to the main posts array
+                    self.posts.append(contentsOf: posts)
+                    
+                    ComprehensiveLogger.shared.log(.data, .info, "Created channel and added to channelPosts", details: [
+                        "channelId": channel.id,
+                        "channelName": channel.name,
+                        "channelType": channelType.rawValue,
+                        "postsCount": posts.count,
+                        "unreadCount": channel.unreadCount,
+                        "channelPostsKeys": Array(channelPosts.keys)
+                    ])
+                } else {
+                    ComprehensiveLogger.shared.log(.data, .warning, "Failed to create channel for type: \(channelType.rawValue)")
+                }
+            } else {
+                ComprehensiveLogger.shared.log(.data, .debug, "No posts for channel type: \(channelType.rawValue)")
+            }
+        }
+        
+        ComprehensiveLogger.shared.log(.data, .info, "Finished creating channels", details: [
+            "totalChannels": channels.count,
+            "channelPostsCount": channelPosts.count,
+            "allChannelIds": Array(channelPosts.keys).sorted(),
+            "postsPerChannel": channelPosts.mapValues { $0.count }
+        ])
+        
+        // Sort channels by priority
+        channels.sort { lhs, rhs in
+            // Pinned channels first
+            if lhs.isPinned != rhs.isPinned {
+                return lhs.isPinned
+            }
+            // Then by last message date
+            return lhs.lastMessage.date > rhs.lastMessage.date
+        }
+        
+        // Sort all posts by date
+        posts.sort { $0.createdAt > $1.createdAt }
+        
+        ComprehensiveLogger.shared.log(.data, .info, "MockFeedService: Data loading complete", details: [
+            "totalChannels": channels.count,
+            "totalPosts": posts.count,
+            "channelNames": channels.map { $0.name }
+        ])
     }
     
     private func checkAndAddReleaseNews() {

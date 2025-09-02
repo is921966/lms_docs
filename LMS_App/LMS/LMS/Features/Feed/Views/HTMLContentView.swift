@@ -23,12 +23,19 @@ struct HTMLContentView: UIViewRepresentable {
         webView.scrollView.isUserInteractionEnabled = false
         webView.scrollView.bounces = false
         
+        // Сохраняем текущий контент в координаторе
+        context.coordinator.currentContent = htmlContent
+        
         return webView
     }
     
     func updateUIView(_ webView: WKWebView, context: Context) {
-        let adaptedHTML = wrapHTMLContent(htmlContent)
-        webView.loadHTMLString(adaptedHTML, baseURL: nil)
+        // Загружаем HTML только если контент изменился
+        if context.coordinator.currentContent != htmlContent {
+            context.coordinator.currentContent = htmlContent
+            let adaptedHTML = wrapHTMLContent(htmlContent)
+            webView.loadHTMLString(adaptedHTML, baseURL: nil)
+        }
     }
     
     func makeCoordinator() -> Coordinator {
@@ -110,6 +117,7 @@ struct HTMLContentView: UIViewRepresentable {
     
     class Coordinator: NSObject, WKNavigationDelegate {
         var parent: HTMLContentView
+        var currentContent: String = ""
         
         init(_ parent: HTMLContentView) {
             self.parent = parent

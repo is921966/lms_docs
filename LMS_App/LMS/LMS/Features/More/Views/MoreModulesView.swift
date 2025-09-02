@@ -89,12 +89,28 @@ struct MoreModulesView: View {
                     badge: -1  // -1 означает "НОВОЕ"
                 ))
             }
+            
+            // 7. SCORM Контент - сразу после Cmi5
+            if Feature.scorm.isEnabled {
+                functions.append((
+                    title: Feature.scorm.displayName,
+                    subtitle: Feature.scorm.description,
+                    icon: Feature.scorm.icon,
+                    color: Feature.scorm.color,
+                    action: {
+                        selectedModule = .scorm
+                        showingModule = true
+                    },
+                    badge: -1  // -1 означает "НОВОЕ"
+                ))
+            }
         }
         
         // Добавляем все остальные активные модули (исключая уже добавленные)
         let activeModules = Feature.allCases.filter { 
             $0.isEnabled && 
             $0 != .cmi5 && 
+            $0 != .scorm &&  // Исключаем scorm, так как он уже добавлен вручную
             $0 != .feed && 
             $0 != .settings &&  // Исключаем settings, так как он уже добавлен вручную
             $0 != .orgStructure  // Исключаем orgStructure, так как он уже добавлен вручную

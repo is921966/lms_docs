@@ -1,0 +1,4 @@
+module ViewInspector {
+    header "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ViewInspector.build/ViewInspector-Swift.h"
+    requires objc
+}

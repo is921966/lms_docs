@@ -26,44 +26,63 @@ struct FeedChannelCell: View {
         return formatter
     }
     
+    private var channelColor: Color {
+        switch channel.type {
+        case .releases:
+            return Color.blue
+        case .sprints:
+            return Color.green
+        case .methodology:
+            return Color.purple
+        case .courses:
+            return Color.orange
+        case .admin:
+            return Color.red
+        case .hr:
+            return Color.teal
+        case .myCourses:
+            return Color.indigo
+        case .userPosts:
+            return Color.pink
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let calendar = Calendar.current
+        if calendar.isDateInToday(date) {
+            return timeFormatter.string(from: date)
+        } else if calendar.isDateInYesterday(date) {
+            return "Вчера"
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd.MM"
+            return formatter.string(from: date)
+        }
+    }
+    
     var body: some View {
         HStack(spacing: 12) {
             // Avatar
-            ChannelAvatar(avatarType: channel.avatarType)
+            ChannelAvatar(avatar: channel.avatar, size: 60)
             
             // Content
             VStack(alignment: .leading, spacing: 4) {
-                // Header: Name and Time
-                HStack(alignment: .top) {
-                    HStack(spacing: 6) {
-                        if channel.isPinned {
-                            Image(systemName: "pin.fill")
-                                .font(.system(size: 12))
-                                .foregroundColor(secondaryColor)
-                        }
-                        
-                        Text(channel.name)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(textColor)
-                            .lineLimit(1)
-                        
-                        if channel.isMuted {
-                            Image(systemName: "speaker.slash.fill")
-                                .font(.system(size: 12))
-                                .foregroundColor(secondaryColor)
-                        }
-                    }
+                // Name and Time
+                HStack {
+                    Text(channel.name)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(textColor)
                     
                     Spacer()
                     
-                    Text(timeFormatter.string(from: channel.lastMessage.timestamp))
+                    Text(formatDate(channel.lastMessage.date))
                         .font(.system(size: 14))
                         .foregroundColor(secondaryColor)
                 }
                 
                 // Message and Badge
                 HStack(alignment: .center) {
-                    Text(channel.lastMessage.text)
+                    Text(channel.lastMessage.content)
                         .font(.system(size: 15))
                         .foregroundColor(channel.lastMessage.isRead ? secondaryColor : textColor)
                         .lineLimit(1)
@@ -75,98 +94,47 @@ struct FeedChannelCell: View {
                     }
                 }
             }
+            .frame(maxWidth: .infinity)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .contentShape(Rectangle())
     }
 }
 
 // MARK: - Previews
 
+#if DEBUG
 struct FeedChannelCell_Previews: PreviewProvider {
     static var previews: some View {
-        VStack(spacing: 0) {
-            // Pinned channel with unread
+        Group {
             FeedChannelCell(channel: FeedChannel(
-                id: UUID(),
-                name: "Администрация ЦУМ",
-                avatarType: .text("А", .red),
+                type: .releases,
                 lastMessage: FeedMessage(
-                    id: UUID(),
-                    text: "📢 Важное объявление о графике работы...",
-                    timestamp: Date(),
-                    author: "Admin",
-                    isRead: false
+                    content: "Важное объявление о работе офиса в праздничные дни",
+                    author: "HR Department",
+                    date: Date()
                 ),
-                unreadCount: 1,
-                category: .announcement,
-                priority: .critical,
+                unreadCount: 3,
                 isPinned: true
             ))
+            .previewLayout(.sizeThatFits)
             
-            Divider()
-                .padding(.leading, 76)
-            
-            // Learning channel
             FeedChannelCell(channel: FeedChannel(
-                id: UUID(),
-                name: "Учебный центр",
-                avatarType: .icon("book.fill", .blue),
+                type: .courses,
                 lastMessage: FeedMessage(
-                    id: UUID(),
-                    text: "Открыта регистрация на курс Swift",
-                    timestamp: Date().addingTimeInterval(-3600),
-                    author: "Learning",
-                    isRead: false
+                    content: "Новый курс по iOS разработке уже доступен",
+                    author: "Учебный центр",
+                    date: Date().addingTimeInterval(-3600)
                 ),
-                unreadCount: 518,
-                category: .learning,
-                priority: .normal
-            ))
-            
-            Divider()
-                .padding(.leading, 76)
-            
-            // Muted HR Department
-            FeedChannelCell(channel: FeedChannel(
-                id: UUID(),
-                name: "HR Департамент",
-                avatarType: .text("HR", .green),
-                lastMessage: FeedMessage(
-                    id: UUID(),
-                    text: "Напоминание: подайте заявления на отпуск",
-                    timestamp: Date().addingTimeInterval(-7200),
-                    author: "HR",
-                    isRead: true
-                ),
-                unreadCount: 5,
-                category: .department,
-                priority: .normal,
+                unreadCount: 0,
+                isPinned: false,
                 isMuted: true
             ))
-            
-            Divider()
-                .padding(.leading, 76)
-            
-            // IT channel with important message
-            FeedChannelCell(channel: FeedChannel(
-                id: UUID(),
-                name: "IT Новости",
-                avatarType: .icon("desktopcomputer", .purple),
-                lastMessage: FeedMessage(
-                    id: UUID(),
-                    text: "🚀 Выпущена новая версия приложения LMS 2.0",
-                    timestamp: Date().addingTimeInterval(-86400),
-                    author: "IT",
-                    isRead: false
-                ),
-                unreadCount: 1,
-                category: .event,
-                priority: .high
-            ))
+            .previewLayout(.sizeThatFits)
         }
-        .background(Color(UIColor.systemBackground))
-        .previewLayout(.sizeThatFits)
+        .padding()
+        .background(Color(UIColor.systemGroupedBackground))
     }
-} 
+}
+#endif 

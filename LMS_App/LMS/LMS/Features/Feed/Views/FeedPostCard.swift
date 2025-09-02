@@ -66,6 +66,17 @@ struct FeedPostCard: View {
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.easeInOut(duration: 0.1), value: isPressed)
         .onTapGesture {
+            // Логируем открытие детального просмотра
+            ComprehensiveLogger.shared.log(.ui, .info, "Post card tapped", details: [
+                "postId": post.id,
+                "authorId": post.author.id,
+                "contentLength": post.content.count,
+                "hasImages": !post.images.isEmpty,
+                "imagesCount": post.images.count,
+                "hasAttachments": !post.attachments.isEmpty,
+                "attachmentsCount": post.attachments.count
+            ])
+            
             // Открываем детальный просмотр при нажатии на карточку
             showingDetail = true
         }
@@ -125,7 +136,7 @@ struct PostDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     // Header
@@ -199,6 +210,7 @@ struct PostDetailView: View {
                 }
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

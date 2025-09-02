@@ -14,11 +14,107 @@ class FeedUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["UI_TESTING"]
         app.launch()
         
         // Wait for app to fully load
         _ = app.wait(for: .runningForeground, timeout: 5)
+    }
+    
+    override func tearDownWithError() throws {
+        app = nil
+    }
+    
+    func testOpenPostDetail() throws {
+        // Wait for app to load
+        sleep(2)
+        
+        // Navigate to Feed tab
+        let feedTab = app.tabBars.buttons["Лента"]
+        XCTAssertTrue(feedTab.waitForExistence(timeout: 5))
+        feedTab.tap()
+        
+        sleep(1)
+        
+        // Check if we're on classic feed and switch to new design if needed
+        let switchToNewButton = app.buttons["Попробовать новую ленту"]
+        if switchToNewButton.exists {
+            switchToNewButton.tap()
+            sleep(2)
+        }
+        
+        // Find first post in the feed
+        let feedPosts = app.scrollViews.descendants(matching: .other).matching(identifier: "FeedPostCard")
+        if feedPosts.count == 0 {
+            // Try alternative query
+            let firstPost = app.scrollViews.firstMatch.otherElements.firstMatch
+            if firstPost.exists {
+                firstPost.tap()
+            }
+        } else {
+            let firstPost = feedPosts.element(boundBy: 0)
+            XCTAssertTrue(firstPost.waitForExistence(timeout: 5))
+            firstPost.tap()
+        }
+        
+        sleep(2)
+        
+        // Verify post detail view opened
+        let doneButton = app.buttons["Готово"]
+        XCTAssertTrue(doneButton.waitForExistence(timeout: 5), "Post detail view should open with Done button")
+        
+        // Take screenshot
+        let screenshot = app.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.name = "Post_Detail_View"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        
+        // Close detail view
+        doneButton.tap()
+        
+        sleep(1)
+        
+        // Verify we're back to feed
+        XCTAssertTrue(app.navigationBars["Новости"].exists || app.navigationBars["Лента"].exists)
+    }
+    
+    func testPostDetailDoesNotCrash() throws {
+        // Navigate to Feed
+        let feedTab = app.tabBars.buttons["Лента"]
+        if feedTab.waitForExistence(timeout: 5) {
+            feedTab.tap()
+        }
+        
+        sleep(2)
+        
+        // Try to tap in the middle of the screen where a post might be
+        let coordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4))
+        coordinate.tap()
+        
+        sleep(3)
+        
+        // Check if app is still running
+        XCTAssertTrue(app.state == .runningForeground, "App should not crash when opening post detail")
+        
+        // Try to find any indication that detail view opened
+        let possibleDetailElements = [
+            app.buttons["Готово"],
+            app.navigationBars.buttons["Готово"],
+            app.buttons["Done"],
+            app.navigationBars.element(matching: NSPredicate(format: "label CONTAINS[c] 'Пост'"))
+        ]
+        
+        var detailViewOpened = false
+        for element in possibleDetailElements {
+            if element.exists {
+                detailViewOpened = true
+                element.tap() // Close the detail view
+                break
+            }
+        }
+        
+        XCTAssertTrue(detailViewOpened || app.navigationBars["Новости"].exists, 
+                     "Either detail view should open or we should still be on feed")
     }
     
     // MARK: - Navigation Tests

@@ -184,7 +184,7 @@ struct TestDetailView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 
-                    FlowLayout(spacing: 8) {
+                    TestFlowLayout(spacing: 8) {
                         ForEach(test.competencyIds, id: \.self) { competencyId in
                             CompetencyChip(competencyId: competencyId)
                         }
@@ -198,7 +198,7 @@ struct TestDetailView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 
-                    FlowLayout(spacing: 8) {
+                    TestFlowLayout(spacing: 8) {
                         ForEach(test.positionIds, id: \.self) { positionId in
                             PositionChip(positionId: positionId)
                         }
@@ -479,7 +479,7 @@ struct AttemptRow: View {
 
 // MARK: - Flow Layout
 
-struct FlowLayout: Layout {
+struct TestFlowLayout: Layout {
     var spacing: CGFloat = 8
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {

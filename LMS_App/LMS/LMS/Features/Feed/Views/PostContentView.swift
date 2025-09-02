@@ -149,7 +149,9 @@ struct PostContentView: View {
             // Контент поста
             if isHTMLContent {
                 // HTML контент для новостей о релизах
-                HTMLContentWrapper(htmlContent: displayedContent)
+                HTMLContentView(htmlContent: displayedContent, baseFont: .body)
+                    .frame(minHeight: 200)
+                    .fixedSize(horizontal: false, vertical: true)
             } else if post.content.contains("# ") || post.content.contains("## ") || post.content.contains("### ") || post.content.contains("**") {
                 // Markdown контент
                 MarkdownContentView(text: formatPostContent(post.content))
@@ -473,33 +475,5 @@ struct FeedFlowLayout: Layout {
             
             self.size = CGSize(width: maxWidth, height: currentY + lineHeight)
         }
-    }
-}
-
-// MARK: - HTML Content Wrapper
-
-struct HTMLContentWrapper: View {
-    let htmlContent: String
-    @State private var contentHeight: CGFloat = 300
-    
-    var body: some View {
-        HTMLContentView(htmlContent: htmlContent, baseFont: .body)
-            .frame(height: contentHeight)
-            .fixedSize(horizontal: false, vertical: true)
-            .onPreferenceChange(WebViewHeightKey.self) { height in
-                if height > 0 {
-                    contentHeight = height
-                }
-            }
-    }
-}
-
-// MARK: - WebView Height Preference Key
-
-struct WebViewHeightKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = max(value, nextValue())
     }
 }

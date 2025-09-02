@@ -45,7 +45,7 @@ final class OrgStructureUITests: XCTestCase {
         
         // Tap to expand
         itDepartment.tap()
-        sleep(0.5)
+        sleep(1)
         
         // Check if child departments are visible
         let developmentDept = app.otherElements.staticTexts["Отдел Разработки"]
@@ -53,7 +53,7 @@ final class OrgStructureUITests: XCTestCase {
         
         // Tap again to collapse
         itDepartment.tap()
-        sleep(0.5)
+        Thread.sleep(forTimeInterval: 0.5)
         
         // Check if child departments are hidden
         XCTAssertFalse(developmentDept.exists)
@@ -67,7 +67,7 @@ final class OrgStructureUITests: XCTestCase {
         let listViewButton = app.buttons["list.bullet"]
         if listViewButton.exists {
             listViewButton.tap()
-            sleep(0.5)
+            Thread.sleep(forTimeInterval: 0.5)
             
             // Verify list view is shown
             let firstRow = app.otherElements.buttons.element(boundBy: 0)
@@ -78,7 +78,7 @@ final class OrgStructureUITests: XCTestCase {
         let treeViewButton = app.buttons["chart.bar.doc.horizontal"]
         if treeViewButton.exists {
             treeViewButton.tap()
-            sleep(0.5)
+            Thread.sleep(forTimeInterval: 0.5)
         }
     }
     
@@ -91,7 +91,7 @@ final class OrgStructureUITests: XCTestCase {
         // Expand IT Department
         let itDepartment = app.otherElements.staticTexts["IT Департамент"]
         itDepartment.tap()
-        sleep(0.5)
+        Thread.sleep(forTimeInterval: 0.5)
         
         // Tap on Development Department
         let developmentDept = app.otherElements.staticTexts["Отдел Разработки"]
@@ -110,7 +110,7 @@ final class OrgStructureUITests: XCTestCase {
         navigateToOrgStructure()
         let itDepartment = app.otherElements.staticTexts["IT Департамент"]
         itDepartment.tap()
-        sleep(0.5)
+        Thread.sleep(forTimeInterval: 0.5)
         
         let developmentDept = app.otherElements.staticTexts["Отдел Разработки"]
         developmentDept.tap()
@@ -128,7 +128,7 @@ final class OrgStructureUITests: XCTestCase {
         navigateToOrgStructure()
         let itDepartment = app.otherElements.staticTexts["IT Департамент"]
         itDepartment.tap()
-        sleep(0.5)
+        Thread.sleep(forTimeInterval: 0.5)
         
         let developmentDept = app.otherElements.staticTexts["Отдел Разработки"]
         developmentDept.tap()
@@ -143,7 +143,7 @@ final class OrgStructureUITests: XCTestCase {
         navigateToOrgStructure()
         let itDepartment = app.otherElements.staticTexts["IT Департамент"]
         itDepartment.tap()
-        sleep(0.5)
+        Thread.sleep(forTimeInterval: 0.5)
         
         let developmentDept = app.otherElements.staticTexts["Отдел Разработки"]
         developmentDept.tap()

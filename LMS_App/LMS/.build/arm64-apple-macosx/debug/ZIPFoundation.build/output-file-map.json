@@ -1,0 +1,137 @@
+{
+  "": {
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/master.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+BackingConfiguration.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+BackingConfiguration.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+BackingConfiguration.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+BackingConfiguration~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+BackingConfiguration.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Deprecated.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Deprecated.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Deprecated.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Deprecated~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Deprecated.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Helpers.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Helpers.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Helpers.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Helpers~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Helpers.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+MemoryFile.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+MemoryFile.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+MemoryFile.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+MemoryFile~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+MemoryFile.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Progress.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Progress.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Progress.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Progress~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Progress.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Reading.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Reading.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Reading.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Reading~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Reading.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ReadingDeprecated.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ReadingDeprecated.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ReadingDeprecated.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ReadingDeprecated~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ReadingDeprecated.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Writing.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Writing.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Writing.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Writing~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+Writing.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+WritingDeprecated.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+WritingDeprecated.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+WritingDeprecated.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+WritingDeprecated~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+WritingDeprecated.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ZIP64.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ZIP64.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ZIP64.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ZIP64~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive+ZIP64.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Archive.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Compression.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Compression.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Compression.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Compression~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Compression.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+CompressionDeprecated.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+CompressionDeprecated.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+CompressionDeprecated.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+CompressionDeprecated~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+CompressionDeprecated.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Serialization.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Serialization.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Serialization.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Serialization~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Data+Serialization.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Date+ZIP.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Date+ZIP.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Date+ZIP.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Date+ZIP~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Date+ZIP.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+Serialization.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+Serialization.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+Serialization.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+Serialization~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+Serialization.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+ZIP64.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+ZIP64.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+ZIP64.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+ZIP64~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry+ZIP64.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/Entry.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIP.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIP.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIP.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIP~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIP.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIPDeprecated.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIPDeprecated.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIPDeprecated~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/FileManager+ZIPDeprecated.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/checkouts/ZIPFoundation/Sources/ZIPFoundation/URL+ZIP.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/URL+ZIP.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/URL+ZIP.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/URL+ZIP~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/URL+ZIP.swiftdeps"
+  },
+  "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/DerivedSources/resource_bundle_accessor.swift": {
+    "dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/resource_bundle_accessor.d",
+    "object": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/ishirokov/lms_docs/LMS_App/LMS/.build/arm64-apple-macosx/debug/ZIPFoundation.build/resource_bundle_accessor.swiftdeps"
+  }
+}
